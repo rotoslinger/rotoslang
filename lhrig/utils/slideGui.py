@@ -1,5 +1,5 @@
 import sys
-linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test/lhrig'
+linux = '/scratch/levih/dev/rotoslang/lhrig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
 os = sys.platform
@@ -7,7 +7,8 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
-sys.path.append(os)
+if os not in sys.path:
+    sys.path.append(os)
 
 from maya import cmds
 import json

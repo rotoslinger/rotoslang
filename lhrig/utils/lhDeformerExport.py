@@ -1,5 +1,5 @@
 import sys
-linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test/lhrig'
+linux = '/scratch/levih/dev/rotoslang/lhrig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
 os = sys.platform
@@ -7,7 +7,8 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
-sys.path.append(os)
+if os not in sys.path:
+    sys.path.append(os)
 
 
 
@@ -753,11 +754,15 @@ class export_slide_deformer():
                                               p = True)[0].split(".")[0]
 #             attr = cmds.getAttr(self.name + ".message")
             self.geo_membership = cmds.sets(self.set, q = True)
+            self.geo_membership = cmds.deformer(self.name, q = True, g = True)
 
     def __get_geoms(self):
             # get all driver geometry (for rebuilding)
         self.driver_surface = return_nurbs_surface_info(name = self.driverSurface).nurbs
         self.weight_geo = return_mesh_info(name = self.weightGeo).mesh
+        if not self.weightBase:
+            self.weightBase = cmds.listConnections(self.name + ".baseGeoArray", d = False)
+
         for i in range(len(self.weightBase)):
             shape = cmds.listRelatives(self.weightBase[i], shapes = True)[0]
             if (cmds.objectType(shape, isType='nurbsSurface')):
@@ -848,7 +853,6 @@ class export_slide_deformer():
     #                         print tmp_flat_weights[j], j, tmp_flat_names[j],tmp_def_weights[0][j]
                 for i in range(len(tmp_flat_names)):
                     self.deformer_weights[tmp_flat_names[i]] = tmp_flat_weights[i]
-#             print self.deformer_weights
             except:
                 pass
 #             print self.deformer_weights
@@ -1012,8 +1016,28 @@ class import_slide_deformer():
                 else:
                     tmp_baseGeo.append(self.baseGeo[i]["name"])
             self.baseGeo = tmp_baseGeo
+            #---Test to see whether or not the geo_membership and the base geo have the same number of points
+            #---If geo_membership and base do not line up, copy the geo_membership, to create the base.
+            if (len(self.geo_membership) != len(self.baseGeo)):
+                print "duplicatingGeo"
+                self.__createBase()
+                return
+            for i in range(len(self.geo_membership)):
+                if not comparePolyCount(self.geo_membership[i], self.baseGeo[i]):
+                    print "duplicatingGeo"
+                    self.__createBase()
+                    return
+
+    def __createBase(self):
+        """Creates base"""
+        for i in self.geo_membership:
+            "create base"
+    
     def __create_deformer(self):
         "creates deformer, turns envelope off"
+        print "WeightGeo", self.weightGeo, "driverSurface", self.driverSurface, "geoms", self.geo_membership
+        if not self.geo_membership:
+            self.geo_membership = cmds.ls(sl=True)
         if self.create_deformer == True:
             self.deformer = slideDeformerCmds.slideDeformerCmd(
                                                  driverSurface = self.driverSurface,
@@ -1208,6 +1232,7 @@ class export_vector_deformer():
                                               p = True)[0].split(".")[0]
 #             attr = cmds.getAttr(self.name + ".message")
             self.geo_membership = cmds.sets(self.set, q = True)
+            self.geo_membership = cmds.deformer(self.name, q = True, g = True)
 
     def __get_geoms(self):
             # get all driver geometry (for rebuilding)
@@ -1653,11 +1678,15 @@ class export_curve_roll_deformer():
     def __get_memberships(self):
             # get all deformed geometry and their memberships
             #get set
+            
             self.set   = cmds.listConnections(self.name + ".message",
                                               d = True,
                                               p = True)[0].split(".")[0]
 #             attr = cmds.getAttr(self.name + ".message")
             self.geo_membership = cmds.sets(self.set, q = True)
+
+            self.geo_membership = cmds.deformer(self.name, q = True, g = True)
+
 
     def __get_geoms(self):
             # get all driver geometry (for rebuilding)
@@ -1989,6 +2018,17 @@ class import_curve_roll_deformer():
 #                             set_curves = True)
 ##############################################################################
 
+
+
+def getMFnMeshFromName(meshName):
+    selectionList = OpenMaya.MSelectionList()
+    selectionList.add(srcMesh)
+    nodeDagPath = selectionList.getDagPath(0)
+    return OpenMaya.MFnMesh(nodeDagPath)
+
+def comparePolyCount(srcMesh="", baseMesh=""):
+    srcMFnMesh = getMFnMeshFromName(srcMesh)
+    baseMFnMesh = getMFnMeshFromName(baseMesh)
 
 
 

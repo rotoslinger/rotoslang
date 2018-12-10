@@ -7,7 +7,8 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
-sys.path.append(os)
+if os not in sys.path:
+    sys.path.append(os)
 
 from maya import cmds
 import maya.OpenMaya as OpenMaya
@@ -158,7 +159,7 @@ class draw_ctl():
                  side="L",
                  name="",
                  parent="",
-                 shape = "",
+                 shape = "circle",
                  lock_attrs=["v"],
                  show_rot_order= True,
                  size = 1,
@@ -186,6 +187,7 @@ class draw_ctl():
                                     cube
                                     square
                                     shoulder
+                                    ik/fk
 
         @type  lock_attrs:          string array
         @param lock_attrs:          the attribute names you want locked,
@@ -241,6 +243,7 @@ class draw_ctl():
                self.shape != "switch" or 
                self.shape != "cube" or 
                self.shape != "square" or 
+               self.shape != "ik/fk" or 
                self.shape != "shoulder"):
             raise Exception(self.shape + " is not supported yet")
             quit()
@@ -399,6 +402,74 @@ class draw_ctl():
                        self.size, 
                        self.ctl + ".cv[0:]", 
                        r = True,p = (0, 0, 0))
+    def __ik_fk(self):
+        """"""
+        if (self.shape == "ik/fk"):
+            self.ctl = cmds.curve(n = self.side + "_" + self.name + "_CTL",
+                                  d = 1, 
+                                  p=[(1.54953666109, -1.60264861549e-16, 0.471768770752),
+                                    (1.17923504277, -4.70697878823e-17, -0.0380165208327),
+                                    (1.53137259859, 3.15088187204e-17, -0.391903104248),
+                                    (1.29816947359, 3.15088187204e-17, -0.391903104248),
+                                    (0.964771036094, -4.74644675234e-17, -0.0362390417482),
+                                    (0.964771036094, 3.15088187204e-17, -0.391903104248),
+                                    (0.787231973594, 3.15088187204e-17, -0.391903104248),
+                                    (0.787231973594, -1.60264861549e-16, 0.471768770752),
+                                    (0.964771036094, -1.60264861549e-16, 0.471768770752),
+                                    (0.964771036094, -9.61234610246e-17, 0.182901583252),
+                                    (1.05090384859, -7.64777176591e-17, 0.0944250207518),
+                                    (1.31750541109, -1.60264861549e-16, 0.471768770752),
+                                    (1.54953666109, -1.60264861549e-16, 0.471768770752),
+                                    (0.230591348594, -1.60264861549e-16, 0.471768770752),
+                                    (0.230591348594, -7.98604284373e-17, 0.109659395752),
+                                    (0.609692911094, -7.98604284373e-17, 0.109659395752),
+                                    (0.609692911094, -4.65537376985e-17, -0.0403406042482),
+                                    (0.230591348594, -4.65537376985e-17, -0.0403406042482),
+                                    (0.230591348594, -2.44839332182e-18, -0.238973416748),
+                                    (0.663599161094, -2.44839332182e-18, -0.238973416748),
+                                    (0.663599161094, 3.1248610199e-17, -0.390731229248),
+                                    (0.0512944735937, 3.1248610199e-17, -0.390731229248),
+                                    (0.0512944735937, -1.60264861549e-16, 0.471768770752),
+                                    (0.230591348594, -1.60264861549e-16, 0.471768770752),
+                                    (-0.273846226506, -1.60447796687e-16, 0.472592637371),
+                                    (0.0988796189713, 5.89503152776e-17, -0.515488617917),
+                                    (-0.0620969617443, 5.88796105146e-17, -0.515170191973),
+                                    (-0.444494027695, -1.6997261774e-16, 0.515488617917),
+                                    (-0.290027527924, -1.6997261774e-16, 0.515488617917),
+                                    (-0.273846226506, -1.60447796687e-16, 0.472592637371),
+                                    (-0.290508231216, -1.6997261774e-16, 0.515488617917),
+                                    (-0.444494027695, -1.6997261774e-16, 0.515488617917),
+                                    (-0.436841348594, -1.60264861549e-16, 0.471768770752),
+                                    (-0.808911661094, -4.74644675234e-17, -0.0362390417482),
+                                    (-0.455005411094, 3.15088187204e-17, -0.391903104248),
+                                    (-0.688208536094, 3.15088187204e-17, -0.391903104248),
+                                    (-1.02160697359, -4.74644675234e-17, -0.0362390417482),
+                                    (-1.02160697359, 3.15088187204e-17, -0.391903104248),
+                                    (-1.19914603609, 3.15088187204e-17, -0.391903104248),
+                                    (-1.19914603609, -1.60264861549e-16, 0.471768770752),
+                                    (-1.02160697359, -1.60264861549e-16, 0.471768770752),
+                                    (-1.02160697359, -9.61234610246e-17, 0.182901583252),
+                                    (-0.935474161094, -7.64777176591e-17, 0.0944250207518),
+                                    (-0.668872598594, -1.60264861549e-16, 0.471768770752),
+                                    (-0.436841348594, -1.60264861549e-16, 0.471768770752),
+                                    (-1.37023978609, -1.60264861549e-16, 0.471768770752),
+                                    (-1.37023978609, 3.15088187204e-17, -0.391903104248),
+                                    (-1.54953666109, 3.15088187204e-17, -0.391903104248),
+                                    (-1.54953666109, -1.60264861549e-16, 0.471768770752),
+                                    (-1.3847677758, -1.60264861549e-16, 0.471768770752)],
+                                    k = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+                                       16,17,18,19,20,21,22,23,24,25,26,27,28,
+                                       29,30,31,32,33,34,35,36,37,38,39,40,
+                                       41,42,43,44,45,46,47,48,49])
+             
+            #50
+ 
+            cmds.parent(self.ctl, self.parent)
+            cmds.scale(self.size, 
+                       self.size, 
+                       self.size, 
+                       self.ctl + ".cv[0:]", 
+                       r = True,p = (0, 0, 0))
 
     def __lock_it(self):
         if self.hide == True:
@@ -451,15 +522,16 @@ class draw_ctl():
         self.__cube()
         self.__square()
         self.__shoulder()
+        self.__ik_fk()
         self.__lock_it()
         self.__color_it()
         self.__cleanup()
 
 ##########################################################
 #---example
-# draw_ctl(name = "C_ctl_CTL", 
+# draw_ctl(name = "BLA", 
 #          parent = 'character_grp', 
-#          shape = "cube", 
+#          shape = "ik/fk", 
 #          lock_attrs = ["tx","ty","tz"], 
 #          size = 1)
 ##########################################################
@@ -586,6 +658,7 @@ class create_ctl():
                self.shape != "sphere" or 
                self.shape != "switch" or 
                self.shape != "cube" or 
+               self.shape != "ik/fk" or 
                self.shape != "shoulder"):
             raise Exception(self.shape + " is not supported yet")
             quit()
@@ -686,7 +759,7 @@ class create_ctl():
 # create_ctl(side = "C", 
 #            name = "ctl", 
 #            parent = 'character_grp', 
-#            shape = "cube",
+#            shape = "switch",
 #            num_buffer = 5,
 #            lock_attrs = ["tx","ty","tz","v"], 
 #            gimbal = True,
@@ -1721,6 +1794,13 @@ def select_secondary_bind_jnts():
             cmds.select(bind_jnts)
 # select_secondary_bind_jnts()
 
+def select_all_bind_jnts():
+    "selects all joints with a BIND attribute"
+    test_jnts = cmds.ls(type = "joint")
+    if test_jnts:
+        bind_jnts = [x for x in test_jnts if cmds.objExists(x + ".SEC_BIND") or cmds.objExists(x + ".BIND")]
+        if bind_jnts:
+            cmds.select(bind_jnts)
 
 
 def sec_bind_jnt_vis():
@@ -1733,6 +1813,14 @@ def sec_bind_jnt_vis():
                 cmds.setAttr(i+".drawStyle",0)
 # sec_bind_jnt_vis()
 
+def skin_jnt_vis():
+    "sets draw type for non bind joints to 0"
+    test_jnts = cmds.ls(type = "joint")
+    if test_jnts:
+        non_bind_jnts = [x for x in test_jnts if cmds.objExists(x + ".SKIN")]
+        if non_bind_jnts:
+            for i in non_bind_jnts:
+                cmds.setAttr(i+".drawStyle",0)
 
 
 def cleanup_geo():
@@ -1772,7 +1860,6 @@ def printPointsPY(object):
         
         if i == points.length()-1:
             print "(" + str(points[i][0]) + ", " + str(points[i][1]) + ", " + str(points[i][2]) + ")]"
-
 
 
 # a function to print and format point positions for gl drawings in cpp
@@ -1819,7 +1906,175 @@ def rename_wild_card_attributes(deformer, string, rename_string):
 #         print this
 #         print deformer + "." + tmp_attrs[i]
 #         print deformer + "." + tmp_attrs + 
-rename_wild_card_attributes("C_mouth_SLD","UWeights", "Weights")
+#rename_wild_card_attributes("C_mouth_SLD","UWeights", "Weights")
+
+def select_skin_jnts():
+    "selects all joints with a BIND attribute"
+    test_jnts = cmds.ls(type = "joint")
+    if test_jnts:
+        bind_jnts = [x for x in test_jnts if cmds.objExists(x + ".SKIN")]
+        if bind_jnts:
+            cmds.select(bind_jnts)
+
+def create_bind_skel(children = [],
+                     parents = [],
+                     character_grp = "C_character_GRP",
+                     rig_parent = "C_rig_GRP"):
+    #---place to store it
+    skel_parent = cmds.createNode("transform",
+                              n = "C_bindSkeleton_GRP",
+                              p = character_grp)
+    select_bind_jnts()
+    AllBones = cmds.ls(sl = True)
+    roots = []
+    
+    for i in range(len(AllBones)):
+        parent = cmds.listRelatives( AllBones[i],
+                                     parent=True)
+        if parent:
+            #if cmds.objExists(parent[0] + ".BIND") == False:
+            
+            
+            if cmds.attributeQuery('BIND', node = parent[0], ex = True) == False and cmds.attributeQuery('SEC_BIND', node = parent[0], ex = True) == False :
+            #if cmds.objectType(parent[0]) != "joint":
+                if AllBones[i] not in roots:
+                    roots.append(AllBones[i])
+                    #print AllBones[i]
+    new_bones = []
+    for i in range(len(roots)):
+        if cmds.objExists(roots[i]):
+            if cmds.objExists(roots[i] + "_FIX") == False:
+            
+                bone = cmds.duplicate(roots[i], n = roots[i] + "_FIX")[0]
+                trash = cmds.listRelatives(bone, type = "parentConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "pointConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "scaleConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "orientConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "ikEffector", pa = True, ad = True)
+                cmds.delete(trash)
+    
+                relatives_long = cmds.listRelatives(bone, type = "joint", pa = True, ad = True)
+                relatives_short = cmds.listRelatives(bone, type = "joint", ad = True)
+                if relatives_long:
+                    for i in range(len(relatives_long)):
+                        cmds.rename(relatives_long[i],  relatives_short[i] + "_FIX")
+                if bone:
+                    cmds.parent(bone,skel_parent)
+    #---parenting
+    for i in range(len(parents)):
+        cmds.parent(children[i],parents[i])
+    skel_relatives = cmds.listRelatives(skel_parent, type = "joint", ad = True)
+    jnt_names = []
+    for i in range(len(skel_relatives)):
+        
+        if cmds.attributeQuery('BIND', node = skel_relatives[i], ex = True) == True :
+
+            cmds.setAttr( skel_relatives[i] + ".BIND", l = False, cb = False, k = False)
+    
+            cmds.deleteAttr(skel_relatives[i], at = "BIND")
+        
+        
+        cmds.addAttr(skel_relatives[i], 
+                     ln = "SKIN",
+                     at = "bool",)
+        cmds.setAttr(skel_relatives[i] + ".SKIN", 
+                     l = True, 
+                     k=False)
+        name = skel_relatives[i].split("_JNT_FIX")[0]
+        new_name = cmds.rename(skel_relatives[i], name + "_BIND")
+        jnt_names.append(name)
+        cmds.parentConstraint(name + "_JNT", new_name)
+        cmds.scaleConstraint(name + "_JNT", new_name)
+        
+def create_sec_bind_skel(children = [],
+                     parents = [],
+                     character_grp = "C_character_GRP",
+                     rig_parent = "C_rig_GRP"):
+    #---place to store it
+    skel_parent = cmds.createNode("transform",
+                              n = "C_bindSkeleton_GRP",
+                              p = character_grp)
+    select_secondary_bind_jnts()
+    AllBones = cmds.ls(sl = True)
+    roots = []
+    
+    for i in range(len(AllBones)):
+        parent = cmds.listRelatives( AllBones[i],
+                                     parent=True)
+        if parent:
+            #if cmds.objExists(parent[0] + ".BIND") == False:
+            
+            
+            if cmds.attributeQuery('SEC_BIND', node = parent[0], ex = True) == False :
+            #if cmds.objectType(parent[0]) != "joint":
+                if AllBones[i] not in roots:
+                    roots.append(AllBones[i])
+                    #print AllBones[i]
+    new_bones = []
+    for i in range(len(roots)):
+        if cmds.objExists(roots[i]):
+            if cmds.objExists(roots[i] + "_FIX") == False:
+            
+                bone = cmds.duplicate(roots[i], n = roots[i] + "_FIX")[0]
+                trash = cmds.listRelatives(bone, type = "parentConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "pointConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "scaleConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "orientConstraint", pa = True, ad = True)
+                cmds.delete(trash)
+                trash = cmds.listRelatives(bone, type = "ikEffector", pa = True, ad = True)
+                cmds.delete(trash)
+    
+                relatives_long = cmds.listRelatives(bone, type = "joint", pa = True, ad = True)
+                relatives_short = cmds.listRelatives(bone, type = "joint", ad = True)
+                if relatives_long:
+                    for i in range(len(relatives_long)):
+                        cmds.rename(relatives_long[i],  relatives_short[i] + "_FIX")
+                if bone:
+                    cmds.parent(bone,skel_parent)
+    #---parenting
+    for i in range(len(parents)):
+        cmds.parent(children[i],parents[i])
+    skel_relatives = cmds.listRelatives(skel_parent, type = "joint", ad = True)
+    jnt_names = []
+    for i in range(len(skel_relatives)):
+        
+        if cmds.attributeQuery('SEC_BIND', node = skel_relatives[i], ex = True) == True :
+
+            cmds.setAttr( skel_relatives[i] + ".SEC_BIND", l = False, cb = False, k = False)
+    
+            cmds.deleteAttr(skel_relatives[i], at = "SEC_BIND")
+        
+        
+        cmds.addAttr(skel_relatives[i], 
+                     ln = "SEC_SKIN",
+                     at = "bool",)
+        cmds.setAttr(skel_relatives[i] + ".SEC_SKIN", 
+                     l = True, 
+                     k=False)
+        name = skel_relatives[i].split("_JNT_FIX")[0]
+        new_name = cmds.rename(skel_relatives[i], name + "_BIND")
+        jnt_names.append(name)
+        cmds.parentConstraint(name + "_JNT", new_name)
+        cmds.scaleConstraint(name + "_JNT", new_name)
+        
+        
+
+    
+    
+    
+
+        
+    
+
+    
+
 
 '''
 #button press

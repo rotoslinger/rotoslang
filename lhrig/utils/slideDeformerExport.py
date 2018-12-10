@@ -7,7 +7,8 @@ if "linux" in os:
     os = linux
 if "mac" in os:
     os = mac
-sys.path.append(os)
+if os not in sys.path:
+    sys.path.append(os)
 
 
 

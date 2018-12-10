@@ -7,7 +7,8 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
-sys.path.append(os)
+if os not in sys.path:
+    sys.path.append(os)
 
 
 # import math, sys
@@ -49,6 +50,34 @@ def skin_to_bind_jnts(geoms):
 #                                  ignoreSelected = True,
                                  name = name,
                                  )
+def skin_to_weight_jnts(geoms, max_influences = 0):
+    test_jnts = cmds.ls(type = "joint")
+    if test_jnts:
+        bind_jnts = [x for x in test_jnts if cmds.objExists(x + ".SKIN")]
+        if bind_jnts:
+            for i in range(len(geoms)):
+                #skin, name skin cluster name of geometry with "SKN" suffix
+                #select bind joints, skin to them
+                name = geoms[i].split("_")
+                name = name[0]+"_"+name[1]+"_SKN"
+#                 cmds.makeIdentity(geoms[i], 
+#                                   apply = True,
+#                                   t = 1, r = 1, s = 1)
+                if max_influences <= 0:
+                    cmds.skinCluster(bind_jnts,
+                                     geoms[i],
+                                     tsb = True,
+                                     name = name,
+                                     )
+                else:
+                    cmds.skinCluster(bind_jnts,
+                                     geoms[i],
+                                     tsb = True,
+                                     obeyMaxInfluences = True,
+                                     maximumInfluences = max_influences,
+                                     name = name,
+                                     )
+                
 #############################################
 #---example
 # skin_to_bind_jnts(["C_body_GEO", 
@@ -86,6 +115,23 @@ def skin_to_bind_sec_jnts(geoms):
                                  tsb = True,
                                  name = name,
                                  )
+def skin_to_sec_skin_jnts(geoms):
+    test_jnts = cmds.ls(type = "joint")
+    if test_jnts:
+        sec_jnts = [x for x in test_jnts if cmds.objExists(x + ".SEC_SKIN")]
+        bind_jnts = [x for x in test_jnts if cmds.objExists(x + ".SKIN")]
+        all_jnts = sec_jnts + bind_jnts
+        if all_jnts:
+            for i in range(len(geoms)):
+                #skin, name skin cluster name of geometry with "SKN" suffix
+                #select bind joints, skin to them
+                name = geoms[i].split("_")
+                name = name[0]+"_"+name[1]+"_SKN"
+                cmds.skinCluster(all_jnts,
+                                 geoms[i],
+                                 tsb = True,
+                                 name = name,
+                                 )
 #############################################
 #example
 # skin_to_bind_sec_jnts(["C_holster_GEO"])
@@ -106,8 +152,8 @@ def export_skins(path):
                              path = path)
 #############################################
 #---example
-# path = "/corp/projects/eng/lharrison/workspace/test/WEIGHTS"
-# export_skins(path)
+weights_path = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig/insomniacWeights"
+export_skins(weights_path)
 #############################################
 
 
@@ -116,23 +162,32 @@ def import_skins(path):
     # if a skin cluster exists try to import to it
     skins = cmds.ls(type = "skinCluster")
     if skins:
+
         for i in skins:
+            #print "something"
+
     #         geom = cmds.skinCluster(q=True, g = True)
     #         print geom
-            try:
-                cmds.deformerWeights(i + ".xml",
-                                     im = True,
-                                     method = "index",
-                                     deformer=i,
-                                     path = path)
-            except:
-                pass
+            cmds.deformerWeights(i + ".xml",
+                             im = True,
+                             method = "index",
+                             deformer=i,
+                             path = path)
+
+#             try:
+#                 cmds.deformerWeights(i + ".xml",
+#                                      im = True,
+#                                      method = "index",
+#                                      deformer=i,
+#                                      path = path)
+#             except:
+#                 pass
 #             geom = cmds.skinCluster(i,q=True, g = True)
 #             cmds.skinPercent(i,geom,normalize = True)
             cmds.skinCluster(i , e = True, forceNormalizeWeights = True);
 #############################################
 #---example
-# path = "/corp/projects/eng/lharrison/workspace/test/WEIGHTS"
+# path = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig/insomniacWeights"
 # import_skins(path)
 #############################################
 

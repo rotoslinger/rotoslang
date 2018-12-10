@@ -514,15 +514,6 @@ def refresh_paintable_attrs(deformer_name, deformer_type ):
 #         cmds.makePaintable()
         cmds.makePaintable(deformer_type, paint, attrType='doubleArray', shapeMode='deformer')
 
-
-
-
-
-
-
-
-
-
 def setFaceIdsOnLocator(locatorName):
     faces = cmds.ls(sl = True, fl=True)
     faces = [x.split("[")[1] for x in faces]
@@ -530,3 +521,9 @@ def setFaceIdsOnLocator(locatorName):
     faces = [int(x) for x in faces]
     cmds.setAttr(locatorName + ".faceIds", faces, type = "doubleArray")
 # setFaceIdsOnLocator("C_tLip_LOC")
+
+
+
+
+
+

@@ -34,10 +34,15 @@ include buildconfig
 
 plugins: \
 		LHNurbsBlendshape.$(EXT)
+	# TEMP OUTPUT DIR
+	cp *.so /home/users/levih/Desktop/plugins/
 
 
 depend:
 	makedepend $(INCLUDES) -I/usr/include/CC *.cc
+
+
+
 
 clean:
 	-rm -f *.o

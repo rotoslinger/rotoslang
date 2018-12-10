@@ -35,9 +35,6 @@ MObject LHCurveDeformer::aCacheParams;
 MObject LHCurveDeformer::aCacheWeights;
 MObject LHCurveDeformer::aCacheBase;
 MObject LHCurveDeformer::aContinuousSlide;
-MObject LHCurveDeformer::aPatchAmount;
-
-static MObject aPatchAmount;
 
 
 void* LHCurveDeformer::creator() { return new LHCurveDeformer; }
