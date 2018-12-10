@@ -1,0 +1,142 @@
+#-
+# ==========================================================================
+# Copyright 1995-2010 Autodesk, Inc. All rights reserved.
+#
+# Use of this software is subject to the terms of the Autodesk
+# license agreement provided at the time of installation or download,
+# or which otherwise accompanies this software in either electronic
+# or hard copy form.
+# ==========================================================================
+#+
+mayaVersion := 2014
+gccVersion := 4.4.7
+
+# If you have Maya installed in a non-standard location, uncomment the
+# following line and set the path to the directory of your Maya
+# installation:
+# MAYA_LOCATION = /sw/external/autodesk/maya2014-sp3-x64
+export MAYA_LOCATION
+
+
+#-------------------------------------------------------------
+#
+#		Try to find Maya
+#
+#-------------------------------------------------------------
+ifeq ($(MAYA_LOCATION),)
+    MAYA_LOCATION = /sw/external/autodesk/maya2014-sp3-x64
+
+    ifeq ($(wildcard $(MAYA_LOCATION)/include/maya/MTypes.h),)
+        $(error Cannot find Maya ${mayaVersion}. Please uncomment the \
+                MAYA_LOCATION setting near the top of 'buildconfig' and set \
+                it to point to the directory where Maya ${mayaVersion} \
+                is installed)
+    endif
+else ifeq ($(wildcard $(MAYA_LOCATION)/include/maya/MTypes.h),)
+    $(error The MAYA_LOCATION environment variable does not point to the \
+            directory where Maya is installed)
+else
+    # Make sure that MAYA_LOCATION is pointing at the correct version of
+    # Maya.
+    apiVersion := $(shell grep 'define.*MAYA_API_VERSION' $(MAYA_LOCATION)/include/maya/MTypes.h | sed 's/^[^0-9]*\([0-9]...\).*$$/\1/')
+
+    ifneq ($(apiVersion),$(mayaVersion))
+        $(error The MAYA_LOCATION environment variable is pointing to \
+                version $(apiVersion) of Maya. Either change it to point to \
+                the directory where Maya $(mayaVersion) is installed or else \
+                uncomment the MAYA_LOCATION setting near the top of 'buildconfig' \
+                and change that to point to the location of Maya $(mayaVersion))
+    endif
+endif
+
+
+#-------------------------------------------------------------
+#
+#		Try to find the correct version of gcc
+#
+#-------------------------------------------------------------
+
+# If 'CC' is undefined or is the wrong version of gcc then we need to
+# try to find the correct version.
+ifneq ($(and $(CC),$(shell $(CC) -dumpversion 2>/dev/null)),$(gccVersion))
+    compressedVersion := $(subst .,,$(gccVersion))
+
+    # Possible names for the compiler.
+    gccNames := gcc \
+                gcc${gccVersion} \
+                gcc-${gccVersion} \
+                gcc${compressedVersion} \
+                gcc-${compressedVersion}
+
+    # Possible directories the compiler might be in.
+    gccDirs :=  /opt/gcc${gccVersion}/bin \
+                /opt/gcc-${gccVersion}/bin \
+                /opt/gcc${compressedVersion}/bin \
+                /opt/gcc-${compressedVersion}/bin \
+                /opt/gcc/${gccVersion}/bin \
+                /opt/gcc/${compressedVersion}/bin
+
+    # Get all combinations of paths and names.
+    gccPaths := $(foreach dir,$(gccDirs),$(foreach name,$(gccNames),$(dir)/$(name)))
+
+    # Insert the names without any directory, in case they are in the user's
+    # path.
+    gccPaths := $(gccNames) $(gccPaths)
+
+    # Try to get the version from each one until we find one which exists
+	# and gives us the right version.
+    CC := $(shell for p in $(gccPaths); do if [ "`$$p -dumpversion 2>/dev/null`" == "$(gccVersion)" ]; then echo $$p; exit 0; fi; done)
+
+    ifeq ($(CC),)
+        $(error Could not find version $(gccVersion) of the gcc compiler. \
+                Uncomment the CC and C++ settings near the top of Makefile and \
+                edit them to point to the correct locations for gcc and g++)
+    endif
+endif
+
+# If 'C++' is undefined or is the wrong version of g++ then we need to
+# try to find the correct version.
+ifneq ($(and $(C++),$(shell $(C++) -dumpversion 2>/dev/null)),$(gccVersion))
+    # We assume that g++ is in the same dir as gcc and similarly named.
+    dirPath := $(dir $(CC))
+    name := $(notdir $(CC))
+
+    ifeq ($(dirPath),./)
+        dirPath :=
+    endif
+
+    C++ := $(dirPath)$(subst gcc,g++,$(name))
+endif
+
+
+#-------------------------------------------------------------
+#
+#		Miscellaneous other settings.
+#
+#-------------------------------------------------------------
+
+NVPARSE = /opt/nvidia/nvparse
+
+CFLAGS = -DBits64_ -m64 -DUNIX -D_BOOL -DLINUX -DFUNCPROTO -D_GNU_SOURCE \
+         -DLINUX_64 -fPIC \
+         -fno-strict-aliasing -DREQUIRE_IOSTREAM -Wno-deprecated -O3 -Wall \
+         -Wno-multichar -Wno-comment -Wno-sign-compare -funsigned-char \
+         -Wno-reorder -fno-gnu-keywords -ftemplate-depth-25 -pthread
+
+C++FLAGS = $(CFLAGS) $(WARNFLAGS) -Wno-deprecated -fno-gnu-keywords
+
+INCLUDES = -I. -I.. -I$(MAYA_LOCATION)/include \
+           -I/usr/X11R6/include -I$(NVPARSE)/include/glh
+
+# -Bsymbolic binds references to global symbols within the library.
+# This avoids symbol clashes in other shared libraries but forces
+# the linking of all required libraries.
+LFLAGS        = -Wl,-Bsymbolic -shared
+LD            = $(C++) $(C++FLAGS) $(LFLAGS)
+LIBS          = -L$(MAYA_LOCATION)/lib -lOpenMaya -lFoundation
+LIBS_GL_EXTRA = -lGL -lGLU
+EXT           = so
+PLATFORM_SPECIFIC_PLUGINS = $(LINUX_PLUGINS)
+
+# Find out if the Qt development tools are installed.
+QMAKE = $(shell which qmake 2> /dev/null)

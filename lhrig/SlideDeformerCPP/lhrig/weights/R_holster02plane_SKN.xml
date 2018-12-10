@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<deformerWeight>
+  <headerInfo fileName="/corp/projects/eng/lharrison/workspace/test/WEIGHTS/R_holster02plane_SKN.xml" worldMatrix="0.000021 -0.009236 0.003833 0.000000 -0.003346 0.003606 0.008706 0.000000 -0.009423 -0.001301 -0.003083 0.000000 -0.156927 1.472602 0.115897 1.000000 "/>
+  <shape name="R_holster02plane_EXShape" group="44" stride="3" size="4" max="4">
+    <point index="0" value=" -0.500000 -0.000000 0.500000"/>
+    <point index="1" value=" 0.500000 -0.000000 0.500000"/>
+    <point index="2" value=" -0.500000 0.000000 -0.500000"/>
+    <point index="3" value=" 0.500000 0.000000 -0.500000"/>
+  </shape>
+  <weights deformer="R_holster02plane_SKN" source="C_chest_JNT" shape="R_holster02plane_EXShape" layer="0" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.342"/>
+    <point index="1" value="0.342"/>
+    <point index="2" value="0.342"/>
+    <point index="3" value="0.342"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="C_hip_JNT" shape="R_holster02plane_EXShape" layer="1" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="C_root_JNT" shape="R_holster02plane_EXShape" layer="2" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="C_torso0_JNT" shape="R_holster02plane_EXShape" layer="3" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="C_torso1_JNT" shape="R_holster02plane_EXShape" layer="4" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="C_torso2_JNT" shape="R_holster02plane_EXShape" layer="5" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.041"/>
+    <point index="1" value="0.041"/>
+    <point index="2" value="0.041"/>
+    <point index="3" value="0.041"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="C_torso3_JNT" shape="R_holster02plane_EXShape" layer="6" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_arm1_JNT" shape="R_holster02plane_EXShape" layer="7" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_arm2_JNT" shape="R_holster02plane_EXShape" layer="8" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_arm3_JNT" shape="R_holster02plane_EXShape" layer="9" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_arm4_JNT" shape="R_holster02plane_EXShape" layer="10" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_arm5_JNT" shape="R_holster02plane_EXShape" layer="11" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_arm_JNT" shape="R_holster02plane_EXShape" layer="12" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_clav0_JNT" shape="R_holster02plane_EXShape" layer="13" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_elbow1_JNT" shape="R_holster02plane_EXShape" layer="14" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_elbow2_JNT" shape="R_holster02plane_EXShape" layer="15" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_elbow3_JNT" shape="R_holster02plane_EXShape" layer="16" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_elbow4_JNT" shape="R_holster02plane_EXShape" layer="17" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_elbow5_JNT" shape="R_holster02plane_EXShape" layer="18" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_elbow6_JNT" shape="R_holster02plane_EXShape" layer="19" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_elbow7_JNT" shape="R_holster02plane_EXShape" layer="20" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_hand_JNT" shape="R_holster02plane_EXShape" layer="21" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_index0_JNT" shape="R_holster02plane_EXShape" layer="22" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_index1_JNT" shape="R_holster02plane_EXShape" layer="23" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_index2_JNT" shape="R_holster02plane_EXShape" layer="24" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_index3_JNT" shape="R_holster02plane_EXShape" layer="25" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_middle0_JNT" shape="R_holster02plane_EXShape" layer="26" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_middle1_JNT" shape="R_holster02plane_EXShape" layer="27" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_middle2_JNT" shape="R_holster02plane_EXShape" layer="28" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_middle3_JNT" shape="R_holster02plane_EXShape" layer="29" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_neckClav0_JNT" shape="R_holster02plane_EXShape" layer="30" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_neck_JNT" shape="R_holster02plane_EXShape" layer="31" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_pec0_JNT" shape="R_holster02plane_EXShape" layer="32" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_pinky0_JNT" shape="R_holster02plane_EXShape" layer="33" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_pinky1_JNT" shape="R_holster02plane_EXShape" layer="34" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_pinky2_JNT" shape="R_holster02plane_EXShape" layer="35" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_pinky3_JNT" shape="R_holster02plane_EXShape" layer="36" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_pinkyMetacarpal0_JNT" shape="R_holster02plane_EXShape" layer="37" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_ring0_JNT" shape="R_holster02plane_EXShape" layer="38" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_ring1_JNT" shape="R_holster02plane_EXShape" layer="39" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_ring2_JNT" shape="R_holster02plane_EXShape" layer="40" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_ring3_JNT" shape="R_holster02plane_EXShape" layer="41" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_scapula0_JNT" shape="R_holster02plane_EXShape" layer="42" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_shoulder_JNT" shape="R_holster02plane_EXShape" layer="43" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_thumb0_JNT" shape="R_holster02plane_EXShape" layer="44" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_thumb1_JNT" shape="R_holster02plane_EXShape" layer="45" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_thumb2_JNT" shape="R_holster02plane_EXShape" layer="46" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="L_thumb3_JNT" shape="R_holster02plane_EXShape" layer="47" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_arm1_JNT" shape="R_holster02plane_EXShape" layer="48" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.017"/>
+    <point index="1" value="0.017"/>
+    <point index="2" value="0.017"/>
+    <point index="3" value="0.017"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="R_arm2_JNT" shape="R_holster02plane_EXShape" layer="49" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.028"/>
+    <point index="1" value="0.028"/>
+    <point index="2" value="0.028"/>
+    <point index="3" value="0.028"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="R_arm3_JNT" shape="R_holster02plane_EXShape" layer="50" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_arm4_JNT" shape="R_holster02plane_EXShape" layer="51" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_arm5_JNT" shape="R_holster02plane_EXShape" layer="52" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_arm_JNT" shape="R_holster02plane_EXShape" layer="53" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.163"/>
+    <point index="1" value="0.163"/>
+    <point index="2" value="0.163"/>
+    <point index="3" value="0.163"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="R_clav0_JNT" shape="R_holster02plane_EXShape" layer="54" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.036"/>
+    <point index="1" value="0.036"/>
+    <point index="2" value="0.036"/>
+    <point index="3" value="0.036"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="R_elbow1_JNT" shape="R_holster02plane_EXShape" layer="55" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_elbow2_JNT" shape="R_holster02plane_EXShape" layer="56" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_elbow3_JNT" shape="R_holster02plane_EXShape" layer="57" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_elbow4_JNT" shape="R_holster02plane_EXShape" layer="58" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_elbow5_JNT" shape="R_holster02plane_EXShape" layer="59" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_elbow6_JNT" shape="R_holster02plane_EXShape" layer="60" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_elbow7_JNT" shape="R_holster02plane_EXShape" layer="61" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_hand_JNT" shape="R_holster02plane_EXShape" layer="62" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_index0_JNT" shape="R_holster02plane_EXShape" layer="63" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_index1_JNT" shape="R_holster02plane_EXShape" layer="64" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_index2_JNT" shape="R_holster02plane_EXShape" layer="65" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_index3_JNT" shape="R_holster02plane_EXShape" layer="66" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_middle0_JNT" shape="R_holster02plane_EXShape" layer="67" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_middle1_JNT" shape="R_holster02plane_EXShape" layer="68" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_middle2_JNT" shape="R_holster02plane_EXShape" layer="69" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_middle3_JNT" shape="R_holster02plane_EXShape" layer="70" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_neckClav0_JNT" shape="R_holster02plane_EXShape" layer="71" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_pec0_JNT" shape="R_holster02plane_EXShape" layer="72" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.146"/>
+    <point index="1" value="0.146"/>
+    <point index="2" value="0.146"/>
+    <point index="3" value="0.146"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="R_pinky0_JNT" shape="R_holster02plane_EXShape" layer="73" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_pinky1_JNT" shape="R_holster02plane_EXShape" layer="74" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_pinky2_JNT" shape="R_holster02plane_EXShape" layer="75" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_pinky3_JNT" shape="R_holster02plane_EXShape" layer="76" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_pinkyMetacarpal0_JNT" shape="R_holster02plane_EXShape" layer="77" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_ring0_JNT" shape="R_holster02plane_EXShape" layer="78" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_ring1_JNT" shape="R_holster02plane_EXShape" layer="79" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_ring2_JNT" shape="R_holster02plane_EXShape" layer="80" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_ring3_JNT" shape="R_holster02plane_EXShape" layer="81" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_scapula0_JNT" shape="R_holster02plane_EXShape" layer="82" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_shoulder_JNT" shape="R_holster02plane_EXShape" layer="83" defaultValue="0.000" size="4" max="3">
+    <point index="0" value="0.227"/>
+    <point index="1" value="0.227"/>
+    <point index="2" value="0.227"/>
+    <point index="3" value="0.227"/>
+  </weights>
+  <weights deformer="R_holster02plane_SKN" source="R_thumb0_JNT" shape="R_holster02plane_EXShape" layer="84" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_thumb1_JNT" shape="R_holster02plane_EXShape" layer="85" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_thumb2_JNT" shape="R_holster02plane_EXShape" layer="86" defaultValue="0.000" size="0" max="0"/>
+  <weights deformer="R_holster02plane_SKN" source="R_thumb3_JNT" shape="R_holster02plane_EXShape" layer="87" defaultValue="0.000" size="0" max="0"/>
+</deformerWeight>
