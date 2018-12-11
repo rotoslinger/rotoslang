@@ -857,6 +857,8 @@ class export_slide_deformer():
                 pass
 #             print self.deformer_weights
     def __organize(self):
+#         print self.base_geo
+
         self.vector_dict = {
                            "driver_surface":       self.driver_surface,
                            "weight_geo":           self.weight_geo,
@@ -880,10 +882,9 @@ class export_slide_deformer():
                            "vUseAnimCurves":       self.vUseAnimCurves,
                            "nUseAnimCurves":       self.nUseAnimCurves,
                            }
-#         print self.vector_dict
     def __export(self):
         file = open(self.path, "wb")
-        json.dump(self.vector_dict, file, sort_keys = True, indent = 2)
+        json.dump(self.vector_dict, file, sort_keys = False, indent = 2)
         file.close()
         
             # format info
@@ -1019,23 +1020,25 @@ class import_slide_deformer():
             #---Test to see whether or not the geo_membership and the base geo have the same number of points
             #---If geo_membership and base do not line up, copy the geo_membership, to create the base.
             if (len(self.geo_membership) != len(self.baseGeo)):
-                print "duplicatingGeo"
                 self.__createBase()
                 return
             for i in range(len(self.geo_membership)):
                 if not comparePolyCount(self.geo_membership[i], self.baseGeo[i]):
-                    print "duplicatingGeo"
                     self.__createBase()
                     return
 
     def __createBase(self):
         """Creates base"""
+        cmds.delete(self.baseGeo)
+        self.baseGeo = []
         for i in self.geo_membership:
-            "create base"
-    
+            tmp = cmds.duplicate(i, name = i + "Base")[0]
+            cmds.setAttr(tmp+".v",0)
+            self.baseGeo.append(tmp)
+
     def __create_deformer(self):
         "creates deformer, turns envelope off"
-        print "WeightGeo", self.weightGeo, "driverSurface", self.driverSurface, "geoms", self.geo_membership
+        #---If doesn't find geo_membership, attempts to apply to selected geo
         if not self.geo_membership:
             self.geo_membership = cmds.ls(sl=True)
         if self.create_deformer == True:
@@ -1083,14 +1086,29 @@ class import_slide_deformer():
             if self.deformer_weights:
                 for i in self.deformer_weights.keys():
                     cmds.setAttr(i, self.deformer_weights.get(i))
-            
+            #ToFixOldDeformers
             for i in self.weights.keys():
                 weights = self.weights.get(i)
-                if not weights == None:
-                    try:
-                        cmds.setAttr(i, weights,typ='doubleArray')
-                    except:
-                        pass
+#                 newName = i
+#                 if "LRU" in i:
+#                     newName = i.replace("LRU", "LR")
+#                 if "LRV" in i:
+#                     newName = i.replace("LRV", "LR")
+#                 if "UDU" in i:
+#                     newName = i.replace("UDU", "UD")
+#                 if "UDV" in i:
+#                     newName = i.replace("UDV", "UD")
+#                 if "SideU" in i:
+#                     newName = i.replace("SideU", "Side")
+#                 if "SideV" in i:
+#                     newName = i.replace("SideV", "Side")
+#                 cmds.setAttr(newName, weights,typ='doubleArray')
+                if not weights:
+                    continue
+                try:
+                    cmds.setAttr(i, weights,typ='doubleArray')
+                except:
+                    print "Weights for " + i + " unable to be set.  It is likely topology has changed."
 
     def __finalize(self):
         if self.create_deformer == True:
@@ -1308,8 +1326,6 @@ class export_vector_deformer():
                 for i in range(len(geoms)):
                     tmp_def_names = self.name + ".weightList[" + str(i) + "].weights"
                     indices = cmds.getAttr(tmp_def_names, mi = True)
-    #                     tmp_def_weights = cmds.getAttr(tmp_def_names)
-    #                     print tmp_def_weights
                     for j in range(len(indices)):
                         tmp_flat_names.append(self.name
                                               + ".weightList["
@@ -1320,10 +1336,8 @@ class export_vector_deformer():
                         tmp_flat_weights.append(cmds.getAttr(tmp_flat_names[j]))
                 for i in range(len(tmp_flat_names)):
                     self.deformer_weights[tmp_flat_names[i]] = tmp_flat_weights[i]
-#             print self.deformer_weights
             except:
                 pass
-#             print self.deformer_weights
     def __organize(self):
         self.vector_dict = {
                            "weight_geo":           self.weight_geo,
@@ -1660,7 +1674,6 @@ class export_curve_roll_deformer():
         
         self.outCurve = cmds.listConnections(self.name + ".outCurve",
                                               d = False)[0]
-        print self.inCurve
 
         self.side = self.name.split("_")[0]
         self.short_name = self.name.split("_")[1]
@@ -1755,8 +1768,6 @@ class export_curve_roll_deformer():
                 for i in range(len(geoms)):
                     tmp_def_names = self.name + ".weightList[" + str(i) + "].weights"
                     indices = cmds.getAttr(tmp_def_names, mi = True)
-    #                     tmp_def_weights = cmds.getAttr(tmp_def_names)
-    #                     print tmp_def_weights
                     for j in range(len(indices)):
                         tmp_flat_names.append(self.name
                                               + ".weightList["
@@ -2019,22 +2030,15 @@ class import_curve_roll_deformer():
 ##############################################################################
 
 
+def comparePolyCount(srcMesh, baseMesh):
+    
+    srcCount = cmds.polyEvaluate(srcMesh, v=True)
+    baseCount = cmds.polyEvaluate(baseMesh, v=True)
+    if srcCount == baseCount:
+        return True
+    return
 
-def getMFnMeshFromName(meshName):
-    selectionList = OpenMaya.MSelectionList()
-    selectionList.add(srcMesh)
-    nodeDagPath = selectionList.getDagPath(0)
-    return OpenMaya.MFnMesh(nodeDagPath)
-
-def comparePolyCount(srcMesh="", baseMesh=""):
-    srcMFnMesh = getMFnMeshFromName(srcMesh)
-    baseMFnMesh = getMFnMeshFromName(baseMesh)
-
-
-
-
-
-
-
-
+def weightTransfer(srcMesh, destMesh, attributes=[]):
+    "TRANSFER"
+    
 

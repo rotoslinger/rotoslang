@@ -141,7 +141,6 @@ class slideDeformerCmd():
 
     def __getTypeArg(self):
         """get argument type (user defined or selected)"""
-        print "THESE ARE THE ARGS", self.driverSurface,self.weightGeo,self.geoms
         if (self.driverSurface and self.weightGeo and self.geoms):
             return
         else:

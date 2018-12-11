@@ -656,7 +656,6 @@ class rename_weight_attrs():
 
     def __get_attr_info(self):
         self.parent = cmds.attributeQuery(self.old, node = self.node, lp =True )
-        print self.parent
         self.final_parent_attr = self.node + "." +self.parent[0]
         self.numParents = cmds.getAttr(self.final_parent_attr, size =True )
         for i in range(self.numParents):
