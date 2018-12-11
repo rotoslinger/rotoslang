@@ -1954,7 +1954,6 @@ class import_curve_roll_deformer():
     def __set_anim_curves(self):
         if self.set_curves == True:
             for i in range(len(self.anim_curves)):
-                print "CURVES"
                 anim_curves = self.anim_curves[str(i)]["name"]
                 frame_values = self.anim_curves[str(i)]["frame_values"]
                 frame_times= self.anim_curves[str(i)]["frame_times"]
@@ -2038,7 +2037,30 @@ def comparePolyCount(srcMesh, baseMesh):
         return True
     return
 
-def weightTransfer(srcMesh, destMesh, attributes=[]):
-    "TRANSFER"
-    
+# def weightTransfer(srcMesh, destMesh, srcDeformer, destDeformer, attributes):
+def weightTransfer(srcMesh, srcDeformer, destMesh, attributes=["C_testFace_SLD.lSideWeights[0].lSideWeight"]):
+    jointOff = cmds.joint(n="JntOFF_TEMP", p=(0,0,0))
+    jointOn = cmds.joint(n="JntON_TEMP", p=(0,0,0))
+    tmpMesh = cmds.duplicate(srcMesh, name = srcMesh + "TempWeightTransfer")[0]
 
+    skin = cmds.skinCluster(jointOn, jointOff, tmpMesh, n = "TempSKIN", tsb=True)
+    vertCount = cmds.polyEvaluate(srcMesh, v=1) - 1
+
+    dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)
+    
+    for attr in attributes:
+        weight = cmds.getAttr(attr)
+        empty = [1.0 for x in range(len(weight))]
+        
+    #     for i in range(vertCount)
+        cmds.setAttr('{0}.weightList[0:{1}].weights[1]'.format(skin[0], vertCount), *empty, size=len(empty))
+        cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(skin[0], vertCount), *weight, size=len(empty))
+        cmds.skinPercent( skin[0], '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", vertCount), normalize=True)
+        
+        #Copy to dest skin, setAttr on weights, delete everything
+        
+        
+    
+#     cmds.delete()
+        
+    
