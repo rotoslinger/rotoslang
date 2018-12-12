@@ -23,6 +23,8 @@ class slideDeformerCmd():
                  uNames = [],
                  vNames = [],
                  nNames = [],
+                 animCurveSuffix = "ACV",
+                 deformerSuffix="SLD"
                  ):
         """
         @type  driverSurface:        string (nurbsSurface)
@@ -111,6 +113,8 @@ class slideDeformerCmd():
         self.uNames                  = uNames
         self.vNames                  = vNames
         self.nNames                  = nNames
+        self.animCurveSuffix         = animCurveSuffix
+        self.deformerSuffix          = deformerSuffix
         #----vars
         self.driverShape             = ''
         self.weightGeoShape          = ''
@@ -204,7 +208,7 @@ class slideDeformerCmd():
         self.returnDeformer = cmds.deformer(self.geoms, 
                                             type = 'LHSlideDeformer',
                                             name= self.side + "_" +
-                                                  self.name + "_SLD")[0]
+                                                  self.name + "_" + self.deformerSuffix)[0]
 
     def __createBase(self):
         """creates base geo"""
@@ -301,28 +305,28 @@ class slideDeformerCmd():
             for i in range(len(self.uNames)):
                 self.uAnimCurvesU.append(cmds.createNode("animCurveTU",
                                                         name = self.uNames[i] 
-                                                        + "_ACV"))
+                                                        + "_" + self.animCurveSuffix))
                 self.uAnimCurvesV.append(cmds.createNode("animCurveTU",
                                                         name = self.uNames[i] 
-                                                        + "Falloff_ACV"))
+                                                        + "Falloff_"+self.animCurveSuffix))
         #----vAnimCurves
         if self.vNames:
             for i in range(len(self.vNames)):
                 self.vAnimCurvesU.append(cmds.createNode("animCurveTU",
                                                         name = self.vNames[i]
-                                                        + "_ACV"))
+                                                        + "_" + self.animCurveSuffix))
                 self.vAnimCurvesV.append(cmds.createNode("animCurveTU",
                                                         name = self.vNames[i]
-                                                        + "Falloff_ACV"))
+                                                        + "Falloff_"+self.animCurveSuffix))
         #----nAnimCurves
         if self.nNames:
             for i in range(len(self.nNames)):
                 self.nAnimCurvesU.append(cmds.createNode("animCurveTU",
                                                         name = self.nNames[i]
-                                                        + "_ACV"))
+                                                        + "_" + self.animCurveSuffix))
                 self.nAnimCurvesV.append(cmds.createNode("animCurveTU",
                                                         name = self.nNames[i]
-                                                        + "Falloff_ACV"))
+                                                        + "Falloff_"+self.animCurveSuffix))
     
     def __setAnimCurveShapes(self):
         """set anim curve shapes default is a straight line with a value of 1"""

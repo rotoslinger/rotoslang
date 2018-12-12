@@ -21,7 +21,7 @@ export MAYA_LOCATION
 
 #-------------------------------------------------------------
 #
-#		Try to find Maya
+#       Try to find Maya
 #
 #-------------------------------------------------------------
 ifeq ($(MAYA_LOCATION),)
@@ -55,7 +55,7 @@ endif
 
 #-------------------------------------------------------------
 #
-#		Try to find the correct version of gcc
+#       Try to find the correct version of gcc
 #
 #-------------------------------------------------------------
 
@@ -87,7 +87,7 @@ ifneq ($(and $(CC),$(shell $(CC) -dumpversion 2>/dev/null)),$(gccVersion))
     gccPaths := $(gccNames) $(gccPaths)
 
     # Try to get the version from each one until we find one which exists
-	# and gives us the right version.
+    # and gives us the right version.
     CC := $(shell for p in $(gccPaths); do if [ "`$$p -dumpversion 2>/dev/null`" == "$(gccVersion)" ]; then echo $$p; exit 0; fi; done)
 
     ifeq ($(CC),)
@@ -114,7 +114,7 @@ endif
 
 #-------------------------------------------------------------
 #
-#		Miscellaneous other settings.
+#       Miscellaneous other settings.
 #
 #-------------------------------------------------------------
 

@@ -1,5 +1,6 @@
 #ifndef _RNKROLLNODE_H
 #define _RNKROLLNODE_H
+#include <maya/MCppCompat.h>
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>

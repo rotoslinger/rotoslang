@@ -2643,7 +2643,7 @@ class slideDeformerGui(object):
         cmds.setParent(self.layout_main)
         self.bake_frame = cmds.frameLayout(label = "Bake Deformer",
                                        collapsable = True,
-                                       collapse = False)
+                                       collapse = True)
 #         self.layout33 = cmds.rowColumnLayout(nc = 1)
         #---row 1
         self.get_deformers4 = cmds.button(label = "Get LH Deformers", 

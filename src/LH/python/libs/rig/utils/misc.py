@@ -1,5 +1,5 @@
 import sys
-linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 #---determine operating system
 os = sys.platform

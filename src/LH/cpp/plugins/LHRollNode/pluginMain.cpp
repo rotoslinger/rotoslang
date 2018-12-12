@@ -1,3 +1,4 @@
+#include <maya/MCppCompat.h>
 #include <maya/MFnPlugin.h>
 #include "rnkRollNode.h"
 

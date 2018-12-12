@@ -1,5 +1,5 @@
 import sys
-linux = '/scratch/levih/dev/rotoslang/lhrig'
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
 os = sys.platform
@@ -10,11 +10,6 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-
-
-
-
-
 # import maya.cmds as cmds
 from maya import cmds, OpenMaya, mel, OpenMayaAnim
 import json
@@ -24,8 +19,6 @@ reload(slideDeformerCmds)
 reload(vectorDeformerCmds)
 reload(curveRollDeformerCmds)
 
-# random
-# math
 
 #===============================================================================
 #CLASS:         return_mesh_info
@@ -672,6 +665,7 @@ class export_slide_deformer():
         self.driver_surface                 = {}
         self.weight_geo                     = {}
         self.base_geo                       = []
+        self.transferGeo                   = []
         self.anim_curves                    = {}
         self.deformer_weights               = {}
         self.weights                        = {}
@@ -681,6 +675,7 @@ class export_slide_deformer():
         self.geoms                   = []
         self.weightGeo               = ""
         self.weightBase              = []
+        self.transferGeo             = []
         self.control                 = ""
         self.lockAttrs               = []
         self.ihi                     = None
@@ -712,12 +707,8 @@ class export_slide_deformer():
 
         self.weightBase = cmds.listConnections(self.name + ".baseGeoArray",
                                               d = False)
-#         print self.weightBase
-                                              
-#         self.control                 = ""
-# 
-#         self.lockAttrs               = []
-#         self.ihi                     = None
+        #---Will be a copy of the geometries where weights will be stored
+        self.transferGeo = cmds.deformer(self.name, q = True, g = True)
 
         self.side = self.name.split("_")[0]
         self.short_name = self.name.split("_")[1]
@@ -762,14 +753,31 @@ class export_slide_deformer():
         self.weight_geo = return_mesh_info(name = self.weightGeo).mesh
         if not self.weightBase:
             self.weightBase = cmds.listConnections(self.name + ".baseGeoArray", d = False)
-
         for i in range(len(self.weightBase)):
             shape = cmds.listRelatives(self.weightBase[i], shapes = True)[0]
             if (cmds.objectType(shape, isType='nurbsSurface')):
                 self.base_geo.append(return_nurbs_surface_info(name = self.weightBase[i]).nurbs)
             if (cmds.objectType(shape, isType='mesh')):
                 self.base_geo.append(return_mesh_info(name = self.weightBase[i]).mesh)
-            # need to write functionality for nurbs curves
+                
+        
+        #---Exporting the transfer geo means finding a non deformed copy of the mesh and storing it.
+        #---The base geo is the only geo that is garanteed to not be deformed.
+        self.transferGeo = []
+        tmpTransferGeo = []
+        for geo in cmds.listConnections(self.name + ".baseGeoArray", d = False):
+            tmpTransferGeo.append(cmds.duplicate(geo, n= geo.replace("Base","Transfer"))[0])
+        for i in range(len(tmpTransferGeo)):
+            shape = cmds.listRelatives(tmpTransferGeo[i], shapes = True)[0]
+            if (cmds.objectType(shape, isType='nurbsSurface')):
+                transferGeo = return_nurbs_surface_info(name = tmpTransferGeo[i]).nurbs
+                self.transferGeo.append(transferGeo)
+                
+            if (cmds.objectType(shape, isType='mesh')):
+                transferGeo = return_mesh_info(name = tmpTransferGeo[i]).mesh
+                self.transferGeo.append(transferGeo)
+        cmds.delete(tmpTransferGeo)
+
     def __get_curves(self):
             # get all curve infos
         self.connections = []
@@ -867,6 +875,7 @@ class export_slide_deformer():
                            "driverSurface":        self.driverSurface,
                            "geoms":                self.geoms,
                            "base_geo":             self.base_geo,
+                           "transferGeo":         self.transferGeo,
                            "geo_membership":       self.geo_membership,
                            "deformer_weights":     self.deformer_weights,
                            "weightGeo":            self.weightGeo,
@@ -927,6 +936,7 @@ class import_slide_deformer():
                  create_deformer = True,
                  set_weights = True,
                  set_curves = True,
+                 transfer = False
                  ):
 
         """
@@ -940,6 +950,7 @@ class import_slide_deformer():
         self.create_deformer         = create_deformer
         self.set_weights             = set_weights
         self.set_curves              = set_curves
+        self.transfer                = transfer
         #---vars
         self.dict                    = {}
         self.geo_membership          = []
@@ -949,6 +960,7 @@ class import_slide_deformer():
         self.weights                 = {}
         self.deformer_weights        = {}
         self.baseGeo                 = []
+        self.transferGeo             = []
         self.driverSurface           = ""
         self.geoms                   = []
         self.control                 = ""
@@ -974,6 +986,7 @@ class import_slide_deformer():
         self.driver_surface   = self.dict["driver_surface"]
         self.weight_geo       = self.dict["weight_geo"]
         self.baseGeo          = self.dict["base_geo"]
+        self.transferGeo      = self.dict["transferGeo"]
         self.anim_curves      = self.dict["anim_curves"]
         self.weights          = self.dict["weights"]
         self.driverSurface    = self.dict["driverSurface"]
@@ -1007,29 +1020,45 @@ class import_slide_deformer():
             #---create base geo, parent if any
             tmp_baseGeo = []
             tmp = []
-            for i in range(len(self.baseGeo)):
-                if not cmds.objExists(self.baseGeo[i]["name"]):
-                    tmp = create_mesh(self.baseGeo[i]).fullPathName()
+#             for i in range(len(self.baseGeo)):
+#                 if not cmds.objExists(self.baseGeo[i]["name"]):
+#                     tmp = create_mesh(self.baseGeo[i]).fullPathName()
+#                     tmp = cmds.listRelatives(tmp, parent = True)
+#                     tmp = cmds.rename(tmp, self.baseGeo[i]["name"])
+#                     cmds.setAttr(tmp+".v",0)
+#                     tmp_baseGeo.append(tmp)
+#                 else:
+#                     tmp_baseGeo.append(self.baseGeo[i]["name"])
+#             self.baseGeo = tmp_baseGeo
+#             #---Test to see whether or not the geo_membership and the base geo have the same number of points
+#             #---If geo_membership and base do not line up, copy the geo_membership, to create the base.
+#             if (len(self.geo_membership) != len(self.baseGeo)):
+#                 self.__createBase()
+#                 return
+#             for i in range(len(self.geo_membership)):
+#                 if not comparePolyCount(self.geo_membership[i], self.baseGeo[i]):
+#                     self.__createBase()
+#                     return
+            self.__createBase()
+
+            #---create transfer geo, parent if any
+            print self.baseGeo        
+            tmp_transferGeo = []
+            tmp = []
+            for i in range(len(self.transferGeo)):
+                if not cmds.objExists(self.transferGeo[i]["name"]):
+                    print "creating Transfer Geo"
+                    tmp = create_mesh(self.transferGeo[i]).fullPathName()
                     tmp = cmds.listRelatives(tmp, parent = True)
-                    tmp = cmds.rename(tmp, self.baseGeo[i]["name"])
+                    tmp = cmds.rename(tmp, self.transferGeo[i]["name"])
                     cmds.setAttr(tmp+".v",0)
-                    tmp_baseGeo.append(tmp)
+                    tmp_transferGeo.append(tmp)
                 else:
-                    tmp_baseGeo.append(self.baseGeo[i]["name"])
-            self.baseGeo = tmp_baseGeo
-            #---Test to see whether or not the geo_membership and the base geo have the same number of points
-            #---If geo_membership and base do not line up, copy the geo_membership, to create the base.
-            if (len(self.geo_membership) != len(self.baseGeo)):
-                self.__createBase()
-                return
-            for i in range(len(self.geo_membership)):
-                if not comparePolyCount(self.geo_membership[i], self.baseGeo[i]):
-                    self.__createBase()
-                    return
+                    tmp_transferGeo.append(self.transferGeo[i]["name"])
+            self.transferGeo = tmp_transferGeo
 
     def __createBase(self):
         """Creates base"""
-        cmds.delete(self.baseGeo)
         self.baseGeo = []
         for i in self.geo_membership:
             tmp = cmds.duplicate(i, name = i + "Base")[0]
@@ -1057,6 +1086,22 @@ class import_slide_deformer():
                                                  nNames = self.nNames,
                                                  ).returnDeformer
             cmds.setAttr(self.deformer + ".envelope", 0)
+        self.transferDeformer = slideDeformerCmds.slideDeformerCmd(
+                                             driverSurface = self.driverSurface,
+                                             weightGeo = self.weightGeo,
+                                             geoms = self.transferGeo,
+                                             control = '',
+                                             ihi = 1,
+                                             side = self.side,
+                                             name = self.short_name,
+                                             #---Mouth
+                                             uNames = self.uNames,
+                                             vNames = self.vNames,
+                                             nNames = self.nNames,
+                                             animCurveSuffix = "SRC",
+                                             deformerSuffix = "SLDSRC"
+                                             ).returnDeformer
+        cmds.setAttr(self.transferDeformer + ".envelope", 0)
 
     def __set_anim_curves(self):
         if self.set_curves == True:
@@ -1083,6 +1128,13 @@ class import_slide_deformer():
     def __set_weights(self):
         "sets deformer weight, then sets double array weights"
         if self.set_weights == True:
+            #---Double Check that the geo in the scene is the same as the geo from the dictionary
+            #---If not, don't set weights, maya could crash
+#             for i in range(len(self.geo_membership)):
+#                 if not comparePolyCount(self.geo_membership[i], self.transferGeo[i]):
+#                     print "Points do not match, weights will be transfered, not set"
+#                     return
+
             if self.deformer_weights:
                 for i in self.deformer_weights.keys():
                     cmds.setAttr(i, self.deformer_weights.get(i))
@@ -1109,9 +1161,24 @@ class import_slide_deformer():
                     cmds.setAttr(i, weights,typ='doubleArray')
                 except:
                     print "Weights for " + i + " unable to be set.  It is likely topology has changed."
+#         #---Set Transfer weights
+        for i in self.weights.keys():
+            weights = self.weights.get(i)
+            if not weights:
+                continue
+            transferAttr = i.replace("_SLD", "_SLDSRC")
+            try:
+                cmds.setAttr(transferAttr, weights,typ='doubleArray')
+            except:
+                print "Weights for " + i + " unable to be set."
+    
+    def __transfer(self):
+        if self.transfer:
+            for i in range(len(self.transferGeo)):
+                lhDeformerWeightTransfer(self.transferGeo[i], self.transferDeformer, self.geo_membership[i], self.deformer)
 
     def __finalize(self):
-        if self.create_deformer == True:
+        if self.create_deformer:
             cmds.setAttr(self.deformer + ".envelope", 1)
             cmds.refresh(force = True)
             cmds.setAttr(self.deformer + ".cacheWeights", 1)
@@ -1126,6 +1193,7 @@ class import_slide_deformer():
         self.__create_deformer()
         self.__set_anim_curves()
         self.__set_weights()
+        self.__transfer()
         self.__finalize()
 
 ##############################################################################
@@ -2038,29 +2106,45 @@ def comparePolyCount(srcMesh, baseMesh):
     return
 
 # def weightTransfer(srcMesh, destMesh, srcDeformer, destDeformer, attributes):
-def weightTransfer(srcMesh, srcDeformer, destMesh, attributes=["C_testFace_SLD.lSideWeights[0].lSideWeight"]):
+def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
+    # Get Attributes From Source
+    attrs = cmds.listAttr(srcDeformer, ud = True, a = True, m=True)
+    srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in attrs]
+    
     jointOff = cmds.joint(n="JntOFF_TEMP", p=(0,0,0))
     jointOn = cmds.joint(n="JntON_TEMP", p=(0,0,0))
     tmpMesh = cmds.duplicate(srcMesh, name = srcMesh + "TempWeightTransfer")[0]
 
-    skin = cmds.skinCluster(jointOn, jointOff, tmpMesh, n = "TempSKIN", tsb=True)
-    vertCount = cmds.polyEvaluate(srcMesh, v=1) - 1
+    srcSkin = cmds.skinCluster(jointOn, jointOff, tmpMesh, n = "TempSKIN", tsb=True)[0]
+    srcVertCount = cmds.polyEvaluate(srcMesh, v=1) - 1
+    dstVertCount = cmds.polyEvaluate(destMesh, v=1) - 1
 
-    dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)
+    dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)[0]
     
-    for attr in attributes:
-        weight = cmds.getAttr(attr)
+    for srcAttr in srcAttributes:
+        weight = cmds.getAttr(srcAttr)
+        #---If weight hasn't been set, skip it
+        if not weight:
+            continue
+        #---If weight isn't large enough, fill additional indexes with empty weight values
+        if len(weight) < srcVertCount:
+            difference = srcVertCount - len(weight)
+            for i in range(srcVertCount):
+                if i > difference:
+                    continue
+                weight.append(0.0)
+
         empty = [1.0 for x in range(len(weight))]
-        
-    #     for i in range(vertCount)
-        cmds.setAttr('{0}.weightList[0:{1}].weights[1]'.format(skin[0], vertCount), *empty, size=len(empty))
-        cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(skin[0], vertCount), *weight, size=len(empty))
-        cmds.skinPercent( skin[0], '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", vertCount), normalize=True)
-        
-        #Copy to dest skin, setAttr on weights, delete everything
-        
-        
+        cmds.setAttr('{0}.weightList[0:{1}].weights[1]'.format(srcSkin, srcVertCount), *empty, size=len(empty))
+        cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount), *weight, size=len(empty))
+        # Only Use Skin Percent to normalize! It is crappy slow to set points....
+        cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=True)
+
+        cmds.copySkinWeights( ss=srcSkin, ds=dstSkin, noMirror=True, ia="oneToOne")
+
+        destAttr = srcAttr.replace(srcDeformer, destDeformer)
+        #---Get weights from dest skin cluster
+        destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
+        cmds.setAttr(destAttr, destWeight, typ='doubleArray')
     
-#     cmds.delete()
-        
-    
+    cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)

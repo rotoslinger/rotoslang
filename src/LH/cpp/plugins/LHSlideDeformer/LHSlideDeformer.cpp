@@ -491,6 +491,8 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 
 
 
+
+
     if (allUAnimCurveWeights.size() < numIndex or cacheWeightCurvesAmt == 0)
     {
         if (weightMeshCheck == 1)
@@ -542,6 +544,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             MObject allAnimCurveVChildren[] = {aUAnimCurveV,
                                                aVAnimCurveV,
                                                aNAnimCurveV};
+
             for(i = 0; i < numIndex; i++ )
             {
                 status = geomArrayHandle.jumpToElement( i );

@@ -34,6 +34,7 @@ include buildconfig
 
 plugins: \
 		rnkRollNode.$(EXT)
+	cp *.so /home/users/levih/Desktop/plugins/
 
 
 depend:
