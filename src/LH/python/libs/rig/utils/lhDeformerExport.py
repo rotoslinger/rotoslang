@@ -760,7 +760,6 @@ class export_slide_deformer():
             if (cmds.objectType(shape, isType='mesh')):
                 self.base_geo.append(return_mesh_info(name = self.weightBase[i]).mesh)
                 
-        
         #---Exporting the transfer geo means finding a non deformed copy of the mesh and storing it.
         #---The base geo is the only geo that is garanteed to not be deformed.
         self.transferGeo = []
@@ -1915,6 +1914,7 @@ class import_curve_roll_deformer():
                  create_deformer = True,
                  set_weights = True,
                  set_curves = True,
+                 transfer = False,
                  ):
 
         """
@@ -1928,6 +1928,7 @@ class import_curve_roll_deformer():
         self.create_deformer         = create_deformer
         self.set_weights             = set_weights
         self.set_curves              = set_curves
+        self.transfer                = transfer
         #---vars
         self.dict                    = {}
         self.geo_membership          = []
