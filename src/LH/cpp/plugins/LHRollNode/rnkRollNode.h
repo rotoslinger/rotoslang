@@ -9,9 +9,19 @@
 #include <maya/MTypeId.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MFnMatrixAttribute.h>
+
 #include <maya/MArrayDataHandle.h>
+
 #include <maya/MPlug.h>
+#include <maya/MMatrix.h>
+#include <maya/MVector.h>
 #include <maya/MGlobal.h>
+#include <maya/MString.h>
+#include <maya/MFnMatrixData.h>
+#include <maya/MFnDependencyNode.h>
+
 #include <math.h>
 
 
@@ -31,8 +41,13 @@ class rnkRollNode : public MPxNode {
   static MObject aRotation;
   static MObject aInputs;
   static MObject aOutputs;
+  static MObject aParamU;
+  static MObject aParamV;
 
-    inline MString FormatError( const MString &msg, const MString
+  static MObject aMatrix;
+  static MObject aBaseMatrix;
+
+  inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
         MString txt( "[rnkRollNode] " );

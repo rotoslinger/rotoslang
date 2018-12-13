@@ -12,6 +12,13 @@ MObject rnkRollNode::aRotation;
 MObject rnkRollNode::aInputs;
 MObject rnkRollNode::aOutputs;
 
+MObject rnkRollNode::aParamU;
+MObject rnkRollNode::aParamV;
+
+MObject rnkRollNode::aMatrix;
+MObject rnkRollNode::aBaseMatrix;
+
+
 
 void* rnkRollNode::creator() { return new rnkRollNode; }
 
@@ -42,6 +49,36 @@ MStatus rnkRollNode::compute( const MPlug& plug, MDataBlock& data )
             float rad = inputsArrayHandle.inputValue().child( rnkRollNode::aRadius ).asFloat();
             float rotAmount = inputsArrayHandle.inputValue().child( rnkRollNode::aRotAmount ).asFloat();
             float gScale = inputsArrayHandle.inputValue().child( rnkRollNode::aGlobalScale ).asFloat();
+            MMatrix matrix = inputsArrayHandle.inputValue().child( rnkRollNode::aMatrix ).asMatrix();
+            MMatrix baseMatrix = inputsArrayHandle.inputValue().child( rnkRollNode::aBaseMatrix ).asMatrix();
+
+            //---Get Points from matrices
+            MTransformationMatrix tMatrix(matrix);
+            MTransformationMatrix tBaseMatrix(matrix);
+
+            MVector vMatrix = tMatrix.getTranslation(MSpace::kWorld);
+            MVector vBaseMatrix = tBaseMatrix.getTranslation(MSpace::kWorld);
+
+
+            MPoint pMatrix(vMatrix.x, vMatrix.y, vMatrix.z);
+            MPoint pBaseMatrix(vBaseMatrix.x, vBaseMatrix.y, vBaseMatrix.z);
+
+
+//			MGlobal::displayInfo(MString("THIS IS THE MATRIX Translation") + vMatrix.x + "," + vMatrix.y + "," + vMatrix.z);
+//			MGlobal::displayInfo(MString("THIS IS THE Base MATRIX Translation") + vBaseMatrix.x + "," + vBaseMatrix.y + "," + vBaseMatrix.z);
+
+            //---For debugging the matrices
+            //double sm[4][4];
+            //baseMatrix.get(sm);
+			//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[0][0] + sm[0][1] + sm[0][2] + sm[0][3]);
+			//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[1][0] + sm[1][1] + sm[1][2] + sm[1][3]);
+			//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[2][0] + sm[2][1] + sm[2][2] + sm[2][3]);
+			//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[3][0] + sm[3][1] + sm[3][2] + sm[3][3]);
+
+
+
+
+
             float RotationValue = 0.0;
 
             rad = rad * gScale;
@@ -50,6 +87,14 @@ MStatus rnkRollNode::compute( const MPlug& plug, MDataBlock& data )
 
             MDataHandle rotData = outputsArrayHandle.outputValue().child( rnkRollNode::aRotation );
             rotData.setFloat( RotationValue );
+
+            MDataHandle paramUData = outputsArrayHandle.outputValue().child( rnkRollNode::aParamU );
+            paramUData.setDouble( (double)dist );
+
+            MDataHandle paramVData = outputsArrayHandle.outputValue().child( rnkRollNode::aParamV );
+            paramVData.setDouble( (double)rad );
+
+
             data.setClean( plug );
         }
     }
@@ -60,6 +105,8 @@ MStatus rnkRollNode::initialize() {
 	MStatus status ;
     MFnNumericAttribute nAttr;
     MFnCompoundAttribute cAttr;
+    MFnTypedAttribute tAttr;
+    MFnMatrixAttribute mAttr;
 
     aDistance = nAttr.create( "distance", "dist", MFnNumericData::kFloat);
     nAttr.setDefault(0.0);
@@ -77,9 +124,17 @@ MStatus rnkRollNode::initialize() {
     nAttr.setKeyable(true);
     nAttr.setDefault(1.0);
 
-    aRotation = nAttr.create( "rotation", "rot", MFnNumericData::kFloat);
-    nAttr.setWritable(false);
-    nAttr.setKeyable(false);
+
+    // CREATE AND ADD ".position" ATTRIBUTE:
+    aMatrix = mAttr.create("matrix", "m");
+    mAttr.setWritable(true);
+    mAttr.setStorable(true);
+    addAttribute( aMatrix );
+
+    aBaseMatrix = mAttr.create("baseMatrix", "bm");
+    mAttr.setWritable(true);
+    mAttr.setStorable(true);
+    addAttribute( aBaseMatrix );
 
     aInputs = cAttr.create("Inputs", "inputs");
     cAttr.setKeyable(true);
@@ -88,16 +143,41 @@ MStatus rnkRollNode::initialize() {
     cAttr.addChild( aRadius );
     cAttr.addChild( aRotAmount );
     cAttr.addChild( aGlobalScale );
+    cAttr.addChild( aMatrix );
+    cAttr.addChild( aBaseMatrix );
     cAttr.setReadable(true);
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
     addAttribute(aInputs);
 
+
+    aRotation = nAttr.create( "rotation", "rot", MFnNumericData::kFloat);
+    nAttr.setWritable(false);
+    nAttr.setKeyable(false);
+
+    aParamU = nAttr.create( "parameterU", "pu", MFnNumericData::kDouble);
+    nAttr.setWritable(false);
+    nAttr.setKeyable(false);
+
+    aParamV = nAttr.create( "parameterV", "pv", MFnNumericData::kDouble);
+    nAttr.setWritable(false);
+    nAttr.setKeyable(false);
+
+
+
+
+
+
+    // CREATE AND ADD ".normalX" ATTRIBUTE:
+
+
     aOutputs = cAttr.create("Outputs", "outputs");
     cAttr.setKeyable(false);
     cAttr.setArray(true);
     cAttr.addChild( aRotation );
+    cAttr.addChild( aParamU );
+    cAttr.addChild( aParamV );
     cAttr.setReadable(true);
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
