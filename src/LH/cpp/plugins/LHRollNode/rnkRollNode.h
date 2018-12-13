@@ -11,9 +11,8 @@
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
-
+#include <maya/MFnNurbsSurface.h>
 #include <maya/MArrayDataHandle.h>
-
 #include <maya/MPlug.h>
 #include <maya/MMatrix.h>
 #include <maya/MVector.h>
@@ -21,6 +20,7 @@
 #include <maya/MString.h>
 #include <maya/MFnMatrixData.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MNurbsIntersector.h>
 
 #include <math.h>
 
@@ -34,18 +34,19 @@ class rnkRollNode : public MPxNode {
 
   static MTypeId id;
 
-  static MObject aDistance;
-  static MObject aRadius;
-  static MObject aRotAmount;
-  static MObject aGlobalScale;
-  static MObject aRotation;
   static MObject aInputs;
   static MObject aOutputs;
   static MObject aParamU;
   static MObject aParamV;
 
+  static MObject aParamUAmount;
+  static MObject aParamVAmount;
+
+
   static MObject aMatrix;
   static MObject aBaseMatrix;
+
+  static MObject aSurface;
 
   inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
