@@ -1,4 +1,4 @@
-efrom maya import cmds
+from maya import cmds
 
 #===============================================================================
 #CLASS:         returnDeformerCmd
