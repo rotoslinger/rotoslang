@@ -13,7 +13,9 @@ if os not in sys.path:
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 from fnmatch import fnmatch
-
+import lhExport
+import exportUtils
+import elements
 #===============================================================================
 #CLASS:         lock_attrs
 #DESCRIPTION:   locks listed attributes
@@ -2063,17 +2065,116 @@ def create_sec_bind_skel(children = [],
         jnt_names.append(name)
         cmds.parentConstraint(name + "_JNT", new_name)
         cmds.scaleConstraint(name + "_JNT", new_name)
-        
-        
 
-    
-    
-    
+def getShape(mayaObject):
+    return cmds.listRelatives(mayaObject, shapes=True)[0]
 
-        
-    
+def getGeoData(mayaObject=None):
+    """Returns a dictionary that can be used with exportUtils to create_mesh
+    create_nurbs_surface, or create_nurbs_curve
+    """
+    if not mayaObject: mayaObject = cmds.ls(sl=True)[0]
+    shape = getShape(mayaObject)
+    if (cmds.objectType(shape, isType='nurbsSurface')):
+        return exportUtils.nurbsSurfaceData(name=mayaObject).nurbs
+    if (cmds.objectType(shape, isType='mesh')):
+        return exportUtils.meshData(name=mayaObject).mesh
+    if (cmds.objectType(shape, isType='nurbsCurve')):
+        return exportUtils.nurbsCurveData(name=mayaObject).nurbsCurve
 
-    
+def createGeoFromData(geomDict=None, name=None, parent=None):
+    """
+    Creates geometry based on a dictionary created from exportUtils
+    @param geomDict: dictionary of geometry
+    @return: 
+    """
+    if (geomDict["type"] is "nurbsSurface"):
+        return exportUtils.create_nurbs_surface(geomDict, name, parent)
+    if (geomDict["type"] is "mesh"):
+        return exportUtils.create_mesh(geomDict, name, parent)
+    if (geomDict["type"] is "nurbsCurve"):
+        return exportUtils.create_curve(geomDict, name, parent)
+
+def formatName(side, name, suffix):
+    return "{0}_{1}_{2}".format(side, name, suffix)
+
+class rigComponent(object):
+    def __init__(self,
+                 side="C",
+                 name="component",
+                 suffix="CPT",
+                 parent=None,
+                 helperGeo=elements.componentNurbs
+                 ):
+        """
+        @param side:
+        @param name:
+        @param suffix:
+        @param parent:
+        @param helperGeo: If it already exists in scene, just give the object as an arg
+                          To create, give a dictionary created from export utils
+                          By default a dictionary will be selected from elements
+
+        """
+
+        self.side = side
+        self.name = name
+        self.suffix = suffix
+        self.parent = parent
+        self.helperGeo = helperGeo
+
+        self.createHier()
+        self.createHelperGeo()
+        self.createCtrl()
+        self.createNodes()
+
+    def createHier(self):
+        self.cmptMasterParent = cmds.createNode("transform",
+                                                n=formatName(self.side,
+                                                             self.name,
+                                                             self.suffix),
+                                                p=self.parent)
+
+    def createHelperGeo(self):
+        if type(self.helperGeo) is str and cmds.objExists(self.helperGeo):
+            return
+        self.helperGeo = createGeoFromData(self.helperGeo,
+                                           name=formatName(self.side,
+                                                           self.name,
+                                                           "EX"),
+                                           parent=self.cmptMasterParent).fullPathName()
+
+    def createCtrl(self):
+        return
+
+    def createNodes(self):
+        return
+
+
+class slidingCtrl(rigComponent):
+
+    def createCtrl(self):
+        self.locator = cmds.createNode("locator",
+                                       n=formatName(self.side,
+                                                    self.name,
+                                                    self.suffix),
+                                       p=self.parent)
+        self.ctrl = create_ctl(side=self.side,
+                               name=self.name,
+                               parent=self.locator,
+                               shape="circle",
+                               orient=[0, 0, 0],
+                               offset=[0, 0, 0],
+                               scale=[1, 1, 1],
+                               num_buffer=2,
+                               lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
+                               gimbal=True,
+                               size=1)
+
+        self.ctrlOffset = self.ctrl.buffers[0]
+        self.ctrlInverseMatrix = self.ctrl.buffers[1]
+
+
 
 
 '''

@@ -1,7 +1,7 @@
 from maya import cmds, OpenMaya, OpenMayaAnim
 
 
-class return_mesh_info():
+class meshData():
     # ===============================================================================
     # CLASS:         return_mesh_info
     # DESCRIPTION:   returns information that can be used to rebuild a mesh
@@ -112,6 +112,7 @@ class return_mesh_info():
                      "uvCount"         : self.uv_count,
                      "uvId"            : self.uv_id,
                      "parent"          : self.parent,
+                     "type"            : "mesh"
                      }
 
     def __create(self):
@@ -124,7 +125,7 @@ class return_mesh_info():
         self.__write_dict()
 
 
-def create_mesh(mesh_dict):
+def create_mesh(mesh_dict, name=None, parent=None):
     #put everything back into m arrays
     #verts
     vertexArray = OpenMaya.MPointArray()
@@ -159,16 +160,26 @@ def create_mesh(mesh_dict):
                                          vArray)
 
     new_mesh.assignUVs(uv_counts,uv_id)
-    if mesh_dict.get("parent"):
-        child = cmds.listRelatives(new_mesh.fullPathName(), parent = True)[0]
-        parent = mesh_dict.get("parent")
-        if cmds.objExists(parent):
-            cmds.parent(child, parent)
-
+    parentNameNewGeo(mesh_dict, name, new_mesh, parent)
     return new_mesh
 
 
-class return_nurbs_surface_info():
+def parentNameNewGeo(meshDict, name, newGeo, parent):
+    if parent:
+        child = cmds.listRelatives(newGeo.fullPathName(), parent=True)[0]
+        if cmds.objExists(parent):
+            cmds.parent(child, parent)
+    if not parent:
+        if meshDict.get("parent"):
+            child = cmds.listRelatives(newGeo.fullPathName(), parent=True)[0]
+            parent = meshDict.get("parent")
+            if cmds.objExists(parent):
+                cmds.parent(child, parent)
+    if name:
+        cmds.rename(newGeo.fullPathName(), name)
+
+
+class nurbsSurfaceData():
     # ===============================================================================
     # CLASS:         return_nurbs_surface_info
     # DESCRIPTION:   returns information that can be used to rebuild a nurbsSurface
@@ -258,8 +269,10 @@ class return_nurbs_surface_info():
                      "degreeInV"          : self.degreeInV,
                      "form"               : self.form,
                      "formV"              : self.formV,
-                     "parent"             : self.parent
-                     }
+                     "parent"             : self.parent,
+                     "type"               : "nurbsSurface"
+
+                      }
 
     def __get_nurbs(self):
         self.__check()
@@ -270,7 +283,7 @@ class return_nurbs_surface_info():
         self.__write_dict()
 
 
-def create_nurbs_surface(nurbs_dict):
+def create_nurbs_surface(nurbs_dict, name=None, parent=None):
     #put everything back into m arrays
     #verts
     controlVertices = OpenMaya.MPointArray()
@@ -291,15 +304,11 @@ def create_nurbs_surface(nurbs_dict):
                      nurbs_dict.get("formV"),
 
                      False)
-    if nurbs_dict.get("parent"):
-        child = cmds.listRelatives(new_nurbs.fullPathName(), parent = True)[0]
-        parent = nurbs_dict.get("parent")
-        if cmds.objExists(parent):
-            cmds.parent(child, parent)
+    parentNameNewGeo(nurbs_dict, name, new_nurbs, parent)
     return new_nurbs
 
 
-class return_nurbs_curve_info():
+class nurbsCurveData():
     # ===============================================================================
     # CLASS:         return_nurbs_curve_info
     # DESCRIPTION:   returns information that can be used to rebuild a nurbsSurface
@@ -382,7 +391,8 @@ class return_nurbs_curve_info():
                            "knots"             : self.knots ,
                            "degree"            : self.degree ,
                            "form"              : self.form,
-                           "parent"            : self.parent
+                           "parent"            : self.parent,
+                           "type"              : "nurbsCurve"
                            }
 
     def __get_nurbsCurve(self):
@@ -394,7 +404,7 @@ class return_nurbs_curve_info():
         self.__write_dict()
 
 
-def create_curve(curve_dict):
+def create_curve(curve_dict, name=None, parent=None):
     #put everything back into m arrays
     #verts
     controlVertices = OpenMaya.MPointArray()
@@ -411,12 +421,7 @@ def create_curve(curve_dict):
                           False,
                           False,
                           )
-    if curve_dict.get("parent"):
-        child = cmds.listRelatives(new_nurbsCurve.fullPathName(), parent = True)[0]
-        parent = curve_dict.get("parent")
-        if cmds.objExists(parent):
-            cmds.parent(child, parent)
-
+    parentNameNewGeo(curve_dict, name, new_nurbsCurve, parent)
     return new_nurbsCurve
 
 
@@ -656,3 +661,79 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
         cmds.setAttr(destAttr, destWeight, typ='doubleArray')
 
     cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)
+
+# def getNodeNetwork(mayaObjList=None):
+#     if not mayaObjList: selection = cmds.ls(sl=True)
+#     for sel in selection:
+#         attrConnectDict = getConnectedAttrs(sel)
+#         if not attrConnectDict:
+#             continue
+#         print attrConnectDict
+#
+#
+#
+# def getConnectedAttrs(mayaObject):
+#     attrs = cmds.listAttr(mayaObject, ud=True, c=True)
+#     if not attrs:
+#         return
+#     attrConnectDict = {}
+#     attrConnectDict[mayaObject] = {}
+#
+#     testDict = {
+#         "NodeName":
+#             {
+#                 "srcAttrName": {
+#                     "srcNodeType": "nurbs",
+#                     "srcAttrType": "float",
+#                     "srcAttrUserDefined": True,
+#                     "srcAttr": "NodeName.UVal",
+#
+#                     "dstAttrName": "SLDNode",
+#                     "dstType": "PMANode",
+#                     "dstAttrType": "float",
+#                     "dstAttrUserDefined": False,
+#                     "dstAttr": "PMANode.OutputX"
+#                 }
+#             }
+#
+#     }
+#
+#     for a in attrs:
+#         fullAttrName = "{0}.{1}".format(mayaObject, a)
+#         connectionsNodes = cmds.listConnections(fullAttrName, c=True)
+#         connectionsAttributes = cmds.listConnections(fullAttrName, c=True, p=True)
+#         if not connectionsNodes:
+#             continue
+#         srcNodeType = cmds.nodeType(connectionsNodes[0])
+#         dstNodeType = cmds.nodeType(connectionsNodes[1])
+#
+#         print "TYPE", srcNodeType
+#         # src data
+#         attrConnectDict[mayaObject][fullAttrName]["srcNodeType"] = srcNodeType
+#         # attrConnectDict[mayaObject][fullAttrName]["srcAttrType"] = "TEMP"
+#         # attrConnectDict[mayaObject][fullAttrName]["srcAttrUserDefined"] = "TEMP"
+#         attrConnectDict[mayaObject][fullAttrName]["srcAttr"] = connectionsAttributes[0]
+#         # dst data
+#         attrConnectDict[mayaObject][fullAttrName]["dstAttrName"] = connectionsNodes[1]
+#         attrConnectDict[mayaObject][fullAttrName]["dstNodeType"] = dstNodeType
+#         attrConnectDict[mayaObject][fullAttrName]["dstAttrType"] = "TEMP"
+#         # attrConnectDict[mayaObject][fullAttrName]["dstAttrUserDefined"] = "TEMP"
+#         attrConnectDict[mayaObject][fullAttrName]["dstAttr"] = connectionsAttributes[1]
+#
+#
+#         print attrConnectDict
+#
+#         return
+#         #attrConnectDict[connections[0]] = (connections[1]
+#
+#
+# def getAllAttrData():
+#     {"attrName":
+#
+# def getAllNodeAttrValues():
+#     pass
+#
+
+
+
+

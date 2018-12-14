@@ -76,21 +76,21 @@ class exportDeformer(lh_deformer_export):
 
     def getGeoms(self):
             # get all driver geometry (for rebuilding)
-        self.weight_geo = xUtils.return_mesh_info(name = self.weightGeo).mesh
+        self.weight_geo = xUtils.meshData(name = self.weightGeo).mesh
         for i in range(len(self.weightBase)):
             shape = cmds.listRelatives(self.weightBase[i], shapes = True)[0]
             if (cmds.objectType(shape, isType='nurbsSurface')):
-                self.base_geo.append(xUtils.return_nurbs_surface_info(name = self.weightBase[i]).nurbs)
+                self.base_geo.append(xUtils.nurbsSurfaceData(name = self.weightBase[i]).nurbs)
             if (cmds.objectType(shape, isType='mesh')):
-                self.base_geo.append(xUtils.return_mesh_info(name = self.weightBase[i]).mesh)
+                self.base_geo.append(xUtils.meshData(name = self.weightBase[i]).mesh)
 
         for i in range(len(self.tPivots)):
             shape = cmds.listRelatives(self.tPivots[i], shapes = True)[0]
-            self.t_pivots.append(xUtils.return_nurbs_curve_info(name = self.tPivots[i]).nurbsCurve)
+            self.t_pivots.append(xUtils.nurbsCurveData(name = self.tPivots[i]).nurbsCurve)
 
         for i in range(len(self.rPivots)):
             shape = cmds.listRelatives(self.rPivots[i], shapes = True)[0]
-            self.r_pivots.append(xUtils.return_nurbs_curve_info(name = self.rPivots[i]).nurbsCurve)
+            self.r_pivots.append(xUtils.nurbsCurveData(name = self.rPivots[i]).nurbsCurve)
 #             need to write functionality for nurbs curves
     def getCurves(self):
             # get all curve infos
@@ -204,7 +204,7 @@ class importDeformer(lh_deformer_import):
             #---create weight surface, parent if any
             if not cmds.objExists(self.weight_geo["name"]):
                 self.weightGeo = xUtils.create_mesh(self.weight_geo).fullPathName()
-                self.weightGeo = cmds.listRelatives(self.weightGeo, parent = True)
+                self.weightGeo = cmds.listRelatives(self.weightGeo, parent=True)
                 self.weightGeo = cmds.rename(self.weightGeo, self.weight_geo["name"])
             else:
                 self.weightGeo = self.weight_geo["name"]

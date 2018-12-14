@@ -98,16 +98,16 @@ class exportDeformer(lh_deformer_export):
 
     def getGeoms(self):
         # get all driver geometry (for rebuilding)
-        self.driver_surface = xUtils.return_nurbs_surface_info(name=self.driverSurface).nurbs
-        self.weight_geo = xUtils.return_mesh_info(name=self.weightGeo).mesh
+        self.driver_surface = xUtils.nurbsSurfaceData(name=self.driverSurface).nurbs
+        self.weight_geo = xUtils.meshData(name=self.weightGeo).mesh
         if not self.weightBase:
             self.weightBase = cmds.listConnections(self.name + ".baseGeoArray", d=False)
         for i in range(len(self.weightBase)):
             shape = cmds.listRelatives(self.weightBase[i], shapes=True)[0]
             if (cmds.objectType(shape, isType='nurbsSurface')):
-                self.base_geo.append(xUtils.return_nurbs_surface_info(name=self.weightBase[i]).nurbs)
+                self.base_geo.append(xUtils.nurbsSurfaceData(name=self.weightBase[i]).nurbs)
             if (cmds.objectType(shape, isType='mesh')):
-                self.base_geo.append(xUtils.return_mesh_info(name=self.weightBase[i]).mesh)
+                self.base_geo.append(xUtils.meshData(name=self.weightBase[i]).mesh)
 
     def getCurves(self):
         # get all curve infos

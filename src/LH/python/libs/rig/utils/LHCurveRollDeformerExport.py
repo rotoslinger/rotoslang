@@ -118,19 +118,19 @@ class export_curve_roll_deformer(lh_deformer_export):
 
     def getGeoms(self):
             # get all driver geometry (for rebuilding)
-        self.weight_geo = xUtils.return_mesh_info(name = self.weightGeo).mesh
+        self.weight_geo = xUtils.meshData(name = self.weightGeo).mesh
         for i in range(len(self.weightBase)):
             shape = cmds.listRelatives(self.weightBase[i], shapes = True)[0]
             if (cmds.objectType(shape, isType='nurbsSurface')):
-                self.base_geo.append(xUtils.return_nurbs_surface_info(name = self.weightBase[i]).nurbs)
+                self.base_geo.append(xUtils.nurbsSurfaceData(name = self.weightBase[i]).nurbs)
             if (cmds.objectType(shape, isType='mesh')):
-                self.base_geo.append(xUtils.return_mesh_info(name = self.weightBase[i]).mesh)
+                self.base_geo.append(xUtils.meshData(name = self.weightBase[i]).mesh)
 
         shape = cmds.listRelatives(self.inCurve, shapes = True)[0]
-        self.in_curve = xUtils.return_nurbs_curve_info(name = self.inCurve).nurbsCurve
+        self.in_curve = xUtils.nurbsCurveData(name = self.inCurve).nurbsCurve
 
         shape = cmds.listRelatives(self.outCurve, shapes = True)[0]
-        self.out_curve = xUtils.return_nurbs_curve_info(name = self.outCurve).nurbsCurve
+        self.out_curve = xUtils.nurbsCurveData(name = self.outCurve).nurbsCurve
 
 #             need to write functionality for nurbs curves
     def getCurves(self):

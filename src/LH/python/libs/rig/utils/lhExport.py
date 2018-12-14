@@ -58,11 +58,11 @@ class lh_deformer_export(object):
         for i in range(len(tmpTransferGeo)):
             shape = cmds.listRelatives(tmpTransferGeo[i], shapes = True)[0]
             if (cmds.objectType(shape, isType='nurbsSurface')):
-                transferGeo = xUtils.return_nurbs_surface_info(name = tmpTransferGeo[i]).nurbs
+                transferGeo = xUtils.nurbsSurfaceData(name = tmpTransferGeo[i]).nurbs
                 self.transferGeo.append(transferGeo)
 
             if (cmds.objectType(shape, isType='mesh')):
-                transferGeo = xUtils.return_mesh_info(name = tmpTransferGeo[i]).mesh
+                transferGeo = xUtils.meshData(name = tmpTransferGeo[i]).mesh
                 self.transferGeo.append(transferGeo)
         cmds.delete(tmpTransferGeo)
 
@@ -271,7 +271,6 @@ class lh_deformer_import(object):
             if not weights:
                 continue
             transferAttr = i.replace(self.transferSuffix, "{0}SRC".format(self.transferSuffix))
-            cmds.setAttr(transferAttr, weights, typ='doubleArray')
 
             try:
                 print transferAttr
