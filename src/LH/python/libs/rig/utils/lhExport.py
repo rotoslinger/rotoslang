@@ -195,7 +195,7 @@ class lh_deformer_import(object):
         for i in range(len(self.transferGeo)):
             if not cmds.objExists(self.transferGeo[i]["name"]):
                 print "creating Transfer Geo"
-                tmp = xUtils.create_mesh(self.transferGeo[i]).fullPathName()
+                tmp = xUtils.createMesh(self.transferGeo[i]).fullPathName()
                 tmp = cmds.listRelatives(tmp, parent = True)
                 tmp = cmds.rename(tmp, self.transferGeo[i]["name"])
                 cmds.setAttr(tmp+".v",0)

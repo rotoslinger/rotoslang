@@ -258,12 +258,12 @@ class import_slide_deformer(lh_deformer_import):
         if not self.create_geo:
             return
         #---create driver surface, parent if any
-        self.driverSurface = xUtils.create_nurbs_surface(self.driver_surface).fullPathName()
+        self.driverSurface = xUtils.createNurbsSurface(self.driver_surface).fullPathName()
         self.driverSurface = cmds.listRelatives(self.driverSurface, parent = True)
         self.driverSurface = cmds.rename(self.driverSurface, self.driver_surface["name"])
         #---create weight surface, parent if any
         if not cmds.objExists(self.weight_geo["name"]):
-            self.weightGeo = xUtils.create_mesh(self.weight_geo).fullPathName()
+            self.weightGeo = xUtils.createMesh(self.weight_geo).fullPathName()
             self.weightGeo = cmds.listRelatives(self.weightGeo, parent = True)
             self.weightGeo = cmds.rename(self.weightGeo, self.weight_geo["name"])
         else:
@@ -277,7 +277,7 @@ class import_slide_deformer(lh_deformer_import):
         for i in range(len(self.transferGeo)):
             if not cmds.objExists(self.transferGeo[i]["name"]):
                 print "creating Transfer Geo"
-                tmp = xUtils.create_mesh(self.transferGeo[i]).fullPathName()
+                tmp = xUtils.createMesh(self.transferGeo[i]).fullPathName()
                 tmp = cmds.listRelatives(tmp, parent = True)
                 tmp = cmds.rename(tmp, self.transferGeo[i]["name"])
                 cmds.setAttr(tmp+".v",0)

@@ -203,7 +203,7 @@ class importDeformer(lh_deformer_import):
         if self.create_geo == True:
             #---create weight surface, parent if any
             if not cmds.objExists(self.weight_geo["name"]):
-                self.weightGeo = xUtils.create_mesh(self.weight_geo).fullPathName()
+                self.weightGeo = xUtils.createMesh(self.weight_geo).fullPathName()
                 self.weightGeo = cmds.listRelatives(self.weightGeo, parent=True)
                 self.weightGeo = cmds.rename(self.weightGeo, self.weight_geo["name"])
             else:

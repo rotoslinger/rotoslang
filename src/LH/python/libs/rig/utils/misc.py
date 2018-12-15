@@ -13,9 +13,9 @@ if os not in sys.path:
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 from fnmatch import fnmatch
-import lhExport
 import exportUtils
-import elements
+
+
 #===============================================================================
 #CLASS:         lock_attrs
 #DESCRIPTION:   locks listed attributes
@@ -2089,91 +2089,30 @@ def createGeoFromData(geomDict=None, name=None, parent=None):
     @return: 
     """
     if (geomDict["type"] is "nurbsSurface"):
-        return exportUtils.create_nurbs_surface(geomDict, name, parent)
+        return exportUtils.createNurbsSurface(geomDict, name, parent)
     if (geomDict["type"] is "mesh"):
-        return exportUtils.create_mesh(geomDict, name, parent)
+        return exportUtils.createMesh(geomDict, name, parent)
     if (geomDict["type"] is "nurbsCurve"):
         return exportUtils.create_curve(geomDict, name, parent)
 
 def formatName(side, name, suffix):
     return "{0}_{1}_{2}".format(side, name, suffix)
 
-class rigComponent(object):
-    def __init__(self,
-                 side="C",
-                 name="component",
-                 suffix="CPT",
-                 parent=None,
-                 helperGeo=elements.componentNurbs
-                 ):
-        """
-        @param side:
-        @param name:
-        @param suffix:
-        @param parent:
-        @param helperGeo: If it already exists in scene, just give the object as an arg
-                          To create, give a dictionary created from export utils
-                          By default a dictionary will be selected from elements
+def createLocator(name=None, parent=None):
+    transform = cmds.createNode("transform", name=name, parent=parent)
+    cmds.createNode("locator", name="{0}Shape".format(name), parent=transform)
+    return transform
 
-        """
+def createAndConnectNode(type=None, name=None, srcOutput=None,
+                         selfInput=None, selfOutput=None, dstInput=None):
+    node = cmds.createNode(type, name=name)
+    print node
 
-        self.side = side
-        self.name = name
-        self.suffix = suffix
-        self.parent = parent
-        self.helperGeo = helperGeo
-
-        self.createHier()
-        self.createHelperGeo()
-        self.createCtrl()
-        self.createNodes()
-
-    def createHier(self):
-        self.cmptMasterParent = cmds.createNode("transform",
-                                                n=formatName(self.side,
-                                                             self.name,
-                                                             self.suffix),
-                                                p=self.parent)
-
-    def createHelperGeo(self):
-        if type(self.helperGeo) is str and cmds.objExists(self.helperGeo):
-            return
-        self.helperGeo = createGeoFromData(self.helperGeo,
-                                           name=formatName(self.side,
-                                                           self.name,
-                                                           "EX"),
-                                           parent=self.cmptMasterParent).fullPathName()
-
-    def createCtrl(self):
-        return
-
-    def createNodes(self):
-        return
-
-
-class slidingCtrl(rigComponent):
-
-    def createCtrl(self):
-        self.locator = cmds.createNode("locator",
-                                       n=formatName(self.side,
-                                                    self.name,
-                                                    self.suffix),
-                                       p=self.parent)
-        self.ctrl = create_ctl(side=self.side,
-                               name=self.name,
-                               parent=self.locator,
-                               shape="circle",
-                               orient=[0, 0, 0],
-                               offset=[0, 0, 0],
-                               scale=[1, 1, 1],
-                               num_buffer=2,
-                               lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
-                               gimbal=True,
-                               size=1)
-
-        self.ctrlOffset = self.ctrl.buffers[0]
-        self.ctrlInverseMatrix = self.ctrl.buffers[1]
-
+    if srcOutput and selfInput:
+        cmds.connectAttr(srcOutput, "{0}.{1}".format(node, selfInput))
+    if selfOutput and dstInput:
+        cmds.connectAttr("{0}.{1}".format(node, selfOutput), dstInput)
+    return node
 
 
 

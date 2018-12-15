@@ -125,7 +125,7 @@ class meshData():
         self.__write_dict()
 
 
-def create_mesh(mesh_dict, name=None, parent=None):
+def createMesh(mesh_dict, name=None, parent=None):
     #put everything back into m arrays
     #verts
     vertexArray = OpenMaya.MPointArray()
@@ -176,7 +176,9 @@ def parentNameNewGeo(meshDict, name, newGeo, parent):
             if cmds.objExists(parent):
                 cmds.parent(child, parent)
     if name:
-        cmds.rename(newGeo.fullPathName(), name)
+        shapeParent = cmds.listRelatives(newGeo.fullPathName(), parent=True)[0]
+        cmds.rename(shapeParent, name)
+        cmds.rename(newGeo.fullPathName(), "{0}Shape".format(name))
 
 
 class nurbsSurfaceData():
@@ -283,7 +285,7 @@ class nurbsSurfaceData():
         self.__write_dict()
 
 
-def create_nurbs_surface(nurbs_dict, name=None, parent=None):
+def createNurbsSurface(nurbs_dict, name=None, parent=None):
     #put everything back into m arrays
     #verts
     controlVertices = OpenMaya.MPointArray()
