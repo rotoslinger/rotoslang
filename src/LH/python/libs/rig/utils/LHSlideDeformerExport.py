@@ -1,4 +1,5 @@
 import json
+import time
 
 from utils import exportUtils as xUtils, LHSlideDeformerCmds
 from utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
@@ -146,36 +147,57 @@ class exportDeformer(lh_deformer_export):
         self.anim_curves = xUtils.get_anim_curve_info(anim_curve=all).curve_dict
 
 
-    def organize(self):
-        self.vector_dict = {
-            "driver_surface": self.driver_surface,
-            "weight_geo": self.weight_geo,
-            "anim_curves": self.anim_curves,
-            "weights": self.weights,
-            "driverSurface": self.driverSurface,
-            "geoms": self.geoms,
-            "base_geo": self.base_geo,
-            "transferGeo": self.transferGeo,
-            "geo_membership": self.geo_membership,
-            "deformer_weights": self.deformer_weights,
-            "weightGeo": self.weightGeo,
-            "control": self.control,
-            "lockAttrs": self.lockAttrs,
-            "ihi": self.ihi,
-            "side": self.side,
-            "short_name": self.short_name,
-            "uNames": self.uNames,
-            "vNames": self.vNames,
-            "nNames": self.nNames,
-            "uUseAnimCurves": self.uUseAnimCurves,
-            "vUseAnimCurves": self.vUseAnimCurves,
-            "nUseAnimCurves": self.nUseAnimCurves,
-        }
+    def pack(self):
+        lh_deformer_export.pack(self)
+        self.vector_dict["driver_surface"] = self.driver_surface
+        self.vector_dict["weight_geo"] = self.weight_geo
+        self.vector_dict["anim_curves"] = self.anim_curves
+        self.vector_dict["weights"] = self.weights
+        self.vector_dict["geoms"] = self.geoms
+        self.vector_dict["base_geo"] = self.base_geo
+        self.vector_dict["transferGeo"] = self.transferGeo
+        self.vector_dict["geo_membership"] = self.geo_membership
+        self.vector_dict["deformer_weights"] = self.deformer_weights
+        self.vector_dict["weightGeo"] = self.weightGeo
+        self.vector_dict["control"] = self.control
+        self.vector_dict["lockAttrs"] = self.lockAttrs
+        self.vector_dict["ihi"] = self.ihi
+        self.vector_dict["side"] = self.side
+        self.vector_dict["short_name"] = self.short_name
+        self.vector_dict["uNames"] = self.uNames
+        self.vector_dict["vNames"] = self.vNames
+        self.vector_dict["nNames"] = self.nNames
+        self.vector_dict["uUseAnimCurves"] = self.uUseAnimCurves
+        self.vector_dict["vUseAnimCurves"] = self.vUseAnimCurves
+        self.vector_dict["nUseAnimCurves"] = self.nUseAnimCurves
+
+        # "weight_geo": self.weight_geo,
+        #     "anim_curves": self.anim_curves,
+        #     "weights": self.weights,
+        #     "driverSurface": self.driverSurface,
+        #     "geoms": self.geoms,
+        #     "base_geo": self.base_geo,
+        #     "transferGeo": self.transferGeo,
+        #     "geo_membership": self.geo_membership,
+        #     "deformer_weights": self.deformer_weights,
+        #     "weightGeo": self.weightGeo,
+        #     "control": self.control,
+        #     "lockAttrs": self.lockAttrs,
+        #     "ihi": self.ihi,
+        #     "side": self.side,
+        #     "short_name": self.short_name,
+        #     "uNames": self.uNames,
+        #     "vNames": self.vNames,
+        #     "nNames": self.nNames,
+        #     "uUseAnimCurves": self.uUseAnimCurves,
+        #     "vUseAnimCurves": self.vUseAnimCurves,
+        #     "nUseAnimCurves": self.nUseAnimCurves,
+        # }
 
 
 
 
-class import_slide_deformer(lh_deformer_import):
+class importDeformer(lh_deformer_import):
     # ===============================================================================
     # CLASS:         import_slide_deformer
     # DESCRIPTION:   rebuilds the slide deformer
@@ -231,13 +253,14 @@ class import_slide_deformer(lh_deformer_import):
         self.nUseAnimCurves          = []
 
     def unpack(self):
+        lh_deformer_import.unpack(self)
         self.driver_surface   = self.dict["driver_surface"]
         self.weight_geo       = self.dict["weight_geo"]
         self.baseGeo          = self.dict["base_geo"]
         self.transferGeo      = self.dict["transferGeo"]
         self.anim_curves      = self.dict["anim_curves"]
         self.weights          = self.dict["weights"]
-        self.driverSurface    = self.dict["driverSurface"]
+        # self.driverSurface    = self.dict["driverSurface"]
         self.geo_membership   = self.dict["geo_membership"]
         self.deformer_weights = self.dict["deformer_weights"]
         self.geoms            = self.dict["geoms"]
@@ -261,6 +284,7 @@ class import_slide_deformer(lh_deformer_import):
         self.driverSurface = xUtils.createNurbsSurface(self.driver_surface).fullPathName()
         self.driverSurface = cmds.listRelatives(self.driverSurface, parent = True)
         self.driverSurface = cmds.rename(self.driverSurface, self.driver_surface["name"])
+        cmds.setAttr(self.driverSurface + ".v", 0)
         #---create weight surface, parent if any
         if not cmds.objExists(self.weight_geo["name"]):
             self.weightGeo = xUtils.createMesh(self.weight_geo).fullPathName()
@@ -268,6 +292,8 @@ class import_slide_deformer(lh_deformer_import):
             self.weightGeo = cmds.rename(self.weightGeo, self.weight_geo["name"])
         else:
             self.weightGeo = self.weight_geo["name"]
+        cmds.setAttr(self.weightGeo + ".v", 0)
+
 
     def createTransferGeo(self):
         if not self.transfer:
@@ -276,7 +302,6 @@ class import_slide_deformer(lh_deformer_import):
         tmp = []
         for i in range(len(self.transferGeo)):
             if not cmds.objExists(self.transferGeo[i]["name"]):
-                print "creating Transfer Geo"
                 tmp = xUtils.createMesh(self.transferGeo[i]).fullPathName()
                 tmp = cmds.listRelatives(tmp, parent = True)
                 tmp = cmds.rename(tmp, self.transferGeo[i]["name"])
@@ -305,6 +330,16 @@ class import_slide_deformer(lh_deformer_import):
                                              nNames = self.nNames,
                                              ).returnDeformer
         cmds.setAttr(self.deformer + ".envelope", 0)
+        # cmds.setAttr(self.deformer + ".cacheWeights", 0)
+        # cmds.setAttr(self.deformer + ".cacheParams", 0)
+        # cmds.setAttr(self.deformer + ".cacheWeightMesh", 0)
+        # cmds.setAttr(self.deformer + ".cacheWeightCurves", 0)
+        # cmds.setAttr(self.deformer + ".cacheBase", 0)
+        # cmds.refresh(force=True)
+
+        # print("initializing points")
+        # cmds.refresh()
+        # time.sleep(1.0)
 
     def createTransferDeformer(self):
         if not self.transferWeights:
@@ -325,15 +360,24 @@ class import_slide_deformer(lh_deformer_import):
                                              deformerSuffix = "SLDSRC"
                                              ).returnDeformer
         cmds.setAttr(self.transferDeformer + ".envelope", 0)
+        # cmds.setAttr(self.transferDeformer + ".cacheWeights", 0)
+        # cmds.setAttr(self.transferDeformer + ".cacheParams", 0)
+        # cmds.setAttr(self.transferDeformer + ".cacheWeightMesh", 0)
+        # cmds.setAttr(self.transferDeformer + ".cacheWeightCurves", 0)
+        # cmds.setAttr(self.transferDeformer + ".cacheBase", 0)
+        # cmds.refresh(force=True)
+        # print("initializing points")
+        # cmds.refresh()
+        # time.sleep(1.0)
 
     def getTransferData(self):
         self.transferSuffix = "SLD"
 
-    def transfer(self):
-        if not self.transfer:
-            return
-        for i in range(len(self.transferGeo)):
-            lhDeformerWeightTransfer(self.transferGeo[i], self.transferDeformer, self.geo_membership[i], self.deformer)
+    # def transfer(self):
+    #     if not self.transferWeights:
+    #         return
+    #     for i in range(len(self.transferGeo)):
+    #         lhDeformerWeightTransfer(self.transferGeo[i], self.transferDeformer, self.geo_membership[i], self.deformer)
 
     def finalize(self):
         if not self.create_deformer:

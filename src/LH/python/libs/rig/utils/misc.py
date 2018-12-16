@@ -488,12 +488,19 @@ class draw_ctl():
         ctl_shape = cmds.listRelatives(self.ctl, shapes = True)[0]
         cmds.setAttr(ctl_shape + ".overrideEnabled", True)
         color = ctl_shape + ".overrideColor"
+        cmds.setAttr(ctl_shape + ".overrideRGBColors", 1)
         if self.side == "C":
-            cmds.setAttr(color, 17)
+            cmds.setAttr(color + "R", 1)
+            cmds.setAttr(color + "G", 1)
+            cmds.setAttr(color + "B", 0)
         if self.side == "L":
-            cmds.setAttr(color, 13)
+            cmds.setAttr(color + "R", 0)
+            cmds.setAttr(color + "G", 0)
+            cmds.setAttr(color + "B", 1)
         if self.side == "R":
-            cmds.setAttr(color, 6)
+            cmds.setAttr(color + "R", 1)
+            cmds.setAttr(color + "G", 0)
+            cmds.setAttr(color + "B", 0)
     def __cleanup(self):
         cmds.delete(self.ctl, ch = True)
         if self.show_rot_order == True:
@@ -2088,19 +2095,23 @@ def createGeoFromData(geomDict=None, name=None, parent=None):
     @param geomDict: dictionary of geometry
     @return: 
     """
-    if (geomDict["type"] is "nurbsSurface"):
+    if (geomDict["type"] == "nurbsSurface"):
         return exportUtils.createNurbsSurface(geomDict, name, parent)
-    if (geomDict["type"] is "mesh"):
+    if (geomDict["type"] == "mesh"):
         return exportUtils.createMesh(geomDict, name, parent)
-    if (geomDict["type"] is "nurbsCurve"):
+    if (geomDict["type"] == "nurbsCurve"):
         return exportUtils.create_curve(geomDict, name, parent)
 
 def formatName(side, name, suffix):
     return "{0}_{1}_{2}".format(side, name, suffix)
 
-def createLocator(name=None, parent=None):
+def createLocator(name=None, parent=None, vis=True, shapeVis=True):
     transform = cmds.createNode("transform", name=name, parent=parent)
-    cmds.createNode("locator", name="{0}Shape".format(name), parent=transform)
+    shape = cmds.createNode("locator", name="{0}Shape".format(name), parent=transform)
+    if not vis:
+        cmds.setAttr(transform + ".v", 0)
+    if not shapeVis:
+        cmds.setAttr(shape + ".v", 0)
     return transform
 
 def createAndConnectNode(type=None, name=None, srcOutput=None,

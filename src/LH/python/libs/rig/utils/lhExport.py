@@ -1,7 +1,7 @@
 import sys
 
 from utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
-
+from rigComponents import slidingCtrl
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
@@ -16,7 +16,7 @@ if os not in sys.path:
 from utils import exportUtils as xUtils
 from maya import cmds
 import json
-from utils import LHSlideDeformerCmds, LHVectorDeformerCmds, LHCurveRollDeformerCmds
+from utils import LHSlideDeformerCmds, LHVectorDeformerCmds, LHCurveRollDeformerCmds, misc
 reload(LHSlideDeformerCmds)
 reload(LHVectorDeformerCmds)
 reload(LHCurveRollDeformerCmds)
@@ -29,6 +29,8 @@ class lh_deformer_export(object):
                  ):
         self.name = name
         self.path = path
+        self.vector_dict = {}
+        self.manipDict = {}
         self.create()
 
     def check(self):
@@ -96,16 +98,12 @@ class lh_deformer_export(object):
                                                + split_weights[1]))
         self.weights = dict(zip(tmp_names, tmp_values))
         # get deformer weights
-        tmp_def_weights = []
-        tmp_def_names = []
         tmp_flat_weights = []
         tmp_flat_names = []
         try:
             for i in range(len(geoms)):
                 tmp_def_names = self.name + ".weightList[" + str(i) + "].weights"
                 indices = cmds.getAttr(tmp_def_names, mi=True)
-                #                     tmp_def_weights = cmds.getAttr(tmp_def_names)
-                #                     print tmp_def_weights
                 for j in range(len(indices)):
                     tmp_flat_names.append(self.name
                                           + ".weightList["
@@ -114,17 +112,82 @@ class lh_deformer_export(object):
                                           + str(indices[j])
                                           + "]")
                     tmp_flat_weights.append(cmds.getAttr(tmp_flat_names[j]))
-                    #                     print tmp_flat_weights[j]
-                    #                         print cmds.getAttr(tmp_flat_names[j])
-                    #                         print tmp_flat_weights[j], j, tmp_flat_names[j],tmp_def_weights[0][j]
             for i in range(len(tmp_flat_names)):
                 self.deformer_weights[tmp_flat_names[i]] = tmp_flat_weights[i]
         except:
             pass
 
 
-    def organize(self):
-        return
+    def getDirectManips(self):
+        #--- get the user defined attributes on the deformer, check connections, if connected to direct manip export
+        # attributes = cmds.listAttr(self.name, ud=True, c=True, s=True, m=False, a=False)
+        self.manipDict = {}
+
+        # "manipDict": {
+        #     "ctrlName":
+        #
+        #     {"name": "corner",
+        #      "side": "L",
+        #      "suffix": "CPT",
+        #      "parent": "parent",
+        #      "helperGeo": "manipSurf",
+        #      "helperGeoData": ["points and nurbs and crap"],
+        #      "uSpeedDefault": .05,
+        #      "vSpeedDefault": .05,
+        #      "initUDefault": .05,
+        #      "initVDefault": .05,
+        #      "baseUDefault": .05,
+        #      "baseVDefault": .05,
+        #      "amountUDefault": .05,
+        #      "amountVDefault": .05,
+        #      "uOutConnectionAttr": "C_testFace_SLD.C_BLipLR",
+        #      "vOutConnectionAttr": "C_testFace_SLD.C_BLipUD",
+        #       }
+        # }
+
+        attributes = cmds.listAttr(self.name, ud=True, c=True, s=True, m=False, a=False)
+        for attr in attributes:
+            if not cmds.objExists(self.name + "." + attr):
+                continue
+            connections = cmds.listConnections(self.name + "." + attr, p=True, t="transform", s=True)
+            if not connections:
+                continue
+            for con in connections:
+                if not ".outU" or ".outV" in con[0]:
+                    continue
+                key = con.split(".")[0]
+                if key not in self.manipDict.keys():
+                    self.manipDict[key] = {}
+                    name = key.split("_")
+                    self.manipDict[key]["name"] = name[1]
+                    self.manipDict[key]["side"] = name[0]
+                    self.manipDict[key]["suffix"] = name[2]
+                    parent = False
+                    if cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True):
+                        parent = cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True)[0]
+                    self.manipDict[key]["parent"] = parent
+                    if "helperGeo" not in self.manipDict[key].keys():
+                        pointOnSurface = cmds.listConnections(key, t="pointOnSurfaceInfo")[0]
+                        surf = cmds.listConnections(pointOnSurface, p=True, t="nurbsSurface", s=True)[0]
+                        surfaceShape = surf.split(".")[0]
+                        self.manipDict[key]["helperGeo"] = cmds.listRelatives(surfaceShape, parent=True)[0]
+                        self.manipDict[key]["helperGeoData"] = xUtils.nurbsSurfaceData(name=surfaceShape).nurbs
+                    self.manipDict[key]["uSpeedDefault"]= cmds.getAttr(key + ".uSpeed")
+                    self.manipDict[key]["vSpeedDefault"]= cmds.getAttr(key + ".vSpeed")
+                    self.manipDict[key]["initUDefault"]= cmds.getAttr(key + ".initU")
+                    self.manipDict[key]["initVDefault"]= cmds.getAttr(key + ".initV")
+                    self.manipDict[key]["baseUDefault"]= cmds.getAttr(key + ".baseU")
+                    self.manipDict[key]["baseVDefault"]= cmds.getAttr(key + ".baseV")
+                    self.manipDict[key]["amountUDefault"]= cmds.getAttr(key + ".amountU")
+                    self.manipDict[key]["amountVDefault"]= cmds.getAttr(key + ".amountV")
+                if "outU" in con.split(".")[1]:
+                    self.manipDict[key]["uOutConnectionAttr"] = self.name + "." + attr
+                if "outV" in con.split(".")[1]:
+                    self.manipDict[key]["vOutConnectionAttr"] = self.name + "." + attr
+
+
+    def pack(self):
+        self.vector_dict["manipDict"] = self.manipDict
 
     def export(self):
         file = open(self.path, "wb")
@@ -140,7 +203,8 @@ class lh_deformer_export(object):
         self.getTransferGeo()
         self.getCurves()
         self.getWeights()
-        self.organize()
+        self.getDirectManips()
+        self.pack()
         self.export()
 
 
@@ -161,6 +225,7 @@ class lh_deformer_import(object):
         self.set_curves              = set_curves
         self.transferWeights         = transferWeights
         self.transferSuffix          = ""
+        self.manipDict = {}
 
         self.create()
 
@@ -174,7 +239,8 @@ class lh_deformer_import(object):
 
     def unpack(self):
         "imports the dictionary, separates all of the info for later use"
-        return
+        if "manipDict" in self.dict.keys():
+            self.manipDict   = self.dict["manipDict"]
 
     def createGeo(self):
         return
@@ -194,7 +260,6 @@ class lh_deformer_import(object):
         tmp = []
         for i in range(len(self.transferGeo)):
             if not cmds.objExists(self.transferGeo[i]["name"]):
-                print "creating Transfer Geo"
                 tmp = xUtils.createMesh(self.transferGeo[i]).fullPathName()
                 tmp = cmds.listRelatives(tmp, parent = True)
                 tmp = cmds.rename(tmp, self.transferGeo[i]["name"])
@@ -264,6 +329,7 @@ class lh_deformer_import(object):
 
     def setTransferWeights(self):
         if not self.transferWeights:
+            # right now if you don't set weights the deformer will crash maya, you need to set the weights to be all 1
             return
         #---Set Transfer weights
         for i in self.weights.keys():
@@ -273,7 +339,6 @@ class lh_deformer_import(object):
             transferAttr = i.replace(self.transferSuffix, "{0}SRC".format(self.transferSuffix))
 
             try:
-                print transferAttr
                 cmds.setAttr(transferAttr, weights, typ='doubleArray')
             except:
                 print "Weights for " + i + " unable to be set."
@@ -286,6 +351,44 @@ class lh_deformer_import(object):
 
     def finalize(self):
         pass
+
+    def createDirectManip(self):
+        keys = ["name", "side", "suffix", "parent", "helperGeo", "helperGeoData", "uSpeedDefault",
+                "vSpeedDefault", "initUDefault", "initVDefault", "baseUDefault", "baseVDefault",
+                "amountUDefault", "amountVDefault", "uOutConnectionAttr", "vOutConnectionAttr"]
+
+        for key in self.manipDict.keys():
+            ctrlDict = self.manipDict[key]
+            for k in keys:
+                setattr(self, k, ctrlDict[k])
+            helperGeo = self.helperGeo
+            if not cmds.objExists(helperGeo):
+                name = self.helperGeo.split("_")
+                helperGeo = xUtils.createNurbsSurface(self.helperGeoData, name=misc.formatName(name[0], name[1], name[2])).fullPathName()
+                helperGeo = cmds.listRelatives(helperGeo, parent=True)[0]
+                cmds.setAttr(helperGeo + ".v", 0)
+                # helperGeo = misc.createGeoFromData(self.helperGeoData,
+                #                                    name=misc.formatName(name[0],
+                #                                                         name[1],
+                #                                                         name[2]),
+                #                                    parent=self.helperGeoData["parent"])
+            slidingCtrl.component( side=self.side,
+                                   name=self.name,
+                                   # suffix=self.suffix,
+                                   parent=self.parent,
+                                   helperGeo=helperGeo,
+                                   uSpeedDefault=self.uSpeedDefault,
+                                   vSpeedDefault=self.vSpeedDefault,
+                                   initUDefault=self.initUDefault,
+                                   initVDefault=self.initVDefault,
+                                   baseUDefault=self.baseUDefault,
+                                   baseVDefault=self.baseVDefault,
+                                   amountUDefault=self.amountUDefault,
+                                   amountVDefault=self.amountVDefault,
+                                   uOutConnectionAttr=self.uOutConnectionAttr,
+                                   vOutConnectionAttr=self.vOutConnectionAttr,
+
+            )
 
     def create(self):
         self.create_instance_variables()
@@ -302,5 +405,6 @@ class lh_deformer_import(object):
         self.setTransferWeights()
         self.transfer()
         self.finalize()
+        self.createDirectManip()
 
 # def weightTransfer(srcMesh, destMesh, srcDeformer, destDeformer, attributes):

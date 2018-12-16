@@ -117,27 +117,54 @@ class exportDeformer(lh_deformer_export):
         self.anim_curves = xUtils.get_anim_curve_info(anim_curve = all).curve_dict
 
 
-    def organize(self):
-        self.vector_dict = {
-                           "weight_geo":           self.weight_geo,
-                           "anim_curves":          self.anim_curves,
-                           "weights":              self.weights,
-                           "geoms":                self.geoms,
-                           "base_geo":             self.base_geo,
-                           "t_pivots":             self.t_pivots,
-                           "r_pivots":             self.r_pivots,
-                           "geo_membership":       self.geo_membership,
-                           "deformer_weights":     self.deformer_weights,
-                           "weightGeo":            self.weightGeo,
-                           "control":              self.control,
-                           "lockAttrs":            self.lockAttrs,
-                           "ihi":                  self.ihi,
-                           "side":                 self.side,
-                           "short_name":           self.short_name,
-                           "tNames":               self.tNames,
-                           "rNames":               self.rNames,
-                           "transferGeo":          self.transferGeo,
-                           }
+    def pack(self):
+        lh_deformer_export.pack(self)
+        self.vector_dict["weight_geo"] = self.weight_geo
+        self.vector_dict["anim_curves"] = self.anim_curves
+        self.vector_dict["weights"] = self.weights
+        self.vector_dict["geoms"] = self.geoms
+        self.vector_dict["base_geo"] = self.base_geo
+        self.vector_dict["t_pivots"] = self.t_pivots
+        self.vector_dict["r_pivots"] = self.r_pivots
+        self.vector_dict["geo_membership"] = self.geo_membership
+        self.vector_dict["deformer_weights"] = self.deformer_weights
+        self.vector_dict["weightGeo"] = self.weightGeo
+        self.vector_dict["control"] = self.control
+        self.vector_dict["lockAttrs"] = self.lockAttrs
+        self.vector_dict["ihi"] = self.ihi
+        self.vector_dict["side"] = self.side
+        self.vector_dict["short_name"] = self.short_name
+        self.vector_dict["tNames"] = self.tNames
+        self.vector_dict["rNames"] = self.rNames
+        self.vector_dict["transferGeo"] = self.transferGeo
+        # self.vector_dict["manipDict"] = self.manipDict
+        # self.vector_dict["manipDict"] = self.manipDict
+        # self.vector_dict["manipDict"] = self.manipDict
+        # self.vector_dict["manipDict"] = self.manipDict
+        # self.vector_dict["manipDict"] = self.manipDict
+
+        # self.vector_dict = {
+        #                    "weight_geo":           self.weight_geo,
+        #                    "anim_curves":          self.anim_curves,
+        #                    "weights":              self.weights,
+        #                    "geoms":                self.geoms,
+        #                    "base_geo":             self.base_geo,
+        #                    "t_pivots":             self.t_pivots,
+        #                    "r_pivots":             self.r_pivots,
+        #                    "geo_membership":       self.geo_membership,
+        #                    "deformer_weights":     self.deformer_weights,
+        #                    "weightGeo":            self.weightGeo,
+        #                    "control":              self.control,
+        #                    "lockAttrs":            self.lockAttrs,
+        #                    "ihi":                  self.ihi,
+        #                    "side":                 self.side,
+        #                    "short_name":           self.short_name,
+        #                    "tNames":               self.tNames,
+        #                    "rNames":               self.rNames,
+        #                    "transferGeo":          self.transferGeo,
+        #                    "manipDict":            self.manipDict
+        #
+        # }
 
 
 class importDeformer(lh_deformer_import):
@@ -180,6 +207,7 @@ class importDeformer(lh_deformer_import):
         self.rNames                  = {}
 
     def unpack(self):
+        lh_deformer_import.unpack(self)
         self.weight_geo       = self.dict["weight_geo"]
         self.baseGeo          = self.dict["base_geo"]
         self.t_pivots         = self.dict["t_pivots"]
@@ -249,6 +277,7 @@ class importDeformer(lh_deformer_import):
                                              tNames = self.tNames,
                                              rNames = self.rNames,
                                              ).returnDeformer
+        cmds.setAttr(self.deformer + ".envelope", 0)
 
     def createTransferDeformer(self):
         "creates deformer, turns envelope off"
@@ -270,6 +299,7 @@ class importDeformer(lh_deformer_import):
                                              animCurveSuffix="SRC",
                                              deformerSuffix="VCDSRC"
                                              ).returnDeformer
+        cmds.setAttr(self.transferDeformer + ".envelope", 0)
 
 
     def getTransferData(self):

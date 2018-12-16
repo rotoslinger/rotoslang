@@ -10,11 +10,24 @@ class component(base.component):
                  vSpeedDefault=.05,
                  initUDefault=0.5,
                  initVDefault=0.5,
+                 baseUDefault=0.5,
+                 baseVDefault=0.5,
+                 amountUDefault=1.1,
+                 amountVDefault=2.4,
+                 uOutConnectionAttr="",
+                 vOutConnectionAttr="",
                  **kw):
         self.uSpeedDefault = uSpeedDefault
         self.vSpeedDefault = vSpeedDefault
         self.initUDefault = initUDefault
         self.initVDefault = initVDefault
+        self.baseUDefault = baseUDefault
+        self.baseVDefault = baseVDefault
+        self.amountUDefault = amountUDefault
+        self.amountVDefault = amountVDefault
+        self.uOutConnectionAttr = uOutConnectionAttr
+        self.vOutConnectionAttr = vOutConnectionAttr
+
         super(component, self).__init__(**kw)
 
     #     self.helperGeo = "manipSurf"
@@ -22,10 +35,9 @@ class component(base.component):
     #     self.helperGeo = "manipSurf"
 
     def createCtrl(self):
-        self.locator = misc.createLocator(name=misc.formatName(self.side,
-                                                              self.name,
-                                                              "LOC"),
-                                         parent=self.cmptMasterParent)
+        self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
+                                          parent=self.cmptMasterParent,
+                                          shapeVis=False)
         self.ctrl = misc.create_ctl(side=self.side,
                                     name=self.name,
                                     parent=self.locator,
@@ -44,8 +56,8 @@ class component(base.component):
 
 
     def createAttrs(self):
-        inputAttrs = ["uSpeed", "vSpeed", "initU", "initV"]
-        outputAttrs = ["currentU", "currentV", "outU", "outV", "baseU", "baseV", "amountU", "amountV"]
+        inputAttrs = ["uSpeed", "vSpeed", "initU", "initV", "baseU", "baseV", "amountU", "amountV"]
+        outputAttrs = ["currentU", "currentV", "outU", "outV", ]
         for attr in inputAttrs:
             setattr(self, attr, "{0}.{1}".format(self.ctrl, attr))
 
@@ -182,6 +194,12 @@ class component(base.component):
         cmds.connectAttr(self.multNodeAmount + ".outputX", self.outU)
         cmds.connectAttr(self.multNodeAmount + ".outputY", self.outV)
 
+        cmds.connectAttr(self.ctrl + ".tz", self.ctrlOffset +".ty")
+
+        if self.uOutConnectionAttr:
+            cmds.connectAttr(self.outU, self.uOutConnectionAttr)
+        if self.vOutConnectionAttr:
+            cmds.connectAttr(self.outV, self.vOutConnectionAttr)
 
 
 def normalizeSlidingCtrls(mayaObjects=None):

@@ -38,12 +38,16 @@ class component(object):
                                                 n=misc.formatName(self.side,
                                                              self.name,
                                                              self.suffix),
-                                                p=self.parent,
                                                 ss=False)
+        if self.parent and cmds.objExists(self.parent):
+            cmds.parent(self.cmptMasterParent, self.parent)
 
     def createHelperGeo(self):
+        if type(self.helperGeo) is unicode:
+            self.helperGeo = str(self.helperGeo)
         if type(self.helperGeo) is str and cmds.objExists(self.helperGeo):
             return
+
         self.helperGeo = misc.createGeoFromData(self.helperGeo,
                                                 name=misc.formatName(self.side,
                                                                      self.name,
