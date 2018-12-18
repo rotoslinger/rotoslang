@@ -30,9 +30,6 @@ class component(base.component):
 
         super(component, self).__init__(**kw)
 
-    #     self.helperGeo = "manipSurf"
-    # def createHelperGeo(self):
-    #     self.helperGeo = "manipSurf"
 
     def createCtrl(self):
         self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),

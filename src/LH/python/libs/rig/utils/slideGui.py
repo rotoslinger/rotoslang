@@ -13,6 +13,8 @@ if os not in sys.path:
 from maya import cmds
 import json
 from utils import faceWeights, lhDeformerExport, lhDeformerCmds
+import weightingUtils
+reload(weightingUtils)
 reload(faceWeights)
 reload(lhDeformerExport)
 reload(lhDeformerCmds)
@@ -55,6 +57,12 @@ class slideDeformerGui(object):
         self.raw_bake_dict = []
         self.undo_cache = {}
         self.undo_counter = 0
+        # This initializes the weight value dragger.
+        # Sets to (q) tool to avoid entering the context immediately.
+        # You will want to set add cmds.setToolTo("weightValueDragger") in your hotkeys to be able to use this feature
+        self.weightContext = weightingUtils.weightValueDragger()
+        self.weightContext.clickAndMoveCommand()
+        cmds.setToolTo("selectSuperContext")
 
     def __selectDeformerAction(self, *args):
         type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
@@ -436,6 +444,8 @@ class slideDeformerGui(object):
             except:
                 pass
             cmds.optionVar( sv=('weightName', self.current_weights) )
+            self.weightContext.weightAttr = self.current_weights
+            print "SETTING WEIGHT CONTEXT", self.current_weights
         if type == 2:
             weights_source = cmds.textScrollList(self.weights_source_list, 
                                            q = 1, 
@@ -2837,8 +2847,6 @@ class slideDeformerGui(object):
         self.__createUiElements()
         cmds.showWindow(self.win)
 
-window = slideDeformerGui()
-window.show()
 
 
 #notes C_BLipCenterLR_ACV C_BLipCenterLRFalloff_ACV C_BLipCenterUD_ACV C_BLipCenterUDFalloff_ACV C_BLipLeftLR_ACV C_BLipLeftLRFalloff_ACV C_BLipLeftUD_ACV C_BLipLeftUDFalloff_ACV C_BLipLR_ACV C_BLipLRFalloff_ACV C_BLipMidLR_ACV C_BLipMidLRFalloff_ACV C_BLipMidUD_ACV C_BLipMidUDFalloff_ACV C_BLipRightLR_ACV C_BLipRightLRFalloff_ACV C_BLipRightUD_ACV C_BLipRightUDFalloff_ACV C_BLipUD_ACV C_BLipUDFalloff_ACV C_testFace_SLD_lSide C_TLipCenterLR_ACV C_TLipCenterLRFalloff_ACV C_TLipCenterUD_ACV C_TLipCenterUDFalloff_ACV C_TLipLeftLR_ACV C_TLipLeftLRFalloff_ACV C_TLipLeftUD_ACV C_TLipLeftUDFalloff_ACV C_TLipLR_ACV C_TLipLRFalloff_ACV C_TLipMidLR_ACV C_TLipMidLRFalloff_ACV C_TLipMidUD_ACV C_TLipMidUDFalloff_ACV C_TLipPinchLR_ACV C_TLipPinchLRFalloff_ACV C_TLipPinchUD_ACV C_TLipPinchUDFalloff_ACV C_TLipRightLR_ACV C_TLipRightLRFalloff_ACV C_TLipRightUD_ACV C_TLipRightUDFalloff_ACV C_TLipSneerLR_ACV C_TLipSneerLRFalloff_ACV C_TLipSneerUD_ACV C_TLipSneerUDFalloff_ACV C_TLipUD_ACV C_TLipUDFalloff_ACV L_BLipPinchLR_ACV L_BLipPinchLRFalloff_ACV L_BLipPinchUD_ACV L_BLipPinchUDFalloff_ACV L_BLipSneerLR_ACV L_BLipSneerLRFalloff_ACV L_BLipSneerUD_ACV L_BLipSneerUDFalloff_ACV L_mouthUD_ACV L_mouthUDFalloff_ACV L_side_ACV L_sideFalloff_ACV C_mouthLR_ACV C_mouthLRFalloff_ACV C_mouthUD_ACV C_mouthUDFalloff_ACV nTest1_ACV nTest1Falloff_ACV R_BLipPinchLR_ACV R_BLipPinchLRFalloff_ACV R_BLipPinchUD_ACV R_BLipPinchUDFalloff_ACV R_BLipSneerLR_ACV R_BLipSneerLRFalloff_ACV R_BLipSneerUD_ACV R_BLipSneerUDFalloff_ACV R_mouthUD_ACV R_mouthUDFalloff_ACV R_side_ACV R_sideFalloff_ACV rTest1_ACV rTest1Falloff_ACV

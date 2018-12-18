@@ -1202,9 +1202,17 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             continue;
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         slideUBasePointParam = 0.0;
         slideVBasePointParam = 0.0;
-
+        //Avoid crashing because of std::vector array size missmatch
+        if (slideUVBasePt.size() < mIndex or slideUVBasePt[mIndex].length() < idx
+        or slideUBasePtParam.size() < mIndex or slideUBasePtParam[mIndex].size() < idx
+        or slideVBasePtParam.size() < mIndex or slideVBasePtParam[mIndex].size() < idx)
+        {
+                    MitGeo.next();
+                    continue;
+        }
 
         //curveBasePt
         MPoint slideUVBasePoint = slideUVBasePt[mIndex][idx];
@@ -1222,42 +1230,6 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
         slideVCheck = slideVBasePointParam + slideVValue;
         double slideVBasePointParamValue = 0.0;
 
-        ////////////////////////////////////////////
-        //////////////// slideUV //////////////
-        ////////////////////////////////////////////
-
-
-//        allURotVals = 0.0;
-//        allVRotVals = 0.0;
-//        rotSlideUValue = 0.0;
-//        rotSlideVValue = 0.0;
-//        //////////////// rotateUV //////////////
-//        uPivOffset = 0.0;
-//        vPivOffset = 0.0;
-//        if (pivCheck > 0)
-//        {
-//            for(i = 0; i < rotatePivotsLength; i++ )
-////            for i in range(rotatePivotsLength)
-//            {
-//
-//                pivotU = rotUParams[mIndex][i];
-//                pivotV = rotVParams[mIndex][i];
-//
-//                double surfaceRot[] = {slideUCheck-pivotU , slideVCheck-pivotV};
-//                double surfaceRotCalc[] =  {(surfaceRot[0] * cos(rW*allVals[3][i])-surfaceRot[1]* sin(rW*allVals[3][i])) , (surfaceRot[0] * sin(rW*allVals[3][i])+surfaceRot[1] * cos(rW*allVals[3][i]))};
-//                double surfaceRotPiv[] = {surfaceRotCalc[0]+pivotU , surfaceRotCalc[1]+pivotV};
-//
-//                slideUCheck = surfaceRotPiv[0];
-//                slideVCheck = surfaceRotPiv[1];
-//            }
-//        }
-//            rotSlideUValue = slideUCheck;
-//            rotSlideVValue = slideVCheck;
-//        if (pivCheck == 0)
-//        {
-//            rotSlideUValue = slideUCheck;
-//            rotSlideVValue = slideVCheck;
-//        }
         rotSlideUValue = slideUCheck;
         rotSlideVValue = slideVCheck;
         // UCheck
@@ -1386,6 +1358,11 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //            yAxisVec = xAxisVec ^ zAxisVec;
 //            yAxisVec.normalize();
 
+            if (baseEuler.size() < mIndex or baseEuler[mIndex].size() < idx)
+            {
+                MitGeo.next();
+                continue;
+            }
             rotateEuler = baseEuler[mIndex][idx];
             // apply rotate offset dereference address pointer rotateMatrix with *
             MQuaternion rotateX(-(rotateEuler[0]),xAxisVec);
