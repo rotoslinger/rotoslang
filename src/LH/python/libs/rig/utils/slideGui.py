@@ -60,8 +60,8 @@ class slideDeformerGui(object):
         # This initializes the weight value dragger.
         # Sets to (q) tool to avoid entering the context immediately.
         # You will want to set add cmds.setToolTo("weightValueDragger") in your hotkeys to be able to use this feature
-        self.weightContext = weightingUtils.weightValueDragger()
-        self.weightContext.clickAndMoveCommand()
+        self.weightDragger = weightingUtils.weightValueDragger()
+        self.weightDragger.clickAndMoveCommand()
         cmds.setToolTo("selectSuperContext")
 
     def __selectDeformerAction(self, *args):
@@ -444,8 +444,8 @@ class slideDeformerGui(object):
             except:
                 pass
             cmds.optionVar( sv=('weightName', self.current_weights) )
-            self.weightContext.weightAttr = self.current_weights
-            print "SETTING WEIGHT CONTEXT", self.current_weights
+            self.weightDragger.weightAttr = self.current_weights
+            weightingUtils.turnOffVertexColor()
         if type == 2:
             weights_source = cmds.textScrollList(self.weights_source_list, 
                                            q = 1, 
@@ -1279,6 +1279,7 @@ class slideDeformerGui(object):
                                 allWeightValues[i][final_points_indexes[i][j]] = initial_values[i][j]/value
             for i in range(len(allWeightValues)):
                 cmds.setAttr(weightAttrs[i],allWeightValues[i], typ='doubleArray')
+            self.setVertexColorsToWeightVals()
 
     def __copy_point_weights(self, *args):
         if cmds.optionVar(exists='weightName') == 1:
@@ -2321,10 +2322,54 @@ class slideDeformerGui(object):
             count += 1
 
 
+    def setVertexColorsToWeightVals(self):
+        if cmds.checkBoxGrp(self.weightDraggerSettings, q=True, v1=True):
+            allWeightValues = weightingUtils.getAllWeightValues(self.current_weights)[0]
+            weightingUtils.setVertexColorsToWeightValue(allWeightValues)
 
 
+    def callWeightAverageWithArgs(self, *args):
+        averageVal = cmds.textFieldGrp(self.averageValue, q=1, text=1)
+        print averageVal
+        weightingUtils.weightAverageAll(self.current_weights, int(averageVal))
+        self.setVertexColorsToWeightVals()
+
+    def callWeightAverageSelectionBorder(self, *args):
+        weightingUtils.weightAverageSelectionBorder(self.current_weights)
+        self.setVertexColorsToWeightVals()
+
+    def queryFlattenVals(self):
+        flattenX = cmds.checkBoxGrp(self.averageWeightsBounds, q=True, v1=True)
+        flattenY = cmds.checkBoxGrp(self.averageWeightsBounds, q=True, v2=True)
+        flattenZ = cmds.checkBoxGrp(self.averageWeightsBounds, q=True, v3=True)
+        return flattenX, flattenY, flattenZ
+
+    def callAverageBetween2Points(self, *args):
+        flattenX, flattenY, flattenz = self.queryFlattenVals()
+        weightingUtils.averageWeightsBetween2Points(self.current_weights,
+                                                    flattenX,
+                                                    flattenY,
+                                                    flattenz
+                                                    )
+        self.setVertexColorsToWeightVals()
+
+    def callGradientBetween2Points(self, *args):
+        calcDefVal = cmds.checkBox(self.checkBoxDeform, query=True, v=True)
+        flattenX, flattenY, flattenz = self.queryFlattenVals()
+        weightingUtils.gradientWeightsBetween2Points(self.current_weights,
+                                                     flattenX,
+                                                     flattenY,
+                                                     flattenz,
+                                                     calcDefVal)
+        self.setVertexColorsToWeightVals()
+
+    def updateVertexColorToggle(self, *args):
+        self.weightDragger.vertexColorWeightVis = cmds.checkBoxGrp(self.weightDraggerSettings, q=True, v1=True)
+        self.weightDragger.toggleVisOnDrag = cmds.checkBoxGrp(self.weightDraggerSettings, q=True, v2=True)
 
 
+    def turnOnVertexWeightColors(self, *args):
+        weightingUtils.turnOnVertexColor(self.current_weights)
 
     def __createUiElements(self):
         if cmds.window(self.win, ex = 1):
@@ -2363,6 +2408,7 @@ class slideDeformerGui(object):
                                        cw2 = [60,180],
                                        cal = [(1,"left"),(2,"left")],
                                        tcc = self.__reload_geo)
+
 #         self.layout = cmds.rowColumnLayout(nc = 4)
         ###########################################################
         #---Weight Info Frame
@@ -2408,7 +2454,24 @@ class slideDeformerGui(object):
         ###########################################################
         #---Weight Calculator Frame
         ###########################################################
-     
+        cmds.setParent(self.layout_main)
+        # cmds.textFieldGrp(label='Weight Dragger Settings', text='0.0',
+        #                   cw2=[70, 180],
+        #                   cal=[(1, "left"), (2, "left")])
+
+        self.weightDraggerSettings = cmds.checkBoxGrp(numberOfCheckBoxes=3,
+                                                      label='Weight Dragger Settings',
+                                                      labelArray3=['Vertex Weight Vis',
+                                                                   'Toggle Vis on Drag',
+                                                                   'Vertex Weight Switch'],
+                                                      cw5=[80,80,80,80, 80],
+                                                      cal=[(1, "right"), (1, "left"), (3, "left")],
+                                                      valueArray3=[True, False, False],
+                                                      cc=self.updateVertexColorToggle,
+                                                      onCommand3=self.turnOnVertexWeightColors,
+                                                      offCommand3=weightingUtils.turnOffVertexColor
+                                                      )
+
         cmds.setParent(self.layout_main)
         self.frame4 = cmds.frameLayout(label = "Weight Calculator",
                                        collapsable = True,
@@ -2446,8 +2509,78 @@ class slideDeformerGui(object):
         self.paste_pw = cmds.button(label = "Paste",
                                         c = self.__paste_point_weights,
                                        w = 200)
+
         cmds.text("Select one or more point")
-        
+        self.layout = cmds.rowColumnLayout(nc = 2)
+        if not hasattr(self, "current_weights"):
+            self.current_weights = ""
+        self.averageValue = cmds.textFieldGrp(label='Average Factor', text='4',
+                                       cw2=[90, 180],
+                                       cal=[(1, "left"), (2, "left")])
+        self.weightAverageButton = cmds.button(label="AverageWeights",
+                                               c=self.callWeightAverageWithArgs,
+                                               w=100)
+        self.layout = cmds.rowColumnLayout(nc = 2)
+
+        cmds.setParent(self.frame4)
+        self.weightAverageButton = cmds.button(label="Average Weights Selection Border",
+                                               c=self.callWeightAverageSelectionBorder,
+                                               w=200)
+        cmds.text("Average weights for the border of an island of verts")
+
+
+
+
+        cmds.setParent(self.frame4)
+        cmds.text("#####################################################################################")
+        cmds.text("  Bounds Weighting Commands  ")
+        cmds.text("#####################################################################################")
+
+        self.averageWeightsBounds = cmds.checkBoxGrp(numberOfCheckBoxes=3,
+                                                     label='Bounds Axis',
+                                                     labelArray3=['FlattenX',
+                                                                  'FlattenY',
+                                                                  'FlattenZ'],
+                                                     cw5 = [80,80,80,80, 80],
+                                                     cal = [(1,"left"),(2,"left"),(3,"left")],
+                                                     valueArray3=[False, True, False]
+
+                                                     )
+        cmds.text("Use these check boxes to flatten the bounds search in an axis")
+        cmds.text("If you want bounds to have a more horizontal average, flatten Y if vertical, flatten X")
+
+        self.averageBetweenMinMaxPoint = cmds.button(label="Average Between Min Max Point",
+                                               c=self.callAverageBetween2Points,
+                                               w=200)
+        cmds.text("Finds the min and max point in selected points and sets the average weight of those two points")
+
+        self.gradientBetweenMinMaxPoint = cmds.button(label="Gradient Between Min Max Point",
+                                               c=self.callGradientBetween2Points,
+                                               # cw2=[90, 180],
+                                               # cal=[(1, "left"), (2, "left")],
+                                               w=100)
+        self.checkBoxDeform = cmds.checkBox(label="Calculate Gradient Deformed", w=200)
+
+        cmds.text("Finds the min and max point in selected points and sets a weight gradient those two points")
+
+
+        cmds.text("#####################################################################################")
+        cmds.text("  End Bounds  ")
+        cmds.text("#####################################################################################")
+
+
+
+        # self.operation = cmds.radioButtonGrp(label = "Flatten Axis",
+        #                                    labelArray3=['FlattenX',
+        #                                                 'FlattenX',
+        #                                                 'FlattenX'],
+        #                                    numberOfRadioButtons = 3,
+        #                                     sl = 1,
+        #                                    cw5 = [80,80,80,80],
+        #                                    cal = [(1,"left"),(2,"left"),(3,"left")]
+        #                                    )
+
+
 
 
         ###########################################################
@@ -2841,8 +2974,6 @@ class slideDeformerGui(object):
                                        w = 200)
 #         cmds.text("Select one or more point")
 
-
-    
     def show(self):
         self.__createUiElements()
         cmds.showWindow(self.win)
