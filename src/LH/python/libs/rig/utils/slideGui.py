@@ -418,6 +418,7 @@ class slideDeformerGui(object):
             deformer = cmds.textScrollList(self.deformer_list, 
                                            q = 1, 
                                            selectItem = 1)
+            geo = cmds.deformer(deformer, q=True, geometry=True)
             idx = len(weights_source)-1
 #     
 #             weights_source = self.weight_dict.get(weights_source[idx])
@@ -437,7 +438,10 @@ class slideDeformerGui(object):
                 self.current_weights= "LHWeightDeformer." + deformer[0] + "." + weights_source[idx]
             except:
                 pass
-            
+            # Check if any of the geo from the deformer is selected before switching the paint channels
+
+            # shapes = [cmds.listRelatives(i, shapes=True)[0] for i in cmds.ls(sl=True) if cmds.ls(sl=True) and cmds.listRelatives(i, shapes=True)]
+            # if any(elem in geo for elem in shapes):
             #--- if you have weightable geo selected this will work
             try:
                 mel.eval('artSetToolAndSelectAttr( "artAttrCtx", "' +self.current_weights+ '" );')
@@ -2325,7 +2329,7 @@ class slideDeformerGui(object):
     def setVertexColorsToWeightVals(self):
         if cmds.checkBoxGrp(self.weightDraggerSettings, q=True, v1=True):
             allWeightValues = weightingUtils.getAllWeightValues(self.current_weights)[0]
-            weightingUtils.setVertexColorsToWeightValue(allWeightValues)
+            weightingUtils.setVertexColorsToWeightValue(allWeightValues, True)
 
 
     def callWeightAverageWithArgs(self, *args):
@@ -2345,21 +2349,21 @@ class slideDeformerGui(object):
         return flattenX, flattenY, flattenZ
 
     def callAverageBetween2Points(self, *args):
-        flattenX, flattenY, flattenz = self.queryFlattenVals()
-        weightingUtils.averageWeightsBetween2Points(self.current_weights,
-                                                    flattenX,
-                                                    flattenY,
-                                                    flattenz
+        # flattenX, flattenY, flattenz = self.queryFlattenVals()
+        weightingUtils.averageBetweenPoints(self.current_weights,
+                                                    # flattenX,
+                                                    # flattenY,
+                                                    # flattenz
                                                     )
         self.setVertexColorsToWeightVals()
 
     def callGradientBetween2Points(self, *args):
         calcDefVal = cmds.checkBox(self.checkBoxDeform, query=True, v=True)
-        flattenX, flattenY, flattenz = self.queryFlattenVals()
-        weightingUtils.gradientWeightsBetween2Points(self.current_weights,
-                                                     flattenX,
-                                                     flattenY,
-                                                     flattenz,
+        # flattenX, flattenY, flattenz = self.queryFlattenVals()
+        weightingUtils.gradientBetweenPoints(self.current_weights,
+                                                     # flattenX,
+                                                     # flattenY,
+                                                     # flattenz,
                                                      calcDefVal)
         self.setVertexColorsToWeightVals()
 
@@ -2536,25 +2540,25 @@ class slideDeformerGui(object):
         cmds.text("  Bounds Weighting Commands  ")
         cmds.text("#####################################################################################")
 
-        self.averageWeightsBounds = cmds.checkBoxGrp(numberOfCheckBoxes=3,
-                                                     label='Bounds Axis',
-                                                     labelArray3=['FlattenX',
-                                                                  'FlattenY',
-                                                                  'FlattenZ'],
-                                                     cw5 = [80,80,80,80, 80],
-                                                     cal = [(1,"left"),(2,"left"),(3,"left")],
-                                                     valueArray3=[False, True, False]
+        # self.averageWeightsBounds = cmds.checkBoxGrp(numberOfCheckBoxes=3,
+        #                                              label='Bounds Axis',
+        #                                              labelArray3=['FlattenX',
+        #                                                           'FlattenY',
+        #                                                           'FlattenZ'],
+        #                                              cw5 = [80,80,80,80, 80],
+        #                                              cal = [(1,"left"),(2,"left"),(3,"left")],
+        #                                              valueArray3=[False, True, False]
+        #
+        #                                              )
+        # cmds.text("Use these check boxes to flatten the bounds search in an axis")
+        # cmds.text("If you want bounds to have a more horizontal average, flatten Y if vertical, flatten X")
 
-                                                     )
-        cmds.text("Use these check boxes to flatten the bounds search in an axis")
-        cmds.text("If you want bounds to have a more horizontal average, flatten Y if vertical, flatten X")
-
-        self.averageBetweenMinMaxPoint = cmds.button(label="Average Between Min Max Point",
+        self.averageBetweenMinMaxPoint = cmds.button(label="Average Between Two Points",
                                                c=self.callAverageBetween2Points,
                                                w=200)
         cmds.text("Finds the min and max point in selected points and sets the average weight of those two points")
 
-        self.gradientBetweenMinMaxPoint = cmds.button(label="Gradient Between Min Max Point",
+        self.gradientBetweenMinMaxPoint = cmds.button(label="Gradient Between Two Points",
                                                c=self.callGradientBetween2Points,
                                                # cw2=[90, 180],
                                                # cal=[(1, "left"), (2, "left")],

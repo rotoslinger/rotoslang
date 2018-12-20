@@ -1,6 +1,6 @@
 from maya import cmds
 import maya.OpenMaya as OpenMaya
-
+from plugins import setVertexWeightColor
 import maya.mel as mel
 
 
@@ -16,6 +16,7 @@ class weightValueDragger(object):
         self.weightAttr = ""
         self.vertexColorWeightVis= True
         self.toggleVisOnDrag= False
+        self.originalWeightValues=""
         # self.vertexWeightVis= False
 
     def clickAndMoveCommand(self):
@@ -37,25 +38,19 @@ class weightValueDragger(object):
                 posNeg = 1
             self.wt = (length*.001)*posNeg
             # self.setWeights()
-            print self.weightAttr
             allWeightValues = setWeightsOnSelectedAcculmulative(self.weightAttr, self.wt)
             if self.vertexColorWeightVis:
-                setVertexColorsToWeightValue(allWeightValues)
+                setVertexColorsToWeightValue(allWeightValues, True)
             vec = tuple(cmds.draggerContext(Context, query=1, dragPoint=1 ))
             self.vectorStart = OpenMaya.MVector(vec[0], vec[1], vec[2])
 
         def releaseClick():
-            print "NEW RELEASE"
-
             self.vectorStart = OpenMaya.MVector(0.0, 0.0, 0.0)
             self.wt = 0.0
-
             sel = cmds.ls(sl=True, fl=True)
             geo = sel[0].split(".")[0]
             if self.toggleVisOnDrag:
                 cmds.setAttr(geo + '.displayColors', False)
-            # cmds.setToolTo("selectSuperContext")
-            #cmds.setToolTo(self.currentContext)
 
             # mel.eval('artSetToolAndSelectAttr( "'+ self.currentContext +'", "' + self.weightAttr + '" );')
 
@@ -67,65 +62,29 @@ class weightValueDragger(object):
         if cmds.draggerContext(Context, exists=True):
             cmds.deleteUI(Context)
 
-        cmds.draggerContext(Context, um="all", pressCommand=getFirstClick, dragCommand=getCursorPosition, name=Context,
+        cmds.draggerContext(Context, um="sequence", pressCommand=getFirstClick, dragCommand=getCursorPosition, name=Context,
                             cursor='crossHair', sp="screen", pr="viewPlane", rc=releaseClick)
         cmds.setToolTo(Context)
         if self.weightAttr and self.vertexColorWeightVis:
             allWeightValues = getAllWeightValues(self.weightAttr)[0]
-            setVertexColorsToWeightValue(allWeightValues)
+            setVertexColorsToWeightValue(allWeightValues, True)
 
 def turnOnVertexColor(weightAttr, *args):
     if weightAttr:
         allWeightValues = getAllWeightValues(weightAttr)[0]
-        setVertexColorsToWeightValue(allWeightValues)
+        setVertexColorsToWeightValue(allWeightValues, True)
         sel = cmds.ls(sl=True, fl=True)
         geo = sel[0].split(".")[0]
         cmds.setAttr(geo + '.displayColors', True)
 
 def turnOffVertexColor(*args):
     sel = cmds.ls(sl=True, fl=True)
+    if not sel:
+        return
     geo = sel[0].split(".")[0]
     cmds.setAttr(geo + '.displayColors', False)
 
 
-def setVertexColorsToWeightValue(allWeightValues, displayVertexColors=True):
-    sel = cmds.ls(sl=True, fl=True)
-    geo = sel[0].split(".")[0]
-    fnMesh = getMFnMesh(geo)
-    util = OpenMaya.MScriptUtil()
-
-    # indexList = [util.createFromInt(x).asInPtr() for x in range(len(allWeightValues))]
-
-    # vertexIndexList = OpenMaya.MIntArray(indexList)
-    vertexColorList = OpenMaya.MColorArray()
-
-    # Check to see if vertex colors exist
-    colors = fnMesh.numColors()
-    if not colors:
-        fnMesh.createColorSetWithName("weightColors")
-
-    fnMesh.getVertexColors(vertexColorList)
-
-    lenVertexList = vertexColorList.length()
-    fnComponent = OpenMaya.MFnSingleIndexedComponent()
-    fnComponent.create(OpenMaya.MFn.kMeshVertComponent)
-    fnComponent.setCompleteData(lenVertexList);
-    vertexIndexList = OpenMaya.MIntArray()
-    fnComponent.getElements(vertexIndexList)
-
-    util.asDoublePtr()
-    # percent = util.getDouble(param)
-
-    for c in range(vertexColorList.length()):
-        # print c
-        # print allWeightValues[c]
-        vertexColorList[c].r = float(allWeightValues[0][c])
-        vertexColorList[c].g = float(allWeightValues[0][c])
-        vertexColorList[c].b = float(allWeightValues[0][c])
-        vertexColorList[c].a = float(1.0)
-    fnMesh.setVertexColors(vertexColorList, vertexIndexList, None)
-    if displayVertexColors:
-        cmds.setAttr(geo+'.displayColors', True)
 
 def getMFnMesh(geo):
     meshNode = OpenMaya.MSelectionList()
@@ -200,7 +159,6 @@ def getAllWeightValues(weightAttr):
 def weightAverageSelectionBorder(weightAttribute="LHWeightDeformer.C_testFace_SLD.lMouthUDWeight"):
     componentMode = cmds.selectMode(q=True, component=True)
     sel = cmds.ls(sl=True, fl=True)
-
     trackComponentSelectionOrder()
 
     # def weightAverage(weightAttribute="LHWeightDeformer.C_testFace_SLD.lSideWeight"):
@@ -296,11 +254,12 @@ def weightAverageAll(weightAttribute="LHWeightDeformer.C_testFace_SLD.lMouthUDWe
 
 def gradientWeightsBetween2Points(weightAttribute="LHWeightDeformer.C_testFace_SLD.lMouthUDWeight",
                                   flattenTx=False, flattenTy=False, flattenTz=False, calcDeformed=False):
-    componentMode = cmds.selectMode(q=True, component=True)
 
     # preserve selection
     if not weightAttribute:
         return
+
+    componentMode = cmds.selectMode(q=True, component=True)
 
     if not calcDeformed:
         deformer = weightAttribute.split(".")[1]
@@ -310,23 +269,8 @@ def gradientWeightsBetween2Points(weightAttribute="LHWeightDeformer.C_testFace_S
 
     currentWeights, indicies, mesh, weightAttrName = getWeightsFromAttribute(weightAttribute, OMObjectType="MFnMesh")
     startPoint, endPoint = getPointBoundingBox(flattenTx, flattenTy, flattenTz)
-    print startPoint, endPoint
 
-    pointDataDict = {}
-    startPointIdx = getPointIndicies(startPoint)
-    endPointidx = getPointIndicies(endPoint)
-
-    startPointWeightValue = currentWeights[startPointIdx]
-    endPointWeightValue = currentWeights[endPointidx]
-    points = sorted([startPointWeightValue, endPointWeightValue])
-
-    pointDataDict[startPointWeightValue] = [startPointIdx, startPoint]
-    pointDataDict[endPointWeightValue] = [endPointidx, endPoint]
-
-
-    startPointDict = {}
-    point1 = cmds.pointPosition(pointDataDict[points[0]][1])
-    point2 = cmds.pointPosition(pointDataDict[points[1]][1])
+    endPointidx, point1, point2, points, startPointIdx = sortPoints(currentWeights, endPoint, startPoint)
 
 
 
@@ -346,8 +290,6 @@ def gradientWeightsBetween2Points(weightAttribute="LHWeightDeformer.C_testFace_S
     util = OpenMaya.MScriptUtil()
     # util.createFromInt(0)
     param = util.asDoublePtr()
-    print points[0]
-    print points[1]
     for id in indicies:
         mesh.getPoint(id, gttrPoint, OpenMaya.MSpace.kWorld)
         fnCurve.closestPoint(gttrPoint, param, OpenMaya.MSpace.kWorld)
@@ -370,6 +312,21 @@ def gradientWeightsBetween2Points(weightAttribute="LHWeightDeformer.C_testFace_S
     if componentMode:
         cmds.selectMode(component=True)
         cmds.hilite(sel[0].split(".")[0])
+
+
+def sortPoints(currentWeights, endPoint, startPoint):
+    pointDataDict = {}
+    startPointIdx = getPointIndicies(startPoint)
+    endPointidx = getPointIndicies(endPoint)
+    startPointWeightValue = currentWeights[startPointIdx]
+    endPointWeightValue = currentWeights[endPointidx]
+    points = sorted([startPointWeightValue, endPointWeightValue])
+    pointDataDict[startPointWeightValue] = [startPointIdx, startPoint]
+    pointDataDict[endPointWeightValue] = [endPointidx, endPoint]
+    point1 = cmds.pointPosition(pointDataDict[points[0]][1])
+    point2 = cmds.pointPosition(pointDataDict[points[1]][1])
+    return endPointidx, point1, point2, points, startPointIdx
+
 
 def modulateBetween2ValuesByFactor(value1, value2, factor):
     """
@@ -395,19 +352,118 @@ def averageWeightsBetween2Points(weightAttribute="LHWeightDeformer.C_testFace_SL
     startPoint, endPoint = getPointBoundingBox(flattenTx, flattenTy, flattenTz)
     startPoint = getPointIndicies(startPoint)
     endPoint = getPointIndicies(endPoint)
-    print startPoint, endPoint
-    print indicies
     indicies.remove(startPoint)
     indicies.remove(endPoint)
     w = sum([currentWeights[startPoint], currentWeights[endPoint]]) / 2
-    print w
-
     for idx in indicies:
         currentWeights[idx] = w
     try:
         cmds.setAttr(weightAttrName, currentWeights, typ='doubleArray')
     except:
         pass
+
+
+def averageBetweenPoints(weightAttr = "LHWeightDeformer.C_testFace_SLD.lSideWeight"):
+    """
+    Averages weights between 2 points.  Works best when selecting points on the same edgeloop.
+    :param weightAttr: the name of the weight attribute
+    :return:
+    """
+    if not weightAttr:
+        return
+    returnData = getWeightsFromAttribute(weightAttr)
+    currentWeights = returnData[0]
+    weightAttrName = returnData[3]
+    selEndPoints, points = getPointsBetween()
+    startPoint = getPointIndicies(selEndPoints[0])
+    endPoint = getPointIndicies(selEndPoints[1])
+    indicies = [getPointIndicies(x) for x in points]
+    w = sum([currentWeights[startPoint], currentWeights[endPoint]]) / 2
+    for idx in indicies:
+        currentWeights[idx] = w
+    try:
+        cmds.setAttr(weightAttrName, currentWeights, typ='doubleArray')
+    except:
+        pass
+
+
+def gradientBetweenPoints(weightAttr = "LHWeightDeformer.C_testFace_SLD.lSideWeight", calcDeformed=False):
+    """
+    Averages weights between 2 points.  Works best when selecting points on the same edgeloop.
+    :param weightAttr: the name of the weight attribute
+    :return:
+    """
+    if not weightAttr:
+        return
+
+    if not calcDeformed:
+        deformer = weightAttr.split(".")[1]
+        cmds.setAttr(deformer + ".envelope", 0)
+
+
+    currentWeights, indicies, mesh, weightAttrName = getWeightsFromAttribute(weightAttr, OMObjectType="MFnMesh")
+
+    selEndPoints, pointsBetween = getPointsBetween()
+    # startPointIdx = getPointIndicies(selEndPoints[0])
+    # endPointIdx = getPointIndicies(selEndPoints[1])
+    selEndPoints = cmds.ls(sl=True, fl=True)
+
+
+    endPointidx, point1, point2, points, startPointIdx = sortPoints(currentWeights, selEndPoints[1], selEndPoints[0])
+
+
+    indicies = [getPointIndicies(x) for x in pointsBetween]
+
+    # create curve between 2 points
+    curve = cmds.curve(d=True, p=[point1, point2], k=[0, 1])
+
+    curveNode = OpenMaya.MSelectionList()
+    curveNode.add(curve)
+    curvePath = OpenMaya.MDagPath()
+    curveNode.getDagPath(0, curvePath)
+    fnCurve = OpenMaya.MFnNurbsCurve(curvePath)
+
+    gttrPoint = OpenMaya.MPoint()
+    util = OpenMaya.MScriptUtil()
+
+
+    # util.createFromInt(0)
+    param = util.asDoublePtr()
+    for id in indicies:
+        mesh.getPoint(id, gttrPoint, OpenMaya.MSpace.kWorld)
+        fnCurve.closestPoint(gttrPoint, param, OpenMaya.MSpace.kWorld)
+        percent = util.getDouble(param)
+        # w = modulateBetween2ValuesByFactor(startPointWeightValue, endPointWeightValue, percent)
+        w = modulateBetween2ValuesByFactor(points[1], points[0], percent)
+        currentWeights[id] = w
+    try:
+        cmds.setAttr(weightAttrName, currentWeights, typ='doubleArray')
+    except:
+        pass
+
+
+    cmds.delete(curve)
+    if not calcDeformed:
+        deformer = weightAttr.split(".")[1]
+        cmds.setAttr(deformer + ".envelope", 1)
+
+    cmds.select(selEndPoints, r=True)
+    cmds.selectMode(component=True)
+    cmds.hilite(selEndPoints[0].split(".")[0])
+
+
+
+def getPointsBetween():
+    selEndPoints = cmds.ls(sl=True, fl=True)
+    startPoint = getPointIndicies(selEndPoints[0])
+    endPoint = getPointIndicies(selEndPoints[1])
+    list = cmds.polySelect('C_body_HI', shortestEdgePath=(startPoint, endPoint), q=True, asSelectString=True)
+    points = cmds.polyListComponentConversion(list, toVertex=True)
+    points = cmds.ls(points, fl=True)
+    points.remove(str(selEndPoints[0]))
+    points.remove(str(selEndPoints[1]))
+    return selEndPoints, points
+
 def trackComponentSelectionOrder():
     if not cmds.selectPref(q=True, trackSelectionOrder=True):
         print "turning on tracking selection order"
@@ -553,3 +609,58 @@ def getPointBoundingBox(flattenTx=False, flattenTy=False, flattenTz=False):
             continue
 
     return startPoint, endPoint
+
+class stayInPointSelectionMode:
+    """
+    Assumes you have an active point selection before running
+    """
+    def __enter__(self):
+        self.componentMode = cmds.selectMode(q=True, component=True)
+    def __exit__(self):
+        if self.componentMode:
+            cmds.selectMode(component=True)
+            sel = cmds.ls(sl=True, fl=True)
+            cmds.hilite(sel[0].split(".")[0])
+
+def setVertexColorsToWeightValue(allWeightValues, displayVertexColors):
+    sel = cmds.ls(sl=True, fl=True)
+    geo = sel[0].split(".")[0]
+    fnMesh = getMFnMesh(geo)
+    util = OpenMaya.MScriptUtil()
+
+    # indexList = [util.createFromInt(x).asInPtr() for x in range(len(allWeightValues))]
+
+    # vertexIndexList = OpenMaya.MIntArray(indexList)
+    vertexColorList = OpenMaya.MColorArray()
+
+    # Check to see if vertex colors exist
+    colors = fnMesh.numColors()
+    if not colors:
+        fnMesh.createColorSetWithName("weightColors")
+
+    fnMesh.getVertexColors(vertexColorList)
+
+    lenVertexList = vertexColorList.length()
+    fnComponent = OpenMaya.MFnSingleIndexedComponent()
+    fnComponent.create(OpenMaya.MFn.kMeshVertComponent)
+    fnComponent.setCompleteData(lenVertexList);
+    vertexIndexList = OpenMaya.MIntArray()
+    fnComponent.getElements(vertexIndexList)
+
+    util.asDoublePtr()
+    # percent = util.getDouble(param)
+
+    setVertexColors(allWeightValues, fnMesh, vertexColorList, vertexIndexList)
+
+    if displayVertexColors:
+        cmds.setAttr(geo+'.displayColors', True)
+
+def setVertexColors(allWeightValues, fnMesh, vertexColorList, vertexIndexList):
+    for c in range(vertexColorList.length()):
+        # print c
+        # print allWeightValues[c]
+        vertexColorList[c].r = float(allWeightValues[0][c])
+        vertexColorList[c].g = float(allWeightValues[0][c])
+        vertexColorList[c].b = float(allWeightValues[0][c])
+        vertexColorList[c].a = float(1.0)
+    fnMesh.setVertexColors(vertexColorList, vertexIndexList, None)
