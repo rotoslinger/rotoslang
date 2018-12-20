@@ -2,186 +2,149 @@
 
 MTypeId LHWeightNode::id(0x00007019);
 
-//doubles
-MObject LHWeightNode::aParamUAmount;
-MObject LHWeightNode::aParamVAmount;
-//CompoundAttributes
-MObject LHWeightNode::aOutputs;
-
-MObject LHWeightNode::aParamU;
-MObject LHWeightNode::aParamV;
-
-MObject LHWeightNode::aMatrix;
-MObject LHWeightNode::aBaseMatrix;
-
-MObject LHWeightNode::aSurface;
-
-//Inputs
-MObject LHWeightNode::aAmount;
-MObject LHWeightNode::aInputWeights;
-MObject LHWeightNode::aInputs;
-
-//Output
+MObject LHWeightNode::aWeightsList;
+MObject LHWeightNode::aWeights;
+MObject LHWeightNode::aBias;
 MObject LHWeightNode::aOutputWeights;
-
+MObject LHWeightNode::aInputWeights;
+MObject LHWeightNode::aOutputWeightArray;
+MObject LHWeightNode::aBiasOut;
 
 
 void* LHWeightNode::creator() { return new LHWeightNode; }
 
-MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data )
+
+MStatus LHWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, double val)
 {
-    MStatus status;
-    if ( plug == LHWeightNode::aOutputWeights)
+    int len = rDoubleArray.length();
+    if (!len)
     {
-        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHWeightNode::aInputs, &status));
-        CheckStatusReturn( status, "Unable to get inputs" );
-
-//        MArrayDataHandle outputsArrayHandle(data.outputArrayValue( LHWeightNode::aOutputs, &status));
-//        CheckStatusReturn( status, "Unable to get outputs" );
-
-        unsigned int elemCount = inputsArrayHandle.elementCount(&status);
-        CheckStatusReturn( status, "Unable to get number of rotates" );
-
-        MDoubleArray finalWeights;
-
-
-        int i = 0;
-        for (i=0;i < elemCount;i++)
-        {
-            status = inputsArrayHandle.jumpToElement(i);
-            CheckStatusReturn( status, "Unable to jump to input element" );
-
-//            status = outputsArrayHandle.jumpToElement(i);
-//            CheckStatusReturn( status, "Unable to jump to element" );
-
-            double uAmount = data.inputValue(LHWeightNode::aParamUAmount ).asDouble();
-            double vAmount = data.inputValue(LHWeightNode::aParamVAmount ).asDouble();
-            MObject oSurface = data.inputValue(aSurface).asNurbsSurfaceTransformed();
-            MMatrix matrix = inputsArrayHandle.inputValue().child( LHWeightNode::aMatrix ).asMatrix();
-            MMatrix baseMatrix = inputsArrayHandle.inputValue().child( LHWeightNode::aBaseMatrix ).asMatrix();
-            MGlobal::displayInfo(MString("THIS IS THE AMT")+uAmount+ " , " + vAmount);
-//            MFnDoubleArrayData uAmount = data.inputValue(LHWeightNode::aParamUAmount ).asDouble();
-
-            MDoubleArray weights;
-            MDataHandle inputWeights = inputsArrayHandle.inputValue().child( LHWeightNode::aInputWeights );
-            weights = MFnDoubleArrayData(inputWeights.data()).array();
-
-
-
-        }
-        MDataHandle hOutputWeights = data.outputValue(aOutputWeights);
-        hOutput.setFloat(inputValue);
-        data.setClean( plug );
-
+        return MS::kFailure;
+    }
+    for (int i= 0; i < len; ++i)
+    {
+        rDoubleArray[i] = rDoubleArray[i] * val;
     }
     return MS::kSuccess;
 }
 
-MStatus LHWeightNode::initialize() {
-	MStatus status ;
-    MFnNumericAttribute nAttr;
-    MFnCompoundAttribute cAttr;
-    MFnTypedAttribute tAttr;
-    MFnMatrixAttribute mAttr;
 
+MDoubleArray LHWeightNode::addDoubleArrays(MDoubleArray doubleArray1,
+                                      MDoubleArray doubleArray2)
+{
+    MDoubleArray rDoubleArray;
+    return rDoubleArray;
+}
+
+
+
+
+MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
+{
+    MStatus status;
+//    if( plug != LHWeightNode::aOutputWeightArray ) { return MS::kUnknownParameter; }
+//    if( plug == LHWeightNode::aOutputWeightArray or  plug == LHWeightNode::aOutputWeights)
+//    if( plug == LHWeightNode::aBiasOut or plug == LHWeightNode::aOutputWeightArray)
+    if( plug == LHWeightNode::aBiasOut or plug == LHWeightNode::aOutputWeightArray)
+    {
+//        MArrayDataHandle outputsHnd = data.outputArrayValue( LHWeightNode::aOutputWeights );
+//        MArrayDataHandle inputsHnd = data.inputArrayValue( LHWeightNode::aInputWeights );
+
+        double inputValue = data.inputValue(LHWeightNode::aBias).asDouble();
+
+
+        MDataHandle hInputArray = data.inputValue( LHWeightNode::aInputWeights );
+        MObject oInputArray = hInputArray.data();
+        MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
+        MDoubleArray arrayDataToSet;
+        dataDoubleArrayFn.copyTo(arrayDataToSet);
+        if (oInputArray.isNull())
+        {
+            MGlobal::displayInfo(MString("The MDataHandle InputArray is NULL"));
+            return MS::kSuccess;
+
+        }
+        ///////// Multiply values
+        LHWeightNode::multiplyKDoubleArrayByVal(arrayDataToSet, inputValue);
+
+
+        MFnDoubleArrayData outputDoubleArrayFn;
+        MObject oOutputArray = outputDoubleArrayFn.create(arrayDataToSet);
+        MDataHandle handle = data.outputValue(LHWeightNode::aOutputWeightArray);
+        handle.setMObject(oOutputArray);
+
+        MGlobal::displayInfo(MString("DEBUG:  UPDATING ") + status);
+
+        if (oOutputArray.isNull())
+        {
+            MGlobal::displayInfo(MString("The MObject hOutputArray is NULL"));
+            return MS::kSuccess;
+
+
+        }
+//        if (!oOutputArray.isNull())
+//        {
+//            MGlobal::displayInfo(MString("The MDataHandle hOutputArray is NOT NULL!!!!!!"));
 //
-    aParamUAmount = nAttr.create( "uParamAmount", "upa", MFnNumericData::kDouble);
+//        }
+
+
+        MDataHandle outputDataHandle = data.outputValue( aBiasOut, &status );
+        outputDataHandle.setDouble( inputValue );
+        handle.setClean();
+        hInputArray.setClean();
+        data.setClean( plug );
+
+    }
+
+    return MS::kSuccess;
+}
+
+MStatus LHWeightNode::initialize()
+{
+    MFnTypedAttribute tAttr;
+    MFnNumericAttribute nAttr;
+    MFnCompoundAttribute cmpAttr;
+
+    aBias = nAttr.create( "bias", "b", MFnNumericData::kDouble);
     nAttr.setKeyable(true);
     nAttr.setWritable(true);
     nAttr.setStorable(true);
     nAttr.setDefault(1.0);
     nAttr.setChannelBox(true);
-    addAttribute( aParamUAmount );
+    addAttribute(aBias);
 
-    aParamVAmount = nAttr.create( "vParamAmount", "vpa", MFnNumericData::kDouble);
-    nAttr.setKeyable(true);
+    aBiasOut = nAttr.create( "biasOut", "bOut", MFnNumericData::kDouble);
+    nAttr.setReadable(true);
     nAttr.setWritable(true);
-    nAttr.setStorable(true);
-
-    nAttr.setDefault(1.0);
+    nAttr.setConnectable(true);
     nAttr.setChannelBox(true);
-    addAttribute( aParamVAmount );
+    nAttr.setKeyable(false);
+    addAttribute(aBiasOut);
+    attributeAffects(aBias, aBiasOut);
 
 
-    // CREATE AND ADD ".position" ATTRIBUTE:
-    aMatrix = mAttr.create("matrix", "m");
-    mAttr.setWritable(true);
-    mAttr.setStorable(true);
-    addAttribute( aMatrix );
 
-    aBaseMatrix = mAttr.create("baseMatrix", "bm");
-    mAttr.setWritable(true);
-    mAttr.setStorable(true);
-    addAttribute( aBaseMatrix );
-
-
-    ////////WIEGHTS
     aInputWeights = tAttr.create("inWeights", "iw", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
     tAttr.setArray(false);
     tAttr.setUsesArrayDataBuilder(true);
+    addAttribute(aInputWeights);
 
-    aAmount = nAttr.create( "amount", "a", MFnNumericData::kDouble);
-    nAttr.setWritable(true);
-    nAttr.setKeyable(true);
-    nAttr.setConnectable(true);
-
-
-
-    aInputs = cAttr.create("Inputs", "inputs");
-    cAttr.setKeyable(true);
-    cAttr.setArray(true);
-    cAttr.addChild( aMatrix );
-    cAttr.addChild( aBaseMatrix );
-    cAttr.addChild( aInputWeights );
-    cAttr.addChild( aAmount );
-    cAttr.setReadable(true);
-    cAttr.setWritable(true);
-    cAttr.setConnectable(true);
-    cAttr.setChannelBox(true);
-    addAttribute(aInputs);
-
-
-    aParamU = nAttr.create( "parameterU", "pu", MFnNumericData::kDouble);
-    nAttr.setWritable(false);
-    nAttr.setKeyable(false);
-
-    aParamV = nAttr.create( "parameterV", "pv", MFnNumericData::kDouble);
-    nAttr.setWritable(false);
-    nAttr.setKeyable(false);
-
-
-    aOutputs = cAttr.create("Outputs", "outputs");
-    cAttr.setKeyable(false);
-    cAttr.setArray(true);
-    cAttr.addChild( aParamU );
-    cAttr.addChild( aParamV );
-    cAttr.setReadable(true);
-    cAttr.setWritable(true);
-    cAttr.setConnectable(true);
-    cAttr.setChannelBox(true);
-    addAttribute(aOutputs);
-
-
-    ////////WIEGHTS
-    aOutputWeights = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
-    tAttr.setKeyable(false);
+    aOutputWeightArray = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
+    tAttr.setKeyable(true);
     tAttr.setArray(false);
+    tAttr.setWritable(true);
+    tAttr.setStorable(true);
     tAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aOutputWeights);
+    addAttribute(aOutputWeightArray);
 
 
-    // Effects
+    attributeAffects(aBias, aOutputWeightArray);
+    attributeAffects(aInputWeights, aOutputWeightArray);
+    attributeAffects(aBias, aBiasOut);
+    attributeAffects(aInputWeights, aBiasOut);
 
-    aSurface = tAttr.create("surface", "sb", MFnData::kNurbsSurface);
-    addAttribute( aSurface );
-
-    attributeAffects( aSurface, aOutputs);
-    attributeAffects( aParamUAmount, aOutputs);
-    attributeAffects( aParamVAmount, aOutputs);
-    attributeAffects( aInputs, aOutputs);
-    attributeAffects( aInputs, aOutputWeights);
-
-  return MS::kSuccess;
+    return MStatus::kSuccess;
 }
 

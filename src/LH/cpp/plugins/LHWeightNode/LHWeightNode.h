@@ -1,62 +1,61 @@
 #ifndef _LHWEIGHTNODE_H
 #define _LHWEIGHTNODE_H
+#define _MApiVersion
+
 #include <maya/MCppCompat.h>
 
-#include <maya/MDataBlock.h>
-#include <maya/MDataHandle.h>
-#include <maya/MStatus.h>
+#include <string.h>
+#include <maya/MIOStream.h>
+#include <math.h>
+
 #include <maya/MPxNode.h>
-#include <maya/MTypeId.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
-#include <maya/MFnTypedAttribute.h>
-#include <maya/MFnMatrixAttribute.h>
-#include <maya/MFnNurbsSurface.h>
-#include <maya/MArrayDataHandle.h>
-#include <maya/MPlug.h>
-#include <maya/MMatrix.h>
-#include <maya/MVector.h>
-#include <maya/MGlobal.h>
-#include <maya/MString.h>
-#include <maya/MFnMatrixData.h>
+#include <maya/MFnPlugin.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MNurbsIntersector.h>
-#include <maya/MDoubleArray.h>
+#include <maya/MTypeId.h>
+#include <maya/MPlug.h>
+#include <maya/MDataBlock.h>
+#include <maya/MDataHandle.h>
+#include <maya/MArrayDataHandle.h>
+#include <maya/MArrayDataBuilder.h>
+#include <maya/MGlobal.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MFnNumericData.h>
 #include <maya/MFnDoubleArrayData.h>
 
 
 #include <math.h>
 
+#define McheckErr(stat,msg)             \
+        if ( MS::kSuccess != stat ) {   \
+                cerr << msg;            \
+                return MS::kFailure;    \
+        }
 
 class LHWeightNode : public MPxNode {
  public:
   LHWeightNode() {};
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
+  virtual MStatus multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray,
+                                         double val);
+  virtual MDoubleArray addDoubleArrays(MDoubleArray doubleArray1,
+                                       MDoubleArray doubleArray2);
   static void* creator();
   static MStatus initialize();
 
   static MTypeId id;
 
-  static MObject aOutputs;
-  static MObject aParamU;
-  static MObject aParamV;
-
-  static MObject aParamUAmount;
-  static MObject aParamVAmount;
-
-
-  static MObject aMatrix;
-  static MObject aBaseMatrix;
-
-  static MObject aSurface;
-
-  //Inputs
-  static MObject aAmount;
-  static MObject aInputWeights;
-  static MObject aInputs;
+  static  MObject         aWeightsList;
+  static  MObject         aWeights;
+  static  MObject         aBias;
+  static  MObject         aOutputWeights;
+  static  MObject         aInputWeights;
+  static  MObject         aOutputWeightArray;
+  static  MObject         aBiasOut;
 
   //Output
-  static MObject aOutputWeights;
+//  static MObject aOutputWeights;
 
   inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
@@ -107,3 +106,8 @@ class LHWeightNode : public MPxNode {
 ///////////////////////////////////////////////////////////
 
 #endif
+
+
+
+
+
