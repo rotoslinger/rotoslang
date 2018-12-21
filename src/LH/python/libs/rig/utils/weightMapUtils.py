@@ -19,14 +19,23 @@ def getCleanShape(mayaObject=None):
 
 def createWeightMapOnObject(mayaObject=None,
                             weightName=PREFIX+"WeightMap",
-                            dataType="doubleArray"):
+                            dataType="doubleArray",
+                            defaultValue=1.0, addAttr=True):
     mayaObject = getCleanShape(mayaObject)
     if not mayaObject:
         return
     # Single
     for i in mayaObject:
-        cmds.addAttr(i, ln=weightName, dataType=dataType)
+        if addAttr:
+            cmds.addAttr(i, ln=weightName, dataType=dataType)
+            setDefaultWeights(i, weightName, dataType=dataType, defaultValue=defaultValue)
         cmds.makePaintable("mesh", weightName)
+
+
+def setDefaultWeights(name, attrName, dataType, defaultValue=1.0):
+    polyCount = cmds.polyEvaluate(name, v=True)
+    defaultVals = [defaultValue for x in range(polyCount)]
+    cmds.setAttr(name + "." + attrName, defaultVals, type=dataType)
 
 
 def removeWeightMapOnObject(mayaObject=None,

@@ -1382,9 +1382,11 @@ MStatus LHCurveRollDeformer::initialize() {
     // R ATTRS
 
     attributeAffects(aRValueParent, outputGeom);
-    attributeAffects(aRWeightsParentArray, outputGeom);
     attributeAffects(aRAnimCurveUParent, outputGeom);
     attributeAffects(aRAnimCurveVParent, outputGeom);
+    attributeAffects(aRWeights, outputGeom);
+    attributeAffects(aRWeightsParent, outputGeom);
+    attributeAffects(aRWeightsParentArray, outputGeom);
 
 //    attributeAffects(aRPivotArray, outputGeom);
 //    attributeAffects(aTPivotArray, outputGeom);

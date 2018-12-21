@@ -23,6 +23,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNumericData.h>
 #include <maya/MFnDoubleArrayData.h>
+#include <maya/MPlugArray.h>
 
 
 #include <math.h>
@@ -37,6 +38,9 @@ class LHWeightNode : public MPxNode {
  public:
   LHWeightNode() {};
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
+  virtual MStatus setDependentsDirty(MPlug const & inPlug,
+                                            MPlugArray  & affectedPlugs);
+
   virtual MStatus multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray,
                                          double val);
   virtual MDoubleArray addDoubleArrays(MDoubleArray doubleArray1,
@@ -51,8 +55,11 @@ class LHWeightNode : public MPxNode {
   static  MObject         aBias;
   static  MObject         aOutputWeights;
   static  MObject         aInputWeights;
-  static  MObject         aOutputWeightArray;
   static  MObject         aBiasOut;
+  static  MObject         aInputs;
+  static  MObject         aTestWeights;
+  static  MObject         aAmount;
+
 
   //Output
 //  static MObject aOutputWeights;
