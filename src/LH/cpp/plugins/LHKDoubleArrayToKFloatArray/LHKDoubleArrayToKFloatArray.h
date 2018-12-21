@@ -37,9 +37,9 @@
                 return MS::kFailure;    \
         }
 
-class LHWeightNode : public MPxNode {
+class LHKDoubleArrayToKFloatArray : public MPxNode {
  public:
-  LHWeightNode() {};
+  LHKDoubleArrayToKFloatArray() {};
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
   virtual MStatus setDependentsDirty(MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs);
@@ -72,7 +72,7 @@ class LHWeightNode : public MPxNode {
   inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
-        MString txt( "[LHWeightNode] " );
+        MString txt( "[LHKDoubleArrayToKFloatArray] " );
         txt += msg ;
         txt += ", File: ";
         txt += sourceFile;

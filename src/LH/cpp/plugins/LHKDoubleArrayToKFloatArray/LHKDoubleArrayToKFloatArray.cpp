@@ -1,24 +1,24 @@
-#include "LHWeightNode.h"
+#include "LHKDoubleArrayToKFloatArray.h"
 
-MTypeId LHWeightNode::id(0x00093019);
+MTypeId LHKDoubleArrayToKFloatArray::id(0x00568819);
 
-MObject LHWeightNode::aWeightsList;
-MObject LHWeightNode::aWeights;
-MObject LHWeightNode::aBias;
-MObject LHWeightNode::aOutputWeights;
-MObject LHWeightNode::aInputWeights;
-MObject LHWeightNode::aBiasOut;
-MObject LHWeightNode::aInputs;
-MObject LHWeightNode::aTestWeights;
-MObject LHWeightNode::aAmount;
-MObject LHWeightNode::aOperation;
-MObject LHWeightNode::aTestKFloatArray;
-
-
-void* LHWeightNode::creator() { return new LHWeightNode; }
+MObject LHKDoubleArrayToKFloatArray::aWeightsList;
+MObject LHKDoubleArrayToKFloatArray::aWeights;
+MObject LHKDoubleArrayToKFloatArray::aBias;
+MObject LHKDoubleArrayToKFloatArray::aOutputWeights;
+MObject LHKDoubleArrayToKFloatArray::aInputWeights;
+MObject LHKDoubleArrayToKFloatArray::aBiasOut;
+MObject LHKDoubleArrayToKFloatArray::aInputs;
+MObject LHKDoubleArrayToKFloatArray::aTestWeights;
+MObject LHKDoubleArrayToKFloatArray::aAmount;
+MObject LHKDoubleArrayToKFloatArray::aOperation;
+MObject LHKDoubleArrayToKFloatArray::aTestKFloatArray;
 
 
-MStatus LHWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, double val)
+void* LHKDoubleArrayToKFloatArray::creator() { return new LHKDoubleArrayToKFloatArray; }
+
+
+MStatus LHKDoubleArrayToKFloatArray::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, double val)
 {
     int len = rDoubleArray.length();
     if (!len)
@@ -33,7 +33,7 @@ MStatus LHWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, doub
 }
 
 
-MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
+MDoubleArray LHKDoubleArrayToKFloatArray::doubleArrayMathOperation(MDoubleArray doubleArray1,
                                                     MDoubleArray doubleArray2,
                                                     short operation)
 {
@@ -109,18 +109,18 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
 
 
 
-MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
+MStatus LHKDoubleArrayToKFloatArray::compute( const MPlug& plug, MDataBlock& data)
 {
     MStatus status;
-//    if( plug != LHWeightNode::aOutputWeights ) { return MS::kUnknownParameter; }
-//    if( plug == LHWeightNode::aOutputWeights or  plug == LHWeightNode::aOutputWeights)
-//    if( plug == LHWeightNode::aBiasOut or plug == LHWeightNode::aOutputWeights)
-    if( plug == LHWeightNode::aBiasOut or plug == LHWeightNode::aOutputWeights)
+//    if( plug != LHKDoubleArrayToKFloatArray::aOutputWeights ) { return MS::kUnknownParameter; }
+//    if( plug == LHKDoubleArrayToKFloatArray::aOutputWeights or  plug == LHKDoubleArrayToKFloatArray::aOutputWeights)
+//    if( plug == LHKDoubleArrayToKFloatArray::aBiasOut or plug == LHKDoubleArrayToKFloatArray::aOutputWeights)
+    if( plug == LHKDoubleArrayToKFloatArray::aBiasOut or plug == LHKDoubleArrayToKFloatArray::aOutputWeights)
     {
-//        MArrayDataHandle outputsHnd = data.outputArrayValue( LHWeightNode::aOutputWeights );
-//        MArrayDataHandle inputsHnd = data.inputArrayValue( LHWeightNode::aInputWeights );
+//        MArrayDataHandle outputsHnd = data.outputArrayValue( LHKDoubleArrayToKFloatArray::aOutputWeights );
+//        MArrayDataHandle inputsHnd = data.inputArrayValue( LHKDoubleArrayToKFloatArray::aInputWeights );
 
-        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHWeightNode::aInputs, &status));
+        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHKDoubleArrayToKFloatArray::aInputs, &status));
         CheckStatusReturn( status, "Unable to get inputs" );
         unsigned int elemCount = inputsArrayHandle.elementCount(&status);
         CheckStatusReturn( status, "Unable to get number of inputs" );
@@ -132,20 +132,20 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 
             status = inputsArrayHandle.jumpToElement(i);
             CheckStatusReturn( status, "Unable to jump to input element" );
-            double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aAmount ).asDouble();
-            short operation = inputsArrayHandle.inputValue().child( LHWeightNode::aOperation ).asShort();
-            MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHWeightNode::aInputWeights);
+            double dAmount = inputsArrayHandle.inputValue().child( LHKDoubleArrayToKFloatArray::aAmount ).asDouble();
+            short operation = inputsArrayHandle.inputValue().child( LHKDoubleArrayToKFloatArray::aOperation ).asShort();
+            MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHKDoubleArrayToKFloatArray::aInputWeights);
             MObject oInputArray = hInputArray.data();
             MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
             MDoubleArray tempWeights;
             dataDoubleArrayFn.copyTo(tempWeights);
-            LHWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
+            LHKDoubleArrayToKFloatArray::multiplyKDoubleArrayByVal(tempWeights, dAmount);
             if (!finalWeights.length())
             {
                 finalWeights = tempWeights;
             }
             else
-                finalWeights = LHWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
+                finalWeights = LHKDoubleArrayToKFloatArray::doubleArrayMathOperation(finalWeights, tempWeights, operation);
 //            hInputArray.setClean();
 
         }
@@ -156,10 +156,10 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 
 
 
-        double inputValue = data.inputValue(LHWeightNode::aBias).asDouble();
+        double inputValue = data.inputValue(LHKDoubleArrayToKFloatArray::aBias).asDouble();
 
 
-//        MDataHandle hInputArray = data.inputValue( LHWeightNode::aInputWeights );
+//        MDataHandle hInputArray = data.inputValue( LHKDoubleArrayToKFloatArray::aInputWeights );
 //        MObject oInputArray = hInputArray.data();
 //        MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
 //        MDoubleArray arrayDataToSet;
@@ -171,13 +171,13 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 //
 //        }
 //        ///////// Multiply values
-//        LHWeightNode::multiplyKDoubleArrayByVal(arrayDataToSet, inputValue);
+//        LHKDoubleArrayToKFloatArray::multiplyKDoubleArrayByVal(arrayDataToSet, inputValue);
 
 
         ////////Set the final weights
         MFnDoubleArrayData outputDoubleArrayFn;
         MObject oOutputArray = outputDoubleArrayFn.create(finalWeights);
-        MDataHandle handle = data.outputValue(LHWeightNode::aOutputWeights);
+        MDataHandle handle = data.outputValue(LHKDoubleArrayToKFloatArray::aOutputWeights);
         handle.setMObject(oOutputArray);
 
         MGlobal::displayInfo(MString("DEBUG:  UPDATING ") + status);
@@ -209,7 +209,7 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 
 
 
-MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
+MStatus LHKDoubleArrayToKFloatArray::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
         if ( inPlug.attribute() != aInputs
@@ -251,7 +251,7 @@ MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
     }
 
 
-MStatus LHWeightNode::initialize()
+MStatus LHKDoubleArrayToKFloatArray::initialize()
 {
     MFnTypedAttribute tAttr;
     MFnNumericAttribute nAttr;
