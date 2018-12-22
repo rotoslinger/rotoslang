@@ -1006,6 +1006,46 @@ MStatus LHCurveDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     return MS::kSuccess;
 }
 
+
+
+//MStatus LHCurveDeformer::setDependentsDirty( MPlug const & inPlug,
+//                                            MPlugArray  & affectedPlugs)
+//    {
+//        if ( inPlug.attribute() != aRevolveWeightsParent)
+//        {
+//            return MS::kSuccess;
+//        }
+//        MObject outputGeom = MPxDeformerNode::outputGeom;
+//        MPlugArray outputPlugs;
+//        MPlug outArrayPlug(thisMObject(), outputGeom);
+//
+//        if (inPlug.isElement()) {
+//            // First dirty the output output element first.
+//            // Of course, dirty output element itself
+//            MPlug elemPlug = outArrayPlug.elementByLogicalIndex(inPlug.logicalIndex());
+//            affectedPlugs.append(elemPlug);
+//
+//            // We also need to dirty the parent.
+//            //
+//            affectedPlugs.append(outArrayPlug);
+//        } else {
+//            // Mark the parent output plug as dirty.
+//            //
+//            affectedPlugs.append(outArrayPlug);
+//
+//            // Also visit each element.
+//            //
+//            unsigned int i,n = outArrayPlug.numElements();
+//            for (i = 0; i < n; i++) {
+//                MPlug elemPlug = outArrayPlug.elementByPhysicalIndex(i);
+//                affectedPlugs.append(elemPlug);
+//            }
+//        }
+//        return MS::kSuccess;
+//    }
+
+
+
 MStatus LHCurveDeformer::initialize() {
 	MStatus status ;
     MFnTypedAttribute tAttr;

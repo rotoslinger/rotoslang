@@ -2,11 +2,11 @@
 
 MTypeId LHKDoubleArrayToKFloatArray::id(0x00568819);
 
-MObject LHKDoubleArrayToKFloatArray::aBias;
-MObject LHKDoubleArrayToKFloatArray::aBiasOut;
-
 MObject LHKDoubleArrayToKFloatArray::aInWeights;
 MObject LHKDoubleArrayToKFloatArray::aOutWeights;
+MObject LHKDoubleArrayToKFloatArray::aOutWeightList;
+MObject LHKDoubleArrayToKFloatArray::aBias;
+MObject LHKDoubleArrayToKFloatArray::aBiasOut;
 
 
 void* LHKDoubleArrayToKFloatArray::creator() { return new LHKDoubleArrayToKFloatArray; }
@@ -14,7 +14,7 @@ void* LHKDoubleArrayToKFloatArray::creator() { return new LHKDoubleArrayToKFloat
 MStatus LHKDoubleArrayToKFloatArray::compute( const MPlug& plug, MDataBlock& data)
 {
     MStatus status;
-    if(plug == LHKDoubleArrayToKFloatArray::aOutWeights or plug == LHKDoubleArrayToKFloatArray::aBiasOut)
+    if(plug == LHKDoubleArrayToKFloatArray::aOutWeightList or plug == LHKDoubleArrayToKFloatArray::aBiasOut or plug == LHKDoubleArrayToKFloatArray::aOutWeights)
     {
         MDataHandle hInputArray = data.inputValue( LHKDoubleArrayToKFloatArray::aInWeights );
         MObject oInputArray = hInputArray.data();
@@ -26,49 +26,31 @@ MStatus LHKDoubleArrayToKFloatArray::compute( const MPlug& plug, MDataBlock& dat
             MGlobal::displayInfo(MString("The MDataHandle InputArray is NULL"));
             return MS::kSuccess;
         }
-        MGlobal::displayInfo(MString("The MDataHandle InputArray is Connected"));
 
+        MObject thisNode = thisMObject();
+        MPlug parent( thisNode, LHKDoubleArrayToKFloatArray::aOutWeightList) ;
+        MPlug parentElement;
 
+        for (unsigned int j = 0; j < parent.numElements(); ++j)
 
-        MArrayDataHandle hOutArray = data.outputArrayValue( aOutWeights, &status);
-        if (!status)
-        {
-            MGlobal::displayInfo(MString("The MArrayDataHandle hOutArray is NULL"));
-        }
-        MArrayDataBuilder bOutArray = hOutArray.builder( &status );
-        if (!status)
-        {
-            MGlobal::displayInfo(MString("The MArrayDataBuilder bOutArray is NULL"));
-        }
-        for( int i = 0; i < arrayDataToSet.length(); i++)
-        {
-            MDataHandle hOut = bOutArray.addElement(i, &status);
-            if (!status)
+            parentElement = parent.elementByLogicalIndex(j, &status);
+            CheckStatusReturn( status, "Unable to get unable to get parentElement" );
+
+            MPlug child = parentElement.child(LHKDoubleArrayToKFloatArray::aOutWeights, &status);
+            CheckStatusReturn( status, "Unable to get unable to get child" );
+
+            for (unsigned int i = 0; i < arrayDataToSet.length(); ++i)
             {
-                MGlobal::displayInfo(MString("couldnt add element"));
-            }
-            else
-            {
+                MPlug childWeight = child.elementByLogicalIndex(i);
                 float val = (float) arrayDataToSet[i];
-                hOut.set(val);
+                status = childWeight.setValue(val);
             }
-        }
-        //
-        hOutArray.set(bOutArray);
-        data.setClean( plug );
-
-
-
-
-
-
-
-
-
-
         double inputValue = data.inputValue(LHKDoubleArrayToKFloatArray::aBias).asDouble();
         MDataHandle outputDataHandle = data.outputValue( aBiasOut, &status );
         outputDataHandle.setDouble( inputValue );
+        MGlobal::displayInfo(MString("updating"));
+
+//        data.setClean( plug );
     }
 
     return MS::kSuccess;
@@ -79,19 +61,17 @@ MStatus LHKDoubleArrayToKFloatArray::compute( const MPlug& plug, MDataBlock& dat
 MStatus LHKDoubleArrayToKFloatArray::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
-        if ( inPlug.attribute() != aInWeights
-         and inPlug.attribute() != aBias)
+        if ( inPlug.attribute() != aInWeights)
         {
             return MS::kSuccess;
         }
-
-        MPlug outArrayPlug(thisMObject(), aOutWeights);
+        MPlugArray outputPlugs;
+        MPlug outArrayPlug(thisMObject(), aOutWeightList);
 
         if (inPlug.isElement()) {
             // First dirty the output output element first.
             // Of course, dirty output element itself
-            MPlug elemPlug = outArrayPlug.elementByLogicalIndex(
-                                                inPlug.logicalIndex());
+            MPlug elemPlug = outArrayPlug.elementByLogicalIndex(inPlug.logicalIndex());
             affectedPlugs.append(elemPlug);
 
             // We also need to dirty the parent.
@@ -140,34 +120,37 @@ MStatus LHKDoubleArrayToKFloatArray::initialize()
     attributeAffects(aBias, aBiasOut);
 
 
+
+
     aInWeights = tAttr.create("inWeights", "iw", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
     tAttr.setArray(false);
     tAttr.setWritable(true);
     tAttr.setStorable(true);
+    tAttr.setConnectable(true);
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aInWeights);
 
 
 
-    aOutWeights = nAttr.create("outWeights", "ow", MFnNumericData::kFloat);
-    nAttr.setKeyable(false);
-    nAttr.setChannelBox(false);
-    nAttr.setConnectable(true);
+    aOutWeights = nAttr.create("outFloatWeights", "outflw", MFnNumericData::kFloat, 0.0);
+    nAttr.setHidden(true);
+    nAttr.setStorable(false);
     nAttr.setArray(true);
-    nAttr.setWritable(false);
-    nAttr.setStorable(true);
     nAttr.setUsesArrayDataBuilder(true);
     addAttribute(aOutWeights);
 
 
 
-
-
-
-
+    aOutWeightList = cAttr.create("outFloatWeightList", "outflwl");
+    cAttr.addChild( aOutWeights );
+    cAttr.setHidden(true);
+    cAttr.setArray(true);
+    cAttr.setUsesArrayDataBuilder(true);
+    addAttribute(aOutWeightList);
 
     attributeAffects(aInWeights, aOutWeights);
+    attributeAffects(aInWeights, aOutWeightList);
 
 
 

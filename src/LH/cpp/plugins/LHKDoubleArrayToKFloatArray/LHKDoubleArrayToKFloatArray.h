@@ -27,7 +27,7 @@
 #include <maya/MFnDoubleArrayData.h>
 #include <maya/MPlugArray.h>
 #include <maya/MString.h>
-
+#include <maya/MObjectArray.h>
 
 #include <math.h>
 
@@ -48,10 +48,13 @@ class LHKDoubleArrayToKFloatArray : public MPxNode {
 
   static MTypeId id;
 
-  static  MObject         aBias;
-  static  MObject         aBiasOut;
   static  MObject         aInWeights;
   static  MObject         aOutWeights;
+  static  MObject         aOutWeightList;
+  static  MObject         aBias;
+  static  MObject         aBiasOut;
+
+
 
   //Output
 //  static MObject aOutputWeights;

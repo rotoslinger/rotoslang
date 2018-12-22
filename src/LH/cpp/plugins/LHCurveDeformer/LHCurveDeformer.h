@@ -47,6 +47,9 @@ class LHCurveDeformer : public MPxDeformerNode {
   LHCurveDeformer() {};
   virtual MStatus deform(MDataBlock& data, MItGeometry& MitGeo,
                          const MMatrix &localToWorldMatrix, unsigned int mIndex);
+//  virtual MStatus setDependentsDirty(MPlug const & inPlug,
+//                                       MPlugArray  & affectedPlugs);
+//
   static void* creator();
   static MStatus initialize();
 
@@ -221,6 +224,7 @@ class LHCurveDeformer : public MPxDeformerNode {
                                            MDoubleArray &returnWeightlist)
     {
         MStatus status;
+
         returnWeightlist.setLength(MitGeoCount) ;
 
         MObject thisNode = thisMObject();
