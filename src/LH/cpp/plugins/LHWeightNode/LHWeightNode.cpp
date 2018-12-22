@@ -2,17 +2,11 @@
 
 MTypeId LHWeightNode::id(0x00093019);
 
-MObject LHWeightNode::aWeightsList;
-MObject LHWeightNode::aWeights;
-MObject LHWeightNode::aBias;
 MObject LHWeightNode::aOutputWeights;
-MObject LHWeightNode::aInputWeights;
-MObject LHWeightNode::aBiasOut;
 MObject LHWeightNode::aInputs;
-MObject LHWeightNode::aTestWeights;
-MObject LHWeightNode::aAmount;
+MObject LHWeightNode::aInputWeights;
+MObject LHWeightNode::aFactor;
 MObject LHWeightNode::aOperation;
-MObject LHWeightNode::aTestKFloatArray;
 
 
 void* LHWeightNode::creator() { return new LHWeightNode; }
@@ -70,38 +64,6 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
                 rDoubleArray.append(doubleArray1[i] / doubleArray2[i]);
                 break;
         }
-
-
-
-
-
-
-
-
-//        if (operation == "add")
-//        {
-//            rDoubleArray.append(doubleArray1[i] + doubleArray2[i]);
-//        }
-//        if (operation == "subtract")
-//        {
-//            rDoubleArray.append(doubleArray1[i] - doubleArray2[i]);
-//        }
-//        if (operation == "multiply")
-//        {
-//            rDoubleArray.append(doubleArray1[i] * doubleArray2[i]);
-//        }
-//        if (operation == "divide")
-//        {
-//            if (doubleArray1[i] == 0.0)
-//            {
-//                doubleArray1[i] = .00001;
-//            }
-//            if (doubleArray2[i] == 0.0)
-//            {
-//                doubleArray2[i] = .00001;
-//            }
-//            rDoubleArray.append(doubleArray1[i] / doubleArray2[i]);
-//        }
     }
     return rDoubleArray;
 }
@@ -112,27 +74,19 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
 MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 {
     MStatus status;
-//    if( plug != LHWeightNode::aOutputWeights ) { return MS::kUnknownParameter; }
-//    if( plug == LHWeightNode::aOutputWeights or  plug == LHWeightNode::aOutputWeights)
-//    if( plug == LHWeightNode::aBiasOut or plug == LHWeightNode::aOutputWeights)
-    if( plug == LHWeightNode::aBiasOut or plug == LHWeightNode::aOutputWeights)
+    if( plug == LHWeightNode::aOutputWeights)
     {
-//        MArrayDataHandle outputsHnd = data.outputArrayValue( LHWeightNode::aOutputWeights );
-//        MArrayDataHandle inputsHnd = data.inputArrayValue( LHWeightNode::aInputWeights );
-
         MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHWeightNode::aInputs, &status));
         CheckStatusReturn( status, "Unable to get inputs" );
         unsigned int elemCount = inputsArrayHandle.elementCount(&status);
         CheckStatusReturn( status, "Unable to get number of inputs" );
         MDoubleArray finalWeights;
-//        MString tempOperation = "add";
 
         for (int i=0;i < elemCount;i++)
         {
-
             status = inputsArrayHandle.jumpToElement(i);
             CheckStatusReturn( status, "Unable to jump to input element" );
-            double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aAmount ).asDouble();
+            double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aFactor ).asDouble();
             short operation = inputsArrayHandle.inputValue().child( LHWeightNode::aOperation ).asShort();
             MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHWeightNode::aInputWeights);
             MObject oInputArray = hInputArray.data();
@@ -149,30 +103,6 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 //            hInputArray.setClean();
 
         }
-        MGlobal::displayInfo(MString("Weight array length ")+finalWeights.length());
-
-
-
-
-
-
-        double inputValue = data.inputValue(LHWeightNode::aBias).asDouble();
-
-
-//        MDataHandle hInputArray = data.inputValue( LHWeightNode::aInputWeights );
-//        MObject oInputArray = hInputArray.data();
-//        MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
-//        MDoubleArray arrayDataToSet;
-//        dataDoubleArrayFn.copyTo(arrayDataToSet);
-//        if (oInputArray.isNull())
-//        {
-//            MGlobal::displayInfo(MString("The MDataHandle InputArray is NULL"));
-//            return MS::kSuccess;
-//
-//        }
-//        ///////// Multiply values
-//        LHWeightNode::multiplyKDoubleArrayByVal(arrayDataToSet, inputValue);
-
 
         ////////Set the final weights
         MFnDoubleArrayData outputDoubleArrayFn;
@@ -180,43 +110,25 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
         MDataHandle handle = data.outputValue(LHWeightNode::aOutputWeights);
         handle.setMObject(oOutputArray);
 
-        MGlobal::displayInfo(MString("DEBUG:  UPDATING ") + status);
+//        MGlobal::displayInfo(MString("DEBUG:  UPDATING ") + status);
 
         if (oOutputArray.isNull())
         {
-            MGlobal::displayInfo(MString("The MObject hOutputArray is NULL"));
+            MGlobal::displayInfo(MString("The output is NULL"));
             return MS::kSuccess;
-
-
         }
-//        if (!oOutputArray.isNull())
-//        {
-//            MGlobal::displayInfo(MString("The MDataHandle hOutputArray is NOT NULL!!!!!!"));
-//
-//        }
-
-
-        MDataHandle outputDataHandle = data.outputValue( aBiasOut, &status );
-        outputDataHandle.setDouble( inputValue );
-//        handle.setClean();
-//        hInputArray.setClean();
-//        data.setClean( plug );
-
     }
 
     return MS::kSuccess;
 }
 
 
-
 MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
         if ( inPlug.attribute() != aInputs
+        and inPlug.attribute() != aFactor
         and inPlug.attribute() != aInputWeights
-        and inPlug.attribute() != aAmount
-        and inPlug.attribute() != aTestWeights
-        and inPlug.attribute() != aInputs
         and inPlug.attribute() != aOperation)
         {
             return MS::kSuccess;
@@ -258,47 +170,20 @@ MStatus LHWeightNode::initialize()
     MFnCompoundAttribute cAttr;
     MFnEnumAttribute eAttr;
 
-    aAmount = nAttr.create( "amount", "amt", MFnNumericData::kDouble);
+    /////// Attrs for compound
+    aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
     nAttr.setKeyable(true);
     nAttr.setWritable(true);
     nAttr.setStorable(true);
     nAttr.setDefault(0.0);
     nAttr.setChannelBox(true);
-    addAttribute(aAmount);
+    addAttribute(aFactor);
 
-
-    aBias = nAttr.create( "bias", "b", MFnNumericData::kDouble);
-    nAttr.setKeyable(true);
-    nAttr.setWritable(true);
-    nAttr.setStorable(true);
-    nAttr.setDefault(1.0);
-    nAttr.setChannelBox(true);
-    addAttribute(aBias);
-
-    aBiasOut = nAttr.create( "biasOut", "bOut", MFnNumericData::kDouble);
-    nAttr.setReadable(true);
-    nAttr.setWritable(true);
-    nAttr.setConnectable(true);
-    nAttr.setChannelBox(true);
-    nAttr.setKeyable(false);
-    addAttribute(aBiasOut);
-    attributeAffects(aBias, aBiasOut);
-
-
-
-    aInputWeights = tAttr.create("inWeights", "iw", MFnNumericData::kDoubleArray);
+    aInputWeights = tAttr.create("inputWeights", "iw", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
     tAttr.setArray(false);
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aInputWeights);
-
-    ////////////////////////////////Test///////////////////////
-    aTestWeights = tAttr.create("testWeights", "tw", MFnNumericData::kDoubleArray);
-    tAttr.setKeyable(true);
-    tAttr.setArray(false);
-    tAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aTestWeights);
-    ////////////////////////////////Test///////////////////////
 
     aOperation = eAttr.create("operation", "op", 0);
     eAttr.addField( "add", 0 );
@@ -315,15 +200,14 @@ MStatus LHWeightNode::initialize()
     aInputs = cAttr.create("Inputs", "inputs");
     cAttr.setKeyable(true);
     cAttr.setArray(true);
-    cAttr.addChild( aTestWeights );
-    cAttr.addChild( aAmount );
+    cAttr.addChild( aInputWeights );
+    cAttr.addChild( aFactor );
     cAttr.addChild( aOperation );
     cAttr.setReadable(true);
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
     addAttribute(aInputs);
-
 
     aOutputWeights = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
@@ -333,38 +217,10 @@ MStatus LHWeightNode::initialize()
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aOutputWeights);
 
-
-
-    aTestKFloatArray = nAttr.create("testKFloat", "tkf", MFnNumericData::kFloat);
-    nAttr.setKeyable(true);
-    nAttr.setArray(true);
-    nAttr.setWritable(true);
-    nAttr.setStorable(true);
-    nAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aTestKFloatArray);
-
-
-
-
     attributeAffects(aOperation, aOutputWeights);
-    attributeAffects(aTestWeights, aOutputWeights);
-    attributeAffects(aInputs, aOutputWeights);
-    attributeAffects(aInputs, aBiasOut);
-    attributeAffects(aBias, aOutputWeights);
     attributeAffects(aInputWeights, aOutputWeights);
-    attributeAffects(aBias, aBiasOut);
-    attributeAffects(aInputWeights, aBiasOut);
-    attributeAffects(aInputs, aBiasOut);
-    attributeAffects(aTestWeights, aBiasOut);
-    attributeAffects(aAmount, aBiasOut);
-
-
-
-
-
-
-
-
+    attributeAffects(aInputs, aOutputWeights);
+    attributeAffects(aFactor, aOutputWeights);
 
     return MStatus::kSuccess;
 }

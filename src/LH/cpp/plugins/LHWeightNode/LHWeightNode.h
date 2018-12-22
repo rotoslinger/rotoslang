@@ -54,20 +54,13 @@ class LHWeightNode : public MPxNode {
 
   static MTypeId id;
 
-  static  MObject         aWeightsList;
-  static  MObject         aWeights;
-  static  MObject         aBias;
-  static  MObject         aOutputWeights;
   static  MObject         aInputWeights;
-  static  MObject         aBiasOut;
-  static  MObject         aInputs;
-  static  MObject         aTestWeights;
-  static  MObject         aAmount;
+  static  MObject         aFactor;
   static  MObject         aOperation;
-  static  MObject         aTestKFloatArray;
+  static  MObject         aInputs;
 
-  //Output
-//  static MObject aOutputWeights;
+  static  MObject         aOutputWeights;
+
 
   inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )

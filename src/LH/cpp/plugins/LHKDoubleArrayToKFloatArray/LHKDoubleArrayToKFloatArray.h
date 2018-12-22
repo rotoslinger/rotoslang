@@ -43,28 +43,15 @@ class LHKDoubleArrayToKFloatArray : public MPxNode {
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
   virtual MStatus setDependentsDirty(MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs);
-
-  virtual MStatus multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray,
-                                         double val);
-  virtual MDoubleArray doubleArrayMathOperation(MDoubleArray doubleArray1,
-                                                MDoubleArray doubleArray2,
-                                                short operation);
   static void* creator();
   static MStatus initialize();
 
   static MTypeId id;
 
-  static  MObject         aWeightsList;
-  static  MObject         aWeights;
   static  MObject         aBias;
-  static  MObject         aOutputWeights;
-  static  MObject         aInputWeights;
   static  MObject         aBiasOut;
-  static  MObject         aInputs;
-  static  MObject         aTestWeights;
-  static  MObject         aAmount;
-  static  MObject         aOperation;
-  static  MObject         aTestKFloatArray;
+  static  MObject         aInWeights;
+  static  MObject         aOutWeights;
 
   //Output
 //  static MObject aOutputWeights;
