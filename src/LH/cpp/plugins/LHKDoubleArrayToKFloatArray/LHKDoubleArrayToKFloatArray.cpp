@@ -134,18 +134,26 @@ MStatus LHKDoubleArrayToKFloatArray::initialize()
 
 
     aOutWeights = nAttr.create("outFloatWeights", "outflw", MFnNumericData::kFloat, 0.0);
-    nAttr.setHidden(true);
-    nAttr.setStorable(false);
+    nAttr.setKeyable(true);
     nAttr.setArray(true);
+    nAttr.setWritable(true);
+    nAttr.setStorable(true);
+    nAttr.setInternal(true);
+    nAttr.setIndexMatters(true);
     nAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aOutWeights);
 
 
 
     aOutWeightList = cAttr.create("outFloatWeightList", "outflwl");
     cAttr.addChild( aOutWeights );
-    cAttr.setHidden(true);
+    cAttr.setHidden(false);
     cAttr.setArray(true);
+    cAttr.setChannelBox(true);
+    cAttr.setConnectable(true);
+    cAttr.setKeyable(true);
+    cAttr.setReadable(true);
+    cAttr.setInternal(true);
+    cAttr.setIndexMatters(true);
     cAttr.setUsesArrayDataBuilder(true);
     addAttribute(aOutWeightList);
 
