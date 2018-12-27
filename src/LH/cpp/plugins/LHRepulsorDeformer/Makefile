@@ -33,7 +33,7 @@ include buildconfig
 
 
 plugins: \
-		LHSurfaceOutputManip.$(EXT)
+		LHRepulsorDeformer.$(EXT)
 	# TEMP OUTPUT DIR
 	cp *.so /home/users/levih/Desktop/plugins/
 
@@ -54,7 +54,7 @@ Clean:
 
 
 
-LHSurfaceOutputManip.$(EXT): LHSurfaceOutputManip.o pluginMain.o
+LHRepulsorDeformer.$(EXT): LHRepulsorDeformer.o pluginMain.o
 	-rm -f $@
 	$(LD) -o $@ $? $(LIBS) -lOpenMayaAnim 
 
