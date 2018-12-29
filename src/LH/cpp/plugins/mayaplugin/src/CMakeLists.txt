@@ -4,6 +4,14 @@ set(SOURCE_FILES
 	"pluginMain.cpp"
 	"LHRepulsorDeformer.cpp"
 	"LHRepulsorDeformer.h"
+	"LHGetDeformPoints.cpp"
+	"LHGetDeformPoints.h"
+	"LHTemplateNode.cpp"
+	"LHTemplateNode.h"
+	"LHTemplateDeformer.cpp"
+	"LHTemplateDeformer.h"
+	"LHWeightNode.cpp"
+	"LHWeightNode.h"
 )
 
 find_package(Maya REQUIRED)

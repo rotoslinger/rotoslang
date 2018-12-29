@@ -5,8 +5,6 @@ MTypeId LHRepulsorDeformer::id(0x00002398);
 MObject LHRepulsorDeformer::aRepulsorMatrix;
 MObject LHRepulsorDeformer::aRepulsorRadius;
 MObject LHRepulsorDeformer::aInputs;
-MObject LHRepulsorDeformer::aBaseGeo;
-MObject LHRepulsorDeformer::aBaseGeoParent;
 MObject LHRepulsorDeformer::aAmount;
 
 
@@ -22,8 +20,6 @@ MStatus LHRepulsorDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
     MPlug geomPlug( thisMObj, input );
     float env = data.inputValue(envelope).asFloat();
     MArrayDataHandle geomArrayHandle = data.inputArrayValue(geomPlug);
-    geomArrayHandle = data.inputArrayValue(aBaseGeoParent, &status);
-    CheckStatusReturn( status, "Unable to get base geo" );
     status = geomArrayHandle.jumpToElement( mIndex );
     CheckStatusReturn( status, "Unable to get current base geo" );
 
@@ -109,25 +105,6 @@ MStatus LHRepulsorDeformer::initialize() {
     nAttr.setChannelBox(true);
     addAttribute( aAmount );
 
-    //base geoms
-    aBaseGeo = gAttr.create("baseGeo", "bGeo");
-    gAttr.addAccept(MFnData::kMesh);
-    gAttr.addAccept(MFnData::kNurbsSurface);
-    gAttr.addAccept(MFnData::kNurbsCurve);
-
-    aBaseGeoParent = cAttr.create("baseGeoArray", "bGeoArray");
-    cAttr.setKeyable(true);
-    cAttr.setArray(true);
-    cAttr.addChild( aBaseGeo );
-    cAttr.setReadable(true);
-    cAttr.setWritable(true);
-    cAttr.setConnectable(true);
-    cAttr.setChannelBox(true);
-    cAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aBaseGeoParent);
-
-
-
 
   aRepulsorMatrix = mAttr.create("repulsorMatrix", "repulsorMatrix");
   mAttr.setWritable(true);
@@ -158,7 +135,7 @@ MStatus LHRepulsorDeformer::initialize() {
 
 
   // Make the deformer weights paintable
-  MGlobal::executeCommand("makePaintable -attrType multiFloat -sm deformer blendNode weights;");
+  MGlobal::executeCommand("makePaintable -attrType multiFloat -sm deformer LHRepulsorDeformer weights;");
 
   return MS::kSuccess;
 }

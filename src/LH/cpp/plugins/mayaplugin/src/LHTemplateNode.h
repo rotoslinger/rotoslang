@@ -1,48 +1,49 @@
-#ifndef _LHREPULSORDEFORMER_H
-#define _LHREPULSORDEFORMER_H
+#ifndef _LHTEMPLATENODE_H
+#define _LHTEMPLATENODE_H
 #define _MApiVersion
 
 #include <maya/MCppCompat.h>
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MGlobal.h>
-#include <maya/MItGeometry.h>
-#include <maya/MMatrix.h>
-#include <maya/MPointArray.h>
 #include <maya/MStatus.h>
-
-#include <maya/MFnMesh.h>
+#include <maya/MPxNode.h>
+#include <maya/MTypeId.h>
 #include <maya/MFnNumericAttribute.h>
+#include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
-#include <maya/MFnCompoundAttribute.h>
-#include <maya/MFloatArray.h>
-#include <maya/MMatrixArray.h>
+#include <maya/MFnNurbsSurface.h>
 #include <maya/MArrayDataHandle.h>
+#include <maya/MPlug.h>
+#include <maya/MMatrix.h>
+#include <maya/MVector.h>
+#include <maya/MGlobal.h>
+#include <maya/MString.h>
+#include <maya/MFnMatrixData.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MNurbsIntersector.h>
 #include <maya/MFnGenericAttribute.h>
 
-#include <maya/MPxDeformerNode.h>
+#include <math.h>
 
-class LHRepulsorDeformer : public MPxDeformerNode {
+
+class LHTemplateNode : public MPxNode {
  public:
-  LHRepulsorDeformer() {};
-  virtual MStatus deform(MDataBlock& data, MItGeometry& itGeo,
-                         const MMatrix &localToWorldMatrix, unsigned int mIndex);
+  LHTemplateNode() {};
+  virtual MStatus compute( const MPlug& plug, MDataBlock& data );
   static void* creator();
-  //virtual void draw(M3dView &view, const MDagPath &path,M3dView::DisplayStyle style, M3dView::DisplayStatus status);
   static MStatus initialize();
 
   static MTypeId id;
-  static MObject aInputs;
-  static MObject aRepulsorMatrix;
-  static MObject aRepulsorRadius;
-  static MObject aAmount;
+
+  static MObject aBiasIn;
+  static MObject aBiasOut;
 
     inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
-        MString txt( "[rnkRollNode] " );
+        MString txt( "[LHTemplateNode] " );
         txt += msg ;
         txt += ", File: ";
         txt += sourceFile;
@@ -83,7 +84,8 @@ class LHRepulsorDeformer : public MPxDeformerNode {
             }
 
 
-
-
 };
+
+///////////////////////////////////////////////////////////
+
 #endif
