@@ -51,7 +51,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin
+CMAKE_BINARY_DIR = /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/src
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(CMAKE_COMMAND) -E cmake_progress_start /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/CMakeFiles /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/src/CMakeFiles/progress.marks
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f CMakeFiles/Makefile2 src/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/src/CMakeFiles /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/src/CMakeFiles/progress.marks
+	$(MAKE) -f CMakeFiles/Makefile2 all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/src/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f CMakeFiles/Makefile2 src/clean
+	$(MAKE) -f CMakeFiles/Makefile2 clean
 .PHONY : clean
 
 # The main clean target
@@ -97,87 +97,31 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	$(MAKE) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	$(MAKE) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-# Convenience name for target.
-src/CMakeFiles/LHRepulsorDeformer.dir/rule:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/LHRepulsorDeformer.dir/rule
-.PHONY : src/CMakeFiles/LHRepulsorDeformer.dir/rule
+#=============================================================================
+# Target rules for targets named LHDeformerNodes
 
-# Convenience name for target.
-LHRepulsorDeformer: src/CMakeFiles/LHRepulsorDeformer.dir/rule
-
-.PHONY : LHRepulsorDeformer
+# Build rule for target.
+LHDeformerNodes: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 LHDeformerNodes
+.PHONY : LHDeformerNodes
 
 # fast build rule for target.
-LHRepulsorDeformer/fast:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f src/CMakeFiles/LHRepulsorDeformer.dir/build.make src/CMakeFiles/LHRepulsorDeformer.dir/build
-.PHONY : LHRepulsorDeformer/fast
-
-LHRepulsorDeformer.o: LHRepulsorDeformer.cpp.o
-
-.PHONY : LHRepulsorDeformer.o
-
-# target to build an object file
-LHRepulsorDeformer.cpp.o:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f src/CMakeFiles/LHRepulsorDeformer.dir/build.make src/CMakeFiles/LHRepulsorDeformer.dir/LHRepulsorDeformer.cpp.o
-.PHONY : LHRepulsorDeformer.cpp.o
-
-LHRepulsorDeformer.i: LHRepulsorDeformer.cpp.i
-
-.PHONY : LHRepulsorDeformer.i
-
-# target to preprocess a source file
-LHRepulsorDeformer.cpp.i:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f src/CMakeFiles/LHRepulsorDeformer.dir/build.make src/CMakeFiles/LHRepulsorDeformer.dir/LHRepulsorDeformer.cpp.i
-.PHONY : LHRepulsorDeformer.cpp.i
-
-LHRepulsorDeformer.s: LHRepulsorDeformer.cpp.s
-
-.PHONY : LHRepulsorDeformer.s
-
-# target to generate assembly for a file
-LHRepulsorDeformer.cpp.s:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f src/CMakeFiles/LHRepulsorDeformer.dir/build.make src/CMakeFiles/LHRepulsorDeformer.dir/LHRepulsorDeformer.cpp.s
-.PHONY : LHRepulsorDeformer.cpp.s
-
-pluginMain.o: pluginMain.cpp.o
-
-.PHONY : pluginMain.o
-
-# target to build an object file
-pluginMain.cpp.o:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f src/CMakeFiles/LHRepulsorDeformer.dir/build.make src/CMakeFiles/LHRepulsorDeformer.dir/pluginMain.cpp.o
-.PHONY : pluginMain.cpp.o
-
-pluginMain.i: pluginMain.cpp.i
-
-.PHONY : pluginMain.i
-
-# target to preprocess a source file
-pluginMain.cpp.i:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f src/CMakeFiles/LHRepulsorDeformer.dir/build.make src/CMakeFiles/LHRepulsorDeformer.dir/pluginMain.cpp.i
-.PHONY : pluginMain.cpp.i
-
-pluginMain.s: pluginMain.cpp.s
-
-.PHONY : pluginMain.s
-
-# target to generate assembly for a file
-pluginMain.cpp.s:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(MAKE) -f src/CMakeFiles/LHRepulsorDeformer.dir/build.make src/CMakeFiles/LHRepulsorDeformer.dir/pluginMain.cpp.s
-.PHONY : pluginMain.cpp.s
+LHDeformerNodes/fast:
+	$(MAKE) -f src/CMakeFiles/LHDeformerNodes.dir/build.make src/CMakeFiles/LHDeformerNodes.dir/build
+.PHONY : LHDeformerNodes/fast
 
 # Help Target
 help:
@@ -187,13 +131,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... LHRepulsorDeformer"
-	@echo "... LHRepulsorDeformer.o"
-	@echo "... LHRepulsorDeformer.i"
-	@echo "... LHRepulsorDeformer.s"
-	@echo "... pluginMain.o"
-	@echo "... pluginMain.i"
-	@echo "... pluginMain.s"
+	@echo "... LHDeformerNodes"
 .PHONY : help
 
 
@@ -205,6 +143,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/leviharrison/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

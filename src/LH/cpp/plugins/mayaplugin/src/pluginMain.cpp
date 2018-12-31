@@ -7,6 +7,10 @@
 #include "LHTemplateNode.h"
 #include "LHWeightNode.h"
 #include "LHTemplateDeformer.h"
+#include "LHMultiCluster.h"
+#include "LHComputeDeformer.h"
+#include "splatDeformer.h"
+#include "sseDeformer.h"
 
 
 MStatus initializePlugin(MObject obj) {
@@ -31,6 +35,22 @@ MStatus initializePlugin(MObject obj) {
                                LHTemplateDeformer::initialize, MPxNode::kDeformerNode);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  status = plugin.registerNode("LHMultiCluster", LHMultiCluster::id, LHMultiCluster::creator,
+		  	  	  	  	  	   LHMultiCluster::initialize, MPxNode::kDeformerNode);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode("LHComputeDeformer", LHComputeDeformer::id, LHComputeDeformer::creator,
+		  	  	  	  	  	   LHComputeDeformer::initialize, MPxNode::kDeformerNode);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+  status = plugin.registerNode( "splatDeformer", splatDeformer::id, splatDeformer::creator,
+                                                            splatDeformer::initialize, MPxNode::kDeformerNode );
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode( "sseDeformer", sseDeformer::id, sseDeformer::creator,
+		  sseDeformer::initialize, MPxNode::kDeformerNode );
+
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
   return status;
 }
 
@@ -50,8 +70,17 @@ MStatus uninitializePlugin(MObject obj) {
   status = plugin.deregisterNode(LHWeightNode::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
-  status = plugin.deregisterNode(LHTemplateDeformer::id);
+  status = plugin.deregisterNode(LHMultiCluster::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.deregisterNode(LHComputeDeformer::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+  status = plugin.deregisterNode(splatDeformer::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.deregisterNode(sseDeformer::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
 
   return status;
 }

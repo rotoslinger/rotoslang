@@ -42,7 +42,7 @@ class LHRepulsorDeformer : public MPxDeformerNode {
     inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
-        MString txt( "[rnkRollNode] " );
+        MString txt( "[LHRepulsorDeformer] " );
         txt += msg ;
         txt += ", File: ";
         txt += sourceFile;

@@ -2,3 +2,7 @@
 /testFile.ma
 /CMakeCache.txt
 /LHRepulsorDeformer.bundle
+/sgSlidingDeformer.cpp
+/sgSlidingDeformer.h
+/SingleBlendMeshDeformer.cpp
+/SingleBlendMeshDeformer.h

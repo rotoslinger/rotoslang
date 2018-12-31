@@ -33,7 +33,7 @@ MStatus LHRepulsorDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
     MFloatArray amountArray;
     MFloatArray modBArray;
     unsigned int inputCount = inputsArrayHandle.elementCount(&status);
-    CheckStatusReturn( status, "Unable to get number of rotates" );
+    CheckStatusReturn( status, "Unable to get number of inputs" );
 
     for (unsigned int i=0;i < inputCount;i++)
     {
