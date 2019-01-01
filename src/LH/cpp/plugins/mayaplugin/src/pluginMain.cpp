@@ -11,6 +11,7 @@
 #include "LHComputeDeformer.h"
 #include "splatDeformer.h"
 #include "sseDeformer.h"
+#include "LHMultiClusterThreaded.h"
 
 
 MStatus initializePlugin(MObject obj) {
@@ -51,6 +52,11 @@ MStatus initializePlugin(MObject obj) {
 
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  status = plugin.registerNode( "LHMultiClusterThreaded", LHMultiClusterThreaded::id, LHMultiClusterThreaded::creator,
+		  LHMultiClusterThreaded::initialize, MPxNode::kDeformerNode );
+
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
   return status;
 }
 
@@ -81,6 +87,8 @@ MStatus uninitializePlugin(MObject obj) {
   status = plugin.deregisterNode(sseDeformer::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
   return status;
 }

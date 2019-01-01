@@ -20,6 +20,8 @@ set(SOURCE_FILES
 	"splatDeformer.h"
 	"sseDeformer.cpp"
 	"sseDeformer.h"
+	"LHMultiClusterThreaded.cpp"
+	"LHMultiClusterThreaded.h"
 )
 
 #set(CMAKE_C_COMPILER clang-omp CACHE STRING "C compiler" FORCE)
