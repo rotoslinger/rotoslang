@@ -96,86 +96,6 @@ MStatus LHMultiClusterThreaded::initialize() {
 }
 
 
-static bool TestForPrime(int val)
-{
-    int limit, factor = 3;
-    limit = (long)(sqrtf((float)val)+0.5f);
-    while( (factor <= limit) && (val % factor))
-        factor ++;
-    return (factor > limit);
-}
-
-// Primes finder. This function is called from multiple threads
-MThreadRetVal Primes(void *data)
-{
-    threadData *myData = (threadData *)data;
-    int numTasks = myData->numTasks;
-    for( int i = myData->start + myData->threadNo*2; i <= myData->end; i += 2*numTasks )
-    {
-        if( TestForPrime(i) )
-        myData->primesFound++;
-    }
-    return (MThreadRetVal)0;
-}
-
-// Function to create thread tasks
-void DecomposePrimes(void *data, MThreadRootTask *root)
-{
-    taskData *taskD = (taskData *)data;
-    int numTasks = taskD->numTasks;
-    threadData tdata[numTasks];
-
-    for( int i = 0; i < numTasks; ++i )
-    {
-        tdata[i].threadNo = i;
-        tdata[i].primesFound = 0;
-        tdata[i].start = taskD->start;
-        tdata[i].end = taskD->end;
-        tdata[i].numTasks = numTasks;
-        MThreadPool::createTask(Primes, (void *)&tdata[i], root);
-    }
-    MThreadPool::executeAndJoin(root);
-    for( int i = 0; i < numTasks; ++i )
-    {
-        taskD->totalPrimes += tdata[i].primesFound;
-    }
-}
-
-// Single threaded calculation
-int SerialPrimes(int start, int end)
-{
-    int primesFound = 0;
-    for( int i = start; i <= end; i+=2)
-    {
-        if( TestForPrime(i) )
-            primesFound++;
-    }
-    return primesFound;
-}
-
-// Set up and tear down parallel tasks
-int ParallelPrimes(int start, int end, int numTasks)
-{
-    MStatus stat = MThreadPool::init();
-    if( MStatus::kSuccess != stat ) {
-        MString str = MString("Error creating threadpool");
-        MGlobal::displayError(str);
-        return 0;
-    }
-
-    taskData tdata;
-    tdata.totalPrimes = 0;
-    tdata.start = start;
-    tdata.end = end;
-    tdata.numTasks = numTasks;
-    MThreadPool::newParallelRegion(DecomposePrimes, (void *)&tdata);
-    // pool is reference counted. Release reference to current thread instance
-    MThreadPool::release();
-    // release reference to whole pool which deletes all threads
-    MThreadPool::release();
-    return tdata.totalPrimes;
-}
-
 //Step3
 // This is what performs the actual deformation calculations
 MThreadRetVal ParallelDeformationCalc(void *data)
@@ -286,43 +206,6 @@ MStatus LHMultiClusterThreaded::deform(MDataBlock& data, MItGeometry& itGeo,
 
   }
 
-//  MGlobal::displayInfo(MString("DEBUG:  Start ") + start);
-//  MGlobal::displayInfo(MString("DEBUG:  end ") + end);
-
-  //======================================================
-  //=======THREADTEST=====================================
-  //======================================================
-
-  // start search on an odd number
-//  if((start % 2) == 0 ) start++;
-//  // run single threaded
-//  MTimer timer;
-//  timer.beginTimer();
-//  int serialPrimes = SerialPrimes(start, end);
-//  timer.endTimer();
-//  double serialTime = timer.elapsedTime();
-//  // run multithreaded
-//  timer.beginTimer();
-//  int parallelPrimes = ParallelPrimes(start, end, numTasks);
-//  timer.endTimer();
-//  double parallelTime = timer.elapsedTime();
-//  // check for correctness
-//  if ( serialPrimes != parallelPrimes ) {
-//      MString str("Error: Computations inconsistent");
-//      MGlobal::displayError(str);
-//      return MStatus::kFailure;
-//  }
-//  // print results
-//  double ratio = serialTime/parallelTime;
-//  MString str = MString("\nElapsed time for serial computation: ") + serialTime + MString("s\n");
-//  str += MString("Elapsed time for parallel computation: ") + parallelTime + MString("s\n");
-//  str += MString("Speedup: ") + ratio + MString("x\n");
-//  MGlobal::displayInfo(str);
-  //return MStatus::kSuccess;
-  //======================================================
-  //======================================================
-  //======================================================
-
   if (env<=0.0)
   {
 	  return MS::kSuccess;
@@ -350,7 +233,6 @@ MStatus LHMultiClusterThreaded::deform(MDataBlock& data, MItGeometry& itGeo,
 			  pt = pt * matrixArray[i];
 		  }
 		  finalPoints.append(pt);
-		  //itGeo.setPosition(pt);
 	  }
 	  itGeo.setAllPositions(finalPoints);
 	  return MS::kSuccess;
@@ -381,7 +263,6 @@ MStatus LHMultiClusterThreaded::deform(MDataBlock& data, MItGeometry& itGeo,
 	          pt = pt * matrixArray[i];
 	      }
 	      finalPoints.append(pt);
-	      //itGeo.setPosition(pt);
 	  }
 	  itGeo.setAllPositions(finalPoints);
 	  timer.endTimer();
