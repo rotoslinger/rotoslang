@@ -328,7 +328,8 @@ MPoint LHCollisionDeformer::getBulge(MPoint currPoint, MPoint closestPoint, doub
     float value;
     curveAttribute.getValueAtPosition((float) relativeDistance, value);
     finalPoint = currPoint + vRay * bulgeAmount * (relativeDistance * maxDisp * value) ;
-    return finalPoint * mainMatrix.inverse();
+    // return finalPoint * mainMatrix.inverse();
+    return finalPoint;
 
 }
 
@@ -533,10 +534,12 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
             if (testDist>maxDisp){
               maxDisp = testDist;
             }
-            finalPoints[i] = closestPoint * bBMatrix.inverse();
+            // finalPoints[i] = closestPoint * bBMatrix.inverse();
+            allPoints[i] = closestPoint;
             }
         else{
-          finalPoints[i] = allPoints[i] * bBMatrix.inverse();
+          // finalPoints[i] = allPoints[i] * bBMatrix.inverse();
+          allPoints[i] = allPoints[i];
         }
       }
       for (i=0;i < numPoints; i++){
@@ -550,26 +553,31 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
           closestPoint = closestPointOn.getPoint();
           //=========================
           // Need to check whether this can be called from a parallel function, or if a threaded version will need to be written
-          finalPoints[i] = LHCollisionDeformer::getBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, curveAttribute);
+          allPoints[i] = LHCollisionDeformer::getBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, curveAttribute);
           //=========================
         }
       }
     }
     else{
       for (i=0;i < numPoints; i++){
-        finalPoints[i] = allPoints[i] * bBMatrix.inverse();
+        // finalPoints[i] = allPoints[i] * bBMatrix.inverse();
+        allPoints[i] = allPoints[i];
       }
     }
-    if (finalPoints.length() > 0)
+    if (allPoints.length() > 0)
       MGlobal::displayInfo(MString("DEBUG: NumPoints in BB") + tPoints.length());
 
   }
+  for (i=0;i < numPoints; i++){
+    allPoints[i] = allPoints[i] * bBMatrix.inverse();
+  }
+
   // MGlobal::displayInfo(MString("DEBUG: Is in BBox ") + tPoints.length());
   // MGlobal::displayInfo(MString("DEBUG: NumPoints in MESH") + numPoints);
   // MGlobal::displayInfo(MString("DEBUG: NumPoints in FINAL") + finalPoints.length());
 
 
-  itGeo.setAllPositions(finalPoints);
+  itGeo.setAllPositions(allPoints);
   return MS::kSuccess;
 }
 
