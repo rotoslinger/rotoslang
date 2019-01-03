@@ -403,7 +403,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   int nColMeshes = oColMeshArray.length();
   if (!nColMeshes)
 	  return MS::kSuccess;
-
+/*
   MIntArray hitMeshes;
   // Do bounding box collision check first, before even touching any point data to be as efficient as possible
   // Test intersections "Quick" collision test. Can run in parallel but not sure if expensive enough to offload...
@@ -420,7 +420,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   }
 //  if(!hitMeshes.length())
 //	 return MS::kSuccess;
-
+*/
   //===============================================================================================================
   // Containment test/deformation algorithm.  If num hits is even, outside the mesh, if odd, inside, if 0, neither.
   // This is MFnMesh AllIntersections, it is slow and NOT threadsafe.
@@ -447,21 +447,23 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   numPoints = allPoints.length();
   //=========================
   //====Only used for debug==
-  MPointArray tPoints;
   //=========================
 
   MPointArray finalPoints;
   MPoint initPoint(0.0, 0.0, 0.0);
-
   //Initialize points, as set length does not...
   for (i=0;i < numPoints; i++){
     finalPoints.append(initPoint);
   }
 
-  isInBBox = false;
-  MIntArray hitArray;
-  maxDisp = 0.0;
   for (x=0;x < inputCount; x++){
+    MPointArray tPoints;
+    MVectorArray vertexNormalArray;
+
+    isInBBox = false;
+    MIntArray hitArray;
+    maxDisp = 0.0;
+
 	  colMatrix = colMatrices[x];
 	  // fnMeshIntersector.create(oColMeshArray[x], colMatrix);
 	  MFnMesh fnColMesh(oColMeshArray[x]);
@@ -477,10 +479,11 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
 	  MMeshIsectAccelParams mmAccelParams = fnColMesh.autoUniformGridParams();
 	  for (i=0;i < numPoints; i++){
-      
+        fnMainMesh.getVertexNormal(i, vRay);
+        vertexNormalArray.append(vRay);
         //Check if the point is within the bounding box
-        MPoint bbMin = colBBArray[0].min();
-        MPoint bbMax = colBBArray[0].max();
+        MPoint bbMin = colBBArray[x].min();
+        MPoint bbMax = colBBArray[x].max();
         allPoints[i] = allPoints[i]; 
         // If inside bounds run more expensive calculations
         if (allPoints[i].x > bbMin.x &&
@@ -490,7 +493,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
           allPoints[i].y < bbMax.y &&
           allPoints[i].z < bbMax.z){
             //Use vertex normal vector to create a ray for casting
-            fnMainMesh.getVertexNormal(i, vRay);
+            // fnMainMesh.getVertexNormal(i, vRay);
             MFloatPointArray hitPoints;
 
             hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 99999999999.0,
@@ -514,7 +517,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
         hitArray.append(0);
 	    }
     }
-  // Can Mostly beRun in Parallel, the fnMeshIntersector CANNOT be sent outside of this function, so an MObject needs to be passed out and the intersector created in the parallel function
+  // Can Mostly be Run in Parallel, the fnMeshIntersector CANNOT be sent outside of this function, so an MObject needs to be passed out and the intersector created in the parallel function
     if (isInBBox){
       //=========================
       // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
@@ -540,7 +543,8 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
         if (!hitArray[i]){
           //=========================
           // Cannot be run in parallel, the normal needs to be passed as an arg to the parallel function
-          fnMainMesh.getVertexNormal(i, vRay);
+          // fnMainMesh.getVertexNormal(i, vRay);
+          vRay = vertexNormalArray[i];
           //=========================
           fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
           closestPoint = closestPointOn.getPoint();
@@ -556,6 +560,9 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
         finalPoints[i] = allPoints[i] * bBMatrix.inverse();
       }
     }
+    if (finalPoints.length() > 0)
+      MGlobal::displayInfo(MString("DEBUG: NumPoints in BB") + tPoints.length());
+
   }
   // MGlobal::displayInfo(MString("DEBUG: Is in BBox ") + tPoints.length());
   // MGlobal::displayInfo(MString("DEBUG: NumPoints in MESH") + numPoints);
