@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/LHCollisionDeformer/",
+                "/scratch/levih/dev/rotoslang/src",
+                "/film/tools/packages/mayaDevKit/2018.0.adsk4.0/CentOS-6.9_thru_8/maya/include"
+
+            ],
+            "defines": [],
+            "compilerPath": "/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
