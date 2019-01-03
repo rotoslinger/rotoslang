@@ -22,6 +22,7 @@
 #include <maya/MFloatPointArray.h>
 #include <maya/MRampAttribute.h>
 #include <maya/MMatrixArray.h>
+#include <maya/MFnTypedAttribute.h>
 
 #include <maya/MFnGenericAttribute.h>
 #include <vector>

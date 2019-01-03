@@ -48,6 +48,7 @@ MStatus LHCollisionDeformer::initialize() {
   MFnCompoundAttribute cAttr;
   MFnMatrixAttribute mAttr;
   MRampAttribute rAttr;
+  MFnTypedAttribute tAttr;
 
   //Main Matrix
   aMainWorldMatrix = mAttr.create("aMainWorldMatrix", "mwmatrix");
@@ -245,8 +246,12 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aBulgeDistance);
   attributeAffects(aBulgeDistance, outputGeom);
 
-  aInputGeo = gAttr.create("inputGeo", "ingeo");
-  gAttr.addAccept(MFnData::kMesh);
+//  aInputGeo = gAttr.create("inputGeo", "ingeo");
+//  gAttr.addAccept(MFnData::kMesh);
+
+
+  aInputGeo = tAttr.create("inputGeo", "ingeo", MFnData::kMesh);
+
 //  gAttr.addAccept(MFnData::kNurbsSurface);
 //  gAttr.addAccept(MFnData::kNurbsCurve);
   addAttribute(aInputGeo);
@@ -365,7 +370,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   for (i=0;i < inputCount; i++){
 
       status = inputsArrayHandle.jumpToElement(i);
-      oTestMesh =inputsArrayHandle.inputValue().child( LHCollisionDeformer::aInputGeo).asMesh();
+      oTestMesh =inputsArrayHandle.inputValue().child( LHCollisionDeformer::aInputGeo).asMeshTransformed();
 
 
       colMatrix =inputsArrayHandle.inputValue().child( LHCollisionDeformer::aColWorldMatrix ).asMatrix();
@@ -374,6 +379,12 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
       colBBArray.push_back(LHCollisionDeformer::getBoundingBoxMultiple(data, colMatrix, LHCollisionDeformer::aColBBMin,
     		               LHCollisionDeformer::aColBBMax, inputCount, LHCollisionDeformer::aInputs));
+//      MPoint centerTest;
+//      centerTest = colBBArray[i].center();
+//
+// 	  MGlobal::displayInfo(MString("DEBUG: BBoxCenter ")+ centerTest.x);
+//
+//
       if (oTestMesh.isNull()){
     	  continue;
       }
@@ -472,12 +483,18 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 	  fnMeshIntersector.create(oColMeshArray[x], colMatrix);
 	  MFnMesh fnColMesh(oColMeshArray[x]);
 
-	  fnColMesh.getPoints(allColPoints);
-	  for (i=0;i < allColPoints.length(); i++){
-		  allColPoints[i] = allColPoints[i] * colMatrix;
-	  }
-	  fnColMesh.setPoints(allColPoints);
 
+	  MPoint tmptstPoint;
+	  fnColMesh.getPoint(0,tmptstPoint);
+	  MGlobal::displayInfo(MString("DEBUG: TemptTest ")+tmptstPoint.x);
+
+
+//	  fnColMesh.getPoints(allColPoints);
+//	  for (i=0;i < allColPoints.length(); i++){
+//		  allColPoints[i] = allColPoints[i] * colMatrix;
+//	  }
+//	  fnColMesh.setPoints(allColPoints);
+//
 
 
 	  MMeshIsectAccelParams mmAccelParams = fnColMesh.autoUniformGridParams();
