@@ -321,7 +321,7 @@ MBoundingBox LHCollisionDeformer::getBoundingBoxMultiple(MDataBlock& data, MMatr
 	  return mainBB;
 }
 
-MPoint LHCollisionDeformer::getBulge(int numColPoints, MPoint currPoint, MPoint closestPoint, double bulgeAmount,
+MPoint LHCollisionDeformer::getBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
                                      double bulgeDistance, MVector vRay, MMatrix mainMatrix, double maxDisp, MRampAttribute curveAttribute){
     distance = currPoint.distanceTo(closestPoint);
     double relativeDistance = distance/bulgeDistance;
@@ -436,23 +436,8 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   MFnMesh fnMainMesh(oMainMesh);
   MPoint tmptstPoint;
   fnMainMesh.getPoint(0,tmptstPoint);
-  // MGlobal::displayInfo(MString("DEBUG: TemptTest ")+tmptstPoint.x);
 
-
-  // MObject oTMesh = data.inputValue(aTestGeo).asMeshTransformed();
-  // if (!oTMesh.isNull()){
-
-  //   MFnMesh fnTMesh(oTMesh);
-  //   MPoint tmptstPoint;
-  //   fnTMesh.getPoint(0,tmptstPoint);
-  //   MGlobal::displayInfo(MString("DEBUG: Temp mesh  ")+tmptstPoint.x);
-  // }
-
-
-
-// Can Run in parallel. For all intents and purposes this is the main deformation algorithm iterator.
-// Some data is gathered, but point information should be
-// set in this iteration for optimization
+// Cannot Run in parallel. Checks if points are in bounding box, if they are, find intersections.
   MMeshIntersector fnMeshIntersector;
 
   MPointArray allPoints;
@@ -460,129 +445,119 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 //  itGeo.allPositions(allPoints);
 
   numPoints = allPoints.length();
-
+  //=========================
+  //====Only used for debug==
   MPointArray tPoints;
+  //=========================
+
   MPointArray finalPoints;
+  MPoint initPoint(0.0, 0.0, 0.0);
+
+  //Initialize points, as set length does not...
+  for (i=0;i < numPoints; i++){
+    finalPoints.append(initPoint);
+  }
+
   isInBBox = false;
   MIntArray hitArray;
   maxDisp = 0.0;
   for (x=0;x < inputCount; x++){
 	  colMatrix = colMatrices[x];
-	  fnMeshIntersector.create(oColMeshArray[x], colMatrix);
+	  // fnMeshIntersector.create(oColMeshArray[x], colMatrix);
 	  MFnMesh fnColMesh(oColMeshArray[x]);
-
 	  fnColMesh.getPoints(allColPoints);
+
+    //=========================
+    // Needs to be multiThreaded!!
 	  for (i=0;i < allColPoints.length(); i++){
 		  allColPoints[i] = allColPoints[i] * colMatrix;
 	  }
+    //=========================
 	  fnColMesh.setPoints(allColPoints);
 
 	  MMeshIsectAccelParams mmAccelParams = fnColMesh.autoUniformGridParams();
 	  for (i=0;i < numPoints; i++){
-		  //Check if the point is within the bounding box
-		  MPoint bbMin = colBBArray[0].min();
-		  MPoint bbMax = colBBArray[0].max();
-		  allPoints[i] = allPoints[i]; //* bBMatrix;
-		  // If inside bounds run more expensive calculations
-	//	  xformPoint = allPoints[i] * bBMatrix;
-		  if (allPoints[i].x > bbMin.x &&
-			  allPoints[i].y > bbMin.y &&
-			  allPoints[i].z > bbMin.z &&
-			  allPoints[i].x < bbMax.x &&
-			  allPoints[i].y < bbMax.y &&
-			  allPoints[i].z < bbMax.z){
-	//		  MGlobal::displayInfo(MString("DEBUG: NumPointsOUT ")+ i);
-			//Use vertex normal vector to create a ray for casting
-			fnMainMesh.getVertexNormal(i, vRay);
-			MFloatPointArray hitPoints;
+      
+        //Check if the point is within the bounding box
+        MPoint bbMin = colBBArray[0].min();
+        MPoint bbMax = colBBArray[0].max();
+        allPoints[i] = allPoints[i]; 
+        // If inside bounds run more expensive calculations
+        if (allPoints[i].x > bbMin.x &&
+          allPoints[i].y > bbMin.y &&
+          allPoints[i].z > bbMin.z &&
+          allPoints[i].x < bbMax.x &&
+          allPoints[i].y < bbMax.y &&
+          allPoints[i].z < bbMax.z){
+            //Use vertex normal vector to create a ray for casting
+            fnMainMesh.getVertexNormal(i, vRay);
+            MFloatPointArray hitPoints;
 
-			hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 99999999999.0,
-											  false, &mmAccelParams, false, hitPoints, NULL, NULL, NULL, NULL, NULL);
+            hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 99999999999.0,
+                              false, &mmAccelParams, false, hitPoints, NULL, NULL, NULL, NULL, NULL);
 
-			numHits = hitPoints.length();
+            numHits = hitPoints.length();
 
-			if (!hit || numHits % 2 == 0){
-				finalPoints.append(allPoints[i]* bBMatrix.inverse());
-				hitArray.append(0);
-				continue;
-			}
-			//Project with closest point on surface
-			hitArray.append(1);
-			isInBBox = true;
-			tPoints.append(allPoints[i]);
+            if (!hit || numHits % 2 == 0){
+              hitArray.append(0);
+              continue;
+            }
+            //Project with closest point on surface
+            hitArray.append(1);
+            isInBBox = true;
+            //=========================
+            //====Only used for debug==
+            tPoints.append(allPoints[i]);
+            //=========================
+          }
+      else{
+        hitArray.append(0);
+	    }
+    }
+  // Can Mostly beRun in Parallel, the fnMeshIntersector CANNOT be sent outside of this function, so an MObject needs to be passed out and the intersector created in the parallel function
+    if (isInBBox){
+      //=========================
+      // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
+      fnMeshIntersector.create(oColMeshArray[x]);
+      //=========================
 
-			fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-			closestPoint = closestPointOn.getPoint();
+      for (i=0;i < numPoints; i++){
+        if  (hitArray[i]){
+            fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
+            closestPoint = closestPointOn.getPoint();
 
-
-			testDist = closestPoint.distanceTo(allPoints[i]);
-			if (testDist>maxDisp){
-			  maxDisp = testDist;
-			}
-
-
-			finalPoints.append(closestPoint * bBMatrix.inverse());
-		  }
-		else{
-			finalPoints.append(allPoints[i] * bBMatrix.inverse());
-			hitArray.append(0);
-		}
-	  }
-  }
-  if (isInBBox){
-    for (i=0;i < numPoints; i++){
-        if (!hitArray[i]){
-          fnMainMesh.getVertexNormal(i, vRay);
-          fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-          closestPoint = closestPointOn.getPoint();
-          finalPoints[i] = LHCollisionDeformer::getBulge(tPoints.length(), allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, curveAttribute);
+            testDist = closestPoint.distanceTo(allPoints[i]);
+            if (testDist>maxDisp){
+              maxDisp = testDist;
+            }
+            finalPoints[i] = closestPoint * bBMatrix.inverse();
+            }
+        else{
+          finalPoints[i] = allPoints[i] * bBMatrix.inverse();
         }
       }
+      for (i=0;i < numPoints; i++){
+        if (!hitArray[i]){
+          //=========================
+          // Cannot be run in parallel, the normal needs to be passed as an arg to the parallel function
+          fnMainMesh.getVertexNormal(i, vRay);
+          //=========================
+          fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
+          closestPoint = closestPointOn.getPoint();
+          //=========================
+          // Need to check whether this can be called from a parallel function, or if a threaded version will need to be written
+          finalPoints[i] = LHCollisionDeformer::getBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, curveAttribute);
+          //=========================
+        }
+      }
+    }
+    else{
+      for (i=0;i < numPoints; i++){
+        finalPoints[i] = allPoints[i] * bBMatrix.inverse();
+      }
+    }
   }
-	  // else{
-      //finalPoints.append(allPoints[i]);
-      //   if (isInBBox){
-      //     fnMainMesh.getVertexNormal(i, vRay);
-      //     fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-      //     closestPoint = closestPointOn.getPoint();
-      //     finalPoints.append(LHCollisionDeformer::getBulge(tPoints.length(), allPoints[i], closestPoint, bulgeAmount,
-      //                                                     bulgeDistance, vRay, bBMatrix));
-      //   }
-      // else{
-      //   finalPoints.append(allPoints[i]);
-      // }
-      // fnMainMesh.getVertexNormal(i, vRay);
-      // fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-      // closestPoint = closestPointOn.getPoint();
-      // finalPoints.append(LHCollisionDeformer::getBulge(tPoints.length(), allPoints[i], closestPoint, bulgeAmount,
-      //                                                  bulgeDistance, vRay, bBMatrix));
-      // finalPoints.append(LHCollisionDeformer::getBulge(allPoints[i], bBMatrix));
-    // }
-
-      // if (tPoints.length() > 0){
-      //   fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-      //   closestPoint = closestPointOn.getPoint();
-
-      //   pDistance = allPoints[i] - closestPoint;
-      //   MVector vDistance(pDistance.x, pDistance.y, pDistance.z);
-      //   distance = vDistance.length();
-      //   // float bulgeAmount = data.inputValue(aBulgeAmount).asFloat();
-      //   // float bulgeDistance = data.inputValue(aBulgeDistance).asFloat();
-
-      //   if (distance < bulgeDistance){
-      //     fnMainMesh.getVertexNormal(i, vRay);
-      //     finalPoint = allPoints[i] + vRay * bulgeAmount;
-      //     finalPoints.append(finalPoint );
-      //   }
-      //   else{
-      //     finalPoints.append(allPoints[i]);
-      //   }
-      // }
-      // else{
-      //   finalPoints.append(allPoints[i]);
-      // }
-
-   MGlobal::displayInfo(MString("DEBUG: Is in BBox ")+ tPoints.length());
+  // MGlobal::displayInfo(MString("DEBUG: Is in BBox ") + tPoints.length());
   // MGlobal::displayInfo(MString("DEBUG: NumPoints in MESH") + numPoints);
   // MGlobal::displayInfo(MString("DEBUG: NumPoints in FINAL") + finalPoints.length());
 

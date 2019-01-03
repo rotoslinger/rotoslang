@@ -35,7 +35,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         virtual MBoundingBox getBoundingBox(MDataBlock& data, MObject worldMatrix, MObject oMinBB, MObject oMaxBB);
         virtual MBoundingBox getBoundingBoxMultiple(MDataBlock& data, MMatrix &colWorldMatrix, MObject oMinBB, MObject oMaxBB,
                                                     unsigned int index, MObject oCompound);
-        virtual MPoint getBulge(int numColPoints, MPoint currPoint, MPoint closestPoint, double bulgeAmount, double bulgeDistance,
+        virtual MPoint getBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount, double bulgeDistance,
                                 MVector vRay, MMatrix bBMatrix, double maxDisp, MRampAttribute curveAttribute);
         // virtual MPoint getBulge(MPoint currPoint, MMatrix mainMatrix);
         static void* creator();
