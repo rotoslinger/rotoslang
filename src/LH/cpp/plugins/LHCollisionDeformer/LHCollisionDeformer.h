@@ -21,6 +21,8 @@
 #include <maya/MMeshIntersector.h>
 #include <maya/MFloatPointArray.h>
 #include <maya/MRampAttribute.h>
+#include <maya/MMatrixArray.h>
+#include <maya/MFnTypedAttribute.h>
 
 #include <maya/MFnGenericAttribute.h>
 #include <vector>
@@ -31,7 +33,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         virtual MStatus deform(MDataBlock& data, MItGeometry& itGeo,
                                 const MMatrix &localToWorldMatrix, unsigned int mIndex);
         virtual MBoundingBox getBoundingBox(MDataBlock& data, MObject worldMatrix, MObject oMinBB, MObject oMaxBB);
-        virtual MBoundingBox getBoundingBoxMultiple(MDataBlock& data, MObject worldMatrix, MObject oMinBB, MObject oMaxBB,
+        virtual MBoundingBox getBoundingBoxMultiple(MDataBlock& data, MMatrix &colWorldMatrix, MObject oMinBB, MObject oMaxBB,
                                                     unsigned int index, MObject oCompound);
         virtual MPoint getBulge(int numColPoints, MPoint currPoint, MPoint closestPoint, double bulgeAmount, double bulgeDistance,
                                 MVector vRay, MMatrix bBMatrix, double maxDisp, MRampAttribute curveAttribute);
@@ -42,7 +44,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MTypeId id;
         static MObject aBulgeAmount;
         static MObject aBulgeDistance;
-        static MObject aInputGeo;
+        static MObject aColGeo;
         static MObject aInputs;
 
         static MObject aMainBBoxMinX;
@@ -70,6 +72,8 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aColWorldMatrix;
         static MObject aFalloffRamp;
 
+        static MObject aTestGeo;
+
 
         bool hit;
         unsigned int i;
@@ -90,16 +94,20 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MPointOnMesh closestPointOn;
         //Bounds attrs
         MMatrix bBMatrix;
+        MMatrix colMatrix;
         //  MPoint minBBPoint;
         //  MPoint maxBBPoint;
         //  MBoundingBox mainBB;
-        
+
         MBoundingBox mainBB;
         double distance;
-        MPoint pDistance;        
+        MPoint pDistance;
 
         bool intersects;
-        //MFnMesh mTestMesh;
+        double maxDisp;
+        double testDist;
+        bool isInBBox;
+  	    MPointArray allColPoints;
 
 
         inline MString FormatError( const MString &msg, const MString
