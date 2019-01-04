@@ -36,16 +36,18 @@ class LHCollisionDeformer : public MPxDeformerNode {
         virtual MBoundingBox getBoundingBoxMultiple(MDataBlock& data, MMatrix &colWorldMatrix, MObject oMinBB, MObject oMaxBB,
                                                     unsigned int index, MObject oCompound);
         virtual MPoint getBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount, double bulgeDistance,
-                                MVector vRay, MMatrix bBMatrix, double maxDisp, MRampAttribute curveAttribute);
+                                MVector vRay, double maxDisp, MRampAttribute curveAttribute);
         virtual void seperateBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
                                                MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
-                                               MPointArray flipPointArray, MMatrix bBMatrix, MRampAttribute rFalloffRamp);
+                                               MPointArray flipPointArray, MRampAttribute rFalloffRamp);
         virtual void BlendBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
                                                MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
-                                               MPointArray flipPointArray, MMatrix bBMatrix, MRampAttribute rFalloffRamp);
+                                               MPointArray flipPointArray, MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp);
         MPoint CollisionFlipCheckSerial(MPointArray allPoints, unsigned int pointIdx,  double bulgeDistance, double bulgeAmount, MVectorArray vertexNormalArray, double &maxDisp,
                                         MPointArray flipPointArray, MRampAttribute rInnerFalloffRamp);
         MPoint CollisionCheapSerial(MPointArray allPoints, unsigned int pointIdx, double &maxDisp);
+        MPoint PerformBulgeSerial(MVectorArray vertexNormalArray, unsigned int pointIdx, MPointArray allPoints, double bulgeAmount, double bulgeDistance, double maxDisp, MRampAttribute rFalloffRamp);
+
 
         static void* creator();
         static MStatus initialize();
@@ -84,6 +86,9 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aPermanent;
         static MObject aFlipCheck;
         static MObject aInnerFalloffRamp;
+
+        static MObject aBlendBulgeCollision;
+        static MObject aBlendBulgeCollisionRamp;
 
         double flipCheck;
         MVector closestNormal;
@@ -127,7 +132,9 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MMeshIntersector fnMeshIntersector;
         MPoint collisionPoint;
         MPoint bulgePoint;
-
+        MPoint blendPoint;
+        MPoint rClosestPoint;
+        
 
         double relativeDistance;
         float value;
