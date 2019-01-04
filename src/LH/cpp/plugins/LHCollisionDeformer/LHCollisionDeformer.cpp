@@ -47,6 +47,7 @@ MObject LHCollisionDeformer::aInnerFalloffRamp;
 MObject LHCollisionDeformer::aBlendBulgeCollision;
 MObject LHCollisionDeformer::aBlendBulgeCollisionRamp;
 
+MObject LHCollisionDeformer::aAlgorithm;
 
 
 MStatus LHCollisionDeformer::initialize() {
@@ -56,28 +57,20 @@ MStatus LHCollisionDeformer::initialize() {
   MFnMatrixAttribute mAttr;
   MRampAttribute rAttr;
   MFnTypedAttribute tAttr;
+  MFnEnumAttribute eAttr;
 
-  aFlipCheck = nAttr.create("flipCheck", "fcheck", MFnNumericData::kInt);
-  nAttr.setKeyable(true);
-  nAttr.setWritable(true);
-  nAttr.setStorable(true);
-  nAttr.setChannelBox(true);
-  nAttr.setDefault(0);
-  nAttr.setMin(0);
-  nAttr.setMax(1);
-  addAttribute(aFlipCheck);
-  attributeAffects(aFlipCheck, outputGeom);
+  aAlgorithm = eAttr.create("operation", "op", 0);
+  eAttr.addField( "cheap", 0 );
+  eAttr.addField( "flipCheck", 1 );
+  eAttr.addField( "blend", 2 );
+  eAttr.setHidden( false );
+  eAttr.setKeyable( true );
+  eAttr.setWritable(true);
+  eAttr.setStorable(true);
+  eAttr.setChannelBox(true);
+  addAttribute(aAlgorithm);
+  attributeAffects(aAlgorithm, outputGeom);
 
-  aBlendBulgeCollision = nAttr.create("blendBulgeCollision", "bbulgecol", MFnNumericData::kInt);
-  nAttr.setKeyable(true);
-  nAttr.setWritable(true);
-  nAttr.setStorable(true);
-  nAttr.setChannelBox(true);
-  nAttr.setDefault(0);
-  nAttr.setMin(0);
-  nAttr.setMax(1);
-  addAttribute(aBlendBulgeCollision);
-  attributeAffects(aBlendBulgeCollision, outputGeom);
 
 	aBlendBulgeCollisionRamp = rAttr.createCurveRamp("blendBulgeCollisionRamp", "bbulgecolramp");
   addAttribute(aBlendBulgeCollisionRamp);
@@ -366,6 +359,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 	  return MS::kSuccess;
   float bulgeAmount = data.inputValue(aBulgeAmount).asFloat();
   float bulgeDistance = data.inputValue(aBulgeDistance).asFloat();
+  short eAlgorithm = data.inputValue(aAlgorithm).asShort();
 
   // Get bounding box
 
@@ -376,8 +370,6 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
   MMatrix bBMatrix = data.inputValue( LHCollisionDeformer::aMainWorldMatrix ).asMatrix();
   int iPermanent = data.inputValue( LHCollisionDeformer::aPermanent ).asInt();
-  int iFlipCheck = data.inputValue( LHCollisionDeformer::aFlipCheck ).asInt();
-  int iBlendBulgeCollision = data.inputValue( LHCollisionDeformer::aBlendBulgeCollision ).asInt();
 //  double3& maxBB = data.inputValue( LHCollisionDeformer::aMainBBMax ).asDouble3();
 //  MPoint minBBPoint(minBB[0], minBB[1], minBB[2]);
 //  MPoint maxBBPoint(maxBB[0], maxBB[1], maxBB[2]);
@@ -445,16 +437,22 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   if (iPermanent){
     if (allPoints.length() == 0){
       fnMainMesh.getPoints(allPoints);
+      maxDisp = 0.0;
+
     }
     else
     {
       for (i=0;i < numPoints; i++){
         allPoints[i] = allPoints[i] * bBMatrix;
+        maxDisp = 0.0;
+
       }
     }
   }
   else{
       fnMainMesh.getPoints(allPoints);
+      maxDisp = 0.0;
+
   }
 
 //  itGeo.allPositions(allPoints);
@@ -462,6 +460,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   numPoints = allPoints.length();
   MPoint initPoint(0.0, 0.0, 0.0);
   for (x=0;x < inputCount; x++){
+
     //=========================
     //====Only used for debug==
     MPointArray tPoints;
@@ -474,7 +473,6 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
     MPointArray flipPointArray;
     MIntArray hitFaceIdArray;
 
-    maxDisp = 0.0;
 
 	  colMatrix = colMatrices[x];
 	  MFnMesh fnColMesh(oColMeshArray[x]);
@@ -526,7 +524,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
 						flipCheck = polyNormal * vRay;
 
-						if (iFlipCheck){
+						if (eAlgorithm>0){
               vRay = vRay * -1.0;
               MFloatPointArray hitPointsFlipped;
               hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 9999999.0,
@@ -534,15 +532,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
               if (hit){
                   flipRayArray.append(1);
-                  //Interp between hitPoints and hitPoints flipped based on angle of normal
-                  // interPoint = hitPointsFlipped[0] + ((hitPointsFlipped[0] - hitPoints[0]) * -flipCheck);
-
-
-
-
-
                   flipPointArray.append(hitPointsFlipped[0]);
-                  // MGlobal::displayInfo(MString("DEBUG: flipCheck ")+ flipCheck);
               }
               else{
                   flipRayArray.append(0);
@@ -572,15 +562,16 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
         flipPointArray.append(initPoint);
 	    }
     }
+
   // Can Mostly be Run in Parallel, the fnMeshIntersector CANNOT be sent outside of this function, so an MObject needs to be passed out and the intersector created in the parallel function
     if (isInBBox){
-      if (iBlendBulgeCollision){
-      LHCollisionDeformer::BlendBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, iFlipCheck, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
+      if (eAlgorithm == 2){
+      LHCollisionDeformer::BlendBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
                                                      rInnerFalloffRamp, bulgeAmount, flipPointArray, rFalloffRamp, rBlendBulgeCollisionRamp);
       }
       else{
-      LHCollisionDeformer::seperateBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, iFlipCheck, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
-                                                     rInnerFalloffRamp, bulgeAmount, flipPointArray, rFalloffRamp);
+      LHCollisionDeformer::seperateBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
+                                                     rInnerFalloffRamp, bulgeAmount, flipPointArray, rFalloffRamp, eAlgorithm);
       }
     }
     else{
@@ -594,7 +585,6 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   for (i=0;i < numPoints; i++){
     allPoints[i] = allPoints[i] * bBMatrix.inverse();
   }
-
   // MGlobal::displayInfo(MString("DEBUG: Is in BBox ") + tPoints.length());
   // MGlobal::displayInfo(MString("DEBUG: NumPoints in MESH") + numPoints);
   // MGlobal::displayInfo(MString("DEBUG: NumPoints in FINAL") + finalPoints.length());
@@ -610,15 +600,16 @@ MPoint LHCollisionDeformer::getBulge(MPoint currPoint, MPoint closestPoint, doub
     distance = currPoint.distanceTo(closestPoint);
     relativeDistance = distance/bulgeDistance;
     rFalloffRamp.getValueAtPosition((float) relativeDistance, value);
-    return currPoint + vRay * bulgeAmount * (relativeDistance * maxDisp * value) ;
+    // return currPoint + vRay * bulgeAmount * (relativeDistance * maxDisp * value) ;
+    return currPoint + vRay * bulgeAmount * relativeDistance * maxDisp * value ;
 
 }
 
 
 
-void LHCollisionDeformer::seperateBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
+void LHCollisionDeformer::seperateBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray,
                                                       MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
-                                                      MPointArray flipPointArray, MRampAttribute rFalloffRamp){
+                                                      MPointArray flipPointArray, MRampAttribute rFalloffRamp, short algorithm){
 
   //=========================
   // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
@@ -627,7 +618,7 @@ void LHCollisionDeformer::seperateBulgeAndCollisionSerial(MObjectArray oColMeshA
 
   for (i=0;i < numPoints; i++){
     if  (hitArray[i]){
-        if (flipRayArray[i] && iFlipCheck){
+        if (flipRayArray[i] && algorithm > 0){
              allPoints[i] = LHCollisionDeformer::CollisionFlipCheckSerial(allPoints, i,  bulgeDistance, bulgeAmount, vertexNormalArray, maxDisp, flipPointArray, rInnerFalloffRamp);
         }
         else{
@@ -646,7 +637,7 @@ void LHCollisionDeformer::seperateBulgeAndCollisionSerial(MObjectArray oColMeshA
   }
 }
 
-void LHCollisionDeformer::BlendBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
+void LHCollisionDeformer::BlendBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray,
                                                       MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
                                                       MPointArray flipPointArray, MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp){
   //=========================
