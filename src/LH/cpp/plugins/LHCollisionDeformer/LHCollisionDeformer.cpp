@@ -40,8 +40,10 @@ MObject LHCollisionDeformer::aColBBMin;
 MObject LHCollisionDeformer::aColBBMax;
 MObject LHCollisionDeformer::aColWorldMatrix;
 MObject LHCollisionDeformer::aFalloffRamp;
+MObject LHCollisionDeformer::aPermanent;
+MObject LHCollisionDeformer::aFlipCheck;
+MObject LHCollisionDeformer::aInnerFalloffRamp;
 
-MObject LHCollisionDeformer::aTestGeo;
 
 
 MStatus LHCollisionDeformer::initialize() {
@@ -51,6 +53,32 @@ MStatus LHCollisionDeformer::initialize() {
   MFnMatrixAttribute mAttr;
   MRampAttribute rAttr;
   MFnTypedAttribute tAttr;
+
+  //Permanent
+  aFlipCheck = nAttr.create("flipCheck", "fcheck", MFnNumericData::kInt);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setChannelBox(true);
+  nAttr.setDefault(0);
+  nAttr.setMin(0);
+  nAttr.setMax(1);
+  addAttribute(aFlipCheck);
+  attributeAffects(aFlipCheck, outputGeom);
+
+
+  //Permanent
+  aPermanent = nAttr.create("permanent", "perm", MFnNumericData::kInt);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setChannelBox(true);
+  nAttr.setDefault(0);
+  nAttr.setMin(0);
+  nAttr.setMax(1);
+  addAttribute(aPermanent);
+  attributeAffects(aPermanent, outputGeom);
+
 
   //Main Matrix
   aMainWorldMatrix = mAttr.create("aMainWorldMatrix", "mwmatrix");
@@ -137,6 +165,8 @@ MStatus LHCollisionDeformer::initialize() {
   cAttr.setChannelBox(true);
   addAttribute(aMainBBMax);
   attributeAffects(aMainBBMax, outputGeom);
+
+  
   ///////////////////////////
 
 
@@ -248,19 +278,6 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aBulgeDistance);
   attributeAffects(aBulgeDistance, outputGeom);
 
-//  aColGeo = gAttr.create("inputGeo", "ingeo");
-//  gAttr.addAccept(MFnData::kMesh);
-  // addAttribute(aColGeo);
-  // attributeAffects(aColGeo, outputGeom);
-//  gAttr.addAccept(MFnData::kNurbsSurface);
-//  gAttr.addAccept(MFnData::kNurbsCurve);
-
-  aTestGeo = gAttr.create("testGeo", "tgeo");
-  gAttr.addAccept(MFnData::kMesh);
-  addAttribute(aTestGeo);
-  attributeAffects(aTestGeo, outputGeom);
-
-
   aColGeo = tAttr.create("inputGeo", "ingeo", MFnData::kMesh);
   addAttribute(aColGeo);
   attributeAffects(aColGeo, outputGeom);
@@ -283,6 +300,10 @@ MStatus LHCollisionDeformer::initialize() {
 	aFalloffRamp = rAttr.createCurveRamp("falloffShape", "fshape");
   addAttribute(aFalloffRamp);
   attributeAffects(aFalloffRamp, outputGeom);
+
+	aInnerFalloffRamp = rAttr.createCurveRamp("falloffShapeInner", "fshapein");
+  addAttribute(aInnerFalloffRamp);
+  attributeAffects(aInnerFalloffRamp, outputGeom);
 
 
   // Make the deformer weights paintable
@@ -322,14 +343,14 @@ MBoundingBox LHCollisionDeformer::getBoundingBoxMultiple(MDataBlock& data, MMatr
 }
 
 MPoint LHCollisionDeformer::getBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
-                                     double bulgeDistance, MVector vRay, MMatrix mainMatrix, double maxDisp, MRampAttribute curveAttribute){
+                                     double bulgeDistance, MVector vRay, MMatrix mainMatrix, double maxDisp, MRampAttribute rFalloffRamp){
     distance = currPoint.distanceTo(closestPoint);
     double relativeDistance = distance/bulgeDistance;
     float value;
-    curveAttribute.getValueAtPosition((float) relativeDistance, value);
-    finalPoint = currPoint + vRay * bulgeAmount * (relativeDistance * maxDisp * value) ;
+    rFalloffRamp.getValueAtPosition((float) relativeDistance, value);
+    return currPoint + vRay * bulgeAmount * (relativeDistance * maxDisp * value) ;
     // return finalPoint * mainMatrix.inverse();
-    return finalPoint;
+    // return finalPoint;
 
 }
 
@@ -352,11 +373,12 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   // Get bounding box
 
   MObject oThis = thisMObject();
-  MRampAttribute curveAttribute(oThis, aFalloffRamp);
-
+  MRampAttribute rFalloffRamp(oThis, aFalloffRamp);
+  MRampAttribute rInnerFalloffRamp(oThis, aInnerFalloffRamp);
 
   MMatrix bBMatrix = data.inputValue( LHCollisionDeformer::aMainWorldMatrix ).asMatrix();
-//  double3& minBB = data.inputValue( LHCollisionDeformer::aMainBBMin ).asDouble3();
+  int iPermanent = data.inputValue( LHCollisionDeformer::aPermanent ).asInt();
+  int iFlipCheck = data.inputValue( LHCollisionDeformer::aFlipCheck ).asInt();
 //  double3& maxBB = data.inputValue( LHCollisionDeformer::aMainBBMax ).asDouble3();
 //  MPoint minBBPoint(minBB[0], minBB[1], minBB[2]);
 //  MPoint maxBBPoint(maxBB[0], maxBB[1], maxBB[2]);
@@ -404,27 +426,8 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   int nColMeshes = oColMeshArray.length();
   if (!nColMeshes)
 	  return MS::kSuccess;
-/*
-  MIntArray hitMeshes;
-  // Do bounding box collision check first, before even touching any point data to be as efficient as possible
-  // Test intersections "Quick" collision test. Can run in parallel but not sure if expensive enough to offload...
-  for (i=0;i < colBBArray.size();i++){
-	  testBounds = colBBArray[i];
-	  intersects = testBounds.intersects(mainBB);
-	  if (intersects){
-		  hitMeshes.append(1);
-		  //MGlobal::displayInfo(MString("DEBUG: INTERSECTING "));
-	  }
-	  //else{
-		 //MGlobal::displayInfo(MString("DEBUG: NOT INTERSECTING "));
-	  //}
-  }
-//  if(!hitMeshes.length())
-//	 return MS::kSuccess;
-*/
   //===============================================================================================================
-  // Containment test/deformation algorithm.  If num hits is even, outside the mesh, if odd, inside, if 0, neither.
-  // This is MFnMesh AllIntersections, it is slow and NOT threadsafe.
+  // Get the main mesh from the MpxDeformer class
   MArrayDataHandle inputGeoArrayHandle(data.inputArrayValue( input, &status));
   status = inputGeoArrayHandle.jumpToElement(mIndex);
   CheckStatusReturn( status, "Unable to get inputGeom" );
@@ -433,40 +436,48 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 	 MGlobal::displayInfo(MString("DEBUG: oMainMesh is null "));
 	 return MS::kFailure;
   }
-  //===============================================================================================================
   MFnMesh fnMainMesh(oMainMesh);
   MPoint tmptstPoint;
   fnMainMesh.getPoint(0,tmptstPoint);
 
-// Cannot Run in parallel. Checks if points are in bounding box, if they are, find intersections.
-  MMeshIntersector fnMeshIntersector;
+// Will Be used later. Checks if points are in bounding box, if they are, find intersections.
+  // MMeshIntersector fnMeshIntersector;
 
-  MPointArray allPoints;
-  fnMainMesh.getPoints(allPoints);
+  if (iPermanent){
+    if (allPoints.length() == 0){
+      fnMainMesh.getPoints(allPoints);
+    }
+    else
+    {
+      for (i=0;i < numPoints; i++){
+        allPoints[i] = allPoints[i] * bBMatrix;
+      }
+    }
+  }
+  else{
+      fnMainMesh.getPoints(allPoints);
+  }
+
 //  itGeo.allPositions(allPoints);
 
   numPoints = allPoints.length();
-  //=========================
-  //====Only used for debug==
-  //=========================
-
-  MPointArray finalPoints;
   MPoint initPoint(0.0, 0.0, 0.0);
-  //Initialize points, as set length does not...
-  for (i=0;i < numPoints; i++){
-    finalPoints.append(initPoint);
-  }
-
   for (x=0;x < inputCount; x++){
+    //=========================
+    //====Only used for debug==
     MPointArray tPoints;
+    //=========================
     MVectorArray vertexNormalArray;
 
     isInBBox = false;
     MIntArray hitArray;
+    MIntArray flipRayArray;
+    MPointArray flipPointArray;
+    MIntArray hitFaceIdArray;
+
     maxDisp = 0.0;
 
 	  colMatrix = colMatrices[x];
-	  // fnMeshIntersector.create(oColMeshArray[x], colMatrix);
 	  MFnMesh fnColMesh(oColMeshArray[x]);
 	  fnColMesh.getPoints(allColPoints);
 
@@ -485,7 +496,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
         //Check if the point is within the bounding box
         MPoint bbMin = colBBArray[x].min();
         MPoint bbMax = colBBArray[x].max();
-        allPoints[i] = allPoints[i]; 
+        // allPoints[i] = allPoints[i]; 
         // If inside bounds run more expensive calculations
         if (allPoints[i].x > bbMin.x &&
           allPoints[i].y > bbMin.y &&
@@ -494,19 +505,61 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
           allPoints[i].y < bbMax.y &&
           allPoints[i].z < bbMax.z){
             //Use vertex normal vector to create a ray for casting
-            // fnMainMesh.getVertexNormal(i, vRay);
             MFloatPointArray hitPoints;
 
-            hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 99999999999.0,
-                              false, &mmAccelParams, false, hitPoints, NULL, NULL, NULL, NULL, NULL);
+            hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 9999999.0,
+                              false, &mmAccelParams, true, hitPoints, NULL, &hitFaceIdArray, NULL, NULL, NULL);
 
             numHits = hitPoints.length();
-
+            // If no hit, or the hit is divisible by 2 skip it, we are outside the mesh (Hormann & Agathos, 2001)
             if (!hit || numHits % 2 == 0){
               hitArray.append(0);
+              flipRayArray.append(0);
+              flipPointArray.append(initPoint);
               continue;
             }
-            //Project with closest point on surface
+
+            //========================================================================================================================================
+            //========================================================================================================================================
+            //This is a slower, but more accurate cleanup pass of the algorithm to avoid swimming points and points flipping to the inside of the mesh.
+            // Need to be sure there is actually a face in the opposite direction, if not there is no point to flipping
+            fnColMesh.getPolygonNormal(hitFaceIdArray[0], polyNormal);
+
+						flipCheck = polyNormal * vRay;
+
+						if (iFlipCheck){
+              vRay = vRay * -1.0;
+              MFloatPointArray hitPointsFlipped;
+              hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 9999999.0,
+                                false, &mmAccelParams, true, hitPointsFlipped, NULL, NULL, NULL, NULL, NULL);
+
+              if (hit){
+                  flipRayArray.append(1);
+                  //Interp between hitPoints and hitPoints flipped based on angle of normal
+                  // interPoint = hitPointsFlipped[0] + ((hitPointsFlipped[0] - hitPoints[0]) * -flipCheck);
+
+
+
+
+
+                  flipPointArray.append(hitPointsFlipped[0]);
+                  // MGlobal::displayInfo(MString("DEBUG: flipCheck ")+ flipCheck);
+              }
+              else{
+                  flipRayArray.append(0);
+                  flipPointArray.append(hitPoints[0]);
+              }
+            }
+            else{
+                  flipRayArray.append(0);
+                  flipPointArray.append(hitPoints[0]);
+            }
+            //========================================================================================================================================
+            //========================================================================================================================================
+
+
+
+
             hitArray.append(1);
             isInBBox = true;
             //=========================
@@ -516,57 +569,22 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
           }
       else{
         hitArray.append(0);
+        flipRayArray.append(0);
+        flipPointArray.append(initPoint);
 	    }
     }
   // Can Mostly be Run in Parallel, the fnMeshIntersector CANNOT be sent outside of this function, so an MObject needs to be passed out and the intersector created in the parallel function
     if (isInBBox){
-      //=========================
-      // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
-      fnMeshIntersector.create(oColMeshArray[x]);
-      //=========================
-
-      for (i=0;i < numPoints; i++){
-        if  (hitArray[i]){
-            fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-            closestPoint = closestPointOn.getPoint();
-
-            testDist = closestPoint.distanceTo(allPoints[i]);
-            if (testDist>maxDisp){
-              maxDisp = testDist;
-            }
-            // finalPoints[i] = closestPoint * bBMatrix.inverse();
-            allPoints[i] = closestPoint;
-            }
-        else{
-          // finalPoints[i] = allPoints[i] * bBMatrix.inverse();
-          allPoints[i] = allPoints[i];
-        }
-      }
-      for (i=0;i < numPoints; i++){
-        if (!hitArray[i]){
-          //=========================
-          // Cannot be run in parallel, the normal needs to be passed as an arg to the parallel function
-          // fnMainMesh.getVertexNormal(i, vRay);
-          vRay = vertexNormalArray[i];
-          //=========================
-          fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-          closestPoint = closestPointOn.getPoint();
-          //=========================
-          // Need to check whether this can be called from a parallel function, or if a threaded version will need to be written
-          allPoints[i] = LHCollisionDeformer::getBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, curveAttribute);
-          //=========================
-        }
-      }
+      LHCollisionDeformer::seperateBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, iFlipCheck, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
+                                                     rInnerFalloffRamp, bulgeAmount, flipPointArray, bBMatrix, rFalloffRamp);
     }
     else{
       for (i=0;i < numPoints; i++){
-        // finalPoints[i] = allPoints[i] * bBMatrix.inverse();
         allPoints[i] = allPoints[i];
       }
     }
-    if (allPoints.length() > 0)
-      MGlobal::displayInfo(MString("DEBUG: NumPoints in BB") + tPoints.length());
-
+    // if (allPoints.length() > 0)
+    //   MGlobal::displayInfo(MString("DEBUG: NumPoints in BB") + tPoints.length());
   }
   for (i=0;i < numPoints; i++){
     allPoints[i] = allPoints[i] * bBMatrix.inverse();
@@ -581,3 +599,112 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   return MS::kSuccess;
 }
 
+
+void LHCollisionDeformer::seperateBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
+                                                      MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+                                                      MPointArray flipPointArray, MMatrix bBMatrix, MRampAttribute rFalloffRamp){
+
+  //=========================
+  // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
+  fnMeshIntersector.create(oColMeshArray[colMeshIndex]);
+  //=========================
+
+  for (i=0;i < numPoints; i++){
+    if  (hitArray[i]){
+        if (flipRayArray[i] && iFlipCheck){
+             allPoints[i] = LHCollisionDeformer::CollisionFlipCheckSerial(allPoints, i,  bulgeDistance, bulgeAmount, vertexNormalArray, maxDisp, flipPointArray, rInnerFalloffRamp);
+        }
+        else{
+          allPoints[i] = LHCollisionDeformer::CollisionCheapSerial(allPoints, i, maxDisp);
+        }
+    }
+    else{
+        allPoints[i] = allPoints[i];
+    }
+  }
+
+  for (i=0;i < numPoints; i++){
+    if (!hitArray[i]){
+      vRay = vertexNormalArray[i];
+      fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
+      closestPoint = closestPointOn.getPoint();
+      //=========================
+      // Need to check whether this can be called from a parallel function, or if a threaded version will need to be written
+      allPoints[i] = LHCollisionDeformer::getBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, rFalloffRamp);
+      //=========================
+    }
+  }
+}
+
+void LHCollisionDeformer::BlendBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
+                                                      MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+                                                      MPointArray flipPointArray, MMatrix bBMatrix, MRampAttribute rFalloffRamp){
+
+  //=========================
+  // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
+  fnMeshIntersector.create(oColMeshArray[colMeshIndex]);
+  //=========================
+  for (i=0;i < numPoints; i++){
+        if (flipRayArray[i] && iFlipCheck){
+          collisionPoint = LHCollisionDeformer::CollisionFlipCheckSerial(allPoints, i,  bulgeDistance, bulgeAmount, vertexNormalArray, maxDisp, flipPointArray, rInnerFalloffRamp);
+        }
+        else{
+          collisionPoint = LHCollisionDeformer::CollisionCheapSerial(allPoints, i, maxDisp);
+        }
+  }
+
+  for (i=0;i < numPoints; i++){
+      vRay = vertexNormalArray[i];
+      fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
+      closestPoint = closestPointOn.getPoint();
+      //=========================
+      // Need to check whether this can be called from a parallel function, or if a threaded version will need to be written
+      bulgePoint = LHCollisionDeformer::getBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, rFalloffRamp);
+      //=========================
+
+
+
+      allPoints[i] = collisionPoint + (bulgePoint -collisionPoint) * 1.0;
+  }
+}
+
+
+MPoint PerformBulgeSerial(){
+
+}
+
+
+
+
+
+MPoint LHCollisionDeformer::CollisionFlipCheckSerial(MPointArray allPoints, unsigned int pointIdx,  double bulgeDistance, double bulgeAmount, MVectorArray vertexNormalArray,
+                                                     double &maxDisp, MPointArray flipPointArray, MRampAttribute rInnerFalloffRamp){
+
+    fnMeshIntersector.getClosestPoint(allPoints[pointIdx], closestPointOn);
+    closestPoint = closestPointOn.getPoint();
+    closestNormal = closestPointOn.getNormal();
+    vRay = vertexNormalArray[pointIdx];
+    flipCheck = closestNormal * vRay;
+    testDist = closestPoint.distanceTo(allPoints[pointIdx]);
+    if (testDist>maxDisp){
+      maxDisp = testDist;
+    }
+    distance = allPoints[i].distanceTo(closestPoint);
+    relativeDistance = distance/bulgeDistance;
+    rInnerFalloffRamp.getValueAtPosition((float) relativeDistance, value);
+    interPoint =  allPoints[pointIdx] + vRay * bulgeAmount * (relativeDistance * maxDisp * value) ;
+    // interPoint = flipPointArray[i] + ((flipPointArray[i] - closestPoint) * value);
+    interPoint = closestPoint + (( closestPoint - flipPointArray[pointIdx]) * (value - 1.1F));
+    return interPoint;
+
+}
+
+MPoint LHCollisionDeformer::CollisionCheapSerial(MPointArray allPoints, unsigned int pointIdx, double &maxDisp){
+  fnMeshIntersector.getClosestPoint(allPoints[pointIdx], closestPointOn);
+  closestPoint = closestPointOn.getPoint();
+  testDist = closestPoint.distanceTo(allPoints[pointIdx]);
+  if (testDist>maxDisp){
+    maxDisp = testDist;
+  }
+  return closestPoint;
+}

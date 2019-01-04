@@ -37,7 +37,16 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                                     unsigned int index, MObject oCompound);
         virtual MPoint getBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount, double bulgeDistance,
                                 MVector vRay, MMatrix bBMatrix, double maxDisp, MRampAttribute curveAttribute);
-        // virtual MPoint getBulge(MPoint currPoint, MMatrix mainMatrix);
+        virtual void seperateBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
+                                               MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+                                               MPointArray flipPointArray, MMatrix bBMatrix, MRampAttribute rFalloffRamp);
+        virtual void BlendBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray, double iFlipCheck,
+                                               MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+                                               MPointArray flipPointArray, MMatrix bBMatrix, MRampAttribute rFalloffRamp);
+        MPoint CollisionFlipCheckSerial(MPointArray allPoints, unsigned int pointIdx,  double bulgeDistance, double bulgeAmount, MVectorArray vertexNormalArray, double &maxDisp,
+                                        MPointArray flipPointArray, MRampAttribute rInnerFalloffRamp);
+        MPoint CollisionCheapSerial(MPointArray allPoints, unsigned int pointIdx, double &maxDisp);
+
         static void* creator();
         static MStatus initialize();
 
@@ -72,8 +81,12 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aColWorldMatrix;
         static MObject aFalloffRamp;
 
-        static MObject aTestGeo;
+        static MObject aPermanent;
+        static MObject aFlipCheck;
+        static MObject aInnerFalloffRamp;
 
+        double flipCheck;
+        MVector closestNormal;
 
         bool hit;
         unsigned int i;
@@ -108,6 +121,16 @@ class LHCollisionDeformer : public MPxDeformerNode {
         double testDist;
         bool isInBBox;
   	    MPointArray allColPoints;
+        MPointArray allPoints;
+        MVector polyNormal;
+        MPoint interPoint;
+        MMeshIntersector fnMeshIntersector;
+        MPoint collisionPoint;
+        MPoint bulgePoint;
+
+
+        double relativeDistance;
+        float value;
 
 
         inline MString FormatError( const MString &msg, const MString
