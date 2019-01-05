@@ -677,10 +677,11 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
       }
     }
   }
+  //============================= multi thread=================================================
   for (i=0;i < numPoints; i++){
     allPoints[i] = allPoints[i] * bBMatrix.inverse();
   }
-  
+  //==============================================================================================
   itGeo.setAllPositions(allPoints);
   return MS::kSuccess;
 }
