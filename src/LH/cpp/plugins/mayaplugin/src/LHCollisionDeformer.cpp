@@ -15,7 +15,7 @@
 MTypeId LHCollisionDeformer::id(0x67438467);
 MObject LHCollisionDeformer::aBulgeAmount;
 MObject LHCollisionDeformer::aBulgeDistance;
-MObject LHCollisionDeformer::aInputGeo;
+MObject LHCollisionDeformer::aColGeo;
 MObject LHCollisionDeformer::aInputs;
 
 MObject LHCollisionDeformer::aMainBBoxMinX;
@@ -39,7 +39,22 @@ MObject LHCollisionDeformer::aColBBoxMaxZ;
 MObject LHCollisionDeformer::aColBBMin;
 MObject LHCollisionDeformer::aColBBMax;
 MObject LHCollisionDeformer::aColWorldMatrix;
+MObject LHCollisionDeformer::aPermanent;
+MObject LHCollisionDeformer::aFlipCheck;
+
+MObject LHCollisionDeformer::aBlendBulgeCollision;
 MObject LHCollisionDeformer::aFalloffRamp;
+MObject LHCollisionDeformer::aInnerFalloffRamp;
+MObject LHCollisionDeformer::aBlendBulgeCollisionRamp;
+
+MObject LHCollisionDeformer::aAlgorithm;
+// Weights
+MObject LHCollisionDeformer::aCollisionWeights;
+MObject LHCollisionDeformer::aBulgeWeights;
+// WeightParents
+MObject LHCollisionDeformer::aWeightsParent;
+
+MObject LHCollisionDeformer::aCacheWeights;
 
 
 MStatus LHCollisionDeformer::initialize() {
@@ -49,6 +64,79 @@ MStatus LHCollisionDeformer::initialize() {
   MFnMatrixAttribute mAttr;
   MRampAttribute rAttr;
   MFnTypedAttribute tAttr;
+  MFnEnumAttribute eAttr;
+
+  aCollisionWeights = nAttr.create("collisionWeights", "cweights", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setArray(true);
+  nAttr.setDefault(1.0);
+  nAttr.setReadable(true);
+  nAttr.setUsesArrayDataBuilder(true);
+  addAttribute(aCollisionWeights);
+
+  aBulgeWeights = nAttr.create("bulgeWeights", "bWeights", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setArray(true);
+  nAttr.setDefault(1.0);
+  nAttr.setReadable(true);
+  nAttr.setUsesArrayDataBuilder(true);
+  addAttribute(aBulgeWeights);
+
+  aWeightsParent = cAttr.create("weightsParent", "pweights");
+  cAttr.setKeyable(true);
+  cAttr.setArray(true);
+  cAttr.addChild( aCollisionWeights );
+  cAttr.addChild( aBulgeWeights );
+  cAttr.setReadable(true);
+  cAttr.setUsesArrayDataBuilder(true);
+  addAttribute(aWeightsParent);
+
+  attributeAffects(aBulgeWeights, outputGeom);
+  attributeAffects(aCollisionWeights, outputGeom);
+  attributeAffects(aWeightsParent, outputGeom);
+
+  //Permanent
+  aCacheWeights = nAttr.create("cacheWeights", "cacheweights", MFnNumericData::kInt);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setChannelBox(true);
+  nAttr.setDefault(0);
+  nAttr.setMin(0);
+  nAttr.setMax(1);
+  addAttribute(aCacheWeights);
+  attributeAffects(aCacheWeights, outputGeom);
+
+  aAlgorithm = eAttr.create("operation", "op", 0);
+  eAttr.addField( "cheap", 0 );
+  eAttr.addField( "flipCheck", 1 );
+  eAttr.addField( "blend", 2 );
+  eAttr.setHidden( false );
+  eAttr.setKeyable( true );
+  eAttr.setWritable(true);
+  eAttr.setStorable(true);
+  eAttr.setChannelBox(true);
+  addAttribute(aAlgorithm);
+  attributeAffects(aAlgorithm, outputGeom);
+
+
+	aBlendBulgeCollisionRamp = rAttr.createCurveRamp("blendBulgeCollisionRamp", "bbulgecolramp");
+  addAttribute(aBlendBulgeCollisionRamp);
+  attributeAffects(aBlendBulgeCollisionRamp, outputGeom);
+
+
+  //Permanent
+  aPermanent = nAttr.create("permanent", "perm", MFnNumericData::kInt);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setChannelBox(true);
+  nAttr.setDefault(0);
+  nAttr.setMin(0);
+  nAttr.setMax(1);
+  addAttribute(aPermanent);
+  attributeAffects(aPermanent, outputGeom);
+
 
   //Main Matrix
   aMainWorldMatrix = mAttr.create("aMainWorldMatrix", "mwmatrix");
@@ -135,13 +223,9 @@ MStatus LHCollisionDeformer::initialize() {
   cAttr.setChannelBox(true);
   addAttribute(aMainBBMax);
   attributeAffects(aMainBBMax, outputGeom);
-  ///////////////////////////
 
-
-
-//
-//
-//  ///ARRAY BOUNDS
+  
+///ARRAY BOUNDS
 //
   //Col Matrix
   aColWorldMatrix = mAttr.create("aColWorldMatrix", "colwmatrix");
@@ -229,11 +313,6 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aColBBMax);
   attributeAffects(aColBBMax, outputGeom);
 
-
-
-
-
-
   aBulgeAmount = nAttr.create("bulgeAmount", "bamnt", MFnNumericData::kFloat);
   nAttr.setKeyable(true);
   nAttr.setDefault(0.0);
@@ -246,16 +325,9 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aBulgeDistance);
   attributeAffects(aBulgeDistance, outputGeom);
 
-//  aInputGeo = gAttr.create("inputGeo", "ingeo");
-//  gAttr.addAccept(MFnData::kMesh);
-
-
-  aInputGeo = tAttr.create("inputGeo", "ingeo", MFnData::kMesh);
-
-//  gAttr.addAccept(MFnData::kNurbsSurface);
-//  gAttr.addAccept(MFnData::kNurbsCurve);
-  addAttribute(aInputGeo);
-  attributeAffects(aInputGeo, outputGeom);
+  aColGeo = tAttr.create("inputGeo", "ingeo", MFnData::kMesh);
+  addAttribute(aColGeo);
+  attributeAffects(aColGeo, outputGeom);
 
   aInputs = cAttr.create("inputGeoArray", "ingeoarray");
   cAttr.setKeyable(false);
@@ -263,7 +335,7 @@ MStatus LHCollisionDeformer::initialize() {
   cAttr.addChild( aColBBMin );
   cAttr.addChild( aColBBMax );
   cAttr.addChild( aColWorldMatrix );
-  cAttr.addChild( aInputGeo );
+  cAttr.addChild( aColGeo );
   cAttr.setReadable(true);
   cAttr.setWritable(true);
   cAttr.setConnectable(true);
@@ -276,12 +348,71 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aFalloffRamp);
   attributeAffects(aFalloffRamp, outputGeom);
 
+	aInnerFalloffRamp = rAttr.createCurveRamp("falloffShapeInner", "fshapein");
+  addAttribute(aInnerFalloffRamp);
+  attributeAffects(aInnerFalloffRamp, outputGeom);
 
   // Make the deformer weights paintable
-  MGlobal::executeCommand("makePaintable -attrType multiFloat -sm deformer LHCollisionDeformer weights;");
+  // MGlobal::executeCommand("makePaintable -attrType multiFloat -sm deformer LHCollisionDeformer weights;");
+  MGlobal::executeCommand("makePaintable -attrType multiDouble -shapeMode deformer LHCollisionDeformer collisionWeights;");
+  MGlobal::executeCommand("makePaintable -attrType multiDouble -shapeMode deformer LHCollisionDeformer bulgeWeights;");
 
   return MS::kSuccess;
 }
+
+//===Post Constructor===
+ 
+
+MStatus postConstructor_initialise_ramp_curve( MObject parentNode, MObject rampObj, int index, float position, float value, int interpolation){
+  MStatus status;
+  MPlug rampPlug( parentNode, rampObj );
+  MPlug elementPlug = rampPlug.elementByLogicalIndex( index, &status );
+  MPlug positionPlug = elementPlug.child(0, &status);
+  status = positionPlug.setFloat(position);
+  MPlug valuePlug = elementPlug.child(1);
+  status = valuePlug.setFloat(value);
+  MPlug interpPlug = elementPlug.child(2);
+  interpPlug.setInt(interpolation);
+  return MS::kSuccess;
+}
+
+
+void LHCollisionDeformer::postConstructor()
+{
+MStatus status;
+MObject thisMObj(LHCollisionDeformer::thisMObject());
+
+postConstructor_initialise_ramp_curve( thisMObj, aFalloffRamp, 0, 0.0f, 1.0f, 2 );
+postConstructor_initialise_ramp_curve( thisMObj, aFalloffRamp, 1, 1.0f, 0.0f, 2 );
+
+postConstructor_initialise_ramp_curve( thisMObj, aInnerFalloffRamp, 0, 0.0f, 1.0f, 2 );
+postConstructor_initialise_ramp_curve( thisMObj, aInnerFalloffRamp, 1, 1.0f, 0.0f, 2 );
+
+
+postConstructor_initialise_ramp_curve( thisMObj, aBlendBulgeCollisionRamp, 0, 0.0f, 1.0f, 2 );
+postConstructor_initialise_ramp_curve( thisMObj, aBlendBulgeCollisionRamp, 1, 1.0f, 0.0f, 2 );
+
+}
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+double SafelyGetWeights(std::vector <MDoubleArray> weights, unsigned int currentIndex, unsigned int currentPointIndex){
+// Bitwise && to make sure if anything fails it won't check the condition to the right...
+if (weights.size() && weights.size() >= currentIndex && weights[currentIndex].length() && weights[currentIndex].length() >= currentPointIndex){
+  return weights[currentIndex][currentPointIndex];
+}
+return 1.0;
+}
+
 MBoundingBox LHCollisionDeformer::getBoundingBox(MDataBlock& data, MObject worldMatrix, MObject oMinBB, MObject oMaxBB){
 	  bBMatrix = data.inputValue( worldMatrix ).asMatrix();
 	  double3& minBB = data.inputValue( oMinBB ).asDouble3();
@@ -295,16 +426,11 @@ MBoundingBox LHCollisionDeformer::getBoundingBox(MDataBlock& data, MObject world
 
 MBoundingBox LHCollisionDeformer::getBoundingBoxMultiple(MDataBlock& data, MMatrix &colWorldMatrix, MObject oMinBB, MObject oMaxBB,
 												 unsigned int index, MObject oCompound){
-//	  MStatus status;
 	  MArrayDataHandle compoundArrayHandle(data.inputArrayValue( oCompound));
-//	  CheckStatusReturn( status, "Unable to get inputs for col bounding box" );
 
-      compoundArrayHandle.jumpToElement(index);
-//	  CheckStatusReturn( status, "Unable to jumpt to element for col bounding box" );
-
-//      colWorldMatrix =compoundArrayHandle.inputValue().child( worldMatrix ).asMatrix();
-      double3& minBB =compoundArrayHandle.inputValue().child( oMinBB ).asDouble3();
-      double3& maxBB =compoundArrayHandle.inputValue().child( oMaxBB ).asDouble3();
+    compoundArrayHandle.jumpToElement(index);
+    double3& minBB =compoundArrayHandle.inputValue().child( oMinBB ).asDouble3();
+    double3& maxBB =compoundArrayHandle.inputValue().child( oMaxBB ).asDouble3();
 	  MPoint minBBPoint(minBB[0], minBB[1], minBB[2]);
 	  MPoint maxBBPoint(maxBB[0], maxBB[1], maxBB[2]);
 	  MBoundingBox mainBB(minBBPoint, maxBBPoint);
@@ -313,18 +439,54 @@ MBoundingBox LHCollisionDeformer::getBoundingBoxMultiple(MDataBlock& data, MMatr
 	  return mainBB;
 }
 
-MPoint LHCollisionDeformer::getBulge(int numColPoints, MPoint currPoint, MPoint closestPoint, double bulgeAmount,
-                                     double bulgeDistance, MVector vRay, MMatrix mainMatrix, double maxDisp, MRampAttribute curveAttribute){
-    distance = currPoint.distanceTo(closestPoint);
-    double relativeDistance = distance/bulgeDistance;
-    float value;
-    curveAttribute.getValueAtPosition((float) relativeDistance, value);
-    finalPoint = currPoint + vRay * bulgeAmount * (relativeDistance * maxDisp * value) ;
-    return finalPoint * mainMatrix.inverse();
+MStatus LHCollisionDeformer::RetrieveWeightsForAllIndicies(MObject weightsParent, MObject weights, int numIndex, std::vector <MDoubleArray> &weightsArray,
+                                                           MPlug inPlug, MDataBlock& data){
 
+  MStatus status;
+  if (weightsArray.size()){
+    weightsArray.clear();
+  }
+  for( i = 0; i < numIndex; ++i)
+  {
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Find out how many points are in each piece of geo that will be deformed, if non fail safely and create a dummy count of 0
+    MArrayDataHandle ahInput = data.inputArrayValue(input, &status) ;
+    CheckStatusReturn( status, "Unable to Make ahInput" );
+    try{
+        status = ahInput.jumpToElement( i ) ;
+    }
+    catch(...){
+        iterGeoCount = 0;
+    }
+    if (status == MS::kSuccess){
+        // if status fails set array to 0
+        MDataHandle dhInput = ahInput.inputValue(&status) ;
+        CheckStatusReturn( status, "Unable to dhInput" );
+
+      MDataHandle dhWeightChild = dhInput.child( inputGeom ) ;
+      CheckStatusReturn( status, "Unable to ahWeightChild" );
+
+
+        MItGeometry iter( dhWeightChild, true, &status );
+        iterGeoCount = iter.count(&status);
+        CheckStatusReturn( status, "Unable to Make iterGeoCount" );
+    }
+    if(iterGeoCount > 0){
+        rWeights.clear();
+        status = getPlugWeightValues(weightsParent, weights, iterGeoCount, i, rWeights);
+        CheckStatusReturn( status, "Unable to get weightsArray" );
+        weightsArray.push_back(rWeights);
+    }
+    else
+    {
+      dummyWeights.clear();
+      dummyWeights.setLength(1) ;
+      dummyWeights[0] = 0.0;
+      weightsArray.push_back(dummyWeights);
+    }
+  }
+  return MS::kSuccess;
 }
-
-
 
 
 void* LHCollisionDeformer::creator() { return new LHCollisionDeformer; }
@@ -332,6 +494,32 @@ void* LHCollisionDeformer::creator() { return new LHCollisionDeformer; }
 MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
                           const MMatrix &localToWorldMatrix, unsigned int mIndex) {
   MStatus status;
+  MObject thisMObj( thisMObject() );
+
+  currentIndex = mIndex;
+   //////////// get highest index in array //////////////////
+
+  if (indexIntArray.size()){
+    indexIntArray.clear();
+  }
+  MPlug inPlug(thisMObj, input);
+  inPlug.getExistingArrayAttributeIndices(indices,&status);
+  CheckStatusReturn( status, "Unable to get NumIndexes" );
+
+  indicesLength = indices.length();
+
+  //loop to put indices into std vector
+  for( i = 0; i < indicesLength; ++i)
+  {
+      indexIntArray.push_back(indices[i]);
+  }
+
+  if (indicesLength == 1)
+      numIndex = indices[0]+1;
+  if (indicesLength == 2)
+      numIndex = std::max(indices[0],indices[1])+1;
+  if (indicesLength >= 3)
+      numIndex = *(max_element(indexIntArray.begin(), indexIntArray.end()))+1;
 
   //Retrieve all data
   float env = data.inputValue(envelope).asFloat();
@@ -339,20 +527,27 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 	  return MS::kSuccess;
   float bulgeAmount = data.inputValue(aBulgeAmount).asFloat();
   float bulgeDistance = data.inputValue(aBulgeDistance).asFloat();
+  short eAlgorithm = data.inputValue(aAlgorithm).asShort();
+  int cacheWeights = data.inputValue( aCacheWeights ).asInt();
 
-  // Get bounding box
+  // Get weights
+	if((!bulgeWeightsArray.size() ||  bulgeWeightsArray.size() < numIndex) or !cacheWeights){
+  status = LHCollisionDeformer::RetrieveWeightsForAllIndicies(aWeightsParent, aBulgeWeights, numIndex, bulgeWeightsArray, inPlug, data);
+  CheckStatusReturn( status, "Unable to get bulge Weights" );
+  }
 
-  MObject oThis = thisMObject();
-  MRampAttribute curveAttribute(oThis, aFalloffRamp);
+	if((!collisionWeightsArray.size() || collisionWeightsArray.size() < numIndex) or !cacheWeights){
+  status = LHCollisionDeformer::RetrieveWeightsForAllIndicies(aWeightsParent, aCollisionWeights, numIndex, collisionWeightsArray, inPlug, data);
+  CheckStatusReturn( status, "Unable to get collision Weights" );
+  }
 
+  // Get ramps
+  MRampAttribute rFalloffRamp(thisMObj, aFalloffRamp);
+  MRampAttribute rInnerFalloffRamp(thisMObj, aInnerFalloffRamp);
+  MRampAttribute rBlendBulgeCollisionRamp(thisMObj, aBlendBulgeCollisionRamp);
 
   MMatrix bBMatrix = data.inputValue( LHCollisionDeformer::aMainWorldMatrix ).asMatrix();
-//  double3& minBB = data.inputValue( LHCollisionDeformer::aMainBBMin ).asDouble3();
-//  double3& maxBB = data.inputValue( LHCollisionDeformer::aMainBBMax ).asDouble3();
-//  MPoint minBBPoint(minBB[0], minBB[1], minBB[2]);
-//  MPoint maxBBPoint(maxBB[0], maxBB[1], maxBB[2]);
-//  MBoundingBox mainBB(minBBPoint, maxBBPoint);
-//  mainBB.transformUsing(bBMatrix);
+  int iPermanent = data.inputValue( LHCollisionDeformer::aPermanent ).asInt();
 
   mainBB = getBoundingBox(data, LHCollisionDeformer::aMainWorldMatrix, LHCollisionDeformer::aMainBBMin, LHCollisionDeformer::aMainBBMax);
 
@@ -361,61 +556,26 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   CheckStatusReturn( status, "Unable to get inputs" );
   unsigned int inputCount = inputsArrayHandle.elementCount(&status);
   CheckStatusReturn( status, "Unable to get number of inputs" );
-
   MObjectArray oColMeshArray;
   std::vector <MBoundingBox> colBBArray;
-
   MMatrixArray colMatrices;
-
   for (i=0;i < inputCount; i++){
-
       status = inputsArrayHandle.jumpToElement(i);
-      oTestMesh =inputsArrayHandle.inputValue().child( LHCollisionDeformer::aInputGeo).asMeshTransformed();
-
-
+      oTestMesh =inputsArrayHandle.inputValue().child( LHCollisionDeformer::aColGeo).asMeshTransformed();
       colMatrix =inputsArrayHandle.inputValue().child( LHCollisionDeformer::aColWorldMatrix ).asMatrix();
       colMatrices.append(colMatrix);
-
-
       colBBArray.push_back(LHCollisionDeformer::getBoundingBoxMultiple(data, colMatrix, LHCollisionDeformer::aColBBMin,
     		               LHCollisionDeformer::aColBBMax, inputCount, LHCollisionDeformer::aInputs));
-//      MPoint centerTest;
-//      centerTest = colBBArray[i].center();
-//
-// 	  MGlobal::displayInfo(MString("DEBUG: BBoxCenter ")+ centerTest.x);
-//
-//
       if (oTestMesh.isNull()){
     	  continue;
       }
-//      MFnMesh tmpMesh(oTestMesh);
-//      fnMeshArray[i](oTestMesh);
       oColMeshArray.append(oTestMesh);
   }
   int nColMeshes = oColMeshArray.length();
   if (!nColMeshes)
 	  return MS::kSuccess;
-
-  MIntArray hitMeshes;
-  // Do bounding box collision check first, before even touching any point data to be as efficient as possible
-  // Test intersections "Quick" collision test. Can run in parallel but not sure if expensive enough to offload...
-  for (i=0;i < colBBArray.size();i++){
-	  testBounds = colBBArray[i];
-	  intersects = testBounds.intersects(mainBB);
-	  if (intersects){
-		  hitMeshes.append(1);
-		  //MGlobal::displayInfo(MString("DEBUG: INTERSECTING "));
-	  }
-	  //else{
-		 //MGlobal::displayInfo(MString("DEBUG: NOT INTERSECTING "));
-	  //}
-  }
-//  if(!hitMeshes.length())
-//	 return MS::kSuccess;
-
   //===============================================================================================================
-  // Containment test/deformation algorithm.  If num hits is even, outside the mesh, if odd, inside, if 0, neither.
-  // This is MFnMesh AllIntersections, it is slow and NOT threadsafe.
+  // Get the main mesh from the MpxDeformer class
   MArrayDataHandle inputGeoArrayHandle(data.inputArrayValue( input, &status));
   status = inputGeoArrayHandle.jumpToElement(mIndex);
   CheckStatusReturn( status, "Unable to get inputGeom" );
@@ -424,198 +584,264 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 	 MGlobal::displayInfo(MString("DEBUG: oMainMesh is null "));
 	 return MS::kFailure;
   }
-  //===============================================================================================================
   MFnMesh fnMainMesh(oMainMesh);
   MPoint tmptstPoint;
   fnMainMesh.getPoint(0,tmptstPoint);
-  MGlobal::displayInfo(MString("DEBUG: TemptTest ")+tmptstPoint.x);
 
-
-
-
-
-
-
-//  MFnMesh differentMesh;
-//  differentMesh = fnMainMesh;
-//  fnMainMesh.AllIntersections
-
-
-
-// Can Run in parallel. For all intents and purposes this is the main deformation algorithm iterator.
-// Some data is gathered, but point information should be
-// set in this iteration for optimization
-  MMeshIntersector fnMeshIntersector;
-
-  MPointArray allPoints;
-  fnMainMesh.getPoints(allPoints);
-//  itGeo.allPositions(allPoints);
+  // If permanent store the currently posed points, if not reset every iteration
+  if (iPermanent){
+    if (allPoints.length() == 0){
+      fnMainMesh.getPoints(allPoints);
+    }
+    else
+    {
+      for (i=0;i < numPoints; i++){
+        allPoints[i] = allPoints[i] * bBMatrix;
+      }
+    }
+  }
+  else{
+      fnMainMesh.getPoints(allPoints);
+  }
 
   numPoints = allPoints.length();
-
-  MPointArray tPoints;
-  MPointArray finalPoints;
-  isInBBox = false;
-  MIntArray hitArray;
-  maxDisp = 0.0;
+  MPoint initPoint(0.0, 0.0, 0.0);
   for (x=0;x < inputCount; x++){
+    MVectorArray vertexNormalArray;
+
+    isInBBox = false;
+    MIntArray hitArray;
+    MIntArray flipRayArray;
+    MPointArray flipPointArray;
+    MIntArray hitFaceIdArray;
+
+
 	  colMatrix = colMatrices[x];
-//	  double sm[4][4];
-//	  colMatrix.get(sm);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[0][0] + sm[0][1] + sm[0][2] + sm[0][3]);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[1][0] + sm[1][1] + sm[1][2] + sm[1][3]);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[2][0] + sm[2][1] + sm[2][2] + sm[2][3]);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[3][0] + sm[3][1] + sm[3][2] + sm[3][3]);
-
-//	  double sm[4][4];
-//	  colMatrix.get(sm);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[0][0] + sm[0][1] + sm[0][2] + sm[0][3]);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[1][0] + sm[1][1] + sm[1][2] + sm[1][3]);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[2][0] + sm[2][1] + sm[2][2] + sm[2][3]);
-//	  MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[3][0] + sm[3][1] + sm[3][2] + sm[3][3]);
-
-
-
-
-
-
-
-	  fnMeshIntersector.create(oColMeshArray[x], colMatrix);
 	  MFnMesh fnColMesh(oColMeshArray[x]);
-
-
-	  MPoint tmptstPoint;
-	  fnColMesh.getPoint(0,tmptstPoint);
-	  MGlobal::displayInfo(MString("DEBUG: TemptTest ")+tmptstPoint.x);
-
-
-//	  fnColMesh.getPoints(allColPoints);
-//	  for (i=0;i < allColPoints.length(); i++){
-//		  allColPoints[i] = allColPoints[i] * colMatrix;
-//	  }
-//	  fnColMesh.setPoints(allColPoints);
-//
-
+	  fnColMesh.getPoints(allColPoints);
+    //=========================
+    // Needs to be multiThreaded!!
+	  for (i=0;i < allColPoints.length(); i++){
+		  allColPoints[i] = allColPoints[i] * colMatrix;
+	  }
+    //=========================
+	  fnColMesh.setPoints(allColPoints);
 
 	  MMeshIsectAccelParams mmAccelParams = fnColMesh.autoUniformGridParams();
 	  for (i=0;i < numPoints; i++){
-		  //Check if the point is within the bounding box
-		  MPoint bbMin = colBBArray[0].min();
-		  MPoint bbMax = colBBArray[0].max();
-		  allPoints[i] = allPoints[i]; //* bBMatrix;
-		  // If inside bounds run more expensive calculations
-	//	  xformPoint = allPoints[i] * bBMatrix;
-		  if (allPoints[i].x > bbMin.x &&
-			  allPoints[i].y > bbMin.y &&
-			  allPoints[i].z > bbMin.z &&
-			  allPoints[i].x < bbMax.x &&
-			  allPoints[i].y < bbMax.y &&
-			  allPoints[i].z < bbMax.z){
-	//		  MGlobal::displayInfo(MString("DEBUG: NumPointsOUT ")+ i);
-			//Use vertex normal vector to create a ray for casting
-			fnMainMesh.getVertexNormal(i, vRay);
-			MFloatPointArray hitPoints;
-
-			hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 99999999999.0,
-											  false, &mmAccelParams, false, hitPoints, NULL, NULL, NULL, NULL, NULL);
-
-			numHits = hitPoints.length();
-
-			if (!hit || numHits % 2 == 0){
-				finalPoints.append(allPoints[i]* bBMatrix.inverse());
-				hitArray.append(0);
-			  // if (isInBBox){
-			  //   fnMainMesh.getVertexNormal(i, vRay);
-			  //   fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-			  //   closestPoint = closestPointOn.getPoint();
-			  //   finalPoints.append(LHCollisionDeformer::getBulge(tPoints.length(), allPoints[i], closestPoint, bulgeAmount,
-			  //                                                   bulgeDistance, vRay, bBMatrix));
-			  // }
-
-				continue;
-			}
-			//Project with closest point on surface
-			hitArray.append(1);
-			isInBBox = true;
-			tPoints.append(allPoints[i]);
-
-			fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-			closestPoint = closestPointOn.getPoint();
-
-
-			testDist = closestPoint.distanceTo(allPoints[i]);
-			if (testDist>maxDisp){
-			  maxDisp = testDist;
-			}
-
-
-			finalPoints.append(closestPoint * bBMatrix.inverse());
-		  }
-		else{
-			finalPoints.append(allPoints[i] * bBMatrix.inverse());
-			hitArray.append(0);
-		}
-	  }
-  }
-  if (isInBBox){
-    for (i=0;i < numPoints; i++){
-        if (!hitArray[i]){
+        collisionWeight = SafelyGetWeights(collisionWeightsArray, currentIndex, i);
+        bulgeWeight = SafelyGetWeights(bulgeWeightsArray, currentIndex, i);
+        if (collisionWeight <= 0.0){
+          hitArray.append(0);
+          flipRayArray.append(0);
+          flipPointArray.append(initPoint);
           fnMainMesh.getVertexNormal(i, vRay);
-          fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-          closestPoint = closestPointOn.getPoint();
-          finalPoints[i] = LHCollisionDeformer::getBulge(tPoints.length(), allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, bBMatrix, maxDisp, curveAttribute);
+          vertexNormalArray.append(vRay);
+          continue;
         }
+        fnMainMesh.getVertexNormal(i, vRay);
+        vertexNormalArray.append(vRay);
+        //Check if the point is within the bounding box
+        MPoint bbMin = colBBArray[x].min();
+        MPoint bbMax = colBBArray[x].max();
+        // allPoints[i] = allPoints[i]; 
+        // If inside bounds run more expensive calculations
+        if (allPoints[i].x > bbMin.x &&
+          allPoints[i].y > bbMin.y &&
+          allPoints[i].z > bbMin.z &&
+          allPoints[i].x < bbMax.x &&
+          allPoints[i].y < bbMax.y &&
+          allPoints[i].z < bbMax.z){
+            //Use vertex normal vector to create a ray for casting
+            MFloatPointArray hitPoints;
+
+            hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 9999999.0,
+                              false, &mmAccelParams, true, hitPoints, NULL, &hitFaceIdArray, NULL, NULL, NULL);
+
+            numHits = hitPoints.length();
+            // If no hit, or the hit is divisible by 2 skip it, we are outside the mesh (Hormann & Agathos, 2001)
+            if (!hit || numHits % 2 == 0){
+              hitArray.append(0);
+              flipRayArray.append(0);
+              flipPointArray.append(initPoint);
+              continue;
+            }
+
+            //========================================================================================================================================
+            //========================================================================================================================================
+            //This is a slower, but more accurate cleanup pass of the algorithm to avoid swimming points and points flipping to the inside of the mesh.
+            // Need to be sure there is actually a face in the opposite direction, if not there is no point to flipping
+
+						if (eAlgorithm>0){
+              fnColMesh.getPolygonNormal(hitFaceIdArray[0], polyNormal);
+              flipCheck = polyNormal * vRay;
+              if (flipCheck > 0){
+                vRay = vRay * -1.0;
+                MFloatPointArray hitPointsFlipped;
+                hit = fnColMesh.allIntersections(allPoints[i], vRay, NULL, NULL, false, MSpace::kObject, 9999999.0,
+                                  false, &mmAccelParams, true, hitPointsFlipped, NULL, NULL, NULL, NULL, NULL);
+                if (hit){
+                    flipRayArray.append(1);
+                    flipPointArray.append(hitPointsFlipped[0]);
+                }
+                else{
+                    flipRayArray.append(0);
+                    flipPointArray.append(hitPoints[0]);
+                }
+              }
+              else{
+                flipRayArray.append(0);
+                flipPointArray.append(hitPoints[0]);
+              }
+            }
+            else{
+                  flipRayArray.append(0);
+                  flipPointArray.append(hitPoints[0]);
+            }
+            //========================================================================================================================================
+            //========================================================================================================================================
+            hitArray.append(1);
+            isInBBox = true;
+          }
+      else{
+        hitArray.append(0);
+        flipRayArray.append(0);
+        flipPointArray.append(initPoint);
+	    }
+    }
+
+  // Can Mostly be Run in Parallel, the fnMeshIntersector CANNOT be sent outside of this function, so an MObject needs to be passed out and the intersector created in the parallel function
+    if (isInBBox){
+      if (eAlgorithm == 2){
+      LHCollisionDeformer::BlendBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
+                                                     rInnerFalloffRamp, bulgeAmount, flipPointArray, rFalloffRamp, rBlendBulgeCollisionRamp, mIndex);
       }
+      else{
+      LHCollisionDeformer::seperateBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
+                                                     rInnerFalloffRamp, bulgeAmount, flipPointArray, rFalloffRamp, eAlgorithm, mIndex);
+      }
+    }
   }
-	  // else{
-      //finalPoints.append(allPoints[i]);
-      //   if (isInBBox){
-      //     fnMainMesh.getVertexNormal(i, vRay);
-      //     fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-      //     closestPoint = closestPointOn.getPoint();
-      //     finalPoints.append(LHCollisionDeformer::getBulge(tPoints.length(), allPoints[i], closestPoint, bulgeAmount,
-      //                                                     bulgeDistance, vRay, bBMatrix));
-      //   }
-      // else{
-      //   finalPoints.append(allPoints[i]);
-      // }
-      // fnMainMesh.getVertexNormal(i, vRay);
-      // fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-      // closestPoint = closestPointOn.getPoint();
-      // finalPoints.append(LHCollisionDeformer::getBulge(tPoints.length(), allPoints[i], closestPoint, bulgeAmount,
-      //                                                  bulgeDistance, vRay, bBMatrix));
-      // finalPoints.append(LHCollisionDeformer::getBulge(allPoints[i], bBMatrix));
-    // }
-
-      // if (tPoints.length() > 0){
-      //   fnMeshIntersector.getClosestPoint(allPoints[i], closestPointOn);
-      //   closestPoint = closestPointOn.getPoint();
-
-      //   pDistance = allPoints[i] - closestPoint;
-      //   MVector vDistance(pDistance.x, pDistance.y, pDistance.z);
-      //   distance = vDistance.length();
-      //   // float bulgeAmount = data.inputValue(aBulgeAmount).asFloat();
-      //   // float bulgeDistance = data.inputValue(aBulgeDistance).asFloat();
-
-      //   if (distance < bulgeDistance){
-      //     fnMainMesh.getVertexNormal(i, vRay);
-      //     finalPoint = allPoints[i] + vRay * bulgeAmount;
-      //     finalPoints.append(finalPoint );
-      //   }
-      //   else{
-      //     finalPoints.append(allPoints[i]);
-      //   }
-      // }
-      // else{
-      //   finalPoints.append(allPoints[i]);
-      // }
-
-   MGlobal::displayInfo(MString("DEBUG: Is in BBox ")+ tPoints.length());
-  // MGlobal::displayInfo(MString("DEBUG: NumPoints in MESH") + numPoints);
-  // MGlobal::displayInfo(MString("DEBUG: NumPoints in FINAL") + finalPoints.length());
-
-
-  itGeo.setAllPositions(finalPoints);
+  //============================= multi thread=================================================
+  for (i=0;i < numPoints; i++){
+    allPoints[i] = allPoints[i] * bBMatrix.inverse();
+  }
+  //==============================================================================================
+  itGeo.setAllPositions(allPoints);
   return MS::kSuccess;
 }
 
+
+void LHCollisionDeformer::BlendBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray,
+                                                      MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+                                                      MPointArray flipPointArray, MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp, unsigned int mIndex){
+  //=========================
+  // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
+  fnMeshIntersector.create(oColMeshArray[colMeshIndex]);
+  //=========================
+  for (i=0;i < numPoints; i++){
+        collisionWeight = SafelyGetWeights(collisionWeightsArray, currentIndex, i);
+        if  (hitArray[i] && collisionWeight){
+          collisionPoint = LHCollisionDeformer::CollisionFlipCheckSerial(allPoints, i,  bulgeDistance, bulgeAmount, vertexNormalArray, maxDisp, flipPointArray, rInnerFalloffRamp);
+          blendPoint = LHCollisionDeformer::CollisionCheapSerial(allPoints, i, maxDisp);
+          distance = blendPoint.distanceTo(collisionPoint);
+          relativeDistance = distance/bulgeDistance;
+          rBlendBulgeCollisionRamp.getValueAtPosition((float) relativeDistance, value);
+          collisionWeightPoint = blendPoint + (collisionPoint - blendPoint ) *  value;
+          collisionWeight = SafelyGetWeights(collisionWeightsArray, currentIndex, i);
+          allPoints[i] = allPoints[i] + (collisionWeightPoint - allPoints[i]) * collisionWeight;
+        }
+  }
+  for (i=0;i < numPoints; i++){
+    bulgeWeight = SafelyGetWeights(bulgeWeightsArray, currentIndex, i);
+    if (!hitArray[i] && bulgeWeight){
+      allPoints[i] = LHCollisionDeformer::PerformBulgeSerial(vertexNormalArray, i, allPoints, bulgeAmount, bulgeDistance, maxDisp, rFalloffRamp);
+    }
+  }
+}
+
+
+void LHCollisionDeformer::seperateBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray,  MIntArray flipRayArray,
+                                                      MPointArray &allPoints, MVectorArray vertexNormalArray,double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+                                                      MPointArray flipPointArray, MRampAttribute rFalloffRamp, short algorithm, unsigned int mIndex){
+
+  //=========================
+  // Cannot be run in parallel, the MObject needs to be passed as an arg to the parallel function
+  fnMeshIntersector.create(oColMeshArray[colMeshIndex]);
+  //=========================
+
+  for (i=0;i < numPoints; i++){
+    collisionWeight = SafelyGetWeights(collisionWeightsArray, currentIndex, i);
+    if  (hitArray[i] && collisionWeight){
+      if (flipRayArray[i] && algorithm > 0){
+        collisionWeight = SafelyGetWeights(collisionWeightsArray, currentIndex, i);
+
+        collisionWeightPoint = LHCollisionDeformer::CollisionFlipCheckSerial(allPoints, i,  bulgeDistance, bulgeAmount, vertexNormalArray, maxDisp, flipPointArray, rInnerFalloffRamp);
+        allPoints[i] = allPoints[i] + (collisionWeightPoint - allPoints[i]) * collisionWeight;
+      }
+      else{
+        collisionWeight = SafelyGetWeights(collisionWeightsArray, currentIndex, i);
+        collisionWeightPoint = LHCollisionDeformer::CollisionCheapSerial(allPoints, i, maxDisp);
+        allPoints[i] = allPoints[i] + (collisionWeightPoint - allPoints[i]) * collisionWeight;
+      }
+    }
+  }
+
+  for (i=0;i < numPoints; i++){
+    bulgeWeight = SafelyGetWeights(bulgeWeightsArray, currentIndex, i);
+    if (!hitArray[i] && bulgeWeight){
+      allPoints[i] = LHCollisionDeformer::PerformBulgeSerial(vertexNormalArray, i, allPoints, bulgeAmount, bulgeDistance, maxDisp, rFalloffRamp);
+    }
+  }
+}
+
+MPoint LHCollisionDeformer::CollisionFlipCheckSerial(MPointArray allPoints, unsigned int pointIdx,  double bulgeDistance, double bulgeAmount, MVectorArray vertexNormalArray,
+                                                     double &maxDisp, MPointArray flipPointArray, MRampAttribute rInnerFalloffRamp){
+
+    fnMeshIntersector.getClosestPoint(allPoints[pointIdx], closestPointOn);
+    closestPoint = closestPointOn.getPoint();
+    closestNormal = closestPointOn.getNormal();
+    vRay = vertexNormalArray[pointIdx];
+    flipCheck = closestNormal * vRay;
+    testDist = closestPoint.distanceTo(allPoints[pointIdx]);
+    if (testDist>maxDisp){
+      maxDisp = testDist;
+    }
+    distance = allPoints[i].distanceTo(closestPoint);
+    relativeDistance = distance/bulgeDistance;
+    rInnerFalloffRamp.getValueAtPosition((float) relativeDistance, value);
+
+    interPoint = closestPoint + ((( closestPoint - flipPointArray[pointIdx]) * (value - 1.1F)));
+    return interPoint;
+
+}
+
+MPoint LHCollisionDeformer::CollisionCheapSerial(MPointArray allPoints, unsigned int pointIdx, double &maxDisp){
+  fnMeshIntersector.getClosestPoint(allPoints[pointIdx], closestPointOn);
+  closestPoint = closestPointOn.getPoint();
+  testDist = closestPoint.distanceTo(allPoints[pointIdx]);
+  if (testDist>maxDisp){
+    maxDisp = testDist;
+  }
+  return closestPoint;
+}
+
+MPoint LHCollisionDeformer::PerformBulgeSerial(MVectorArray vertexNormalArray, unsigned int pointIdx, MPointArray allPoints, double bulgeAmount, double bulgeDistance, double maxDisp,
+                                                MRampAttribute rFalloffRamp){
+    vRay = vertexNormalArray[pointIdx];
+    fnMeshIntersector.getClosestPoint(allPoints[pointIdx], closestPointOn);
+    closestPoint = closestPointOn.getPoint();
+    bulgeWeight = SafelyGetWeights(bulgeWeightsArray, currentIndex, pointIdx);
+    //=========================
+    // Need to check whether this can be called from a parallel function, or if a threaded version will need to be written
+    return LHCollisionDeformer::getBulge(allPoints[pointIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
+    //=========================
+
+}
+MPoint LHCollisionDeformer::getBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
+                                     double bulgeDistance, MVector vRay, double maxDisp, MRampAttribute rFalloffRamp, double bulgeWeight){
+    distance = currPoint.distanceTo(closestPoint);
+    relativeDistance = distance/bulgeDistance;
+    rFalloffRamp.getValueAtPosition((float) relativeDistance, value);
+    return currPoint + vRay * bulgeAmount * relativeDistance * maxDisp * value * bulgeWeight ;
+}

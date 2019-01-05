@@ -1,0 +1,17 @@
+src/LH/python/libs/rig/utils/.DS_Store
+src/LH/cpp/plugins/mayaplugin/src/cmake_install.cmake
+src/LH/python/.DS_Store
+src/LH/python/libs/.DS_Store
+src/LH/python/libs/rig/.DS_Store
+src/LH/python/libs/rig/__init__.pyc
+src/LH/python/libs/rig/builders/__init__.pyc
+src/LH/python/libs/rig/builders/build.pyc
+.DS_Store
+src/.DS_Store
+src/LH/.DS_Store
+src/LH/cpp/.DS_Store
+src/LH/cpp/plugins/.DS_Store
+src/LH/cpp/plugins/.gitignore
+src/LH/cpp/plugins/mayaplugin/.DS_Store
+src/LH/cpp/plugins/mayaplugin/Makefile
+src/LH/cpp/plugins/mayaplugin/build/.DS_Store
