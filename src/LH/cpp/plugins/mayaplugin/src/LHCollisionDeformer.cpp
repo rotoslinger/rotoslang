@@ -377,32 +377,17 @@ MStatus postConstructor_initialise_ramp_curve( MObject parentNode, MObject rampO
 }
 
 
-void LHCollisionDeformer::postConstructor()
-{
+void LHCollisionDeformer::postConstructor(){
 MStatus status;
 MObject thisMObj(LHCollisionDeformer::thisMObject());
-
+// Not in a loop because eventually these will be customized individually, possibly based on the bounding box of the geo...
 postConstructor_initialise_ramp_curve( thisMObj, aFalloffRamp, 0, 0.0f, 1.0f, 2 );
 postConstructor_initialise_ramp_curve( thisMObj, aFalloffRamp, 1, 1.0f, 0.0f, 2 );
-
 postConstructor_initialise_ramp_curve( thisMObj, aInnerFalloffRamp, 0, 0.0f, 1.0f, 2 );
 postConstructor_initialise_ramp_curve( thisMObj, aInnerFalloffRamp, 1, 1.0f, 0.0f, 2 );
-
-
 postConstructor_initialise_ramp_curve( thisMObj, aBlendBulgeCollisionRamp, 0, 0.0f, 1.0f, 2 );
 postConstructor_initialise_ramp_curve( thisMObj, aBlendBulgeCollisionRamp, 1, 1.0f, 0.0f, 2 );
-
 }
- 
- 
-
-
-
-
-
-
-
-
 
 
 double SafelyGetWeights(std::vector <MDoubleArray> weights, unsigned int currentIndex, unsigned int currentPointIndex){
@@ -435,7 +420,6 @@ MBoundingBox LHCollisionDeformer::getBoundingBoxMultiple(MDataBlock& data, MMatr
 	  MPoint maxBBPoint(maxBB[0], maxBB[1], maxBB[2]);
 	  MBoundingBox mainBB(minBBPoint, maxBBPoint);
 	  mainBB.transformUsing(colWorldMatrix);
-//	  rBBox = mainBB;
 	  return mainBB;
 }
 
