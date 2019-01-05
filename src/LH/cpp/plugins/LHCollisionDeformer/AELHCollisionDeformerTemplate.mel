@@ -1,0 +1,14 @@
+global proc AELHCollisionDeformerTemplate( string $nodeName )
+{
+    editorTemplate -beginScrollLayout;
+ 
+        editorTemplate -beginLayout "Collision Deformer Attributes" -collapse 0;
+            AEaddRampControl( $nodeName + ".falloffShape" );
+            AEaddRampControl( $nodeName + ".falloffShapeInner" );
+            AEaddRampControl( $nodeName + ".blendBulgeCollisionRamp" );
+
+        editorTemplate -endLayout;
+ 
+    editorTemplate -addExtraControls;
+    editorTemplate -endScrollLayout;
+}
