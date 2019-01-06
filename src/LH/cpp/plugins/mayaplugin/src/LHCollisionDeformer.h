@@ -41,7 +41,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
 
         virtual MStatus deform(MDataBlock& data, MItGeometry& itGeo,
                                 const MMatrix &localToWorldMatrix, unsigned int mIndex);
-        virtual MBoundingBox getBoundingBox(MDataBlock& data, MObject worldMatrix, MObject oMinBB, MObject oMaxBB);
+        virtual MBoundingBox getBoundingBox(MDataBlock& data, MMatrix worldMatrix, MObject oMinBB, MObject oMaxBB, MArrayDataHandle mainArrayHandle, unsigned int index);
         virtual MBoundingBox getBoundingBoxMultiple(MDataBlock& data, MMatrix &colWorldMatrix, MObject oMinBB, MObject oMaxBB,
                                                     unsigned int index, MObject oCompound);
         virtual MPoint getBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount, double bulgeDistance,
@@ -107,8 +107,9 @@ class LHCollisionDeformer : public MPxDeformerNode {
 
         static MObject aNumTasks;
         static MObject aMultiThread;
+        static MObject aMainInputs;
 
-
+        unsigned int inputCount;
 
         double flipCheck;
         MVector closestNormal;
@@ -171,7 +172,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         double bulgeWeight;
         double collisionWeight;
         MPoint collisionWeightPoint;
-
+        std::vector <MPointArray> allPointsArray;
         inline MString FormatError( const MString &msg, const MString
                                         &sourceFile, const int &sourceLine )
         {

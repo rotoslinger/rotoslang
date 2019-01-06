@@ -15,3 +15,6 @@ src/LH/cpp/plugins/.gitignore
 src/LH/cpp/plugins/mayaplugin/.DS_Store
 src/LH/cpp/plugins/mayaplugin/Makefile
 src/LH/cpp/plugins/mayaplugin/build/.DS_Store
+src/LH/python/libs/rig/utils/DeformerCmdsBase.pyc
+src/LH/python/libs/rig/utils/LHCollisionDeformerCmds.pyc
+src/LH/python/libs/rig/utils/__init__.pyc

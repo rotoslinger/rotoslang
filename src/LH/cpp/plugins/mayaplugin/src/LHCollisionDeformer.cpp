@@ -55,6 +55,7 @@ MObject LHCollisionDeformer::aBulgeWeights;
 MObject LHCollisionDeformer::aWeightsParent;
 
 MObject LHCollisionDeformer::aCacheWeights;
+MObject LHCollisionDeformer::aMainInputs;
 
 
 MStatus LHCollisionDeformer::initialize() {
@@ -139,7 +140,7 @@ MStatus LHCollisionDeformer::initialize() {
 
 
   //Main Matrix
-  aMainWorldMatrix = mAttr.create("aMainWorldMatrix", "mwmatrix");
+  aMainWorldMatrix = mAttr.create("mainWorldMatrix", "mwmatrix");
   mAttr.setWritable(true);
   mAttr.setStorable(true);
   addAttribute( aMainWorldMatrix );
@@ -224,11 +225,26 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aMainBBMax);
   attributeAffects(aMainBBMax, outputGeom);
 
+
+
+  aMainInputs = cAttr.create("deformInputArray", "definarray");
+  cAttr.setKeyable(false);
+  cAttr.setArray(true);
+  cAttr.addChild( aMainBBMin );
+  cAttr.addChild( aMainBBMax );
+  cAttr.addChild( aMainWorldMatrix );
+  cAttr.setReadable(true);
+  cAttr.setWritable(true);
+  cAttr.setConnectable(true);
+  cAttr.setChannelBox(true);
+  cAttr.setUsesArrayDataBuilder(true);
+  addAttribute(aMainInputs);
+  attributeAffects(aMainInputs, outputGeom);
   
 ///ARRAY BOUNDS
 //
   //Col Matrix
-  aColWorldMatrix = mAttr.create("aColWorldMatrix", "colwmatrix");
+  aColWorldMatrix = mAttr.create("colWorldMatrix", "colwmatrix");
   mAttr.setWritable(true);
   mAttr.setStorable(true);
   addAttribute( aColWorldMatrix );
@@ -315,13 +331,13 @@ MStatus LHCollisionDeformer::initialize() {
 
   aBulgeAmount = nAttr.create("bulgeAmount", "bamnt", MFnNumericData::kFloat);
   nAttr.setKeyable(true);
-  nAttr.setDefault(0.0);
+  nAttr.setDefault(1.0);
   addAttribute(aBulgeAmount);
   attributeAffects(aBulgeAmount, outputGeom);
 
   aBulgeDistance = nAttr.create("bulgeDistance", "bdist", MFnNumericData::kFloat);
   nAttr.setKeyable(true);
-  nAttr.setDefault(0.0);
+  nAttr.setDefault(1.0);
   addAttribute(aBulgeDistance);
   attributeAffects(aBulgeDistance, outputGeom);
 
@@ -329,7 +345,7 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aColGeo);
   attributeAffects(aColGeo, outputGeom);
 
-  aInputs = cAttr.create("inputGeoArray", "ingeoarray");
+  aInputs = cAttr.create("colliderInputArray", "colinarray");
   cAttr.setKeyable(false);
   cAttr.setArray(true);
   cAttr.addChild( aColBBMin );
@@ -398,14 +414,16 @@ if (weights.size() && weights.size() >= currentIndex && weights[currentIndex].le
 return 1.0;
 }
 
-MBoundingBox LHCollisionDeformer::getBoundingBox(MDataBlock& data, MObject worldMatrix, MObject oMinBB, MObject oMaxBB){
-	  bBMatrix = data.inputValue( worldMatrix ).asMatrix();
-	  double3& minBB = data.inputValue( oMinBB ).asDouble3();
-	  double3& maxBB = data.inputValue( oMaxBB ).asDouble3();
+MBoundingBox LHCollisionDeformer::getBoundingBox(MDataBlock& data, MMatrix worldMatrix, MObject oMinBB, MObject oMaxBB,
+                                                 MArrayDataHandle mainArrayHandle, unsigned int index){
+    MStatus status;
+    status = mainArrayHandle.jumpToElement(index);
+    double3& minBB = mainArrayHandle.inputValue().child( oMinBB).asDouble3();
+    double3& maxBB = mainArrayHandle.inputValue().child( oMaxBB).asDouble3();
 	  MPoint minBBPoint(minBB[0], minBB[1], minBB[2]);
 	  MPoint maxBBPoint(maxBB[0], maxBB[1], maxBB[2]);
 	  MBoundingBox mainBB(minBBPoint, maxBBPoint);
-	  mainBB.transformUsing(bBMatrix);
+	  mainBB.transformUsing(worldMatrix);
 	  return mainBB;
 }
 
@@ -513,6 +531,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   float bulgeDistance = data.inputValue(aBulgeDistance).asFloat();
   short eAlgorithm = data.inputValue(aAlgorithm).asShort();
   int cacheWeights = data.inputValue( aCacheWeights ).asInt();
+  int iPermanent = data.inputValue( LHCollisionDeformer::aPermanent ).asInt();
 
   // Get weights
 	if((!bulgeWeightsArray.size() ||  bulgeWeightsArray.size() < numIndex) or !cacheWeights){
@@ -530,15 +549,26 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   MRampAttribute rInnerFalloffRamp(thisMObj, aInnerFalloffRamp);
   MRampAttribute rBlendBulgeCollisionRamp(thisMObj, aBlendBulgeCollisionRamp);
 
-  MMatrix bBMatrix = data.inputValue( LHCollisionDeformer::aMainWorldMatrix ).asMatrix();
-  int iPermanent = data.inputValue( LHCollisionDeformer::aPermanent ).asInt();
 
-  mainBB = getBoundingBox(data, LHCollisionDeformer::aMainWorldMatrix, LHCollisionDeformer::aMainBBMin, LHCollisionDeformer::aMainBBMax);
+  MArrayDataHandle mainArrayHandle(data.inputArrayValue( LHCollisionDeformer::aMainInputs, &status));
+  CheckStatusReturn( status, "Unable to get deformer inputs" );
+  inputCount = mainArrayHandle.elementCount(&status);
+  CheckStatusReturn( status, "Unable to get number of inputs" );
+  if (inputCount<=mIndex){
+	  return MS::kSuccess;
+  }
+  status = mainArrayHandle.jumpToElement(mIndex);
+  CheckStatusReturn( status, "Unable to jump to element" );
+  MMatrix bBMatrix = mainArrayHandle.inputValue().child( LHCollisionDeformer::aMainWorldMatrix).asMatrix();
+
+  // MMatrix bBMatrix = data.inputValue( LHCollisionDeformer::aMainWorldMatrix ).asMatrix();
+
+  mainBB = getBoundingBox(data, bBMatrix, LHCollisionDeformer::aMainBBMin, LHCollisionDeformer::aMainBBMax, mainArrayHandle, mIndex);
 
   //Get collision geo
   MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHCollisionDeformer::aInputs, &status));
   CheckStatusReturn( status, "Unable to get inputs" );
-  unsigned int inputCount = inputsArrayHandle.elementCount(&status);
+  inputCount = inputsArrayHandle.elementCount(&status);
   CheckStatusReturn( status, "Unable to get number of inputs" );
   MObjectArray oColMeshArray;
   std::vector <MBoundingBox> colBBArray;
@@ -571,6 +601,53 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   MFnMesh fnMainMesh(oMainMesh);
   MPoint tmptstPoint;
   fnMainMesh.getPoint(0,tmptstPoint);
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+  // If permanent store the currently posed points, if not reset every iteration
+  // =============== This will set up the std::vector to store the points ===============
+  if (!allPointsArray.size()){
+      fnMainMesh.getPoints(allPoints);
+      allPointsArray.push_back(allPoints);
+  }
+  if (allPointsArray.size() && allPointsArray.size()-1 < mIndex){
+      fnMainMesh.getPoints(allPoints);
+      allPointsArray.push_back(allPoints);
+  }
+  //======================================================================================
+
+
+  
+  if (iPermanent && !allPointsArray[mIndex].length()){
+    fnMainMesh.getPoints(allPoints);
+    numPoints = allPoints.length();
+    // for (i=0;i < numPoints; i++){
+    //   allPoints[i] = allPoints[i] * bBMatrix;
+    // }
+    allPointsArray[mIndex] = allPoints;
+  }
+
+  if (!iPermanent){
+    fnMainMesh.getPoints(allPoints);
+    allPointsArray[mIndex] = allPoints;
+  }
+
+  // allPoints = allPointsArray[mIndex];
+  for (i=0;i < numPoints; i++){
+    allPoints[i] = allPointsArray[mIndex][i] * bBMatrix;
+  }
+
+*/
 
   // If permanent store the currently posed points, if not reset every iteration
   if (iPermanent){
