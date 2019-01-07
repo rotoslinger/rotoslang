@@ -609,6 +609,16 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
 
 
+  // =============== This will set up the std::vector to store the points ===============
+  if (!allPointsArray.size()){
+      fnMainMesh.getPoints(allPoints);
+      allPointsArray.push_back(allPoints);
+  }
+  if (allPointsArray.size() && allPointsArray.size()-1 < mIndex){
+      fnMainMesh.getPoints(allPoints);
+      allPointsArray.push_back(allPoints);
+  }
+  //======================================================================================
 
 
 
@@ -786,6 +796,9 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   //============================= multi thread=================================================
   for (i=0;i < numPoints; i++){
     allPoints[i] = allPoints[i] * bBMatrix.inverse();
+  }
+  if (iPermanent){
+    allPointsArray[mIndex] = allPoints;
   }
   //==============================================================================================
   itGeo.setAllPositions(allPoints);
