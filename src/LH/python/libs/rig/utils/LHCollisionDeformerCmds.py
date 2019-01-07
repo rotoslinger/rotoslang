@@ -13,7 +13,7 @@ import DeformerCmdsBase
 #Version        1.0.0
 #===============================================================================
 
-class curveDeformerCmd(DeformerCmdsBase.deformerCmd):
+class collisionDeformerCmd(DeformerCmdsBase.deformerCmd):
 
         def checkArgs(self):
             # setup default suffix if user hasn't changed from base
