@@ -2,7 +2,7 @@
 #define LHCOLLISIONEFORMER_H
 #define _MApiVersion
 
-#include <maya/MCppCompat.h>
+// #include <maya/MCppCompat.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MGlobal.h>

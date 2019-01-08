@@ -26,6 +26,8 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MPlugArray.h>
 #include <maya/MFnDoubleArrayData.h>
+#include <maya/MThreadPool.h>
+#include <maya/MTimer.h>
 
 #include <maya/MFnGenericAttribute.h>
 #include <iostream>
@@ -33,6 +35,62 @@
 #include <set>
 #include <math.h>
 #include <vector>
+#include "tbb/blocked_range.h"
+
+#define TBB_PREVIEW_SERIAL_SUBSET 1
+
+#include "tbb/parallel_for.h"
+
+
+
+// using namespace tbb;
+
+struct ThreadData
+{
+	int numTasks;
+	int currThreadNum;
+};
+
+struct matrixSpaceTaskData
+{
+	MMatrix wSpaceMatrix;
+	MIntArray finalIndexArray;
+	MPointArray finalPoints;
+	MPointArray finalPointArray;
+    MPointArray allPoints;
+    ThreadData threadData;
+
+    
+	// I could pass the thread data struct in here, but I am trying to make this as simple as possible
+	// For learning purposes...
+	// int start;
+	// int end;
+	// int numTasks = 10;
+	// int currThreadNum;
+};
+
+struct bulgeTaskData
+{
+    MObjectArray oColMeshArray;
+    unsigned int colMeshIndex;
+    unsigned int numPoints;
+    MIntArray hitArray;
+    MIntArray flipRayArray;
+    MPointArray allPoints;
+    MVectorArray vertexNormalArray;
+    double maxDisp;
+    double bulgeDistance;
+    MRampAttribute rInnerFalloffRamp;
+    double bulgeAmount;
+    MPointArray flipPointArray;
+    MRampAttribute rFalloffRamp;
+    MRampAttribute rBlendBulgeCollisionRamp;
+    unsigned int mIndex;
+	int numTasks;
+	int currThreadNum;
+	MPointArray finalPointArray;
+	MIntArray finalIndexArray;
+};
 
 class LHCollisionDeformer : public MPxDeformerNode {
     public:
@@ -58,6 +116,13 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MPoint PerformBulgeSerial(MVectorArray vertexNormalArray, unsigned int pointIdx, MPointArray allPoints, double bulgeAmount, double bulgeDistance, double maxDisp, MRampAttribute rFalloffRamp);
         virtual MStatus RetrieveWeightsForAllIndicies(MObject weightsParent, MObject weights, int numIndex, std::vector <MDoubleArray> &weightsArray,
                                                    MPlug inPlug, MDataBlock& data);
+        virtual void BlendBulgeAndCollisionParallel(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray, MIntArray flipRayArray,
+                                                       MPointArray &allPoints, MVectorArray vertexNormalArray, double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+                                                       MPointArray flipPointArray, MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp, unsigned int mIndex, unsigned int numTasks);
+        static void DecomposeBlendBulgeAndCollision(void *data, MThreadRootTask *root);
+        static MThreadRetVal BlendBulgeAndCollisionLoop(void *data);
+        virtual void testIntersector( const tbb::blocked_range<size_t> & r );
+
         static void* creator();
         static MStatus initialize();
 

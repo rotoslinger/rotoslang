@@ -10,6 +10,7 @@
 //==============================================================
 
 #include "LHCollisionDeformer.h"
+#include "threading.cpp"
 #include <maya/MFnPlugin.h>
 
 MTypeId LHCollisionDeformer::id(0x67438467);
@@ -58,6 +59,10 @@ MObject LHCollisionDeformer::aCacheWeights;
 MObject LHCollisionDeformer::aMainInputs;
 
 
+MObject LHCollisionDeformer::aMultiThread;
+MObject LHCollisionDeformer::aNumTasks;
+
+
 MStatus LHCollisionDeformer::initialize() {
   MFnNumericAttribute nAttr;
   MFnGenericAttribute gAttr;
@@ -66,6 +71,28 @@ MStatus LHCollisionDeformer::initialize() {
   MRampAttribute rAttr;
   MFnTypedAttribute tAttr;
   MFnEnumAttribute eAttr;
+
+
+  aMultiThread = nAttr.create( "multiThread", "mthread", MFnNumericData::kInt);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setMin(0);
+  nAttr.setMax(2);
+  nAttr.setDefault(1);
+  nAttr.setChannelBox(true);
+  addAttribute( aMultiThread );
+  attributeAffects(aMultiThread, outputGeom);
+
+  aNumTasks = nAttr.create( "numTasks", "nt", MFnNumericData::kInt);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(16);
+  nAttr.setChannelBox(true);
+  addAttribute( aNumTasks );
+  attributeAffects(aNumTasks, outputGeom);
+
 
   aCollisionWeights = nAttr.create("collisionWeights", "cweights", MFnNumericData::kDouble);
   nAttr.setKeyable(true);
@@ -406,14 +433,6 @@ postConstructor_initialise_ramp_curve( thisMObj, aBlendBulgeCollisionRamp, 1, 1.
 }
 
 
-double SafelyGetWeights(std::vector <MDoubleArray> weights, unsigned int currentIndex, unsigned int currentPointIndex){
-// Bitwise && to make sure if anything fails it won't check the condition to the right...
-if (weights.size() && weights.size() >= currentIndex && weights[currentIndex].length() && weights[currentIndex].length() >= currentPointIndex){
-  return weights[currentIndex][currentPointIndex];
-}
-return 1.0;
-}
-
 MBoundingBox LHCollisionDeformer::getBoundingBox(MDataBlock& data, MMatrix worldMatrix, MObject oMinBB, MObject oMaxBB,
                                                  MArrayDataHandle mainArrayHandle, unsigned int index){
     MStatus status;
@@ -490,7 +509,6 @@ MStatus LHCollisionDeformer::RetrieveWeightsForAllIndicies(MObject weightsParent
   return MS::kSuccess;
 }
 
-
 void* LHCollisionDeformer::creator() { return new LHCollisionDeformer; }
 
 MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
@@ -532,6 +550,8 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   short eAlgorithm = data.inputValue(aAlgorithm).asShort();
   int cacheWeights = data.inputValue( aCacheWeights ).asInt();
   int iPermanent = data.inputValue( LHCollisionDeformer::aPermanent ).asInt();
+  int iMultiThread = data.inputValue( LHCollisionDeformer::aMultiThread ).asInt();
+  int iNumTasks = data.inputValue( LHCollisionDeformer::aNumTasks ).asInt();
 
   // Get weights
 	if((!bulgeWeightsArray.size() ||  bulgeWeightsArray.size() < numIndex) or !cacheWeights){
@@ -632,10 +652,57 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   // If permanent store the currently posed points, if not reset every iteration
   if (iPermanent){
       allPoints = allPointsArray[mIndex];
-      for (i=0;i < numPoints; i++){
-        allPoints[i] = allPoints[i] * bBMatrix;
+      //============================= multi thread=================================================
+      //May not speed up much, may even make slower, but should at least try to multiThread
+
+      // if (iMultiThread == 0)
+      // {
+      //   for (i = 0; i < numPoints; i++)
+      //   {
+      //     allPoints[i] = allPoints[i] * bBMatrix;
+      //   }
+      // }
+
+      if (iMultiThread == 1)
+      {
+        countTest = MainParallelDeformationCalc(bBMatrix, countTest, iNumTasks);
       }
+
+      if (iMultiThread == 2)
+      {
+        MTimer timer;
+        timer.beginTimer();
+        for (i = 0; i < numPoints; i++)
+        {
+          countTest[i] = countTest[i] * bBMatrix;
+        }
+        timer.endTimer();
+        double serialTime = timer.elapsedTime();
+
+        timer.beginTimer();
+        countTest = MainParallelDeformationCalc(bBMatrix, countTest, iNumTasks);
+        timer.endTimer();
+        double parallelTime = timer.elapsedTime();
+
+        double ratio = serialTime / parallelTime;
+        MString str = MString("\nElapsed time for serial computation: ") + serialTime + MString("s\n");
+        str += MString("Elapsed time for parallel computation: ") + parallelTime + MString("s\n");
+        str += MString("Speedup: ") + ratio + MString("x\n");
+        MGlobal::displayInfo(str);
+      }
+
+
+
+
+        for (i = 0; i < numPoints; i++)
+        {
+          allPoints[i] = allPoints[i] * bBMatrix;
+        }
+
+
   }
+
+  //============================= multi thread=================================================
   else{
       fnMainMesh.getPoints(allPoints);
       allPointsArray[mIndex] = allPoints;
@@ -714,7 +781,7 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
             //========================================================================================================================================
             //========================================================================================================================================
-            //This is a slower, but more accurate cleanup pass of the algorithm to avoid swimming points and points flipping to the inside of the mesh.
+            //This is a slower but more accurate cleanup pass of the algorithm to avoid swimming points and points flipping to the inside of the mesh.
             // Need to be sure there is actually a face in the opposite direction, if not there is no point to flipping
 
             if (eAlgorithm > 0)
@@ -764,6 +831,92 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 
   // Can Mostly be Run in Parallel, the fnMeshIntersector CANNOT be sent outside of this function, so an MObject needs to be passed out and the intersector created in the parallel function
     if (isInBBox){
+      
+      MObject oMesh = oColMeshArray[0];
+
+      MMeshIntersector fnMeshIntersector;
+      fnMeshIntersector.create(oMesh);
+
+
+      MTimer timer;
+      timer.beginTimer();
+
+      // SerialParallelAverage(&tOutput, &tInput, 10);
+
+
+      timer.endTimer();
+      double serialTime = timer.elapsedTime();
+
+      timer.beginTimer();
+
+      bool failed = false;
+      bool stop = false;
+      // tbb::parallel_for(cancelable_range<unsigned int>(0, numPoints, numPoints / 1000, stop),
+      //                   [&](const cancelable_range<unsigned int> &r) {
+      //                           // Iterate over subrange. It is important that "<" be used for comparison,
+      //                           // because the value of r.end() changes to r.begin() if r is cancelled.
+      //                           for (unsigned int i = r.begin(); i < r.end(); ++i)
+      //                           {
+      //                                   // mesh point object must be in loop-local scope to avoid race conditions
+      //                                   MPointOnMesh meshPoint;
+      //                                   // Do intersection. Need to use per-thread status value as
+      //                                   // MStatus has internal state and may trigger race conditions
+      //                                   // if set from multiple threads. Probably benign in this case,
+      //                                   // but worth being careful.
+      //                                   MStatus localStatus = fnMeshIntersector.getClosestPoint(allPoints[i], meshPoint);
+      //                                   if (localStatus != MStatus::kSuccess)
+      //                                   {
+      //                                           failed = true;
+      //                                           r.cancel();
+      //                                   }
+      //                                   else
+      //                                   {
+      //                                           // default scheduling breaks traversal into large
+      //                                           // chunks, so low risk of false sharing here in array write.
+      //                                           allPoints[i] = meshPoint.getPoint();
+      //                                   }
+      //                           }
+      //                   });
+
+      // void test(const tbb::blocked_range<size_t> &r)
+      // {
+      //   for (size_t i = r.begin(); i != r.end(); ++i)
+      //   {
+      //     // mesh point object must be in loop-local scope to avoid race conditions
+      //     MPointOnMesh meshPoint;
+      //     // Do intersection. Need to use per-thread status value as
+      //     // MStatus has internal state and may trigger race conditions
+      //     // if set from multiple threads. Probably benign in this case,
+      //     // but worth being careful.
+      //     MStatus localStatus = fnMeshIntersector.getClosestPoint(allPoints[i], meshPoint);
+      //   }
+      // }
+
+
+      // tbb::parallel_for( tbb::blocked_range<size_t>(0, numPoints), LHCollisionDeformer::testIntersector);
+
+
+
+
+      timer.endTimer();
+      double parallelTime = timer.elapsedTime();
+
+      double ratio = serialTime / parallelTime;
+      MString str = MString("\nElapsed time for serial computation: ") + serialTime + MString("s\n");
+      str += MString("Elapsed time for parallel computation: ") + parallelTime + MString("s\n");
+      str += MString("Speedup: ") + ratio + MString("x\n");
+      MGlobal::displayInfo(str);
+
+
+
+
+
+
+
+
+
+
+
       if (eAlgorithm == 2){
       LHCollisionDeformer::BlendBulgeAndCollisionSerial(oColMeshArray, x, numPoints, hitArray,  flipRayArray, allPoints, vertexNormalArray, maxDisp, bulgeDistance,
                                                      rInnerFalloffRamp, bulgeAmount, flipPointArray, rFalloffRamp, rBlendBulgeCollisionRamp, mIndex);
@@ -782,6 +935,19 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   //==============================================================================================
   itGeo.setAllPositions(allPoints);
   return MS::kSuccess;
+}
+void LHCollisionDeformer::testIntersector(const tbb::blocked_range<size_t> &r)
+{
+  for (size_t i = r.begin(); i != r.end(); ++i)
+  {
+    // mesh point object must be in loop-local scope to avoid race conditions
+    MPointOnMesh meshPoint;
+    // Do intersection. Need to use per-thread status value as
+    // MStatus has internal state and may trigger race conditions
+    // if set from multiple threads. Probably benign in this case,
+    // but worth being careful.
+    MStatus localStatus = fnMeshIntersector.getClosestPoint(allPoints[i], meshPoint);
+  }
 }
 
 void LHCollisionDeformer::BlendBulgeAndCollisionSerial(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray, MIntArray flipRayArray,

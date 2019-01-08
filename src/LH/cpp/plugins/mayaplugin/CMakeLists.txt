@@ -1,12 +1,43 @@
-# OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
-cmake_minimum_required(VERSION 3.1.3)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)  # not necessary, but encouraged
+cmake_minimum_required(VERSION 2.8)
 
+include(RezBuild)
+include(AL_CMakeLib)
 
-project(LHDeformerNodes)
+SET(CMAKE_CXX_FLAGS "-std=c++11")
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
+rez_find_packages(PREFIX pkgs AUTO)
 
+set(source_files
+	"src/pluginMain.cpp"
+#	"LHRepulsorDeformer.cpp"
+#	"LHRepulsorDeformer.h"
+#	"LHGetDeformPoints.cpp"
+#	"LHGetDeformPoints.h"
+#	"LHTemplateNode.cpp"
+#	"LHTemplateNode.h"
+#	"LHTemplateDeformer.cpp"
+#	"LHTemplateDeformer.h"
+#	"LHWeightNode.cpp"
+#	"LHWeightNode.h"
+#	"LHMultiCluster.cpp"
+#	"LHMultiCluster.h"
+#	"LHComputeDeformer.cpp"
+#	"LHComputeDeformer.h"
+#	"splatDeformer.cpp"
+#	"splatDeformer.h"
+#	"sseDeformer.cpp"
+#	"sseDeformer.h"
+#	"LHMultiClusterThreaded.cpp"
+#	"LHMultiClusterThreaded.h"
+	"src/LHCollisionDeformer.cpp"
+	"src/LHCollisionDeformer.h"
+)
 
-add_subdirectory(src)
+add_library(collision SHARED ${source_files})
+set_target_properties(collision PROPERTIES PREFIX "")
+
+link_directories(${stdlib_ROOT}/lib64)
+
+target_link_libraries(collision ${maya_LIBRARIES} Foundation OpenMaya)
+
+install(TARGETS collision DESTINATION plugins)

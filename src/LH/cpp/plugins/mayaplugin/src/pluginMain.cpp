@@ -1,17 +1,17 @@
-#include <maya/MCppCompat.h>
+// #include <maya/MCppCompat.h>
 #define _MApiVersion
 
 #include <maya/MFnPlugin.h>
-#include "LHRepulsorDeformer.h"
-#include "LHGetDeformPoints.h"
-#include "LHTemplateNode.h"
-#include "LHWeightNode.h"
-#include "LHTemplateDeformer.h"
-#include "LHMultiCluster.h"
-#include "LHComputeDeformer.h"
-#include "splatDeformer.h"
-#include "sseDeformer.h"
-#include "LHMultiClusterThreaded.h"
+// #include "LHRepulsorDeformer.h"
+// #include "LHGetDeformPoints.h"
+// #include "LHTemplateNode.h"
+// #include "LHWeightNode.h"
+// #include "LHTemplateDeformer.h"
+// #include "LHMultiCluster.h"
+// #include "LHComputeDeformer.h"
+// #include "splatDeformer.h"
+// #include "sseDeformer.h"
+// #include "LHMultiClusterThreaded.h"
 #include "LHCollisionDeformer.h"
 
 
