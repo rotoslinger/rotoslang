@@ -79,13 +79,13 @@ MPointArray MainParallelDeformationCalc(MMatrix wSpaceMatrix, MPointArray allPoi
 }
 
 
-double SafelyGetWeights(std::vector <MDoubleArray> weights, unsigned int currentIndex, unsigned int currentPointIndex){
-// Bitwise && to make sure if anything fails it won't check the condition to the right...
-if (weights.size() && weights.size() >= currentIndex && weights[currentIndex].length() && weights[currentIndex].length() >= currentPointIndex){
-  return weights[currentIndex][currentPointIndex];
-}
-return 1.0;
-}
+// double SafelyGetWeights(std::vector <MDoubleArray> weights, unsigned int currentIndex, unsigned int currentPointIndex){
+// // Bitwise && to make sure if anything fails it won't check the condition to the right...
+// if (weights.size() && weights.size() >= currentIndex && weights[currentIndex].length() && weights[currentIndex].length() >= currentPointIndex){
+//   return weights[currentIndex][currentPointIndex];
+// }
+// return 1.0;
+// }
 
 
 

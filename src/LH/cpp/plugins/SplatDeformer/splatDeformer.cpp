@@ -31,6 +31,7 @@
 #include <maya/MMeshIntersector.h>
 #include <maya/MThreadUtils.h>
 #include <tbb/tbb.h>
+#include <omp.h>
 // Macros
 //
 #define MCheckStatus(status, message)    \

@@ -15,6 +15,9 @@ private_build_requires:
 - AL_CMakeLibMaya
 - AL_CMakeLib-2
 - AL_MTypeId-2.2+<3
+- 'cuda-8.0.61'
+
+- tbb-2017+
 
 requires:
 - stdlib-4.8.3+<5

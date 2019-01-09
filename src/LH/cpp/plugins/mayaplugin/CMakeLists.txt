@@ -2,10 +2,14 @@ cmake_minimum_required(VERSION 2.8)
 
 include(RezBuild)
 include(AL_CMakeLib)
+include ( ExternalProject )
 
 SET(CMAKE_CXX_FLAGS "-std=c++11")
 
 rez_find_packages(PREFIX pkgs AUTO)
+
+
+
 
 set(source_files
 	"src/pluginMain.cpp"
@@ -31,13 +35,15 @@ set(source_files
 #	"LHMultiClusterThreaded.h"
 	"src/LHCollisionDeformer.cpp"
 	"src/LHCollisionDeformer.h"
+	"src/threading.cpp"
 )
 
 add_library(collision SHARED ${source_files})
 set_target_properties(collision PROPERTIES PREFIX "")
 
 link_directories(${stdlib_ROOT}/lib64)
+find_package(OpenMP)
 
-target_link_libraries(collision ${maya_LIBRARIES} Foundation OpenMaya)
+target_link_libraries(collision tbb clew cuda cudart ${maya_LIBRARIES} Foundation OpenMaya)
 
 install(TARGETS collision DESTINATION plugins)

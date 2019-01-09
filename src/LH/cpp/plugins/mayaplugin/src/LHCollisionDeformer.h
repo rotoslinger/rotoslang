@@ -26,6 +26,9 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MPlugArray.h>
 #include <maya/MFnDoubleArrayData.h>
+#include <maya/MThreadPool.h>
+#include <maya/MTimer.h>
+#include <maya/MFnNurbsCurve.h>
 
 #include <maya/MFnGenericAttribute.h>
 #include <iostream>
@@ -33,6 +36,61 @@
 #include <set>
 #include <math.h>
 #include <vector>
+ 
+#include <stdio.h>
+
+// #include "tbb/blocked_range.h"
+
+#define TBB_PREVIEW_SERIAL_SUBSET 1
+
+#include <tbb/tbb.h>
+
+struct ThreadData
+{
+	int numTasks;
+	int currThreadNum;
+};
+
+struct matrixSpaceTaskData
+{
+	MMatrix wSpaceMatrix;
+	MIntArray finalIndexArray;
+	MPointArray finalPoints;
+	MPointArray finalPointArray;
+    MPointArray allPoints;
+    ThreadData threadData;
+
+    
+	// I could pass the thread data struct in here, but I am trying to make this as simple as possible
+	// For learning purposes...
+	// int start;
+	// int end;
+	// int numTasks = 10;
+	// int currThreadNum;
+};
+
+struct bulgeTaskData
+{
+    MObjectArray oColMeshArray;
+    unsigned int colMeshIndex;
+    unsigned int numPoints;
+    MIntArray hitArray;
+    MIntArray flipRayArray;
+    MPointArray allPoints;
+    MVectorArray vertexNormalArray;
+    double maxDisp;
+    double bulgeDistance;
+    MRampAttribute rInnerFalloffRamp;
+    double bulgeAmount;
+    MPointArray flipPointArray;
+    MRampAttribute rFalloffRamp;
+    MRampAttribute rBlendBulgeCollisionRamp;
+    unsigned int mIndex;
+	int numTasks;
+	int currThreadNum;
+	MPointArray finalPointArray;
+	MIntArray finalIndexArray;
+};
 
 class LHCollisionDeformer : public MPxDeformerNode {
     public:
@@ -55,9 +113,27 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MPoint CollisionFlipCheckSerial(MPointArray allPoints, unsigned int pointIdx,  double bulgeDistance, double bulgeAmount, MVectorArray vertexNormalArray, double &maxDisp,
                                         MPointArray flipPointArray, MRampAttribute rInnerFalloffRamp);
         MPoint CollisionCheapSerial(MPointArray allPoints, unsigned int pointIdx, double &maxDisp);
-        MPoint PerformBulgeSerial(MVectorArray vertexNormalArray, unsigned int pointIdx, MPointArray allPoints, double bulgeAmount, double bulgeDistance, double maxDisp, MRampAttribute rFalloffRamp);
-        virtual MStatus RetrieveWeightsForAllIndicies(MObject weightsParent, MObject weights, int numIndex, std::vector <MDoubleArray> &weightsArray,
-                                                   MPlug inPlug, MDataBlock& data);
+        MPoint PerformBulgeSerial(MVectorArray vertexNormalArray, unsigned int pointIdx, MPointArray allPoints, double bulgeAmount, double bulgeDistance,
+                                  double maxDisp, MRampAttribute rFalloffRamp);
+        virtual MStatus RetrieveWeightsForAllIndicies(MObject weightsParent, MObject weights, int numIndex, std::vector<MDoubleArray> &weightsArray,
+                                                      MPlug inPlug, MDataBlock &data);
+        virtual void capsuleDeform(MPointArray &allPoints, MItGeometry itGeo, MMatrix bBMatrix, MFnMesh *newMainMesh, double bulgeAmount,
+                                   double bulgeDistance, MRampAttribute rFalloffRamp);
+        virtual MPoint getClosestPointOnSphereImplicit(MPoint testPoint, MPoint capsuleCenter, double radius);
+        virtual MPoint transformPointByClosestPointDistance(MPoint closestPoint, MPoint currentPoint,unsigned int currentPointIndex, MFnMesh *newMainMesh, MMatrix mCapsuleMatrix);
+        virtual MStatus getIntersectionData(MPoint &currPnt, MPoint bbMin, MPoint bbMax, MFnMesh *fnColMesh, MMeshIsectAccelParams &mmAccelParams,
+                                            MPoint initPoint, MIntArray &hitArray, MIntArray &flipRayArray, MPointArray &flipPointArray);
+        virtual MPoint getBulgeCapsule(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
+                                       double bulgeDistance, MVector vRay, double maxDisp, MRampAttribute rFalloffRamp,
+                                       double bulgeWeight, MMatrix mCapsuleMatrix);
+
+        // virtual void BlendBulgeAndCollisionParallel(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray, MIntArray flipRayArray,
+        //                                                MPointArray &allPoints, MVectorArray vertexNormalArray, double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
+        //                                                MPointArray flipPointArray, MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp, unsigned int mIndex, unsigned int numTasks);
+        // static void DecomposeBlendBulgeAndCollision(void *data, MThreadRootTask *root);
+        // static MThreadRetVal BlendBulgeAndCollisionLoop(void *data);
+        // virtual void testIntersector( const tbb::blocked_range<size_t> & r );
+
         static void* creator();
         static MStatus initialize();
 
@@ -108,6 +184,12 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aNumTasks;
         static MObject aMultiThread;
         static MObject aMainInputs;
+        static MObject aGrainSize;
+        static MObject aCapsule;
+        static MObject aCapsuleCurve;
+        static MObject aCapsuleRadius;
+        static MObject aCapsuleMatrix;
+
 
         unsigned int inputCount;
 
@@ -173,6 +255,23 @@ class LHCollisionDeformer : public MPxDeformerNode {
         double collisionWeight;
         MPoint collisionWeightPoint;
         std::vector <MPointArray> allPointsArray;
+        MPointArray countTest;
+
+        int iGrainSize;
+        int iMultiThread;
+        int iCapsule;
+        MObject oCapsuleCurve;
+        MPointArray capsuleCurvePoints;
+        double oCapsuleRadius;
+        MVector capsuleSurfaceDirection;
+        short eAlgorithm;
+        MPoint capsulePoint;
+        double dispCheck;
+        MIntArray hitFaceIdArray;
+        MMatrix mCapsuleMatrix;
+        double matScaleArray[3];
+
+
         inline MString FormatError( const MString &msg, const MString
                                         &sourceFile, const int &sourceLine )
         {
@@ -247,6 +346,24 @@ class LHCollisionDeformer : public MPxDeformerNode {
             }
         }
         return status;
+    }
+    void convertMVectorToMPoint(MVector vec, MPoint &pnt)
+    {
+            pnt.x = vec.x;
+            pnt.y = vec.y;
+            pnt.z = vec.z;
+    }
+    MPointArray closestPointTest(MPointArray testPoints, MMeshIntersector* meshIntersector)
+    {
+    MPointArray rPoints;
+    MPointOnMesh ptOn;
+    MPoint closestPoint;
+    for (unsigned int x = 0; x < 1; x++)
+    {
+        meshIntersector->getClosestPoint(testPoints[x], ptOn);
+        rPoints.append(ptOn.getPoint());
+    }
+    return rPoints;
     }
 
 
