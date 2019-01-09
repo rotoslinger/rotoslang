@@ -51,6 +51,21 @@ struct ThreadData
 	int currThreadNum;
 };
 
+
+
+
+struct CapsuleData
+{
+	MPointArray pPointAArray;
+	MPointArray pPointBArray;
+    MDoubleArray dRadiusAArray;
+    MDoubleArray dRadiusBArray;
+    MIntArray eTypeArray;
+    MIntArray allowScaleArray;
+    MMatrixArray mWorldMatrixArray;
+};
+
+
 struct matrixSpaceTaskData
 {
 	MMatrix wSpaceMatrix;
@@ -117,15 +132,19 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                   double maxDisp, MRampAttribute rFalloffRamp);
         virtual MStatus RetrieveWeightsForAllIndicies(MObject weightsParent, MObject weights, int numIndex, std::vector<MDoubleArray> &weightsArray,
                                                       MPlug inPlug, MDataBlock &data);
-        virtual void capsuleDeform(MPointArray &allPoints, MItGeometry itGeo, MMatrix bBMatrix, MFnMesh *newMainMesh, double bulgeAmount,
-                                   double bulgeDistance, MRampAttribute rFalloffRamp);
+        virtual void sphereDeformScaledSingle(MPointArray &allPoints, MItGeometry itGeo, MMatrix bBMatrix, MFnMesh *newMainMesh, double bulgeAmount,
+                                   double bulgeDistance, MRampAttribute rFalloffRamp, std::vector <MPointArray> &allPointsArray);
         virtual MPoint getClosestPointOnSphereImplicit(MPoint testPoint, MPoint capsuleCenter, double radius);
-        virtual MPoint transformPointByClosestPointDistance(MPoint closestPoint, MPoint currentPoint,unsigned int currentPointIndex, MFnMesh *newMainMesh, MMatrix mCapsuleMatrix);
+        virtual MPoint transformPointByClosestPointDistance(MPoint closestPoint, MPoint currentPoint,unsigned int currentPointIndex, MFnMesh *newMainMesh, MMatrix mCapsuleMatrix, double distance);
         virtual MStatus getIntersectionData(MPoint &currPnt, MPoint bbMin, MPoint bbMax, MFnMesh *fnColMesh, MMeshIsectAccelParams &mmAccelParams,
                                             MPoint initPoint, MIntArray &hitArray, MIntArray &flipRayArray, MPointArray &flipPointArray);
-        virtual MPoint getBulgeCapsule(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
+        virtual MPoint getBulgeCapsuleScaled(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
                                        double bulgeDistance, MVector vRay, double maxDisp, MRampAttribute rFalloffRamp,
                                        double bulgeWeight, MMatrix mCapsuleMatrix);
+        MStatus getCapsuleData(MDataBlock& data, CapsuleData &rCapsuleData);
+        void perPolyDeformation(MMatrixArray colMatrices, MObjectArray oColMeshArray, MFnMesh *fnMainMesh,
+                                double bulgeDistance, double bulgeAmount, MRampAttribute rInnerFalloffRamp,
+                                MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp, MItGeometry itGeo, MMatrix bBMatrix);
 
         // virtual void BlendBulgeAndCollisionParallel(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray, MIntArray flipRayArray,
         //                                                MPointArray &allPoints, MVectorArray vertexNormalArray, double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
@@ -189,6 +208,17 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aCapsuleCurve;
         static MObject aCapsuleRadius;
         static MObject aCapsuleMatrix;
+        static MObject aCapsuleAllowScale;
+
+        static MObject aPrimCapsuleCurve;
+        static MObject aPrimCapsuleType;
+        static MObject aPrimCapsuleRadiusA;
+        static MObject aPrimCapsuleRadiusB;
+        static MObject aPrimCapsuleMatrix;
+        static MObject aPrimCapsuleAllowScale;
+        static MObject aPrimCollisionInputs;
+
+
 
 
         unsigned int inputCount;
@@ -248,7 +278,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         unsigned int iterGeoCount;
         MDoubleArray rWeights;
         MDoubleArray dummyWeights;
-        unsigned int currentIndex;
+        unsigned int currentMIndex;
         std::vector <MDoubleArray> bulgeWeightsArray;
         std::vector <MDoubleArray> collisionWeightsArray;
         double bulgeWeight;
@@ -270,8 +300,18 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MIntArray hitFaceIdArray;
         MMatrix mCapsuleMatrix;
         double matScaleArray[3];
-
-
+        double averagedScale;
+        double averagedInverseScale;
+        MVector skewedDistance;
+        int iAllowScale;
+        int iPermanent;
+        bool permanentChanged;
+        MPoint transformedPoint;
+        MPoint offsetPoint;
+        double distanceToCenter;
+        bool capsuleHit;
+        double bulgeAmountScaled;
+        CapsuleData capsuleData;
         inline MString FormatError( const MString &msg, const MString
                                         &sourceFile, const int &sourceLine )
         {
