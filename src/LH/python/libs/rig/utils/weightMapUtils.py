@@ -20,7 +20,8 @@ def getCleanShape(mayaObject=None):
 def createWeightMapOnObject(mayaObject=None,
                             weightName=PREFIX+"WeightMap",
                             dataType="doubleArray",
-                            defaultValue=1.0, addAttr=True):
+                            defaultValue=1.0, addAttr=True,
+                            makePaintable=True):
     mayaObject = getCleanShape(mayaObject)
     if not mayaObject:
         return
@@ -30,10 +31,30 @@ def createWeightMapOnObject(mayaObject=None,
         if addAttr:
             cmds.addAttr(i, ln=weightName, dataType=dataType)
             setDefaultWeights(i, weightName, dataType=dataType, defaultValue=defaultValue)
-        cmds.makePaintable("mesh", weightName)
+        if makePaintable:
+            cmds.makePaintable("mesh", weightName)
         returnAttrs.append(i + "." + weightName)
     return returnAttrs
 
+def createWeightMapOnDeformer(deformer=None,
+                              mesh = None,
+                              weightName=PREFIX+"WeightMap",
+                              dataType="doubleArray",
+                              defaultValue=1.0, addAttr=True,
+                              makePaintable=True,
+                              deformerType="LHCollisionDeformer"):
+    mesh = getCleanShape(mesh)
+    if not mesh:
+        return
+    # Single
+    returnAttrs = []
+    if addAttr:
+        cmds.addAttr(deformer, ln=weightName, dataType=dataType)
+        setDefaultWeightsWithDeformer(mesh, deformer, weightName, dataType=dataType, defaultValue=defaultValue)
+    if makePaintable:
+        cmds.makePaintable(deformerType, weightName)
+    returnAttrs.append(deformer + "." + weightName)
+    return returnAttrs
 
 
 def setDefaultWeights(name, attrName, dataType, defaultValue=1.0):
@@ -41,6 +62,10 @@ def setDefaultWeights(name, attrName, dataType, defaultValue=1.0):
     defaultVals = [defaultValue for x in range(polyCount)]
     cmds.setAttr(name + "." + attrName, defaultVals, type=dataType)
 
+def setDefaultWeightsWithDeformer(meshName, deformerName, attrName, dataType, defaultValue=1.0):
+    polyCount = cmds.polyEvaluate(meshName, v=True)
+    defaultVals = [defaultValue for x in range(polyCount)]
+    cmds.setAttr(deformerName + "." + attrName, defaultVals, type=dataType)
 
 def removeWeightMapOnObject(mayaObject=None,
                             weightName=PREFIX+"WeightMap",
@@ -208,3 +233,54 @@ def createAndConnectFloatConvertNode(inComingAttr, weightAttrToConnectTo, name="
     # # To get new array item
     # cmds.getAttr("LHKDoubleArrayToKFloatArray1.outFloatWeightList[0]", typ=True)
 
+def addCapsuleWeightsToLHCollisionDeformer(meshIdx=0, addAttr=True, updatePaintableWeights=True):
+    """Select collision deformer and run.  Will add capsule weights for any capsule array that doesn't have weights attached already
+    meshIdx refers to the idx of the selected mesh in the deformer.  If 3 meshes are being deformed, and the selected mesh is the 2nd in the mIndex, the idx will be 1
+    
+    
+    """
+    deformer = cmds.ls(sl=True)[0]
+    mesh = cmds.ls(sl=True)[1]
+    # Get attr
+    collisionInput = cmds.getAttr(deformer + ".primitiveCollisionInputs", mi=True)
+    inputCount = len(collisionInput)
+
+
+#   MGlobal::executeCommand("makePaintable -attrType multiDouble -shapeMode deformer LHCollisionDeformer pCollisionWeights;");
+#   MGlobal::executeCommand("makePaintable -attrType multiDouble -shapeMode deformer LHCollisionDeformer pBulgeWeights;");
+
+
+
+
+    for i in range(inputCount):
+        for attr in ("pCollisionWeights", "pBulgeWeights"):
+
+            colConnection = cmds.listConnections(deformer + ".primitiveCollisionInputs[{0}].pWeightsParent[{1}].{2}".format(i, meshIdx, attr))
+            if not colConnection:
+                attrName = deformer + ".primitiveCollisionInputs[{0}].pWeightsParent[{1}].{2}".format(i, meshIdx, attr)
+                addCapsuleWeightMap(name = mesh + "{0}{1:03}".format(attr, i), deformer=deformer, attr=attrName, idx=i, mesh=mesh, addAttr=addAttr)
+            elif updatePaintableWeights:
+                attrName = deformer + ".primitiveCollisionInputs[{0}].pWeightsParent[{1}].{2}".format(i, meshIdx, attr)
+                addCapsuleWeightMap(name = mesh + "{0}{1:03}".format(attr, i), deformer=deformer, attr=attrName, idx=i, mesh=mesh, addAttr=False)
+
+
+        # bulgeConnection = cmds.listConnections(deformer + ".primitiveCollisionInputs[{0}].pWeightsParent[{1}].pBulgeWeights".format(i, meshIdx))
+        #     attrName = deformer + ".primitiveCollisionInputs[{0}].pWeightsParent[{1}].pBulgeWeights".format(i, meshIdx)
+        #     addCapsuleWeightMap(name = mesh + "pBulgeWeights{0:03}".format(i), deformer=deformer, attr=attrName, idx=i, mesh=mesh)
+
+
+
+
+
+
+def addCapsuleWeightMap(name=None, deformer=None, attr=None, idx=None, mesh=None, addAttr=True):
+    if not name or not deformer or not attr or not mesh:
+        return
+    print "ACTUALLY CREATING ", idx
+    createWeightMapOnDeformer(deformer=deformer, mesh=mesh, weightName=name, dataType="doubleArray",
+                            defaultValue=1.0, addAttr=addAttr,
+                            makePaintable=True, deformerType="LHCollisionDeformer")
+    if addAttr:
+        cmds.connectAttr(deformer + "." + name, attr)
+    
+    
