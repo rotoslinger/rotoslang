@@ -144,7 +144,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                 double bulgeDistance, double bulgeAmount, MRampAttribute rInnerFalloffRamp,
                                 MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp, MItGeometry itGeo, MMatrix bBMatrix);
         void primitiveCollision(MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
-                                MRampAttribute rFalloffRamp);
+                                MRampAttribute rFalloffRamp, MMatrix bBMatrix);
         MStatus getCapsuleWeights(MDataBlock& data, std::vector<MDoubleArray> &rColWeights,
                                                std::vector<MDoubleArray> &rBulgeWeights, MArrayDataHandle inputsArrayHandle);
         // virtual void BlendBulgeAndCollisionParallel(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray, MIntArray flipRayArray,
@@ -159,6 +159,21 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MPoint transformPointByClosestPointDistance(MPoint closestPoint, MPoint currentPoint,unsigned int currentPointIndex, MFnMesh *newMainMesh, double distance);
         MPoint getSphereCapsuleBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
                                      double bulgeDistance, MVector vRay, double maxDisp, MRampAttribute rFalloffRamp, double bulgeWeight);
+
+        void cubeCapsuleCollision(unsigned int capsuleIdx, MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
+                                                            MRampAttribute rFalloffRamp);             
+        void capsuleDeformation(unsigned int capsuleIdx, MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
+                            MRampAttribute rFalloffRamp, MMatrix bBMatrix);
+
+        void sphereClosestPointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleCenter,
+                                     double capsuleRadius, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit, double collisionWeight);
+        void sphereBulgeLogic(MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleCenter, double capsuleRadiusA, MFnMesh *newMainMesh, double bulgeDistance,
+                              double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
+        void cubeClosestPointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleCenter,
+                                                        double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit,
+                                                        double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix, MMatrix bBMatrix);
+        MPoint getClosestPointOnCubeImplicit(MPoint checkPoint, MPointArray framePoints, MMatrix capsuleWorldMatrix);
+
         static void *creator();
         static MStatus initialize();
 
@@ -323,6 +338,13 @@ class LHCollisionDeformer : public MPxDeformerNode {
         std::vector <std::vector <MDoubleArray>> colWeights;
         std::vector <std::vector <MDoubleArray>> bulgeWeights;
         unsigned int weightsCount;
+        MVector pointAsVector;
+
+        double distanceA;
+        double distanceB;
+        double X;
+        double Y;
+        double Z;
 
         inline MString FormatError( const MString &msg, const MString
                                         &sourceFile, const int &sourceLine )
@@ -405,6 +427,13 @@ class LHCollisionDeformer : public MPxDeformerNode {
             pnt.y = vec.y;
             pnt.z = vec.z;
     }
+    void convertMPointToMVector(MPoint pnt, MVector &vec)
+    {
+            vec.x = pnt.x;
+            vec.y = pnt.y;
+            vec.z = pnt.z;
+    }
+
     MPointArray closestPointTest(MPointArray testPoints, MMeshIntersector* meshIntersector)
     {
     MPointArray rPoints;
