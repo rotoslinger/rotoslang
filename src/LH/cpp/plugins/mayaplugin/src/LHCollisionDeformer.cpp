@@ -1347,9 +1347,7 @@ void LHCollisionDeformer::cylinderPointLogic(MPoint &offsetPoint, MPointArray &a
           MVector direction;
           newMainMesh->getVertexNormal(currentIdx, direction);
           direction.normalize();
-          // testDist = allPoints[i].distanceTo(offsetPoint);
           allPoints[i] = offsetPoint + direction * ((testDist-capsuleRadiusA)*.05);
-
         }
         else
           allPoints[i] = offsetPoint;
@@ -1359,8 +1357,6 @@ void LHCollisionDeformer::cylinderPointLogic(MPoint &offsetPoint, MPointArray &a
       else
       {
         hitArray.append(0);
-
-
       }
 
 }
