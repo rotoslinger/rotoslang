@@ -174,6 +174,13 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                                         double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix, MMatrix bBMatrix);
         MPoint getClosestPointOnCubeImplicit(MPoint checkPoint, MPointArray framePoints, MMatrix capsuleWorldMatrix);
 
+
+
+        void cylinderPointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleCenter, MPoint capsuleEnd,
+                                                        double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit,
+                                                        double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix,
+                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec);
+
         static void *creator();
         static MStatus initialize();
 
@@ -345,7 +352,8 @@ class LHCollisionDeformer : public MPxDeformerNode {
         double X;
         double Y;
         double Z;
-
+        double distanceToFirst;
+        double halfRadius;
         inline MString FormatError( const MString &msg, const MString
                                         &sourceFile, const int &sourceLine )
         {

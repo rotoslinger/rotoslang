@@ -1221,6 +1221,8 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
 
     MPoint capsuleCenter = capsuleData.pPointAArray[capsuleIdx];
     MPoint capsuleEndPoint = capsuleData.pPointBArray[capsuleIdx];
+    MPoint capsuleFromToVec = capsuleEndPoint -capsuleCenter;
+    double distanceBetweenPoints = capsuleCenter.distanceTo(capsuleEndPoint);
     double capsuleRadiusA = capsuleData.dRadiusAArray[capsuleIdx];
     MMatrix capsuleMatrix = capsuleData.mWorldMatrixArray[capsuleIdx];
     MVectorArray boundsData;
@@ -1246,8 +1248,10 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
               ;
               break;
           case 3 : // cylinder
-              ;
+              LHCollisionDeformer::cylinderPointLogic(offsetPoint, allPoints, i, capsuleCenter, capsuleEndPoint, capsuleRadiusA, newMainMesh, hitArray, capsuleHit, collisionWeightsArray[i],
+                                                      framePoints, boundsData, capsuleMatrix, bBMatrix, distanceBetweenPoints, capsuleFromToVec);
               break;
+
           case 4 : // plane
               ;
               break;
@@ -1300,6 +1304,66 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
     }
   }
 
+double getLineMagnitude(MPoint from, MPoint to)
+{
+  //This is getting the distance, it is written out here just as a mathmatical exercise, it will be replaced with a simple call to the length() function
+  MPoint magnitude = to - from;
+  return ( double )sqrt(magnitude.x * magnitude.x + magnitude.y * magnitude.y + magnitude.z * magnitude.z);
+}
+
+bool getPointOnLine(MPoint point, MPoint lineStart, MPoint lineEnd, MPoint &pIntersectionPoint, double &pDistance, double radius)
+{
+  double lineMagnitude = lineEnd.distanceTo(lineStart);
+  double U = ( ( ( point.x - lineStart.x ) * ( lineEnd.x - lineStart.x ) ) +
+               ( ( point.y - lineStart.y ) * ( lineEnd.y - lineStart.y ) ) +
+               ( ( point.z - lineStart.z ) * ( lineEnd.z - lineStart.z ) ) ) /
+                 ( lineMagnitude * lineMagnitude );
+  if( U < 0.0 || U > 1.0 )
+    return false;
+  
+  pIntersectionPoint.x = lineStart.x + U * ( lineEnd.x - lineStart.x );
+  pIntersectionPoint.y = lineStart.y + U * ( lineEnd.y - lineStart.y );
+  pIntersectionPoint.z = lineStart.z + U * ( lineEnd.z - lineStart.z );
+  
+  pDistance = point.distanceTo(pIntersectionPoint);
+  if (pDistance > radius)
+    return false;
+  return true;
+}
+
+void LHCollisionDeformer::cylinderPointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleCenter,
+                                                        MPoint capsuleEnd,
+                                                        double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit,
+                                                        double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix,
+                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec)
+{
+      if (getPointOnLine(allPoints[currentIdx], capsuleCenter, capsuleEnd, offsetPoint, testDist, capsuleRadiusA))
+      {
+        MVector direction(allPoints[i] - offsetPoint);
+        direction.normalize();
+        offsetPoint = offsetPoint + direction * capsuleRadiusA;
+        if (eAlgorithm == 1)
+        {
+          MVector direction;
+          newMainMesh->getVertexNormal(currentIdx, direction);
+          direction.normalize();
+          // testDist = allPoints[i].distanceTo(offsetPoint);
+          allPoints[i] = offsetPoint + direction * ((testDist-capsuleRadiusA)*.05);
+
+        }
+        else
+          allPoints[i] = offsetPoint;
+
+        
+      }
+      else
+      {
+        hitArray.append(0);
+
+
+      }
+
+}
 
 void LHCollisionDeformer::cubeClosestPointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleCenter,
                                                   double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit, double collisionWeight,
