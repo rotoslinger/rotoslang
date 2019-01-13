@@ -178,6 +178,12 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                                         double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix,
                                                         MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec);
 
+        void cylinderBulgeLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleCenter,
+                                                        MPoint capsuleEnd,
+                                                        double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit,
+                                                        double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix,
+                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec,double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp);
+
         static void *creator();
         static MStatus initialize();
 
