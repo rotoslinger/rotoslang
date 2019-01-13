@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\LH",
+    "\\src\\LH\\cpp",
+    "\\src\\LH\\cpp\\plugins",
+    "\\src\\LH\\cpp\\plugins\\mayaplugin",
+    "\\src\\LH\\cpp\\plugins\\mayaplugin\\build",
+    "\\src\\LH\\cpp\\plugins\\mayaplugin\\src"
+  ],
+  "SelectedNode": "\\src\\LH\\cpp\\plugins\\mayaplugin\\build\\LHDeformerNodes.sln",
+  "PreviewInSolutionExplorer": false
+}

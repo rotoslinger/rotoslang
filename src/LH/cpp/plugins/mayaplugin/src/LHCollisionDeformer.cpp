@@ -933,12 +933,12 @@ MStatus LHCollisionDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
   }
 
   // Get weights
-	if((!bulgeWeightsArray.size() ||  bulgeWeightsArray.size() < numIndex) or !cacheWeights){
+	if((!bulgeWeightsArray.size() ||  bulgeWeightsArray.size() < numIndex) || !cacheWeights){
   status = LHCollisionDeformer::RetrieveWeightsForAllIndicies(aWeightsParent, aBulgeWeights, numIndex, bulgeWeightsArray, inPlug, data);
   CheckStatusReturn( status, "Unable to get bulge Weights" );
   }
 
-	if((!collisionWeightsArray.size() || collisionWeightsArray.size() < numIndex) or !cacheWeights){
+	if((!collisionWeightsArray.size() || collisionWeightsArray.size() < numIndex) || !cacheWeights){
   status = LHCollisionDeformer::RetrieveWeightsForAllIndicies(aWeightsParent, aCollisionWeights, numIndex, collisionWeightsArray, inPlug, data);
   CheckStatusReturn( status, "Unable to get collision Weights" );
   }

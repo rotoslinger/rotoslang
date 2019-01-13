@@ -264,34 +264,3 @@
 
 
 
-//======================================================================
-// Cancelable range implementation, so that a parallel_for can end early
-// if a failure (or for that matter, a success) is found.
-//
-// From https://software.intel.com/en-us/blogs/2007/11/08/have-a-fish-how-break-from-a-parallel-loop-in-tbb
-//
-template <typename Value>
-class cancelable_range
-{
-        tbb::blocked_range<Value> my_range;
-        volatile bool &my_stop;
-
-      public:
-        // Constructor for client code
-        cancelable_range(int begin, int end, int grainsize, volatile bool &stop) : my_range(begin, end, grainsize),
-                                                                                   my_stop(stop)
-        {
-        }
-        cancelable_range(cancelable_range &r, tbb::split) : my_range(r.my_range, tbb::split()),
-                                                            my_stop(r.my_stop)
-        {
-        }
-        cancelable_range &operator=(const cancelable_range &);
-        void cancel() const { my_stop = true; }
-        bool empty() const { return my_stop || my_range.empty(); }
-        bool is_divisible() const { return !my_stop && my_range.is_divisible(); }
-        Value begin() const { return my_range.begin(); }
-        Value end() const { return my_stop ? my_range.begin() : my_range.end(); }
-};
-//======================================================================
-

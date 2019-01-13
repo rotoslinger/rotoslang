@@ -1,7 +1,7 @@
 #ifndef LHCOLLISIONEFORMER_H
 #define LHCOLLISIONEFORMER_H
 #define _MApiVersion
-
+#define NOMINMAX
 // #include <maya/MCppCompat.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
@@ -41,9 +41,6 @@
 
 // #include "tbb/blocked_range.h"
 
-#define TBB_PREVIEW_SERIAL_SUBSET 1
-
-#include <tbb/tbb.h>
 
 struct ThreadData
 {
