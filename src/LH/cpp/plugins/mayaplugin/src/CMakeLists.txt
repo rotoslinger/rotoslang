@@ -24,6 +24,8 @@ set(SOURCE_FILES
 #	"LHMultiClusterThreaded.h"
 	"LHCollisionDeformer.cpp"
 	"LHCollisionDeformer.h"
+	"LHLocator.cpp"
+	"LHLocator.h"
 )
 
 #set(CMAKE_C_COMPILER clang-omp CACHE STRING "C compiler" FORCE)
@@ -49,6 +51,13 @@ set(SOURCE_FILES
 #endif()
 
 
+find_package(OpenGL REQUIRED)
+if (OPENGL_FOUND)
+	include_directories(${OPENGL_INCLUDE_DIR})
+	link_libraries(${OPENGL_LIBRARIES})
+
+endif()
+#OPENGL
 
 
 find_package(Maya REQUIRED)

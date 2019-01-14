@@ -13,6 +13,7 @@
 // #include "sseDeformer.h"
 // #include "LHMultiClusterThreaded.h"
 #include "LHCollisionDeformer.h"
+#include "LHLocator.h"
 
 
 MStatus initializePlugin(MObject obj) {
@@ -60,8 +61,13 @@ MStatus initializePlugin(MObject obj) {
 
   status = plugin.registerNode( "LHCollisionDeformer", LHCollisionDeformer::id, LHCollisionDeformer::creator,
 		  LHCollisionDeformer::initialize, MPxNode::kDeformerNode );
-
   CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode( "LHLocator", LHLocator::id, LHLocator::creator,
+		  LHLocator::initialize, MPxNode::kLocatorNode );
+      
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
 
   return status;
 }
@@ -97,6 +103,9 @@ MStatus uninitializePlugin(MObject obj) {
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.deregisterNode(LHCollisionDeformer::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.deregisterNode(LHLocator::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   return status;

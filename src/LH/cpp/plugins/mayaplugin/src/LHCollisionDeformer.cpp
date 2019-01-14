@@ -1287,9 +1287,9 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
                    ;
                   break;
               case 3 : // cylinder
-                  MGlobal::displayInfo(MString("WORKING"));
                   LHCollisionDeformer::cylinderBulgeLogic(offsetPoint, allPoints, i, capsuleCenter, capsuleEndPoint, capsuleRadiusA, newMainMesh, hitArray, capsuleHit, collisionWeightsArray[i],
-                                                          framePoints, boundsData, capsuleMatrix, bBMatrix, distanceBetweenPoints, capsuleFromToVec,bulgeDistance, bulgeAmount, rFalloffRamp);
+                                                          framePoints, boundsData, capsuleMatrix, bBMatrix, distanceBetweenPoints, capsuleFromToVec,bulgeDistance, bulgeAmount, rFalloffRamp, maxDisp,
+                                                          bulgeWeightsArray[i]);
                   break;
               case 4 : // plane
                   ;
@@ -1341,9 +1341,12 @@ void LHCollisionDeformer::cylinderPointLogic(MPoint &offsetPoint, MPointArray &a
 {
       if (getPointOnLine(allPoints[currentIdx], capsuleCenter, capsuleEnd, offsetPoint, testDist, capsuleRadiusA))
       {
+        hitArray.append(1);
+        capsuleHit = true;
         MVector direction(allPoints[i] - offsetPoint);
         direction.normalize();
         offsetPoint = offsetPoint + direction * capsuleRadiusA;
+        getMaxDisplacement(offsetPoint, allPoints[currentIdx], dispCheck, maxDisp);
         if (eAlgorithm == 1)
         {
           MVector direction;
@@ -1367,18 +1370,16 @@ void LHCollisionDeformer::cylinderBulgeLogic(MPoint &offsetPoint, MPointArray &a
                                                         MPoint capsuleEnd,
                                                         double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit,
                                                         double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix,
-                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec, double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp)
+                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec, double bulgeDistance,
+                                                        double bulgeAmount, MRampAttribute rFalloffRamp, double maxDisp, double bulgeWeight)
 {
-  
-
   distanceToCenter = allPoints[currentIdx].distanceTo(capsuleCenter);
   if (distanceToCenter < capsuleRadiusA + distanceBetweenPoints + bulgeDistance)
   {
-
     getPointOnLine(allPoints[currentIdx], capsuleCenter, capsuleEnd, closestPoint, testDist, capsuleRadiusA);
-
-    // closestPoint = LHCollisionDeformer::getClosestPointOnSphereImplicit(allPoints[currentIdx], capsuleCenter, capsuleRadiusA);
-    // bulgeWeight = bulgeWeightsArray[i];
+    MVector direction(allPoints[i] - closestPoint);
+    direction.normalize();
+    closestPoint = closestPoint + direction * capsuleRadiusA;
     newMainMesh->getVertexNormal(currentIdx, vRay);
     vRay.normalize();
     allPoints[currentIdx] = LHCollisionDeformer::getSphereCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
@@ -1391,7 +1392,6 @@ void LHCollisionDeformer::sphereBulgeLogic(MPointArray &allPoints, unsigned int 
   if (distanceToCenter < capsuleRadiusA + bulgeDistance)
   {
     closestPoint = LHCollisionDeformer::getClosestPointOnSphereImplicit(allPoints[currentIdx], capsuleCenter, capsuleRadiusA);
-    // bulgeWeight = bulgeWeightsArray[i];
     newMainMesh->getVertexNormal(currentIdx, vRay);
     vRay.normalize();
     allPoints[currentIdx] = LHCollisionDeformer::getSphereCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
@@ -1404,35 +1404,6 @@ void LHCollisionDeformer::cubeClosestPointLogic(MPoint &offsetPoint, MPointArray
 {
       if (currentIdx == 0)
       {
-      //   // MGlobal::displayInfo(MString("x!!!...................................")+  framePoints[0].x);
-      //   // MGlobal::displayInfo(MString("negX!!!...................................")+ framePoints[3].x );
-      //   // MGlobal::displayInfo(MString("Y!!!...................................")+  framePoints[1].y);
-      //   // MGlobal::displayInfo(MString("negY!!!...................................")+ framePoints[4].y );
-      //   // MGlobal::displayInfo(MString("Z!!!...................................")+  framePoints[2].z);
-      //   // MGlobal::displayInfo(MString("negZ!!!...................................")+ framePoints[5].z );
-
-
-      //   if (allPoints[currentIdx].x < framePoints[0].x &&
-      //       allPoints[currentIdx].x > framePoints[3].x &&
-      //       allPoints[currentIdx].y < framePoints[1].y &&
-      //       allPoints[currentIdx].y > framePoints[4].y &&
-      //       allPoints[currentIdx].z < framePoints[2].z &&
-      //       allPoints[currentIdx].z > framePoints[5].z)
-      //       {
-
-
-      //       // MGlobal::displayInfo(MString("INSIDE!!!...................................") );
-
-
-
-      //       }
-
-
-
-      // convertMPointToMVector(allPoints[currentIdx], pointAsVector);
-      // MGlobal::displayInfo(MString("DOT PRODUCT x.....................") + (boundsData[0] * pointAsVector) + " " + framePoints[0].x + " " + framePoints[1].x);
-      // MGlobal::displayInfo(MString("DOT PRODUCT y.....................") + (boundsData[1] * pointAsVector) + " " + framePoints[0].y + " " + framePoints[2].y);
-      // MGlobal::displayInfo(MString("DOT PRODUCT z.....................") + (boundsData[2] * pointAsVector) + " " + framePoints[0].z + " " + framePoints[3].z);
       capsulePoint = allPoints[currentIdx] - capsuleCenter;
       capsulePoint = capsulePoint * capsuleWorldMatrix.inverse();
       MGlobal::displayInfo(MString("CapsuleCenter z.....................") + (capsuleCenter.x) + " " + capsuleCenter.y + " " + capsuleCenter.z);

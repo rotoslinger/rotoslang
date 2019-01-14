@@ -1,7 +1,7 @@
 #ifndef LHCOLLISIONEFORMER_H
 #define LHCOLLISIONEFORMER_H
 #define _MApiVersion
-#define NOMINMAX
+// #define NOMINMAX
 // #include <maya/MCppCompat.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
@@ -182,7 +182,8 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                                         MPoint capsuleEnd,
                                                         double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit,
                                                         double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix,
-                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec,double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp);
+                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec,double bulgeDistance,
+                                                        double bulgeAmount, MRampAttribute rFalloffRamp, double maxDisp, double bulgeWeight);
 
         static void *creator();
         static MStatus initialize();
