@@ -6,6 +6,14 @@ include ( ExternalProject )
 
 SET(CMAKE_CXX_FLAGS "-std=c++11")
 
+# must put find_package before rez_find_packages or will not work......
+find_package(OpenGL REQUIRED)
+if (OPENGL_FOUND)
+	include_directories(${OPENGL_INCLUDE_DIR})
+	link_libraries(${OPENGL_LIBRARIES})
+
+endif()
+
 rez_find_packages(PREFIX pkgs AUTO)
 
 
@@ -35,6 +43,8 @@ set(source_files
 #	"LHMultiClusterThreaded.h"
 	"src/LHCollisionDeformer.cpp"
 	"src/LHCollisionDeformer.h"
+	"src/LHLocator.cpp"
+	"src/LHLocator.h"
 	"src/threading.cpp"
 )
 
@@ -47,3 +57,5 @@ find_package(OpenMP)
 target_link_libraries(collision tbb clew cuda cudart ${maya_LIBRARIES} Foundation OpenMaya)
 
 install(TARGETS collision DESTINATION plugins)
+
+
