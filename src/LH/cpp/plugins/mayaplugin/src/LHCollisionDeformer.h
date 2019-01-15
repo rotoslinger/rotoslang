@@ -189,7 +189,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
                             bool lineCheck, MPoint startUpVector, MPoint endUpVector, MPoint capsuleCenter, bool &endPoint, double &U);
         MPoint planeBulgeLogic(MPoint point, double currentIdx, MVector normal, MVector planarUpVector,
                                 MFnMesh *newMainMesh, double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
-        void planePointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIndex, MVector normal, MVector planarUpVector, double &maxDisp, MIntArray &hitPoints, bool &capsuleHit);
+        void planePointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIndex, MVector normal, MVector planarUpVector, double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MMatrix capsuleMatrix);
 
         static void *creator();
         static MStatus initialize();

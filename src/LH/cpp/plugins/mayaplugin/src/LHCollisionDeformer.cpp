@@ -1226,15 +1226,48 @@ void getMaxDisplacement(MPoint pPointFrom, MPoint pPointTo, double &currMaxVal)
 
 
 
-bool getClosestPointOnPlane(MPoint point, MVector normal, MVector planarUpVector, MPoint &closestPoint, double searchDistance = 999999999.9, bool lengthCheck = true)
+bool getClosestPointOnPlane(MPoint point, MVector normal, MVector planarUpVector, MPoint &closestPoint, MMatrix capsuleMatrix,
+                            double searchDistance = 0.0, bool lengthCheck = true)
 {
+  // MPoint originCheck(0.0,0.0,1.0);
+  // originCheck * capsuleMatrix;
+  // MPoint origin(0.0,0.0,0.0);
+  // double subtractDistance = origin.distanceTo(originCheck);
   MVector target;
   target = normal * searchDistance;
   double length = (normal * convertMPointToMVector(planarUpVector-point)) / (normal * convertMPointToMVector(target - point));
+  
+  target = point + normal * searchDistance;
+  target.normal();
+  normal.normalize();
+  length = target * normal;
+  // length = target * (normal ^ planarUpVector);
+      // MGlobal::displayInfo(MString("") + " " + target.x +" "+ target.y +" "+ target.z +" ");
 
+  closestPoint = point - (length-1) * normal;
+  MGlobal::displayInfo(MString(" length")+ closestPoint.distanceTo(point));
+  return true;
   if (lengthCheck && (length > 0.0 && length < 1.0))
   {
-    closestPoint = point + ( target - point ) * length;
+    // MMatrix scale;
+    // scale = scale * capsuleMatrix;
+    // MTransformationMatrix xMatrix(scale);
+    // double matScaleArray[3];
+    // xMatrix.getScale(matScaleArray, MSpace::kObject);
+    // matScaleArray[2] = 0.0;
+
+    // xMatrix.setScale(matScaleArray, MSpace::kObject);
+
+    // closestPoint = point * xMatrix.asMatrix();
+
+    // MVector direction(target - point* capsuleMatrix.inverse());
+    MVector direction(target - point );
+    // direction.normalize();
+    closestPoint = point + ( direction ) * length;
+    MVector dotCheck = closestPoint-point;
+    // MGlobal::displayInfo(MString("") + " " + target.x +" "+ target.y +" "+ target.z +" ");
+
+
     return true;
   }
   return false;
@@ -1243,11 +1276,15 @@ bool getClosestPointOnPlane(MPoint point, MVector normal, MVector planarUpVector
               // planePointLogic(offsetPoint, allPoints, i, planarNormal, planarUpVector, maxDisp, hitArray, capsuleHit);
 
 void LHCollisionDeformer::planePointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIndex, MVector normal, MVector planarUpVector,
-                                          double &maxDisp, MIntArray &hitPoints, bool &capsuleHit)
+                                          double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MMatrix capsuleMatrix)
 {
   MPoint rPoint;
-  if (getClosestPointOnPlane(allPoints[currentIndex], normal, planarUpVector, closestPoint, true))
+  
+  if (getClosestPointOnPlane(allPoints[currentIndex], normal, planarUpVector, closestPoint, capsuleMatrix, true ))
   {
+
+
+
     getMaxDisplacement(allPoints[currentIndex], closestPoint, dispCheck, maxDisp);
     allPoints[currentIndex] = closestPoint;
     hitPoints.append(1);
@@ -1329,7 +1366,7 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
 
           case 4 : // plane
               // allPoints[i] = planePointLogic(allPoints[i], planarNormal, planarUpVector, maxDisp);
-              planePointLogic(offsetPoint, allPoints, i, planarNormal, planarUpVector, maxDisp, hitArray, capsuleHit);
+              planePointLogic(offsetPoint, allPoints, i, planarNormal, planarUpVector, maxDisp, hitArray, capsuleHit, capsuleMatrix);
 
               break;
           case 5 : // capsule
