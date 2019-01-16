@@ -60,6 +60,7 @@ struct CapsuleData
 	MPointArray pPointBArray;
     MDoubleArray dRadiusAArray;
     MDoubleArray dRadiusBArray;
+    MDoubleArray dLengthArray;
     std::vector <short> eTypeArray;
     MIntArray allowScaleArray;
     MMatrixArray mWorldMatrixArray;
@@ -129,8 +130,8 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                   double maxDisp, MRampAttribute rFalloffRamp);
         virtual MStatus RetrieveWeightsForAllIndicies(MObject weightsParent, MObject weights, int numIndex, std::vector<MDoubleArray> &weightsArray,
                                                       MPlug inPlug, MDataBlock &data);
-        virtual void sphereDeformScaledSingle(MPointArray &allPoints, MItGeometry itGeo, MMatrix bBMatrix, MFnMesh *newMainMesh, double bulgeAmount,
-                                   double bulgeDistance, MRampAttribute rFalloffRamp, std::vector <MPointArray> &allPointsArray);
+        // virtual void sphereDeformScaledSingle(MPointArray &allPoints, MItGeometry itGeo, MMatrix bBMatrix, MFnMesh *newMainMesh, double bulgeAmount,
+        //                            double bulgeDistance, MRampAttribute rFalloffRamp, std::vector <MPointArray> &allPointsArray);
         virtual MPoint getClosestPointOnSphereImplicit(MPoint testPoint, MPoint capsuleStart, double radius);
         virtual MPoint transformPointByClosestPointDistanceScaled(MPoint closestPoint, MPoint currentPoint,unsigned int currentPointIndex, MFnMesh *newMainMesh, MMatrix mCapsuleMatrix, double distance);
         virtual MStatus getIntersectionData(MPoint &currPnt, MPoint bbMin, MPoint bbMax, MFnMesh *fnColMesh, MMeshIsectAccelParams &mmAccelParams,
@@ -146,14 +147,8 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                 MRampAttribute rFalloffRamp, MMatrix bBMatrix);
         MStatus getCapsuleWeights(MDataBlock& data, std::vector<MDoubleArray> &rColWeights,
                                                std::vector<MDoubleArray> &rBulgeWeights, MArrayDataHandle inputsArrayHandle);
-        // virtual void BlendBulgeAndCollisionParallel(MObjectArray oColMeshArray, unsigned int colMeshIndex, unsigned int numPoints, MIntArray hitArray, MIntArray flipRayArray,
-        //                                                MPointArray &allPoints, MVectorArray vertexNormalArray, double maxDisp, double bulgeDistance, MRampAttribute rInnerFalloffRamp, double bulgeAmount,
-        //                                                MPointArray flipPointArray, MRampAttribute rFalloffRamp, MRampAttribute rBlendBulgeCollisionRamp, unsigned int mIndex, unsigned int numTasks);
-        // static void DecomposeBlendBulgeAndCollision(void *data, MThreadRootTask *root);
-        // static MThreadRetVal BlendBulgeAndCollisionLoop(void *data);
-        // virtual void testIntersector( const tbb::blocked_range<size_t> & r );
-        void sphereCapsuleCollision(unsigned int capsuleIdx, MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
-                                                 MRampAttribute rFalloffRamp);
+        // void sphereCapsuleCollision(unsigned int capsuleIdx, MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
+        //                                          MRampAttribute rFalloffRamp);
 
         MPoint transformPointByClosestPointDistance(MPoint closestPoint, MPoint currentPoint,unsigned int currentPointIndex, MFnMesh *newMainMesh, double distance);
         MPoint getSphereCapsuleBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
@@ -173,23 +168,20 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                                         double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix, MMatrix bBMatrix);
         MPoint getClosestPointOnCubeImplicit(MPoint checkPoint, MPointArray framePoints, MMatrix capsuleWorldMatrix);
 
-
-
-        void cylinderPointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleStart, MPoint capsuleEnd,
-                                                        double capsuleRadiusA, MFnMesh *newMainMesh, MIntArray &hitArray, bool &capsuleHit,
-                                                        double collisionWeight, MPointArray framePoints, MVectorArray boundsData, MMatrix capsuleWorldMatrix,
-                                                        MMatrix bBMatrix, double distanceBetweenPoints, MPoint capsuleFromToVec, MPoint upVector, MPoint endUpVector, MPoint capsuleCenter);
-
-        void cylinderBulgeLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleStart,
-                                                        MPoint capsuleEnd,
-                                                        double capsuleRadiusA, MFnMesh *newMainMesh,
-                                                        double collisionWeight, MPointArray framePoints, MVectorArray boundsData, double distanceBetweenPoints, MPoint capsuleFromToVec,double bulgeDistance,
-                                                        double bulgeAmount, MRampAttribute rFalloffRamp, double maxDisp, double bulgeWeight, MPoint upVector, MPoint endUpVector, MPoint capsuleCenter);
         bool getPointOnLine(MPoint point, MPoint lineStart, MPoint lineEnd, MPoint &pIntersectionPoint, double &pDistance, double radius,
                             bool lineCheck, MPoint startUpVector, MPoint endUpVector, MPoint capsuleCenter, bool &endPoint, double &U);
-        MPoint planeBulgeLogic(MPoint point, double currentIdx, MVector normal, MVector planarUpVector,
-                                MFnMesh *newMainMesh, double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
-        void planePointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIndex, MVector normal, MVector planarUpVector, double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MMatrix capsuleMatrix);
+        void planeBulgeLogic(MPointArray &allPoints, unsigned int currentIdx,  MPoint capsuleStart, MPoint capsuleEnd, MFnMesh *newMainMesh, double bulgeDistance,
+                        double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
+        void planePointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIndex, double &maxDisp,
+                             MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleCenter, MPoint capsuleEnd);
+        void capsulePointLogic(MPoint &offsetPoint, MPointArray &allPoints, unsigned int currentIndex, double &maxDisp,
+                             MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleCenter, MPoint capsuleEnd, double radiusA, double radiusB);
+        void capsuleBulgeLogic(MPointArray &allPoints, unsigned int currentIdx,  MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB, MFnMesh *newMainMesh, double bulgeDistance,
+                                double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
+        void cylinderPointLogic(MPoint &closestPoint, MPointArray &allPoints, unsigned int currentIndex,
+                                double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB);
+        void cylinderBulgeLogic(MPointArray &allPoints, unsigned int currentIdx,  MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB, MFnMesh *newMainMesh, double bulgeDistance,
+                                double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
 
         static void *creator();
         static MStatus initialize();
@@ -260,6 +252,11 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aPrimCollisionWeights;
         static MObject aPrimBulgeWeights;
         static MObject aPrimWeightsParent;
+        static MObject aPrimLength;
+
+
+
+
 
         unsigned int inputCount;
 
