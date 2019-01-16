@@ -60,7 +60,9 @@ struct CapsuleData
 	MPointArray pPointBArray;
     MDoubleArray dRadiusAArray;
     MDoubleArray dRadiusBArray;
-    MDoubleArray dLengthArray;
+    MDoubleArray dRadiusCArray;
+    MDoubleArray dLengthAArray;
+    MDoubleArray dLengthBArray;
     std::vector <short> eTypeArray;
     MIntArray allowScaleArray;
     MMatrixArray mWorldMatrixArray;
@@ -151,7 +153,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         //                                          MRampAttribute rFalloffRamp);
 
         MPoint transformPointByClosestPointDistance(MPoint closestPoint, MPoint currentPoint,unsigned int currentPointIndex, MFnMesh *newMainMesh, double distance);
-        MPoint getSphereCapsuleBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
+        MPoint getCapsuleBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
                                      double bulgeDistance, MVector vRay, double maxDisp, MRampAttribute rFalloffRamp, double bulgeWeight);
 
         void cubeCapsuleCollision(unsigned int capsuleIdx, MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
@@ -182,7 +184,10 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                 double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB);
         void cylinderBulgeLogic(MPointArray &allPoints, unsigned int currentIdx,  MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB, MFnMesh *newMainMesh, double bulgeDistance,
                                 double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
-
+        void ellipsoidPointLogic(MPoint &closestPoint, MPointArray &allPoints, unsigned int currentIdx,
+                                double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB, double radiusC, MMatrix capsuleRotationMatrix);
+        void ellipsoidBulgeLogic(MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB,
+                                 double radiusC, MMatrix capsuleMatrix, MFnMesh *newMainMesh, double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
         static void *creator();
         static MStatus initialize();
 
@@ -244,6 +249,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aPrimCapsuleType;
         static MObject aPrimCapsuleRadiusA;
         static MObject aPrimCapsuleRadiusB;
+        static MObject aPrimCapsuleRadiusC;
         static MObject aPrimCapsuleMatrix;
         static MObject aPrimCapsuleAllowScale;
         static MObject aPrimCollisionInputs;
@@ -252,7 +258,8 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aPrimCollisionWeights;
         static MObject aPrimBulgeWeights;
         static MObject aPrimWeightsParent;
-        static MObject aPrimLength;
+        static MObject aPrimLengthA;
+        static MObject aPrimLengthB;
 
 
 

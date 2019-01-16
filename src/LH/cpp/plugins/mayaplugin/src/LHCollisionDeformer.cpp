@@ -80,6 +80,7 @@ MObject LHCollisionDeformer::aPrimCapsuleCurve;
 MObject LHCollisionDeformer::aPrimCapsuleType;
 MObject LHCollisionDeformer::aPrimCapsuleRadiusA;
 MObject LHCollisionDeformer::aPrimCapsuleRadiusB;
+MObject LHCollisionDeformer::aPrimCapsuleRadiusC;
 MObject LHCollisionDeformer::aPrimCapsuleMatrix;
 MObject LHCollisionDeformer::aPrimCapsuleAllowScale;
 
@@ -87,7 +88,8 @@ MObject LHCollisionDeformer::aPrimCollisionInputs;
 MObject LHCollisionDeformer::aPrimCollisionWeights;
 MObject LHCollisionDeformer::aPrimBulgeWeights;
 MObject LHCollisionDeformer::aPrimWeightsParent;
-MObject LHCollisionDeformer::aPrimLength;
+MObject LHCollisionDeformer::aPrimLengthA;
+MObject LHCollisionDeformer::aPrimLengthB;
 
 MStatus LHCollisionDeformer::initialize() {
   MFnNumericAttribute nAttr;
@@ -178,15 +180,35 @@ MStatus LHCollisionDeformer::initialize() {
   addAttribute(aPrimCapsuleRadiusB);
   attributeAffects(aPrimCapsuleRadiusB, outputGeom);
 
-  aPrimLength = nAttr.create("pLength", "plen", MFnNumericData::kDouble);
+  aPrimCapsuleRadiusC = nAttr.create("capsuleRadiusC", "cradiusc", MFnNumericData::kDouble);
   nAttr.setKeyable(true);
   nAttr.setWritable(true);
   nAttr.setStorable(true);
   nAttr.setDefault(1.0);
   nAttr.setReadable(true);
   nAttr.setChannelBox(true);
-  addAttribute(aPrimLength);
-  attributeAffects(aPrimLength, outputGeom);
+  addAttribute(aPrimCapsuleRadiusC);
+  attributeAffects(aPrimCapsuleRadiusC, outputGeom);
+
+  aPrimLengthA = nAttr.create("pLengthA", "plena", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(0.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimLengthA);
+  attributeAffects(aPrimLengthA, outputGeom);
+
+  aPrimLengthB = nAttr.create("pLengthB", "plenb", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(0.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimLengthB);
+  attributeAffects(aPrimLengthB, outputGeom);
 
 
   aPrimCapsuleAllowScale = nAttr.create( "pAllowScale", "pallowscale", MFnNumericData::kInt);
@@ -248,10 +270,12 @@ MStatus LHCollisionDeformer::initialize() {
   cAttr.addChild( aPrimCapsuleMatrix );
   cAttr.addChild( aPrimCapsuleRadiusA );
   cAttr.addChild( aPrimCapsuleRadiusB );
+  cAttr.addChild( aPrimCapsuleRadiusC );
   cAttr.addChild( aPrimCapsuleAllowScale );
   cAttr.addChild( aPrimCapsuleType );
   cAttr.addChild( aPrimWeightsParent );
-  cAttr.addChild( aPrimLength );
+  cAttr.addChild( aPrimLengthA );
+  cAttr.addChild( aPrimLengthB );
   cAttr.setReadable(true);
   cAttr.setWritable(true);
   cAttr.setConnectable(true);
@@ -800,10 +824,12 @@ MStatus LHCollisionDeformer::getCapsuleData(MDataBlock& data, CapsuleData &rCaps
       fCapsuleData.pPointBArray.append(capsuleCurvePoints[1]);
       fCapsuleData.dRadiusAArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimCapsuleRadiusA).asDouble());
       fCapsuleData.dRadiusBArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimCapsuleRadiusB).asDouble());
+      fCapsuleData.dRadiusCArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimCapsuleRadiusC).asDouble());
       fCapsuleData.mWorldMatrixArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimCapsuleMatrix).asMatrix());
       fCapsuleData.allowScaleArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimCapsuleAllowScale).asInt());
       fCapsuleData.eTypeArray.push_back(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimCapsuleType).asShort());
-      fCapsuleData.dLengthArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimLength).asDouble());
+      fCapsuleData.dLengthAArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimLengthA).asDouble());
+      fCapsuleData.dLengthBArray.append(inputsArrayHandle.inputValue().child( LHCollisionDeformer::aPrimLengthB).asDouble());
   
       std::vector<MDoubleArray> rColWeights;
       std::vector<MDoubleArray> rBulgeWeights;
@@ -1225,7 +1251,7 @@ void LHCollisionDeformer::planeBulgeLogic(MPointArray &allPoints, unsigned int c
   {
     newMainMesh->getVertexNormal(currentIdx, vRay);
     vRay.normalize();
-    allPoints[currentIdx] = LHCollisionDeformer::getSphereCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
+    allPoints[currentIdx] = LHCollisionDeformer::getCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
   }
 }
 
@@ -1329,7 +1355,7 @@ void LHCollisionDeformer::capsuleBulgeLogic(MPointArray &allPoints, unsigned int
   {
     newMainMesh->getVertexNormal(currentIdx, vRay);
     vRay.normalize();
-    allPoints[currentIdx] = LHCollisionDeformer::getSphereCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
+    allPoints[currentIdx] = LHCollisionDeformer::getCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
   }
 }
 
@@ -1457,9 +1483,11 @@ void LHCollisionDeformer::cylinderBulgeLogic(MPointArray &allPoints, unsigned in
   {
     newMainMesh->getVertexNormal(currentIdx, vRay);
     vRay.normalize();
-    allPoints[currentIdx] = LHCollisionDeformer::getSphereCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
+    allPoints[currentIdx] = LHCollisionDeformer::getCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
   }
 }
+
+
 
 void LHCollisionDeformer::cylinderPointLogic(MPoint &closestPoint, MPointArray &allPoints, unsigned int currentIdx,
                                             double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB)
@@ -1480,6 +1508,70 @@ void LHCollisionDeformer::cylinderPointLogic(MPoint &closestPoint, MPointArray &
   }
 }
 
+bool projectPointOnEllipsoid(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB, double radiusC, MMatrix capsuleMatrix)
+{
+  MVector collsionVector = point - capsuleStart;
+  collsionVector = collsionVector * capsuleMatrix.inverse();
+  double uParam = ((collsionVector.x * collsionVector.x)/(radiusA * radiusA)) + ((collsionVector.y * collsionVector.y)/(radiusB*radiusB)) + ((collsionVector.z * collsionVector.z)/(radiusC*radiusC));
+  double lenToSurface = sqrt(1/uParam);
+  collsionVector = collsionVector * capsuleMatrix;
+  closestPoint = capsuleStart + collsionVector *lenToSurface;
+}
+
+bool getClosestPointOnEllipsoid(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB, double radiusC, MMatrix capsuleMatrix)
+{
+  MVector collsionVector = point - capsuleStart;
+  collsionVector = collsionVector * capsuleMatrix.inverse();
+  double uParam = ((collsionVector.x * collsionVector.x)/(radiusA * radiusA)) + ((collsionVector.y * collsionVector.y)/(radiusB*radiusB)) + ((collsionVector.z * collsionVector.z)/(radiusC*radiusC));
+  if (uParam < 1)
+  {
+    double lenToSurface = sqrt(1/uParam);
+    collsionVector = collsionVector * capsuleMatrix;
+    closestPoint = capsuleStart + collsionVector *lenToSurface;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+
+
+
+void LHCollisionDeformer::ellipsoidPointLogic(MPoint &closestPoint, MPointArray &allPoints, unsigned int currentIdx,
+                                            double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleStart,
+                                            MPoint capsuleEnd, double radiusA, double radiusB, double radiusC, MMatrix capsuleMatrix)
+{
+    // getClosestPointOnEllipsoid(allPoints[currentIdx], closestPoint, capsuleStart, capsuleEnd, currentIdx, radiusA, radiusB, radiusC, capsuleMatrix);
+    // allPoints[currentIdx] = closestPoint;
+
+  if (getClosestPointOnEllipsoid(allPoints[currentIdx], closestPoint, capsuleStart, capsuleEnd, currentIdx, radiusA, radiusB, radiusC, capsuleMatrix))
+  {
+    getMaxDisplacement(allPoints[currentIdx], closestPoint, dispCheck, maxDisp);
+    allPoints[currentIdx] = closestPoint;
+    hitPoints.append(1);
+    capsuleHit = true;
+  }
+  else
+  {
+    hitPoints.append(0);
+  }
+}
+
+void LHCollisionDeformer::ellipsoidBulgeLogic(MPointArray &allPoints, unsigned int currentIdx,  MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB,
+                                              double radiusC, MMatrix capsuleMatrix, MFnMesh *newMainMesh, double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight)
+{
+  projectPointOnEllipsoid(allPoints[currentIdx], closestPoint, capsuleStart, capsuleEnd, currentIdx, radiusA, radiusB, radiusC, capsuleMatrix);
+  distanceToCenter = allPoints[currentIdx].distanceTo(closestPoint);
+  if (distanceToCenter < bulgeDistance)
+  {
+    newMainMesh->getVertexNormal(currentIdx, vRay);
+    vRay.normalize();
+    allPoints[currentIdx] = LHCollisionDeformer::getCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
+  }
+}
+
 
 
 void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
@@ -1496,26 +1588,33 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
     MPoint capsuleStart = capsuleData.pPointAArray[capsuleIdx];
     MPoint capsuleEnd = capsuleData.pPointBArray[capsuleIdx];
     MMatrix capsuleMatrix = capsuleData.mWorldMatrixArray[capsuleIdx];
-    double scaleMatrixArray[3];
+    double capsuleLengthA = capsuleData.dLengthAArray[capsuleIdx];
+    double capsuleLengthB = capsuleData.dLengthBArray[capsuleIdx];
+
+
+    capsuleStart = capsuleStart + (capsuleStart - capsuleEnd) * capsuleLengthA;
+    capsuleEnd = capsuleEnd + (capsuleEnd - capsuleStart) * capsuleLengthB;
 
     MPoint capsuleFromToVec = capsuleEnd -capsuleStart;
     double distanceBetweenPoints = capsuleStart.distanceTo(capsuleEnd);
 
-    
-
+    // The ellipsoid will do its own scaling, it doesn't need world scale
     double capsuleRadiusA = capsuleData.dRadiusAArray[capsuleIdx];
     double capsuleRadiusB = capsuleData.dRadiusBArray[capsuleIdx];
-
+    double capsuleRadiusC = capsuleData.dRadiusCArray[capsuleIdx];
 
     // Thinking about adding global scaling ....
+    double scaleMatrixArray[3];
     MTransformationMatrix capsuleScalarMatrix(capsuleMatrix);
     capsuleScalarMatrix.getScale(scaleMatrixArray, MSpace::kWorld);
     double averageScale = (scaleMatrixArray[0] + scaleMatrixArray[1] + scaleMatrixArray[2])/3;
-    capsuleRadiusA = capsuleRadiusA * averageScale;
-    capsuleRadiusB = capsuleRadiusB * averageScale;
 
-
-
+    if (capsuleData.eTypeArray[x] != 2)
+    {
+      capsuleRadiusA = capsuleRadiusA * averageScale;
+      capsuleRadiusB = capsuleRadiusB * averageScale;
+      capsuleRadiusC = capsuleRadiusC * averageScale;
+    }
 
     MVectorArray boundsData;
     MPoint startUpVector;
@@ -1539,7 +1638,7 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
           case 1 : // cube
               break;
           case 2 : // elipsoid
-              ;
+              ellipsoidPointLogic(offsetPoint, allPoints, i, maxDisp, hitArray, capsuleHit, capsuleStart, capsuleEnd, capsuleRadiusA, capsuleRadiusB, capsuleRadiusC, capsuleMatrix);
               break;
           case 3 : // cylinder
               cylinderPointLogic(offsetPoint, allPoints, i, maxDisp, hitArray, capsuleHit, capsuleStart, capsuleEnd, capsuleRadiusA, capsuleRadiusB);
@@ -1551,7 +1650,7 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
               capsulePointLogic(offsetPoint, allPoints, i, maxDisp, hitArray, capsuleHit, capsuleStart, capsuleEnd, capsuleRadiusA, capsuleRadiusB);
               break;
           case 6 : // cone
-              ;
+              cylinderPointLogic(offsetPoint, allPoints, i, maxDisp, hitArray, capsuleHit, capsuleStart, capsuleEnd, capsuleRadiusA, 0.01);
               break;
       }
     }
@@ -1575,7 +1674,7 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
               ;
                   break;
               case 2 : // elipsoid
-                   ;
+                  ellipsoidBulgeLogic(allPoints, i, capsuleStart, capsuleEnd, capsuleRadiusA, capsuleRadiusB, capsuleRadiusC, capsuleMatrix, newMainMesh, bulgeDistance, bulgeAmount, rFalloffRamp, bulgeWeightsArray[i]);
                   break;
               case 3 : // cylinder
                   cylinderBulgeLogic(allPoints, i, capsuleStart, capsuleEnd, capsuleRadiusA, capsuleRadiusB, newMainMesh, bulgeDistance, bulgeAmount, rFalloffRamp, bulgeWeightsArray[i]);
@@ -1587,7 +1686,7 @@ void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArra
                   capsuleBulgeLogic(allPoints, i, capsuleStart, capsuleEnd, capsuleRadiusA, capsuleRadiusB, newMainMesh, bulgeDistance, bulgeAmount, rFalloffRamp, bulgeWeightsArray[i]);
                   break;
               case 6 : // cone
-                  ;
+                  cylinderBulgeLogic(allPoints, i, capsuleStart, capsuleEnd, capsuleRadiusA, 0.01, newMainMesh, bulgeDistance, bulgeAmount, rFalloffRamp, bulgeWeightsArray[i]);
                   break;
           }
         }
@@ -1602,7 +1701,7 @@ double getLineMagnitude(MPoint from, MPoint to)
   return ( double )sqrt(magnitude.x * magnitude.x + magnitude.y * magnitude.y + magnitude.z * magnitude.z);
 }
 
-MPoint LHCollisionDeformer::getSphereCapsuleBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
+MPoint LHCollisionDeformer::getCapsuleBulge(MPoint currPoint, MPoint closestPoint, double bulgeAmount,
                                      double bulgeDistance, MVector vRay, double maxDisp, MRampAttribute rFalloffRamp, double bulgeWeight)
 {
   // get distance vector in regular world matrix
@@ -1622,7 +1721,7 @@ void LHCollisionDeformer::sphereBulgeLogic(MPointArray &allPoints, unsigned int 
     closestPoint = LHCollisionDeformer::getClosestPointOnSphereImplicit(allPoints[currentIdx], capsuleStart, capsuleRadiusA);
     newMainMesh->getVertexNormal(currentIdx, vRay);
     vRay.normalize();
-    allPoints[currentIdx] = LHCollisionDeformer::getSphereCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
+    allPoints[currentIdx] = LHCollisionDeformer::getCapsuleBulge(allPoints[currentIdx], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
   }
 }
 
@@ -2086,7 +2185,7 @@ MStatus LHCollisionDeformer::getIntersectionData(MPoint &currPnt, MPoint bbMin, 
 //             bulgeWeight = bulgeWeightsArray[i];
 //             newMainMesh->getVertexNormal(i, vRay);
 //             vRay.normalize();
-//             allPoints[i] = LHCollisionDeformer::getSphereCapsuleBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
+//             allPoints[i] = LHCollisionDeformer::getCapsuleBulge(allPoints[i], closestPoint, bulgeAmount, bulgeDistance, vRay, maxDisp, rFalloffRamp, bulgeWeight);
 //           }
 //         }
 //       }
