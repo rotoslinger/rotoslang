@@ -1572,8 +1572,6 @@ void LHCollisionDeformer::ellipsoidBulgeLogic(MPointArray &allPoints, unsigned i
   }
 }
 
-
-
 void LHCollisionDeformer::capsuleDeformation(unsigned int capsuleIdx, MPointArray &allPoints, MFnMesh *newMainMesh, double bulgeAmount, double bulgeDistance,
                                                  MRampAttribute rFalloffRamp, MMatrix bBMatrix)
 {
