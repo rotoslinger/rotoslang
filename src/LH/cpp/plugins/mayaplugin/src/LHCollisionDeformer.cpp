@@ -834,9 +834,6 @@ MStatus LHCollisionDeformer::getCapsuleData(MDataBlock& data, CapsuleData &rCaps
       std::vector<MDoubleArray> rColWeights;
       std::vector<MDoubleArray> rBulgeWeights;
 
-
-
-
       MStatus status;
       MDataHandle weightsHandle = inputsArrayHandle.inputValue().child(LHCollisionDeformer::aPrimWeightsParent);
       MArrayDataHandle weightsArrayHandle(weightsHandle);
@@ -858,36 +855,11 @@ MStatus LHCollisionDeformer::getCapsuleData(MDataBlock& data, CapsuleData &rCaps
         MDoubleArray dACollisionWeights = MFnDoubleArrayData(bulgeChild.data()).array(&status);
         CheckStatusReturn( status, "Couldn't get collisionWeights" );
         rColWeights.push_back(dACollisionWeights);
-
       }
-
-
-
-
-
-
-
-
-
-
-      // status = LHCollisionDeformer::getCapsuleWeights(data, rColWeights, rBulgeWeights, inputsArrayHandle);
-
-
-
-
-
-
-
-      // MGlobal::displayInfo(MString("STATUS")+ status);
 
       colWeights.push_back(rColWeights);
       bulgeWeights.push_back(rBulgeWeights);
-      // fCapsuleData.colWeights.push_back(rColWeights);
-      // fCapsuleData.bulgeWeights.push_back(rBulgeWeights);
       }
-
-
-
 
   rCapsuleData = fCapsuleData;
   if (!fCapsuleData.pPointAArray.length())

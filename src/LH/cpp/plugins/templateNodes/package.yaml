@@ -1,0 +1,34 @@
+name: template
+
+version: 0.1.0
+
+uuid: 0bff2ff6-2c8c-418d-b41d-8383ac87f9fe
+
+authors:
+- rot
+
+description: template nodes
+
+private_build_requires:
+- gcc-4.8.3
+- cmake
+- AL_CMakeLibMaya
+- AL_CMakeLib-2
+- AL_MTypeId-2.2+<3
+- 'cuda-8.0.61'
+
+- tbb-2017+
+
+requires:
+- stdlib-4.8.3+<5
+- mayaLoadVersionedTool-0
+
+variants:
+# - [CentOS-6.6+<8, mayaDevKit-2017.0]
+- [CentOS-6.6+<8, mayaDevKit-2018.0]
+
+
+commands: |-
+  prependenv('AL_MAYA_AUTO_LOADVERSIONEDTOOL', 'template')
+  setenv('TEMPLATE_PLUGINS', '{root}/plugins')
+  prependenv('MAYA_PLUG_IN_PATH', '$TEMPLATE_PLUGINS')

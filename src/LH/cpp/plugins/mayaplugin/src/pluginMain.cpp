@@ -14,6 +14,8 @@
 // #include "LHMultiClusterThreaded.h"
 #include "LHCollisionDeformer.h"
 #include "LHLocator.h"
+#include "LHCollisionLocator.h"
+static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
 
 MStatus initializePlugin(MObject obj) {
@@ -65,9 +67,23 @@ MStatus initializePlugin(MObject obj) {
 
   status = plugin.registerNode( "LHLocator", LHLocator::id, LHLocator::creator,
 		  LHLocator::initialize, MPxNode::kLocatorNode );
-      
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  status = plugin.registerNode("LHCollisionLocator",
+                                LHCollisionLocator::id,
+                                LHCollisionLocator::creator,
+                                LHCollisionLocator::initialize,
+                                MPxNode::kLocatorNode,
+                                &LHCollisionLocator::drawDbClassification);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+  if (!sUseLegacyDraw)
+  {
+    status = MHWRender::MDrawRegistry::registerDrawOverrideCreator(
+            LHCollisionLocator::drawDbClassification,
+            LHCollisionLocator::drawRegistrantId,
+            LHCollisionLocatorOverride::creator);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+  }
 
   return status;
 }
@@ -108,6 +124,72 @@ MStatus uninitializePlugin(MObject obj) {
   status = plugin.deregisterNode(LHLocator::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  if (!sUseLegacyDraw)
+  {
+    status = MDrawRegistry::deregisterGeometryOverrideCreator(
+            LHCollisionLocator::drawDbClassification,
+            LHCollisionLocator::drawRegistrantId);
+  }
+
+
+  status = plugin.deregisterNode( LHCollisionLocator::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
   return status;
 }
 
+
+// MStatus initializePlugin(MObject obj)
+// {
+//     MStatus status;
+//     MFnPlugin plugin(obj, PLUGIN_COMPANY, "3.0", "Any");
+//     // status = plugin.registerNode(
+//     //     "LHCollisionLocator",
+//     //     LHCollisionLocator::id,
+//     //     &LHCollisionLocator::creator,
+//     //     &LHCollisionLocator::initialize,
+//     //     MPxNode::kLocatorNode,
+//     //     sUseLegacyDraw ? NULL : &LHCollisionLocator::drawDbClassification);
+//     if (!status)
+//     {
+//         status.perror("registerNode");
+//         return status;
+//     }
+//     if (!sUseLegacyDraw)
+//     {
+//         status = MHWRender::MDrawRegistry::registerDrawOverrideCreator(
+//             LHCollisionLocator::drawDbClassification,
+//             LHCollisionLocator::drawRegistrantId,
+//             LHCollisionLocatorDrawOverride::Creator);
+//         if (!status)
+//         {
+//             status.perror("registerDrawOverrideCreator");
+//             return status;
+//         }
+//     }
+//     return status;
+// }
+// MStatus uninitializePlugin(MObject obj)
+// {
+//     MStatus status;
+//     MFnPlugin plugin(obj);
+//     if (!sUseLegacyDraw)
+//     {
+//         status = MHWRender::MDrawRegistry::deregisterDrawOverrideCreator(
+//             LHCollisionLocator::drawDbClassification,
+//             LHCollisionLocator::drawRegistrantId);
+//         if (!status)
+//         {
+//             status.perror("deregisterDrawOverrideCreator");
+//             return status;
+//         }
+//     }
+//     status = plugin.deregisterNode(LHCollisionLocator::id);
+//     if (!status)
+//     {
+//         status.perror("deregisterNode");
+//         return status;
+//     }
+//     return status;
+// }
