@@ -16,7 +16,6 @@ private_build_requires:
 - AL_CMakeLib-2
 - AL_MTypeId-2.2+<3
 - 'cuda-8.0.61'
-
 - tbb-2017+
 
 requires:
@@ -24,7 +23,6 @@ requires:
 - mayaLoadVersionedTool-0
 
 variants:
-- [CentOS-6.6+<8, mayaDevKit-2017.0]
 - [CentOS-6.6+<8, mayaDevKit-2018.0]
 
 

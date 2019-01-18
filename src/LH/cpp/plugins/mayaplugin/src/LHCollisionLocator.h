@@ -25,6 +25,9 @@
 #include <maya/MHWGeometryUtilities.h>
 #include <maya/MGlobal.h>
 #include <maya/MFnMatrixData.h>
+#include <algorithm>
+
+#include <iterator>
 
 // #include "../utils.h"
 
@@ -37,8 +40,8 @@ class LHCollisionLocator : public MPxLocatorNode
     virtual ~LHCollisionLocator();
     static void *creator();
     static MStatus initialize();
-    virtual bool isBounded() const;
-    virtual MBoundingBox boundingBox() const;
+    // virtual bool isBounded() const;
+    // virtual MBoundingBox boundingBox() const;
     virtual void draw(M3dView &view, const MDagPath &path,
                       M3dView::DisplayStyle style,
                       M3dView::DisplayStatus status);
@@ -48,6 +51,14 @@ class LHCollisionLocator : public MPxLocatorNode
     static MString drawDbClassification;
     static MString drawRegistrantId;
     static MObject aSize;
+
+    static MObject aPrimCapsuleType;
+    static MObject aPrimCapsuleRadiusA;
+    static MObject aPrimCapsuleRadiusB;
+    static MObject aPrimCapsuleRadiusC;
+    static MObject aPrimCapsuleRadiusD;
+    static MObject aPrimLengthA;
+    static MObject aPrimLengthB;
 };
 
 class LocatorCapsuleData : public MUserData
@@ -58,11 +69,12 @@ class LocatorCapsuleData : public MUserData
     double size;
     MColor mColor;
     MPointArray shapePoints;
-    MPoint pPointA;
-    MPoint pPointB;
+    MPoint pPointStart;
+    MPoint pPointEnd;
     double dRadiusA;
     double dRadiusB;
     double dRadiusC;
+    double dRadiusD;
     double dLengthA;
     double dLengthB;
     short eType;
@@ -78,10 +90,10 @@ public:
   virtual ~LHCollisionLocatorOverride();
 
   virtual MHWRender::DrawAPI supportedDrawAPIs() const;
-  virtual bool isBounded(const MDagPath& objPath,
-                         const MDagPath& cameraPath) const;
-  virtual MBoundingBox boundingBox(const MDagPath& objPath,
-                                   const MDagPath& cameraPath) const;
+  // virtual bool isBounded(const MDagPath& objPath,
+  //                        const MDagPath& cameraPath) const;
+  // virtual MBoundingBox boundingBox(const MDagPath& objPath,
+  //                                  const MDagPath& cameraPath) const;
   virtual MUserData* prepareForDraw(const MDagPath& objPath,
                                     const MDagPath& cameraPath,
                                     const MFrameContext& frameContext,
@@ -91,7 +103,6 @@ public:
                               MHWRender::MUIDrawManager& drawManager,
                               const MHWRender::MFrameContext& frameContext,
                               const MUserData* data);
-  virtual LocatorCapsuleData getPlugValuesFromLocatorNode(const MDagPath &objPath) const;
 
 
 private:

@@ -2,27 +2,106 @@
 
 MObject LHCollisionLocator::aSize;
 
-// MObject LHCollisionLocator::aPrimCapsuleType;
-// MObject LHCollisionLocator::aPrimCapsuleRadiusA;
-// MObject LHCollisionLocator::aPrimCapsuleRadiusB;
-// MObject LHCollisionLocator::aPrimCapsuleRadiusC;
-// MObject LHCollisionLocator::aPrimCapsuleMatrix;
-// MObject LHCollisionLocator::aPrimLengthA;
-// MObject LHCollisionLocator::aPrimLengthB;
+MObject LHCollisionLocator::aPrimCapsuleType;
+MObject LHCollisionLocator::aPrimCapsuleRadiusA;
+MObject LHCollisionLocator::aPrimCapsuleRadiusB;
+MObject LHCollisionLocator::aPrimCapsuleRadiusC;
+MObject LHCollisionLocator::aPrimCapsuleRadiusD;
+MObject LHCollisionLocator::aPrimLengthA;
+MObject LHCollisionLocator::aPrimLengthB;
 
 MTypeId LHCollisionLocator::id(10983797);
-static float circle[][3] = {{0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
-                          {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
-                          {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
-                          {-1.10819418755f, 1.96633546162e-32f, -3.21126950724e-16f},
-                          {-0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
-                          {-3.33920536359e-16f, -6.78573232311e-17f, 1.10819418755f},
-                          {0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
-                          {1.10819418755f, -3.6446300679e-32f, 5.95213259928e-16f},
-                          {0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
-                          {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
-                          {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f}};
-static int circleCount = sizeof(circle)/sizeof(circle[0]) -1;
+// static float circle[][3] = {{0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
+//                           {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
+//                           {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
+//                           {-1.10819418755f, 1.96633546162e-32f, -3.21126950724e-16f},
+//                           {-0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
+//                           {-3.33920536359e-16f, -6.78573232311e-17f, 1.10819418755f},
+//                           {0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
+//                           {1.10819418755f, -3.6446300679e-32f, 5.95213259928e-16f},
+//                           {0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
+//                           {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
+//                           {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f}};
+// static int circleCount = sizeof(circle)/sizeof(circle[0]) -1;
+
+std::vector<std::vector<float>> newCircle = {{0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
+                                             {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
+                                             {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
+                                             {-1.10819418755f, 1.96633546162e-32f, -3.21126950724e-16f},
+                                             {-0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
+                                             {-3.33920536359e-16f, -6.78573232311e-17f, 1.10819418755f},
+                                             {0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
+                                             {1.10819418755f, -3.6446300679e-32f, 5.95213259928e-16f},
+                                             {0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
+                                             {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
+                                             {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f}};
+
+std::vector<std::vector<float>> sphere = {{-5.36587337206e-16f, -6.12203396374e-17f, 0.999804019903f},
+                                          {0.308956433194f, -5.8224002942e-17f, 0.950870128147f},
+                                          {0.587670058082f, -4.95282951681e-17f, 0.808858443146f},
+                                          {0.808858443146f, -3.59844127792e-17f, 0.587670058082f},
+                                          {0.950870128147f, -1.89181253494e-17f, 0.308956433194f},
+                                          {0.999804019903f, -3.57023946799e-32f, 5.83064353e-16f},
+                                          {0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
+                                          {0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
+                                          {0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
+                                          {0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
+                                          {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
+                                          {-0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
+                                          {-0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
+                                          {-0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
+                                          {-0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
+                                          {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
+                                          {-0.950870128147f, -1.89181253494e-17f, 0.308956433194f},
+                                          {-0.808858443146f, -3.59844127792e-17f, 0.587670058082f},
+                                          {-0.587670058082f, -4.95282951681e-17f, 0.808858443146f},
+                                          {-0.308956433194f, -5.8224002942e-17f, 0.950870128147f},
+                                          {-5.36587337206e-16f, -6.12203396374e-17f, 0.999804019903f},
+                                          {4.37515205623e-15f, 0.308956433194f, 0.950870128147f},
+                                          {8.32203374572e-15f, 0.587670058082f, 0.808858443146f},
+                                          {1.14542967892e-14f, 0.808858443146f, 0.587670058082f},
+                                          {1.34653334561e-14f, 0.950870128147f, 0.308956433194f},
+                                          {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
+                                          {1.34653334561e-14f, 0.950870128147f, -0.308956433194f},
+                                          {1.14542967892e-14f, 0.808858443146f, -0.587670058082f},
+                                          {8.32203374572e-15f, 0.587670058082f, -0.808858443146f},
+                                          {4.37515205623e-15f, 0.308956433194f, -0.950870128147f},
+                                          {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
+                                          {-4.37515205623e-15f, -0.308956433194f, -0.950870128147f},
+                                          {-8.32203374572e-15f, -0.587670058082f, -0.808858443146f},
+                                          {-1.14542967892e-14f, -0.808858443146f, -0.587670058082f},
+                                          {-1.34653334561e-14f, -0.950870128147f, -0.308956433194f},
+                                          {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
+                                          {-1.34653334561e-14f, -0.950870128147f, 0.308956433194f},
+                                          {-1.14542967892e-14f, -0.808858443146f, 0.587670058082f},
+                                          {-8.32203374572e-15f, -0.587670058082f, 0.808858443146f},
+                                          {-4.37515205623e-15f, -0.308956433194f, 0.950870128147f},
+                                          {-5.36587337206e-16f, -6.12203396374e-17f, 0.999804019903f},
+                                          {4.37515205623e-15f, 0.308956433194f, 0.950870128147f},
+                                          {8.32203374572e-15f, 0.587670058082f, 0.808858443146f},
+                                          {1.14542967892e-14f, 0.808858443146f, 0.587670058082f},
+                                          {1.34653334561e-14f, 0.950870128147f, 0.308956433194f},
+                                          {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
+                                          {0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
+                                          {0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
+                                          {0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
+                                          {0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
+                                          {0.999804019903f, -3.57023946799e-32f, 5.83064353e-16f},
+                                          {0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
+                                          {0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
+                                          {0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
+                                          {0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
+                                          {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
+                                          {-0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
+                                          {-0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
+                                          {-0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
+                                          {-0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
+                                          {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
+                                          {-0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
+                                          {-0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
+                                          {-0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
+                                          {-0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
+                                          {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f}};
 
 MString LHCollisionLocator::drawDbClassification("drawdb/geometry/LHCollisionLocator");
 
@@ -35,50 +114,152 @@ LHCollisionLocator::~LHCollisionLocator() {}
 void* LHCollisionLocator::creator() {
   return new LHCollisionLocator();
 }
-bool LHCollisionLocator::isBounded() const
+// bool LHCollisionLocator::isBounded() const
+// {
+//     return false;
+// }
+// MBoundingBox LHCollisionLocator::boundingBox() const
+// {
+//     static MBoundingBox circleBBox;
+//     for (int i = 0; i < circleCount; i++)
+//     {
+//         MPoint shapePoint(circle[i][0], circle[i][1], circle[i][2]);
+//         circleBBox.expand(shapePoint);
+//     }
+//     MBoundingBox bounds;
+//     return bounds;
+// }
+
+LocatorCapsuleData getPlugValuesFromLocatorNode(const MDagPath &objPath)
 {
-    return true;
+    LocatorCapsuleData rData;
+    // Retrieve value of the size attribute from the node
+    MStatus status;
+    MObject locatorNode = objPath.node(&status);
+
+    // Put your objects into an array so you can loop through them by type
+    MPlug plug(locatorNode, LHCollisionLocator::aSize);
+    double val;
+    plug.getValue(val);
+    rData.size = val;
+
+    MPlug radiusAPlug(locatorNode, LHCollisionLocator::aPrimCapsuleRadiusA);
+    radiusAPlug.getValue(val);
+    rData.dRadiusA = val;
+
+    MPlug radiusBPlug(locatorNode, LHCollisionLocator::aPrimCapsuleRadiusB);
+    radiusBPlug.getValue(val);
+    rData.dRadiusB = val;
+
+    MPlug radiusCPlug(locatorNode, LHCollisionLocator::aPrimCapsuleRadiusC);
+    radiusCPlug.getValue(val);
+    rData.dRadiusC = val;
+
+    MPlug radiusDPlug(locatorNode, LHCollisionLocator::aPrimCapsuleRadiusD);
+    radiusDPlug.getValue(val);
+    rData.dRadiusD = val;
+
+
+    MPlug lengthAPlug(locatorNode, LHCollisionLocator::aPrimLengthA);
+    lengthAPlug.getValue(val);
+    rData.dLengthA = val;
+
+    MPlug lengthBPlug(locatorNode, LHCollisionLocator::aPrimLengthB);
+    lengthBPlug.getValue(val);
+    rData.dLengthB = val;
+
+
+    MPlug eTypePlug(locatorNode, LHCollisionLocator::aPrimCapsuleType);
+    short eVal;
+    eTypePlug.getValue(eVal);
+    rData.eType = eVal;
+
+
+    //Get Locators World Matrix
+    MPlug matrixPlug(locatorNode, LHCollisionLocator::worldMatrix);
+    MFnMatrixData matrixData(matrixPlug.asMObject());
+    MMatrix worldMatrix = matrixData.matrix();
+    rData.mWorldMatrix = worldMatrix;
+
+
+    // Start and end points
+    MPoint pointStart(0.0, 0.0, 0.0);
+    MPoint pointEnd(0.0, 0.0, 1.0);
+
+    rData.pPointStart = pointStart * worldMatrix;
+    rData.pPointEnd = pointEnd * worldMatrix;
+
+
+    return rData;
 }
-MBoundingBox LHCollisionLocator::boundingBox() const
+
+
+MPoint drawType(MPoint inPoint, LocatorCapsuleData capsuleData)
 {
-    static MBoundingBox circleBBox;
-    for (int i = 0; i < circleCount; i++)
+    switch( capsuleData.eType )
     {
-        MPoint shapePoint(circle[i][0], circle[i][1], circle[i][2]);
-        circleBBox.expand(shapePoint);
+        case 0 : // sphere
+            inPoint = inPoint + (inPoint - capsuleData.pPointStart) * (capsuleData.dRadiusA -1.0);
+            break;
+        case 1 : // elipsoidCapsule
+            break;
+        case 2 : // elipsoid
+            break;
+        case 3 : // cylinder
+            break;
+        case 4 : // plane
+            break;
+        case 5 : // capsule
+            break;
+        case 6 : // cone
+            break;
     }
 
-    return circleBBox;
+    return inPoint;
+}
+
+ void getShape(std::vector<std::vector<float>> &shape, LocatorCapsuleData capsuleData)
+ {
+     switch (capsuleData.eType)
+     {
+     case 0: // sphere
+         shape = sphere;
+         break;
+     case 1: // elipsoidCapsule
+         break;
+     case 2: // elipsoid
+         break;
+     case 3: // cylinder
+         break;
+     case 4: // plane
+         break;
+     case 5: // capsule
+         break;
+     case 6: // cone
+         break;
+     }
+
+
 }
 
 void LHCollisionLocator::draw(M3dView &view, const MDagPath &path,
                               M3dView::DisplayStyle style,
                               M3dView::DisplayStatus status)
 {
-    // just drawing the lines for selection, without this legacy draw you cannot select the locator
-    MObject thisNode = thisMObject();
 
-    //Get Size
-    MPlug sizePlug(thisNode, aSize);
-    double sizeVal;
-    sizePlug.getValue(sizeVal);
+    LocatorCapsuleData plugData = getPlugValuesFromLocatorNode(path);
 
-    //Get Locators World Matrix
-    MPlug matrixPlug(thisNode, LHCollisionLocator::worldMatrix);
-    MFnMatrixData matrixData(matrixPlug.asMObject());
-    MMatrix worldMatrix = matrixData.matrix();
-
-    MPoint origin(0.0, 0.0, 0.0);
-    origin = origin * worldMatrix;
+    std::vector<std::vector<float>> shape;
+    getShape(shape, plugData);
 
     view.beginGL();
     glPushAttrib(GL_CURRENT_BIT);
     glBegin(GL_LINE_STRIP);
-    for (unsigned int i = 0; i < circleCount; ++i)
+    for (unsigned int i = 0; i < shape.size(); ++i)
     {
-        MPoint point(circle[i][0], circle[i][1], circle[i][2]);
-        point = point + (point - origin) * sizeVal;
-        glVertex3f(point.x, point.y, point.z);
+        MPoint shapePoint(shape[i][0], shape[i][1], shape[i][2]);
+        shapePoint = drawType(shapePoint, plugData);
+        glVertex3f(shapePoint.x, shapePoint.y, shapePoint.z);
     }
     glEnd();
     glPopAttrib();
@@ -94,41 +275,28 @@ MHWRender::DrawAPI LHCollisionLocatorOverride::supportedDrawAPIs() const {
     return (MHWRender::kOpenGL | MHWRender::kDirectX11 | MHWRender::kOpenGLCoreProfile);
 }
 
-bool LHCollisionLocatorOverride::isBounded(const MDagPath&, const MDagPath&) const {
-  return true;
-}
+// bool LHCollisionLocatorOverride::isBounded(const MDagPath&, const MDagPath&) const {
+//   return false;
+// }
 
-MBoundingBox LHCollisionLocatorOverride::boundingBox(const MDagPath& objPath, const MDagPath& cameraPath) const {
-    static MBoundingBox circleBBox;
-    for (int i = 0; i < circleCount; i++)
-    {
-    MPoint shapePoint(circle[i][0], circle[i][1], circle[i][2]);
-    circleBBox.expand(shapePoint);
-}
-    return circleBBox;
-}
+// MBoundingBox LHCollisionLocatorOverride::boundingBox(const MDagPath& objPath, const MDagPath& cameraPath) const {
+//     static MBoundingBox circleBBox;
+//     for (int i = 0; i < circleCount; i++)
+//     {
+//     MPoint shapePoint(circle[i][0], circle[i][1], circle[i][2]);
+//     circleBBox.expand(shapePoint);
+//     }
+//     return circleBBox;
+// }
 
-LocatorCapsuleData LHCollisionLocatorOverride::getPlugValuesFromLocatorNode(const MDagPath &objPath) const
-{
-    LocatorCapsuleData rData;
-    // Retrieve value of the size attribute from the node
-    MStatus status;
-    MObject locatorNode = objPath.node(&status);
 
-    // Put your objects into an array so you can loop through them by type
-    MPlug plug(locatorNode, LHCollisionLocator::aSize);
-    double sizeVal;
-    plug.getValue(sizeVal);
-    rData.size = sizeVal;
 
-    //Get Locators World Matrix
-    MPlug matrixPlug(locatorNode, LHCollisionLocator::worldMatrix);
-    MFnMatrixData matrixData(matrixPlug.asMObject());
-    MMatrix worldMatrix = matrixData.matrix();
-    rData.mWorldMatrix = worldMatrix;
 
-    return rData;
-}
+
+
+
+
+
 
 MUserData* LHCollisionLocatorOverride::prepareForDraw(const MDagPath& objPath, const MDagPath& cameraPath,
                                                   const MHWRender::MFrameContext& frameContext, MUserData* oldData) {
@@ -140,16 +308,16 @@ MUserData* LHCollisionLocatorOverride::prepareForDraw(const MDagPath& objPath, c
     }
 
     LocatorCapsuleData plugData = getPlugValuesFromLocatorNode(objPath);
-    MPoint origin(0.0, 0.0, 0.0);
-    origin = origin * plugData.mWorldMatrix;
 
     if (data->shapePoints.length())
         data->shapePoints.clear();
+    std::vector<std::vector<float>> shape;
+    getShape(shape, plugData);
 
-    for (int i = 0; i < circleCount; i++)
+    for (int i = 0; i < shape.size(); i++)
     {
-        MPoint shapePoint(circle[i][0], circle[i][1], circle[i][2]);
-        shapePoint = shapePoint + (shapePoint - origin) * (plugData.size -1.0);
+        MPoint shapePoint(shape[i][0], shape[i][1], shape[i][2]);
+        shapePoint = drawType(shapePoint, plugData);
         data->shapePoints.append(shapePoint);
     }
 
@@ -207,6 +375,77 @@ MStatus LHCollisionLocator::initialize() {
   nAttr.setReadable(true);
   nAttr.setChannelBox(true);
   addAttribute(aSize);
+
+  aPrimCapsuleRadiusA = nAttr.create("capsuleRadiusA", "cradiusa", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(1.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimCapsuleRadiusA);
+
+  aPrimCapsuleRadiusB = nAttr.create("capsuleRadiusB", "cradiusb", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(1.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimCapsuleRadiusB);
+
+  aPrimCapsuleRadiusC = nAttr.create("capsuleRadiusC", "cradiusc", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(1.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimCapsuleRadiusC);
+
+  aPrimCapsuleRadiusD = nAttr.create("capsuleRadiusD", "cradiusd", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(1.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimCapsuleRadiusD);
+
+  aPrimLengthA = nAttr.create("pLengthA", "plena", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(0.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimLengthA);
+
+  aPrimLengthB = nAttr.create("pLengthB", "plenb", MFnNumericData::kDouble);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setDefault(0.0);
+  nAttr.setReadable(true);
+  nAttr.setChannelBox(true);
+  addAttribute(aPrimLengthB);
+
+  aPrimCapsuleType = eAttr.create("primType", "ptyp", 0);
+  eAttr.addField( "sphere", 0 );
+  eAttr.addField( "elipsoidCapsule", 1 );
+  eAttr.addField( "elipsoid", 2 );
+  eAttr.addField( "cylinder", 3 );
+  eAttr.addField( "plane", 4 );
+  eAttr.addField( "capsule", 5 );
+  eAttr.addField( "cone", 6 );
+  eAttr.setHidden( false );
+  eAttr.setKeyable( true );
+  eAttr.setWritable(true);
+  eAttr.setStorable(true);
+  eAttr.setChannelBox(true);
+  addAttribute(aPrimCapsuleType);
+
+
 
   return MS::kSuccess;
 }

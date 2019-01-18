@@ -61,8 +61,13 @@ struct CapsuleData
     MDoubleArray dRadiusAArray;
     MDoubleArray dRadiusBArray;
     MDoubleArray dRadiusCArray;
+    MDoubleArray dRadiusDArray;
     MDoubleArray dLengthAArray;
     MDoubleArray dLengthBArray;
+    MDoubleArray dBulgeAmount;
+    MDoubleArray dBulgeDistance;
+    MDoubleArray dBulgeClampStart;
+    MDoubleArray dBulgeClampEnd;
     std::vector <short> eTypeArray;
     MIntArray allowScaleArray;
     MMatrixArray mWorldMatrixArray;
@@ -188,6 +193,13 @@ class LHCollisionDeformer : public MPxDeformerNode {
                                 double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB, double radiusC, MMatrix capsuleRotationMatrix);
         void ellipsoidBulgeLogic(MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleStart, MPoint capsuleEnd, double radiusA, double radiusB,
                                  double radiusC, MMatrix capsuleMatrix, MFnMesh *newMainMesh, double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
+
+        void capsuleElipsoidLogic(MPoint &closestPoint, MPointArray &allPoints, unsigned int currentIdx,
+                                  double &maxDisp, MIntArray &hitPoints, bool &capsuleHit, MPoint capsuleStart,
+                                  MPoint capsuleEnd, double radiusA, double radiusB, double radiusC, double radiusD, MMatrix capsuleMatrix);
+        void capsuleEllipsoidBulgeLogic(MPointArray &allPoints, unsigned int currentIdx, MPoint capsuleStart,
+                                        MPoint capsuleEnd, double radiusA, double radiusB, double radiusC, double radiusD, MMatrix capsuleMatrix,
+                                        MFnMesh *newMainMesh, double bulgeDistance, double bulgeAmount, MRampAttribute rFalloffRamp, double bulgeWeight);
         static void *creator();
         static MStatus initialize();
 
@@ -250,6 +262,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aPrimCapsuleRadiusA;
         static MObject aPrimCapsuleRadiusB;
         static MObject aPrimCapsuleRadiusC;
+        static MObject aPrimCapsuleRadiusD;
         static MObject aPrimCapsuleMatrix;
         static MObject aPrimCapsuleAllowScale;
         static MObject aPrimCollisionInputs;
@@ -260,16 +273,15 @@ class LHCollisionDeformer : public MPxDeformerNode {
         static MObject aPrimWeightsParent;
         static MObject aPrimLengthA;
         static MObject aPrimLengthB;
-
-
-
+        static MObject aPrimBulgeAmount;
+        static MObject aPrimBulgeDistance;
+        static MObject aPrimBulgeClampStart;
+        static MObject aPrimBulgeClampEnd;
 
 
         unsigned int inputCount;
-
         double flipCheck;
         MVector closestNormal;
-
         bool hit;
         unsigned int i;
         unsigned int x;
@@ -285,14 +297,9 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MPoint closestPoint;
         MPoint clearPoint;
         MPoint finalPoint;
-        //  MFloatPoint closestPoint;
         MPointOnMesh closestPointOn;
-        //Bounds attrs
         MMatrix bBMatrix;
         MMatrix colMatrix;
-        //  MPoint minBBPoint;
-        //  MPoint maxBBPoint;
-        //  MBoundingBox mainBB;
     
         MBoundingBox mainBB;
         double distance;
@@ -368,6 +375,8 @@ class LHCollisionDeformer : public MPxDeformerNode {
         double Z;
         double distanceToFirst;
         double halfRadius;
+        double bulgeClampStart;
+        double bulgeClampEnd;
         inline MString FormatError( const MString &msg, const MString
                                         &sourceFile, const int &sourceLine )
         {

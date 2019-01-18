@@ -23,14 +23,14 @@ set(source_files
 )
 #message( "BLAAAAAAAAAA" ${source_files})
 
-add_library(template SHARED ${source_files})
-set_target_properties(template PROPERTIES PREFIX "")
+add_library(templateLocator SHARED ${source_files})
+set_target_properties(templateLocator PROPERTIES PREFIX "")
 
 link_directories(${stdlib_ROOT}/lib64)
 find_package(OpenMP)
 
-target_link_libraries(template tbb clew cuda cudart ${maya_LIBRARIES} Foundation OpenMaya)
+target_link_libraries(templateLocator tbb clew cuda cudart ${maya_LIBRARIES} Foundation OpenMaya)
 
-install(TARGETS template DESTINATION plugins)
+install(TARGETS templateLocator DESTINATION plugins)
 
 

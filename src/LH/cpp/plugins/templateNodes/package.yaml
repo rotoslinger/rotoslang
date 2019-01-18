@@ -1,13 +1,13 @@
-name: template
+name: templateLocator
 
 version: 0.1.0
 
-uuid: 0bff2ff6-2c8c-418d-b41d-8383ac87f9fe
+uuid: 03339296-d3dd-44e1-9225-9e6ef1c183a6
 
 authors:
 - rot
 
-description: template nodes
+description: templateLocator nodes
 
 private_build_requires:
 - gcc-4.8.3
@@ -16,7 +16,6 @@ private_build_requires:
 - AL_CMakeLib-2
 - AL_MTypeId-2.2+<3
 - 'cuda-8.0.61'
-
 - tbb-2017+
 
 requires:
@@ -29,6 +28,6 @@ variants:
 
 
 commands: |-
-  prependenv('AL_MAYA_AUTO_LOADVERSIONEDTOOL', 'template')
+  prependenv('AL_MAYA_AUTO_LOADVERSIONEDTOOL', 'templateLocator')
   setenv('TEMPLATE_PLUGINS', '{root}/plugins')
   prependenv('MAYA_PLUG_IN_PATH', '$TEMPLATE_PLUGINS')

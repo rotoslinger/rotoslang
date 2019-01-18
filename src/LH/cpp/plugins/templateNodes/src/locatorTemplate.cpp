@@ -1,7 +1,7 @@
 #include "locatorTemplate.h"
 
 MObject locatorTemplate::aSize;
-MTypeId locatorTemplate::id(10983797);
+MTypeId locatorTemplate::id(0704741);
 static float circle[][3] = {{0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
                           {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
                           {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
