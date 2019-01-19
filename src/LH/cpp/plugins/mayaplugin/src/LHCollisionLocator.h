@@ -68,7 +68,15 @@ class LocatorCapsuleData : public MUserData
     virtual ~LocatorCapsuleData() {}
     double size;
     MColor mColor;
-    MPointArray shapePoints;
+    MPointArray shapePointsA;
+    std::vector<std::vector<float>> shape;
+    std::vector<std::vector<int>> intArray;
+    MPointArray shapePointsB;
+    MPointArray shapePointsC;
+    bool doShapeA;
+    bool doShapeB;
+    bool doShapeC;
+    
     MPoint pPointStart;
     MPoint pPointEnd;
     double dRadiusA;

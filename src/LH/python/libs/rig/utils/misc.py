@@ -1888,7 +1888,20 @@ def printPointsCPP(object):
             print "{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f},"
         if i == points.length()-1:
             print "{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f}}"
-            
+
+def printIntArray():
+    selectedPoints = cmds.ls(sl=True, fl=True)
+    points = [str(s.split("[")[1].split("]")[0]) for s in selectedPoints]
+    pointArray = ""
+    for i , intName in enumerate(points):
+        if i == 0:
+            pointArray += "{" + intName + ", "
+        if i != 0 and i != len(points)-1:
+            pointArray += intName + ", "
+        if i == len(points)-1:
+            pointArray += intName + "}"
+    print pointArray
+
 def setFaceIdsOnLocator(locatorName):
     faces = cmds.ls(sl = True, fl=True)
     faces = [x.split("[")[1] for x in faces]
