@@ -26,7 +26,7 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnMatrixData.h>
 #include <algorithm>
-
+#include <vector>
 #include <iterator>
 
 // #include "../utils.h"

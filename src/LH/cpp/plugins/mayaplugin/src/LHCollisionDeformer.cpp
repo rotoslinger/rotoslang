@@ -1547,7 +1547,7 @@ void LHCollisionDeformer::cylinderPointLogic(MPoint &closestPoint, MPointArray &
   }
 }
 
-bool projectPointOnEllipsoid(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB, double radiusC, MMatrix capsuleMatrix)
+void projectPointOnEllipsoid(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB, double radiusC, MMatrix capsuleMatrix)
 {
   MVector collsionVector = point - capsuleStart;
   collsionVector = collsionVector * capsuleMatrix.inverse();

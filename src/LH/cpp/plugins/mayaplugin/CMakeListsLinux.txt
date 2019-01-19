@@ -46,6 +46,9 @@ set(source_files
 	"src/LHLocator.cpp"
 	"src/LHLocator.h"
 	"src/threading.cpp"
+	"src/LHCollisionLocator.cpp"
+	"src/LHCollisionLocator.h"
+
 )
 
 add_library(collision SHARED ${source_files})
