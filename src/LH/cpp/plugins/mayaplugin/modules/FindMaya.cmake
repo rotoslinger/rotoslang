@@ -44,7 +44,7 @@
 
 # Set a default Maya version if not specified
 if(NOT DEFINED MAYA_VERSION)
-    set(MAYA_VERSION 2017 CACHE STRING "Maya version")
+    set(MAYA_VERSION 2018 CACHE STRING "Maya version")
 endif()
 
 # OS Specific environment setup
@@ -58,10 +58,14 @@ if(WIN32)
     set(MAYA_PLUGIN_EXTENSION ".mll")
     set(MAYA_TARGET_TYPE RUNTIME)
 elseif(APPLE)
-    # Apple
-    set(MAYA_INSTALL_BASE_DEFAULT /Applications/Autodesk)
-    set(MAYA_COMPILE_DEFINITIONS "${MAYA_COMPILE_DEFINITIONS};OSMac_")
-    set(MAYA_PLUGIN_EXTENSION ".bundle")
+    # Mac
+    set(MAYA_INSTALL_BASE_DEFAULT "/Applications/Autodesk")
+    set(OPENMAYA libOpenMaya.dylib)
+    set(MAYA_LIB_SUFFIX "Maya.app/Contents/MacOS/")
+    set(MAYA_INC_SUFFIX "devkit/include/")
+	set(MAYA_COMPILE_DEFINITIONS "${MAYA_COMPILE_DEFINITIONS};OSMac_")
+	set(MAYA_PLUGIN_EXTENSION ".bundle")
+
 else()
     # Linux
     set(MAYA_COMPILE_DEFINITIONS "${MAYA_COMPILE_DEFINITIONS};LINUX")
