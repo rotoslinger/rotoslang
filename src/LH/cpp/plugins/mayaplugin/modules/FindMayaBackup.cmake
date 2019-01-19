@@ -20,6 +20,7 @@ elseif(APPLE)
     set(MAYA_INC_SUFFIX "devkit/include/")
 	set(MAYA_COMPILE_DEFINITIONS "${MAYA_COMPILE_DEFINITIONS};OSMac_")
 	set(MAYA_PLUGIN_EXTENSION ".bundle")
+    
 
 else()
     #Linux

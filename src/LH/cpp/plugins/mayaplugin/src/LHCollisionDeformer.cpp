@@ -1357,7 +1357,7 @@ bool getClosestPointOnCapsule(MPoint point, MPoint &closestPoint, MPoint capsule
 }
 
 
-bool projectPointOnCapsule(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB)
+void projectPointOnCapsule(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB)
 {
   double uParam = getLengthOfPointProjectedToLine(point, capsuleStart, capsuleEnd);
   // if (i == 21)
@@ -1368,18 +1368,17 @@ bool projectPointOnCapsule(MPoint point, MPoint &closestPoint, MPoint capsuleSta
   if (modulationValue>1.0)
   {
     closestPoint = getClosestPointOnSphere(point, capsuleEnd, radiusB);
-    return true;
   }
   if (modulationValue < 0.0)
   {
     closestPoint = getClosestPointOnSphere(point, capsuleStart, radiusA);
-    return true;
   }
   double currentRadius = radiusA + (radiusB-radiusA) * modulationValue;
   MPoint closestPointOnCurve = capsuleStart + ( direction ) * uParam;
   MVector directionVec(point-closestPointOnCurve);
   directionVec.normalize();
   closestPoint = closestPointOnCurve + directionVec * currentRadius;
+
 }
 
 
@@ -1435,7 +1434,7 @@ void getClosestPointOnPlaneCylindrical(MPoint point, MPoint &closestPoint, MPoin
 }
 
 
-bool projectPointOnCylinder(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB)
+void projectPointOnCylinder(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i, double radiusA, double radiusB)
 {
   double uParam = getLengthOfPointProjectedToLine(point, capsuleStart, capsuleEnd);
   // if (i == 21)
@@ -1446,13 +1445,10 @@ bool projectPointOnCylinder(MPoint point, MPoint &closestPoint, MPoint capsuleSt
   if (modulationValue>1.0)
   {
     getClosestPointOnPlaneCylindrical(point, closestPoint, capsuleEnd, capsuleStart, true, radiusB);
-
-    return true;
   }
   if (modulationValue < 0.0)
   {
     getClosestPointOnPlaneCylindrical(point, closestPoint, capsuleStart, capsuleEnd, true, radiusA);
-    return true;
   }
   double currentRadius = radiusA + (radiusB-radiusA) * modulationValue;
   MPoint closestPointOnCurve = capsuleStart + ( direction ) * uParam;
@@ -1485,6 +1481,7 @@ bool closestPointOnCylinder(MPoint point, MPoint &closestPoint, MPoint capsuleSt
     }
   }
   if (modulationValue < 0.0)
+  {
     if (getClosestPointOnPlane(point, closestPoint, capsuleEnd, capsuleStart, false, 0 ))
     {
 
@@ -1495,6 +1492,7 @@ bool closestPointOnCylinder(MPoint point, MPoint &closestPoint, MPoint capsuleSt
       closestPoint = point;
       return false;
     }
+  }
   double currentRadius = radiusA + (radiusB-radiusA) * modulationValue;
   MPoint closestPointOnCurve = capsuleStart + ( direction ) * uParam;
 
@@ -1665,7 +1663,7 @@ bool getClosestPointOnEllipsoidCapsule(MPoint point, MPoint &closestPoint, MPoin
 }
 
 
-bool projectPointOnElipsoidCapsule(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i,
+void projectPointOnElipsoidCapsule(MPoint point, MPoint &closestPoint, MPoint capsuleStart, MPoint capsuleEnd, unsigned int i,
                                    double radiusA, double radiusB, double radiusC, double radiusD, MMatrix capsuleMatrix, unsigned int currentIdx)
 {
   double uParam = getLengthOfPointProjectedToLine(point, capsuleStart, capsuleEnd);
@@ -1674,12 +1672,10 @@ bool projectPointOnElipsoidCapsule(MPoint point, MPoint &closestPoint, MPoint ca
   if (modulationValue>1.0)
   {
     projectPointOnEllipsoid(point, closestPoint, capsuleEnd, capsuleStart, currentIdx, radiusB, radiusB, radiusD, capsuleMatrix);
-    return true;
   }
   if (modulationValue < 0.0)
   {
     projectPointOnEllipsoid(point, closestPoint, capsuleStart, capsuleEnd, currentIdx, radiusA, radiusA, radiusC, capsuleMatrix);
-    return true;
   }
   double currentRadius = radiusA + (radiusB-radiusA) * modulationValue;
   MPoint closestPointOnCurve = capsuleStart + ( direction ) * uParam;
