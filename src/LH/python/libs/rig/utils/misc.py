@@ -1,12 +1,16 @@
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
+win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
 #---determine operating system
 os = sys.platform
 if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win32" in os:
+    os = mac
+
 if os not in sys.path:
     sys.path.append(os)
 
@@ -189,7 +193,7 @@ class draw_ctl():
                                     cube
                                     square
                                     shoulder
-                                    ik/fk
+                                    ik\\fk
 
         @type  lock_attrs:          string array
         @param lock_attrs:          the attribute names you want locked,
@@ -1872,7 +1876,8 @@ def printPointsPY(object):
 
 
 # a function to print and format point positions for gl drawings in cpp
-def printPointsCPP(object):
+def printPointsCPP(object=None):
+    if not object: object = cmds.ls(sl=True)[0]
     curveNode = OpenMaya.MSelectionList()
     curveNode.add(object)
     pPath = OpenMaya.MDagPath()

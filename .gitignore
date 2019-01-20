@@ -141,3 +141,7 @@ RotoslangVisualStudio/Project1/Project1.vcxproj.user
 .vs/rotoslang/v15/Browse.VC.db
 .vs/slnx.sqlite
 .vs/rotoslang/v15/.suo
+src/LH/python/libs/rig/utils/exportUtils.pyc
+src/LH/python/libs/rig/utils/misc.pyc
+**/*.pyc
+src/LH/python/libs/rig/utils/misc.pyc

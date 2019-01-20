@@ -28,6 +28,8 @@ set(SOURCE_FILES
 	"LHLocator.h"
 	"LHCollisionLocator.cpp"
 	"LHCollisionLocator.h"
+	"constants.h"
+
 )
 
 #set(CMAKE_C_COMPILER clang-omp CACHE STRING "C compiler" FORCE)

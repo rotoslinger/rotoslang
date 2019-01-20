@@ -1,4 +1,5 @@
 #include "LHCollisionLocator.h"
+#include "constants.h"
 
 MObject LHCollisionLocator::aSize;
 
@@ -11,284 +12,6 @@ MObject LHCollisionLocator::aPrimLengthA;
 MObject LHCollisionLocator::aPrimLengthB;
 
 MTypeId LHCollisionLocator::id(10983797);
-std::vector<std::vector<float>> newCircle = {{0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
-                                             {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
-                                             {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
-                                             {-1.10819418755f, 1.96633546162e-32f, -3.21126950724e-16f},
-                                             {-0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
-                                             {-3.33920536359e-16f, -6.78573232311e-17f, 1.10819418755f},
-                                             {0.783611624891f, -4.79823734099e-17f, 0.783611624891f},
-                                             {1.10819418755f, -3.6446300679e-32f, 5.95213259928e-16f},
-                                             {0.783611624891f, 4.79823734099e-17f, -0.783611624891f},
-                                             {-1.26431706078e-16f, 6.78573232311e-17f, -1.10819418755f},
-                                             {-0.783611624891f, 4.79823734099e-17f, -0.783611624891f}};
-
-std::vector<std::vector<float>> sphere = {{-5.36587337206e-16f, -6.12203396374e-17f, 0.999804019903f},
-                                          {0.308956433194f, -5.8224002942e-17f, 0.950870128147f},
-                                          {0.587670058082f, -4.95282951681e-17f, 0.808858443146f},
-                                          {0.808858443146f, -3.59844127792e-17f, 0.587670058082f},
-                                          {0.950870128147f, -1.89181253494e-17f, 0.308956433194f},
-                                          {0.999804019903f, -3.57023946799e-32f, 5.83064353e-16f},
-                                          {0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
-                                          {0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
-                                          {0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
-                                          {0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
-                                          {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
-                                          {-0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
-                                          {-0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
-                                          {-0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
-                                          {-0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
-                                          {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
-                                          {-0.950870128147f, -1.89181253494e-17f, 0.308956433194f},
-                                          {-0.808858443146f, -3.59844127792e-17f, 0.587670058082f},
-                                          {-0.587670058082f, -4.95282951681e-17f, 0.808858443146f},
-                                          {-0.308956433194f, -5.8224002942e-17f, 0.950870128147f},
-                                          {-5.36587337206e-16f, -6.12203396374e-17f, 0.999804019903f},
-                                          {4.37515205623e-15f, 0.308956433194f, 0.950870128147f},
-                                          {8.32203374572e-15f, 0.587670058082f, 0.808858443146f},
-                                          {1.14542967892e-14f, 0.808858443146f, 0.587670058082f},
-                                          {1.34653334561e-14f, 0.950870128147f, 0.308956433194f},
-                                          {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
-                                          {1.34653334561e-14f, 0.950870128147f, -0.308956433194f},
-                                          {1.14542967892e-14f, 0.808858443146f, -0.587670058082f},
-                                          {8.32203374572e-15f, 0.587670058082f, -0.808858443146f},
-                                          {4.37515205623e-15f, 0.308956433194f, -0.950870128147f},
-                                          {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
-                                          {-4.37515205623e-15f, -0.308956433194f, -0.950870128147f},
-                                          {-8.32203374572e-15f, -0.587670058082f, -0.808858443146f},
-                                          {-1.14542967892e-14f, -0.808858443146f, -0.587670058082f},
-                                          {-1.34653334561e-14f, -0.950870128147f, -0.308956433194f},
-                                          {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
-                                          {-1.34653334561e-14f, -0.950870128147f, 0.308956433194f},
-                                          {-1.14542967892e-14f, -0.808858443146f, 0.587670058082f},
-                                          {-8.32203374572e-15f, -0.587670058082f, 0.808858443146f},
-                                          {-4.37515205623e-15f, -0.308956433194f, 0.950870128147f},
-                                          {-5.36587337206e-16f, -6.12203396374e-17f, 0.999804019903f},
-                                          {4.37515205623e-15f, 0.308956433194f, 0.950870128147f},
-                                          {8.32203374572e-15f, 0.587670058082f, 0.808858443146f},
-                                          {1.14542967892e-14f, 0.808858443146f, 0.587670058082f},
-                                          {1.34653334561e-14f, 0.950870128147f, 0.308956433194f},
-                                          {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
-                                          {0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
-                                          {0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
-                                          {0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
-                                          {0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
-                                          {0.999804019903f, -3.57023946799e-32f, 5.83064353e-16f},
-                                          {0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
-                                          {0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
-                                          {0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
-                                          {0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
-                                          {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
-                                          {-0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
-                                          {-0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
-                                          {-0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
-                                          {-0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
-                                          {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
-                                          {-0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
-                                          {-0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
-                                          {-0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
-                                          {-0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
-                                          {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f}};
-std::vector<std::vector<int>> sphereIntArray = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                                                18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
-                                                34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-                                                50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65}};
-
-// std::vector<std::vector<float>> capsuleStart = {{0.999804019903f, -3.57023946799e-32f, 5.83064353e-16f},
-//                                                 {0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
-//                                                 {0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
-//                                                 {0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
-//                                                 {0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
-//                                                 {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
-//                                                 {-0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
-//                                                 {-0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
-//                                                 {-0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
-//                                                 {-0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
-//                                                 {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
-//                                                 {0.999804019928f, -3.69778549322e-32f, 6.10622663544e-16f},
-//                                                 {0.0f, 0.0f, 0.0f},
-//                                                 {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
-//                                                 {1.34653334561e-14f, 0.950870128147f, -0.308956433194f},
-//                                                 {1.14542967892e-14f, 0.808858443146f, -0.587670058082f},
-//                                                 {8.32203374572e-15f, 0.587670058082f, -0.808858443146f},
-//                                                 {4.37515205623e-15f, 0.308956433194f, -0.950870128147f},
-//                                                 {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
-//                                                 {-4.37515205623e-15f, -0.308956433194f, -0.950870128147f},
-//                                                 {-8.32203374572e-15f, -0.587670058082f, -0.808858443146f},
-//                                                 {-1.14542967892e-14f, -0.808858443146f, -0.587670058082f},
-//                                                 {-1.34653334561e-14f, -0.950870128147f, -0.308956433194f},
-//                                                 {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
-//                                                 {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
-//                                                 {0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
-//                                                 {0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
-//                                                 {0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
-//                                                 {0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
-//                                                 {0.999804019903f, -3.57023946799e-32f, 5.83064353e-16f},
-//                                                 {0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
-//                                                 {0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
-//                                                 {0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
-//                                                 {0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
-//                                                 {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
-//                                                 {-0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
-//                                                 {-0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
-//                                                 {-0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
-//                                                 {-0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
-//                                                 {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
-//                                                 {-0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
-//                                                 {-0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
-//                                                 {-0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
-//                                                 {-0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
-//                                                 {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f}}
-
-// std::vector<std::vector<float>> capsuleEnd = {{0.999804019903f, 1.23121221134e-16f, 1.0f},
-//                                             {0.950870128147f, 1.42039346484e-16f, 1.30895643319f},
-//                                             {0.808858443146f, 1.59105633913e-16f, 1.58767005808f},
-//                                             {0.587670058082f, 1.72649516302e-16f, 1.80885844315f},
-//                                             {0.308956433194f, 1.81345224076e-16f, 1.95087012815f},
-//                                             {-6.16179902019e-17f, 1.84341560772e-16f, 1.9998040199f},
-//                                             {-0.308956433194f, 1.81345224076e-16f, 1.95087012815f},
-//                                             {-0.587670058082f, 1.72649516302e-16f, 1.80885844315f},
-//                                             {-0.808858443146f, 1.59105633913e-16f, 1.58767005808f},
-//                                             {-0.950870128147f, 1.42039346484e-16f, 1.30895643319f},
-//                                             {-0.999804019903f, 1.23121221134e-16f, 1.0f},
-//                                             {0.999804019928f, 1.23121221134e-16f, 1.0f},
-//                                             {0.0f, 1.23121221134e-16f, 1.0f},
-//                                             {-6.16179902019e-17f, -0.999804019903f, 1.0f},
-//                                             {1.34653334561e-14f, -0.950870128147f, 1.30895643319f},
-//                                             {1.14542967892e-14f, -0.808858443146f, 1.58767005808f},
-//                                             {8.32203374572e-15f, -0.587670058082f, 1.80885844315f},
-//                                             {4.37515205623e-15f, -0.308956433194f, 1.95087012815f},
-//                                             {-6.16179902019e-17f, 1.84341560772e-16f, 1.9998040199f},
-//                                             {-4.37515205623e-15f, 0.308956433194f, 1.95087012815f},
-//                                             {-8.32203374572e-15f, 0.587670058082f, 1.80885844315f},
-//                                             {-1.14542967892e-14f, 0.808858443146f, 1.58767005808f},
-//                                             {-1.34653334561e-14f, 0.950870128147f, 1.30895643319f},
-//                                             {-5.36587337206e-16f, 0.999804019903f, 1.0f},
-//                                             {-6.16179902019e-17f, -0.999804019903f, 1.0f},
-//                                             {0.308956433194f, -0.950870128147f, 1.0f},
-//                                             {0.587670058082f, -0.808858443146f, 1.0f},
-//                                             {0.808858443146f, -0.587670058082f, 1.0f},
-//                                             {0.950870128147f, -0.308956433194f, 1.0f},
-//                                             {0.999804019903f, 1.23121221134e-16f, 1.0f},
-//                                             {0.950870128147f, 0.308956433194f, 1.0f},
-//                                             {0.808858443146f, 0.587670058082f, 1.0f},
-//                                             {0.587670058082f, 0.808858443146f, 1.0f},
-//                                             {0.308956433194f, 0.950870128147f, 1.0f},
-//                                             {-5.36587337206e-16f, 0.999804019903f, 1.0f},
-//                                             {-0.308956433194f, 0.950870128147f, 1.0f},
-//                                             {-0.587670058082f, 0.808858443146f, 1.0f},
-//                                             {-0.808858443146f, 0.587670058082f, 1.0f},
-//                                             {-0.950870128147f, 0.308956433194f, 1.0f},
-//                                             {-0.999804019903f, 1.23121221134e-16f, 1.0f},
-//                                             {-0.950870128147f, -0.308956433194f, 1.0f},
-//                                             {-0.808858443146f, -0.587670058082f, 1.0f},
-//                                             {-0.587670058082f, -0.808858443146f, 1.0f},
-//                                             {-0.308956433194f, -0.950870128147f, 1.0f},
-//                                             {-6.16179902019e-17f, -0.999804019903f, 1.0f}}
-//First index is capsule start, second capsule end
-std::vector<std::vector<float>> capsule = {{-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
-                                           {-0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
-                                           {-0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
-                                           {-0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
-                                           {-0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
-                                           {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
-                                           {-0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
-                                           {-0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
-                                           {-0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
-                                           {-0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
-                                           {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
-                                           {0.308956433194f, -0.950870128147f, 1.52911578997e-16f},
-                                           {0.587670058082f, -0.808858443146f, 1.3007435828e-16f},
-                                           {0.808858443146f, -0.587670058082f, 9.45045530938e-17f},
-                                           {0.950870128147f, -0.308956433194f, 4.96839837983e-17f},
-                                           {0.999804019903f, -3.57023946799e-32f, 5.83064353e-16f},
-                                           {0.950870128147f, 0.308956433194f, -4.96839837983e-17f},
-                                           {0.808858443146f, 0.587670058082f, -9.45045530938e-17f},
-                                           {0.587670058082f, 0.808858443146f, -1.3007435828e-16f},
-                                           {0.308956433194f, 0.950870128147f, -1.52911578997e-16f},
-                                           {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
-                                           {-5.36587337206e-16f, -0.999804019903f, 1.60780748964e-16f},
-                                           {-1.34653334561e-14f, -0.950870128147f, -0.308956433194f},
-                                           {-1.14542967892e-14f, -0.808858443146f, -0.587670058082f},
-                                           {-8.32203374572e-15f, -0.587670058082f, -0.808858443146f},
-                                           {-4.37515205623e-15f, -0.308956433194f, -0.950870128147f},
-                                           {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
-                                           {4.37515205623e-15f, 0.308956433194f, -0.950870128147f},
-                                           {8.32203374572e-15f, 0.587670058082f, -0.808858443146f},
-                                           {1.14542967892e-14f, 0.808858443146f, -0.587670058082f},
-                                           {1.34653334561e-14f, 0.950870128147f, -0.308956433194f},
-                                           {-6.16179902019e-17f, 0.999804019903f, -1.60780748964e-16f},
-                                           {0.0f, 0.0f, 0.0f},
-                                           {0.999804019928f, -3.69778549322e-32f, 6.10622663544e-16f},
-                                           {-0.999804019903f, 1.12083152919e-32f, -1.83045679778e-16f},
-                                           {-0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
-                                           {-0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
-                                           {-0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
-                                           {-0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
-                                           {-6.16179902019e-17f, 6.12203396374e-17f, -0.999804019903f},
-                                           {0.308956433194f, 5.8224002942e-17f, -0.950870128147f},
-                                           {0.587670058082f, 4.95282951681e-17f, -0.808858443146f},
-                                           {0.808858443146f, 3.59844127792e-17f, -0.587670058082f},
-                                           {0.950870128147f, 1.89181253494e-17f, -0.308956433194f},
-                                           {0.999804019928f, -3.69778549322e-32f, 5.82867087928e-16f},
-                                           {0.999804019928f, 2.22044604925e-16f, 1.0f},
-                                           {0.950870128147f, 1.42039346484e-16f, 1.30895643319f},
-                                           {0.808858443146f, 1.59105633913e-16f, 1.58767005808f},
-                                           {0.587670058082f, 1.72649516302e-16f, 1.80885844315f},
-                                           {0.308956433194f, 1.81345224076e-16f, 1.95087012815f},
-                                           {-6.16179902019e-17f, 1.84341560772e-16f, 1.9998040199f},
-                                           {-0.308956433194f, 1.81345224076e-16f, 1.95087012815f},
-                                           {-0.587670058082f, 1.72649516302e-16f, 1.80885844315f},
-                                           {-0.808858443146f, 1.59105633913e-16f, 1.58767005808f},
-                                           {-0.950870128147f, 1.42039346484e-16f, 1.30895643319f},
-                                           {-0.999804019903f, 1.23121221134e-16f, 1.0f},
-                                           {-0.999804019928f, 0.0f, -2.22044604925e-16f},
-                                           {-0.999804019928f, 1.23121215202e-16f, 1.0f},
-                                           {0.999804019928f, 1.23121221134e-16f, 1.0f},
-                                           {0.0f, 1.23121221134e-16f, 1.0f},
-                                           {-6.16179902019e-17f, -0.999804019903f, 1.0f},
-                                           {1.34653334561e-14f, -0.950870128147f, 1.30895643319f},
-                                           {1.14542967892e-14f, -0.808858443146f, 1.58767005808f},
-                                           {8.32203374572e-15f, -0.587670058082f, 1.80885844315f},
-                                           {4.37515205623e-15f, -0.308956433194f, 1.95087012815f},
-                                           {-6.16179902019e-17f, 1.84341560772e-16f, 1.9998040199f},
-                                           {-4.37515205623e-15f, 0.308956433194f, 1.95087012815f},
-                                           {-8.32203374572e-15f, 0.587670058082f, 1.80885844315f},
-                                           {-1.14542967892e-14f, 0.808858443146f, 1.58767005808f},
-                                           {-1.34653334561e-14f, 0.950870128147f, 1.30895643319f},
-                                           {-5.36587337206e-16f, 0.999804019903f, 1.0f},
-                                           {0.0f, 0.999804019928f, 0.0f},
-                                           {-4.99600361081e-16f, 0.999804019928f, 1.0f},
-                                           {-5.55111512313e-17f, -0.999804019928f, 1.0f},
-                                           {-5.55111512313e-16f, -0.999804019928f, 2.22044604925e-16f},
-                                           {-6.16179902019e-17f, -0.999804019903f, 1.0f},
-                                           {0.308956433194f, -0.950870128147f, 1.0f},
-                                           {0.587670058082f, -0.808858443146f, 1.0f},
-                                           {0.808858443146f, -0.587670058082f, 1.0f},
-                                           {0.950870128147f, -0.308956433194f, 1.0f},
-                                           {0.999804019903f, 1.23121221134e-16f, 1.0f},
-                                           {0.950870128147f, 0.308956433194f, 1.0f},
-                                           {0.808858443146f, 0.587670058082f, 1.0f},
-                                           {0.587670058082f, 0.808858443146f, 1.0f},
-                                           {0.308956433194f, 0.950870128147f, 1.0f},
-                                           {-5.36587337206e-16f, 0.999804019903f, 1.0f},
-                                           {-0.308956433194f, 0.950870128147f, 1.0f},
-                                           {-0.587670058082f, 0.808858443146f, 1.0f},
-                                           {-0.808858443146f, 0.587670058082f, 1.0f},
-                                           {-0.950870128147f, 0.308956433194f, 1.0f},
-                                           {-0.999804019903f, 1.23121221134e-16f, 1.0f},
-                                           {-0.950870128147f, -0.308956433194f, 1.0f},
-                                           {-0.808858443146f, -0.587670058082f, 1.0f},
-                                           {-0.587670058082f, -0.808858443146f, 1.0f},
-                                           {-0.308956433194f, -0.950870128147f, 1.0f},
-                                           {-6.16179902019e-17f, -0.999804019903f, 1.0f}};
-std::vector<std::vector<int>> capsuleIntArray{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-                                                23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
-                                                44, 56, 71, 74},
-                                                {45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 60, 61, 62, 63, 64,
-                                                65, 66, 67, 68, 69, 70, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86,
-                                                87, 88, 89, 90, 91, 92, 93, 94, 95}};
-
 
 MString LHCollisionLocator::drawDbClassification("drawdb/geometry/LHCollisionLocator");
 
@@ -383,83 +106,137 @@ LocatorCapsuleData getPlugValuesFromLocatorNode(const MDagPath &objPath)
         case 0 : // sphere
             rData.shape = sphere;
             rData.intArray = sphereIntArray;
-            rData.doShapeA = true;
-            rData.doShapeB = false;
-            rData.doShapeC = false;
+            // rData.doShapeA = true;
+            // rData.doShapeB = false;
+            // rData.doShapeC = false;
             break;
         case 1 : // elipsoidCapsule
             rData.shape = capsule;
             rData.intArray = capsuleIntArray;
-            rData.doShapeA = true;
-            rData.doShapeB = false;
-            rData.doShapeC = false;
+            // rData.doShapeA = true;
+            // rData.doShapeB = false;
+            // rData.doShapeC = false;
             break;
         case 2 : // elipsoid
+            rData.shape = sphere;
+            rData.intArray = sphereIntArray;
             break;
         case 3 : // cylinder
+            rData.shape = cylinder;
+            rData.intArray = cylinderIntArray;
             break;
         case 4 : // plane
+            rData.shape = plane;
+            rData.intArray = planeIntArray;
             break;
         case 5 : // capsule
+            rData.shape = capsule;
+            rData.intArray = capsuleIntArray;
             break;
         case 6 : // cone
+            rData.shape = cone;
+            rData.intArray = coneIntArray;
             break;
     }
-
-
-
     return rData;
+}
+MPoint cylinderEndPointLogic(MPoint inPoint, LocatorCapsuleData capsuleData, int index)
+{
+    if  (std::find(std::begin(capsuleData.intArray[0]), std::end(capsuleData.intArray[0]), index) == std::end(capsuleData.intArray[0]))
+    {
+        return inPoint + (inPoint - capsuleData.pPointEnd) * (capsuleData.dRadiusB -1.0);
+    }
+    if  (std::find(std::begin(capsuleData.intArray[1]), std::end(capsuleData.intArray[1]), index) == std::end(capsuleData.intArray[1]))
+    {
+        return inPoint + (inPoint - capsuleData.pPointStart) * (capsuleData.dRadiusA -1.0);
+    }
+    MPoint nullPoint(0.0, 0.0, 0.0);
+    return nullPoint;
+}
+
+MPoint lengthLogic(MPoint inPoint, LocatorCapsuleData capsuleData, int index)
+{
+    if  (std::find(std::begin(capsuleData.intArray[0]), std::end(capsuleData.intArray[0]), index) == std::end(capsuleData.intArray[0]))
+    {
+        return inPoint + (capsuleData.pPointEnd - capsuleData.pPointStart) * capsuleData.dLengthB;
+    }
+    if  (std::find(std::begin(capsuleData.intArray[1]), std::end(capsuleData.intArray[1]), index) == std::end(capsuleData.intArray[1]))
+    {
+        return inPoint + (capsuleData.pPointStart - capsuleData.pPointEnd) * capsuleData.dLengthA;
+    }
+    MPoint nullPoint(0.0, 0.0, 0.0);
+    return nullPoint;
+
+}
+MPoint capWidthLogic(MPoint inPoint, LocatorCapsuleData capsuleData, int index, MTransformationMatrix capsuleMatrix)
+{
+            double matScaleArray[3];
+
+    if  (std::find(std::begin(capsuleData.intArray[0]), std::end(capsuleData.intArray[0]), index) == std::end(capsuleData.intArray[0]))
+    {
+        MVector translate(0.0, 0.0, 1.0);
+        inPoint = inPoint -translate;
+        capsuleMatrix.getScale( matScaleArray, MSpace::kObject);
+        matScaleArray[2] = matScaleArray[2] * capsuleData.dRadiusD;
+        capsuleMatrix.setScale( matScaleArray, MSpace::kObject);
+        inPoint = inPoint * capsuleMatrix.asMatrix();
+        return inPoint + translate;
+    }
+    if  (std::find(std::begin(capsuleData.intArray[1]), std::end(capsuleData.intArray[1]), index) == std::end(capsuleData.intArray[1]))
+    {
+        capsuleMatrix.getScale( matScaleArray, MSpace::kObject);
+        matScaleArray[2] = matScaleArray[2] * capsuleData.dRadiusC;
+        capsuleMatrix.setScale( matScaleArray, MSpace::kObject);
+        return inPoint * capsuleMatrix.asMatrix();
+    }
+    MPoint nullPoint(0.0, 0.0, 0.0);
+    return nullPoint;
 }
 
 
-MPoint drawType(MPoint inPoint, LocatorCapsuleData capsuleData)
+MPoint drawType(MPoint inPoint, LocatorCapsuleData capsuleData, int index)
 {
+    MTransformationMatrix capsuleMatrix(capsuleData.mWorldMatrix);
+
     switch( capsuleData.eType )
     {
         case 0 : // sphere
             inPoint = inPoint + (inPoint - capsuleData.pPointStart) * (capsuleData.dRadiusA -1.0);
             break;
         case 1 : // elipsoidCapsule
-            inPoint = inPoint + (inPoint - capsuleData.pPointStart) * (capsuleData.dRadiusA -1.0);
+            inPoint = cylinderEndPointLogic(inPoint, capsuleData, index);
+            inPoint = capWidthLogic(inPoint, capsuleData, index, capsuleMatrix);
+            inPoint = lengthLogic(inPoint, capsuleData, index);
             break;
         case 2 : // elipsoid
+            double matScaleArray[3];
+            capsuleMatrix.getScale( matScaleArray, MSpace::kObject);
+            matScaleArray[0] = matScaleArray[0] * capsuleData.dRadiusA;
+            matScaleArray[1] = matScaleArray[1] * capsuleData.dRadiusB;
+            matScaleArray[2] = matScaleArray[2] * capsuleData.dRadiusC;
+            capsuleMatrix.setScale( matScaleArray, MSpace::kObject);
+            inPoint = inPoint * capsuleMatrix.asMatrix();
             break;
         case 3 : // cylinder
+            inPoint = cylinderEndPointLogic(inPoint, capsuleData, index);
+            inPoint = lengthLogic(inPoint, capsuleData, index);
             break;
         case 4 : // plane
+            // The plane has the simplest logic, it does nothing
             break;
         case 5 : // capsule
+            inPoint = cylinderEndPointLogic(inPoint, capsuleData, index);
+            inPoint = lengthLogic(inPoint, capsuleData, index);
             break;
         case 6 : // cone
+            inPoint = cylinderEndPointLogic(inPoint, capsuleData, index);
+            inPoint = lengthLogic(inPoint, capsuleData, index);
             break;
     }
 
     return inPoint;
 }
 
-//  void getShape(std::vector<std::vector<float>> &shape, LocatorCapsuleData capsuleData)
-//  {
-//      switch (capsuleData.eType)
-//      {
-//      case 0: // sphere
-//          shape = sphere;
-//          break;
-//      case 1: // elipsoidCapsule
-//          break;
-//      case 2: // elipsoid
-//          break;
-//      case 3: // cylinder
-//          break;
-//      case 4: // plane
-//          break;
-//      case 5: // capsule
-//          break;
-//      case 6: // cone
-//          break;
-//      }
-
-
-// }
 void collectShapeData(LocatorCapsuleData plugData, MPointArray &shapePoints)
 {
     if (shapePoints.length())
@@ -472,7 +249,7 @@ void collectShapeData(LocatorCapsuleData plugData, MPointArray &shapePoints)
     for (int i = 0; i < plugData.shape.size(); i++)
     {
         MPoint shapePoint(plugData.shape[i][0], plugData.shape[i][1], plugData.shape[i][2]);
-        shapePoint = drawType(shapePoint, plugData);
+        shapePoint = drawType(shapePoint, plugData, i);
         shapePoints.append(shapePoint);
     }
 
@@ -483,7 +260,7 @@ void drawShape(MPointArray shapePoints, LocatorCapsuleData plugData)
     for (unsigned int i = 0; i < shapePoints.length(); ++i)
     {
         MPoint shapePoint(shapePoints[i][0], shapePoints[i][1], shapePoints[i][2]);
-        shapePoint = drawType(shapePoint, plugData);
+        shapePoint = drawType(shapePoint, plugData, i);
         glVertex3f(shapePoint.x, shapePoint.y, shapePoint.z);
     }
 }
@@ -495,35 +272,35 @@ void LHCollisionLocator::draw(M3dView &view, const MDagPath &path,
 
     LocatorCapsuleData plugData = getPlugValuesFromLocatorNode(path);
 
-    if (plugData.doShapeA)
-        collectShapeData(plugData, plugData.shapePointsA);
-    if (plugData.doShapeB)
-        collectShapeData(plugData, plugData.shapePointsB);
-    if (plugData.doShapeC)
-        collectShapeData(plugData, plugData.shapePointsC);
+    // if (plugData.doShapeA)
+    collectShapeData(plugData, plugData.shapePointsA);
+    // if (plugData.doShapeB)
+    //     collectShapeData(plugData, plugData.shapePointsB);
+    // if (plugData.doShapeC)
+    //     collectShapeData(plugData, plugData.shapePointsC);
 
     view.beginGL();
 
-    if (plugData.doShapeA)
-        glPushAttrib(GL_CURRENT_BIT);
-        glBegin(GL_LINE_STRIP);
-        drawShape(plugData.shapePointsA, plugData);
-        glEnd();
-        glPopAttrib();
-    if (plugData.doShapeB)
-        view.beginGL();
-        glPushAttrib(GL_CURRENT_BIT);
-        glBegin(GL_LINE_STRIP);
-        drawShape(plugData.shapePointsB, plugData);
-        glEnd();
-        glPopAttrib();
-    if (plugData.doShapeC)
-        view.beginGL();
-        glPushAttrib(GL_CURRENT_BIT);
-        glBegin(GL_LINE_STRIP);
-        drawShape(plugData.shapePointsC, plugData);
-        glEnd();
-        glPopAttrib();
+    // if (plugData.doShapeA)
+    glPushAttrib(GL_CURRENT_BIT);
+    glBegin(GL_LINE_STRIP);
+    drawShape(plugData.shapePointsA, plugData);
+    glEnd();
+    glPopAttrib();
+    // if (plugData.doShapeB)
+    //     view.beginGL();
+    //     glPushAttrib(GL_CURRENT_BIT);
+    //     glBegin(GL_LINE_STRIP);
+    //     drawShape(plugData.shapePointsB, plugData);
+    //     glEnd();
+    //     glPopAttrib();
+    // if (plugData.doShapeC)
+    //     view.beginGL();
+    //     glPushAttrib(GL_CURRENT_BIT);
+    //     glBegin(GL_LINE_STRIP);
+    //     drawShape(plugData.shapePointsC, plugData);
+    //     glEnd();
+    //     glPopAttrib();
 
     view.endGL();
 }
@@ -569,16 +346,16 @@ MUserData* LHCollisionLocatorOverride::prepareForDraw(const MDagPath& objPath, c
     }
 
     LocatorCapsuleData plugData = getPlugValuesFromLocatorNode(objPath);
-    data->doShapeA = plugData.doShapeA ;
-    data->doShapeB = plugData.doShapeB ;
-    data->doShapeB = plugData.doShapeB ;
+    // data->doShapeA = plugData.doShapeA ;
+    // data->doShapeB = plugData.doShapeB ;
+    // data->doShapeB = plugData.doShapeB ;
 
-    if (plugData.doShapeA)
-        collectShapeData(plugData, data->shapePointsA);
-    if (plugData.doShapeB)
-        collectShapeData(plugData, data->shapePointsB);
-    if (plugData.doShapeC)
-        collectShapeData(plugData, data->shapePointsC);
+    // if (plugData.doShapeA)
+    collectShapeData(plugData, data->shapePointsA);
+    // if (plugData.doShapeB)
+    //     collectShapeData(plugData, data->shapePointsB);
+    // if (plugData.doShapeC)
+    //     collectShapeData(plugData, data->shapePointsC);
 
 
 

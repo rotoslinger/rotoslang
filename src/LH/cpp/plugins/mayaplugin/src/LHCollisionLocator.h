@@ -25,6 +25,7 @@
 #include <maya/MHWGeometryUtilities.h>
 #include <maya/MGlobal.h>
 #include <maya/MFnMatrixData.h>
+#include <maya/MTransformationMatrix.h>
 #include <algorithm>
 #include <vector>
 #include <iterator>
@@ -71,11 +72,11 @@ class LocatorCapsuleData : public MUserData
     MPointArray shapePointsA;
     std::vector<std::vector<float>> shape;
     std::vector<std::vector<int>> intArray;
-    MPointArray shapePointsB;
-    MPointArray shapePointsC;
-    bool doShapeA;
-    bool doShapeB;
-    bool doShapeC;
+    // MPointArray shapePointsB;
+    // MPointArray shapePointsC;
+    // bool doShapeA;
+    // bool doShapeB;
+    // bool doShapeC;
     
     MPoint pPointStart;
     MPoint pPointEnd;

@@ -437,7 +437,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         MPlug child = parentElement.child(weightChild, &status);
         CheckStatusReturn( status, "Unable to get unable to get child" );
 
-        for (unsigned int i = 0; i < MitGeoCount; ++i)
+        for (int i = 0; i < MitGeoCount; ++i)
         {
             MPlug childWeight = child.elementByLogicalIndex(i);
             status = childWeight.getValue(weight);
