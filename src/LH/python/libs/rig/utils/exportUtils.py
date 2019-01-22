@@ -332,6 +332,7 @@ class nurbsCurveData():
 
     def __init__(self,
                  name = "",
+                 space= OpenMaya.MSpace.kWorld
                  ):
 
         """
@@ -342,6 +343,7 @@ class nurbsCurveData():
 
         #---args
         self.name                           = name
+        self.space                          = space
         #---vars
         self.nurbsCurve                     = {}
         self.fn_nurbsCurve                  = ""
@@ -370,7 +372,7 @@ class nurbsCurveData():
 
     def __get_cvs(self):
         points = OpenMaya.MPointArray()
-        self.fn_nurbsCurve.getCVs(points, OpenMaya.MSpace.kWorld)
+        self.fn_nurbsCurve.getCVs(points, self.space)
         for i in range(points.length()):
             self.controlVertices.append((points[i].x,
                                          points[i].y,
@@ -425,6 +427,35 @@ def create_curve(curve_dict, name=None, parent=None):
                           )
     parentNameNewGeo(curve_dict, name, new_nurbsCurve, parent)
     return new_nurbsCurve
+
+def create_curve_2(curve_dict, name=None, parent=None):
+    parentNode = OpenMaya.MSelectionList()
+    parentNode.add(parent)
+    parentPath = OpenMaya.MDagPath()
+    parentNode.getDagPath(0,parentPath)
+    parentMObject = parentPath.transform()
+
+    #verts
+    controlVertices = OpenMaya.MPointArray()
+    [controlVertices.append(OpenMaya.MPoint(i[0],i[1],i[2]))for i in curve_dict.get("controlVertices")]
+    #counts
+    uKnots = OpenMaya.MDoubleArray()
+    [uKnots.append(i) for i in curve_dict.get("knots")]
+    #connects
+    new_nurbsCurve = OpenMaya.MFnNurbsCurve()
+    newShape = new_nurbsCurve.create(controlVertices,
+                                    uKnots,
+                                    curve_dict.get("degree"),
+                                    curve_dict.get("form"),
+                                    False,
+                                    False,
+                                    parentMObject
+                                    )
+    nurbsCurve_path = OpenMaya.MDagPath()
+    path = nurbsCurve_path.getAPathTo(newShape)
+    cmds.rename(path.fullPathName(), name)
+    return new_nurbsCurve
+
 
 
 class get_anim_curve_info():

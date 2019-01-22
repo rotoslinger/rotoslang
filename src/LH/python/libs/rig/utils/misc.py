@@ -2145,6 +2145,61 @@ def createAndConnectNode(type=None, name=None, srcOutput=None,
 
 
 
+def pushCurveShape(sourceCurve=None, targetCurve=None, mirror=False, inheritColor=False):
+    if not sourceCurve and not targetCurve:
+        sourceCurve = cmds.ls(sl=True)[0]
+        targetCurve = cmds.ls(sl=True)[1]
+    if not cmds.objectType(sourceCurve, isType='nurbsCurve'):
+        sourceCurve = cmds.listRelatives(sourceCurve, type = "nurbsCurve")[0]
+    if not cmds.objectType(targetCurve, isType='nurbsCurve'):
+        targetCurve = cmds.listRelatives(targetCurve, type = "nurbsCurve")[0]
+
+    parentNode = OpenMaya.MSelectionList()
+    parentNode.add(targetCurve)
+    parentPath = OpenMaya.MDagPath()
+    parentNode.getDagPath(0,parentPath)
+    parentMObject = parentPath.transform()
+
+    source = OpenMaya.MSelectionList()
+    source.add(sourceCurve)
+    sourcePath = OpenMaya.MDagPath()
+    source.getDagPath(0,sourcePath)
+    sourceMFnCurve = sourcePath.node()
+
+    nurbsCurve_node = OpenMaya.MSelectionList()
+    nurbsCurve_node.add(targetCurve)
+    nurbsCurve_path = OpenMaya.MDagPath()
+    nurbsCurve_node.getDagPath(0,nurbsCurve_path)
+    fn_nurbsCurve = OpenMaya.MFnNurbsCurve(nurbsCurve_path)
+    dummy = OpenMaya.MObject()
+
+    curveColor = targetCurve
+
+    if not inheritColor:
+        curveColor = sourceCurve
+
+    color = cmds.getAttr(curveColor + ".overrideColor")
+    override = cmds.getAttr(curveColor + ".overrideRGBColors")
+
+    colorR = cmds.getAttr(curveColor + ".overrideColorR")
+    colorG = cmds.getAttr(curveColor + ".overrideColorG")
+    colorB = cmds.getAttr(curveColor + ".overrideColorB")
+    cmds.delete(targetCurve)
+    newShape = fn_nurbsCurve.copy(sourceMFnCurve, parentMObject)
+    path = nurbsCurve_path.getAPathTo(newShape)
+    cmds.setAttr(path.fullPathName() + ".overrideRGBColors", override)
+    cmds.setAttr(path.fullPathName() + ".overrideEnabled", True)
+    cmds.setAttr(path.fullPathName() + ".overrideColor", color)
+    cmds.setAttr(path.fullPathName() + ".overrideColorR", colorR)
+    cmds.setAttr(path.fullPathName() + ".overrideColorG", colorG)
+    cmds.setAttr(path.fullPathName() + ".overrideColorB", colorB)
+    cmds.rename(path.fullPathName(), targetCurve)
+
+    if mirror:
+        numCV = fn_nurbsCurve.numCVs()
+        points = path.fullPathName() + '.cv[0:{0}]'.format(numCV)
+        cmds.scale(-1.0, points, r=True, scaleX=True, scaleY=False, scaleZ=False, )
+
 '''
 #button press
 tool = maya.cmds.weightSlideContext()

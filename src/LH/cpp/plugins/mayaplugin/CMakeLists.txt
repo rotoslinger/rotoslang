@@ -1,16 +1,64 @@
-# WINDOWS cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
-# Windows build cmake --build . --config Debug
+cmake_minimum_required(VERSION 2.8)
 
-# OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
-cmake_minimum_required(VERSION 3.1.3)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)  # not necessary, but encouraged
+include(RezBuild)
+include(AL_CMakeLib)
+include ( ExternalProject )
+
+SET(CMAKE_CXX_FLAGS "-std=c++11")
+
+# must put find_package before rez_find_packages or will not work......
+find_package(OpenGL REQUIRED)
+if (OPENGL_FOUND)
+	include_directories(${OPENGL_INCLUDE_DIR})
+	link_libraries(${OPENGL_LIBRARIES})
+
+endif()
+
+rez_find_packages(PREFIX pkgs AUTO)
 
 
-project(LHDeformerNodes)
-
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
 
-add_subdirectory(src)
+set(source_files
+	"src/pluginMain.cpp"
+#	"LHRepulsorDeformer.cpp"
+#	"LHRepulsorDeformer.h"
+#	"LHGetDeformPoints.cpp"
+#	"LHGetDeformPoints.h"
+#	"LHTemplateNode.cpp"
+#	"LHTemplateNode.h"
+#	"LHTemplateDeformer.cpp"
+#	"LHTemplateDeformer.h"
+#	"LHWeightNode.cpp"
+#	"LHWeightNode.h"
+#	"LHMultiCluster.cpp"
+#	"LHMultiCluster.h"
+#	"LHComputeDeformer.cpp"
+#	"LHComputeDeformer.h"
+#	"splatDeformer.cpp"
+#	"splatDeformer.h"
+#	"sseDeformer.cpp"
+#	"sseDeformer.h"
+#	"LHMultiClusterThreaded.cpp"
+#	"LHMultiClusterThreaded.h"
+	"src/LHCollisionDeformer.cpp"
+	"src/LHCollisionDeformer.h"
+	"src/LHLocator.cpp"
+	"src/LHLocator.h"
+	"src/threading.cpp"
+	"src/LHCollisionLocator.cpp"
+	"src/LHCollisionLocator.h"
+
+)
+
+add_library(collision SHARED ${source_files})
+set_target_properties(collision PROPERTIES PREFIX "")
+
+link_directories(${stdlib_ROOT}/lib64)
+find_package(OpenMP)
+
+target_link_libraries(collision tbb clew cuda cudart ${maya_LIBRARIES} Foundation OpenMaya)
+
+install(TARGETS collision DESTINATION plugins)
+
 

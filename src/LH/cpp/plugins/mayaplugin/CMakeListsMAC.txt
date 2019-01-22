@@ -1,4 +1,4 @@
-# WINDOWS cmake -G "Visual Studio 15 2017" -DMAYA_VERSION=2018 .. 
+# WINDOWS cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
 # Windows build cmake --build . --config Debug
 
 # OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..

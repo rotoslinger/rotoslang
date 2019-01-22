@@ -14,7 +14,7 @@ if os not in sys.path:
     sys.path.append(os)
 
 from utils import exportUtils as xUtils
-from maya import cmds
+from maya import cmds, OpenMaya
 import json
 from utils import LHSlideDeformerCmds, LHVectorDeformerCmds, LHCurveRollDeformerCmds, misc
 reload(LHSlideDeformerCmds)
@@ -123,28 +123,6 @@ class lh_deformer_export(object):
         # attributes = cmds.listAttr(self.name, ud=True, c=True, s=True, m=False, a=False)
         self.manipDict = {}
 
-        # "manipDict": {
-        #     "ctrlName":
-        #
-        #     {"name": "corner",
-        #      "side": "L",
-        #      "suffix": "CPT",
-        #      "parent": "parent",
-        #      "helperGeo": "manipSurf",
-        #      "helperGeoData": ["points and nurbs and crap"],
-        #      "uSpeedDefault": .05,
-        #      "vSpeedDefault": .05,
-        #      "initUDefault": .05,
-        #      "initVDefault": .05,
-        #      "baseUDefault": .05,
-        #      "baseVDefault": .05,
-        #      "amountUDefault": .05,
-        #      "amountVDefault": .05,
-        #      "uOutConnectionAttr": "C_testFace_SLD.C_BLipLR",
-        #      "vOutConnectionAttr": "C_testFace_SLD.C_BLipUD",
-        #       }
-        # }
-
         attributes = cmds.listAttr(self.name, ud=True, c=True, s=True, m=False, a=False)
         for attr in attributes:
             if not cmds.objExists(self.name + "." + attr):
@@ -184,6 +162,8 @@ class lh_deformer_export(object):
                     self.manipDict[key]["uOutConnectionAttr"] = self.name + "." + attr
                 if "outV" in con.split(".")[1]:
                     self.manipDict[key]["vOutConnectionAttr"] = self.name + "." + attr
+                ctrlShape = cmds.listRelatives(key, type = "nurbsCurve")[0]
+                self.manipDict[key]["nurbsShape"] = xUtils.nurbsCurveData(name = ctrlShape, space=OpenMaya.MSpace.kObject).nurbsCurve
 
 
     def pack(self):
@@ -355,7 +335,7 @@ class lh_deformer_import(object):
     def createDirectManip(self):
         keys = ["name", "side", "suffix", "parent", "helperGeo", "helperGeoData", "uSpeedDefault",
                 "vSpeedDefault", "initUDefault", "initVDefault", "baseUDefault", "baseVDefault",
-                "amountUDefault", "amountVDefault", "uOutConnectionAttr", "vOutConnectionAttr"]
+                "amountUDefault", "amountVDefault", "uOutConnectionAttr", "vOutConnectionAttr", "nurbsShape"]
 
         for key in self.manipDict.keys():
             ctrlDict = self.manipDict[key]
@@ -367,11 +347,6 @@ class lh_deformer_import(object):
                 helperGeo = xUtils.createNurbsSurface(self.helperGeoData, name=misc.formatName(name[0], name[1], name[2])).fullPathName()
                 helperGeo = cmds.listRelatives(helperGeo, parent=True)[0]
                 cmds.setAttr(helperGeo + ".v", 0)
-                # helperGeo = misc.createGeoFromData(self.helperGeoData,
-                #                                    name=misc.formatName(name[0],
-                #                                                         name[1],
-                #                                                         name[2]),
-                #                                    parent=self.helperGeoData["parent"])
             slidingCtrl.component( side=self.side,
                                    name=self.name,
                                    # suffix=self.suffix,
@@ -387,7 +362,7 @@ class lh_deformer_import(object):
                                    amountVDefault=self.amountVDefault,
                                    uOutConnectionAttr=self.uOutConnectionAttr,
                                    vOutConnectionAttr=self.vOutConnectionAttr,
-
+                                   curveData=self.nurbsShape
             )
 
     def create(self):

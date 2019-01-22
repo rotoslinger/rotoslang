@@ -2,6 +2,7 @@ from maya import cmds
 from rigComponents import base
 from utils.misc import formatName, create_ctl
 from utils import misc
+from utils import exportUtils
 
 
 class component(base.component):
@@ -16,6 +17,7 @@ class component(base.component):
                  amountVDefault=2.4,
                  uOutConnectionAttr="",
                  vOutConnectionAttr="",
+                 curveData=None,
                  **kw):
         self.uSpeedDefault = uSpeedDefault
         self.vSpeedDefault = vSpeedDefault
@@ -27,7 +29,7 @@ class component(base.component):
         self.amountVDefault = amountVDefault
         self.uOutConnectionAttr = uOutConnectionAttr
         self.vOutConnectionAttr = vOutConnectionAttr
-
+        self.curveData = curveData
         super(component, self).__init__(**kw)
 
 
@@ -50,6 +52,27 @@ class component(base.component):
         self.ctrlOffset = self.ctrl.buffers[0]
         self.ctrlInverseMatrix = self.ctrl.buffers[1]
         self.ctrl = self.ctrl.ctl
+        if self.curveData:
+            # get Curve data for transfer
+            sourceCurve = cmds.listRelatives(self.ctrl, type = "nurbsCurve")[0]
+            color = cmds.getAttr(sourceCurve + ".overrideColor")
+            override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
+            colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
+            colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
+            colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
+            cmds.delete(sourceCurve)
+            
+            # create curve
+            curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
+            
+            # transfer Curve data
+            cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
+            cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
+            cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
+            cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
+            cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
+            cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
+
 
 
     def createAttrs(self):
@@ -155,12 +178,6 @@ class component(base.component):
                                                                                      "{0}{1}".format(self.name, "Nuetralize"),
                                                                                      "PMA"))
 
-        # cmds.connectAttr(self.surfaceInfo + ".position", self.aim + ".target[0].targetRotatePivot", force=True)
-        # self.pmaFinalOut = cmds.createNode("plusMinusAverage", name=misc.formatName(self.side,
-        #                                                                             "{0}{1}".format(self.name, "FinalOut"),
-        #                                                                             "PMA"))
-
-
         #---We want to clamp between 0 and 1 because this is the limit of nurbs UVs
         cmds.connectAttr(self.baseU, self.pmaNtrlzNode + ".input2D[0].input2Dx")
         cmds.connectAttr(self.baseV, self.pmaNtrlzNode + ".input2D[0].input2Dy")
@@ -216,3 +233,77 @@ def normalizeSlidingCtrls(mayaObjects=None):
         currentV = cmds.getAttr(ctrl + ".currentV")
         cmds.setAttr(ctrl + ".baseU", currentU)
         cmds.setAttr(ctrl + ".baseV", currentV)
+
+def findOppositeSlideConnection(ctrl, attr):
+
+    outU = cmds.listConnections(ctrl + "." + attr, d=True, p=True, t="LHSlideDeformer", et=True)[0]
+
+    if not outU:
+        return
+    outUAttrShort = outU.split(".")[1]
+    deformer = outU.split(".")[0]
+    if not "L_" and not "R_" in outUAttrShort:
+        return
+    if "L_" in outUAttrShort:
+        outUAttrShort = outUAttrShort.replace("L_", "R_")
+    elif "R_" in outUAttrShort:
+        outUAttrShort = outUAttrShort.replace("R_", "L_")
+
+    if cmds.objExists(deformer + "." + outUAttrShort):
+        return deformer + "." + outUAttrShort
+
+def mirrorSlidingCtrls(mayaObjects=None):
+    if not mayaObjects: mayaObjects = cmds.ls(sl=True)
+    for ctrl in mayaObjects:
+        # Get name and side of selected control
+        side=""
+        if not "L_" and not "R_" in ctrl:
+            continue
+        if "L_" in ctrl:
+            side = "R"
+        if "R_" in ctrl:
+            side = "L"
+        name = ctrl.split("_")[1]
+        # Get location of control and all attributes
+        attrsDict = {}
+        attrs = (".initU", ".initV", ".baseU", ".baseV", ".uSpeed", ".vSpeed", ".amountU",
+                 ".amountV", ".rotateOrder", ".vis", ".gimbal_vis")
+        for attr in attrs:
+            attrsDict[ctrl + attr] = cmds.getAttr(ctrl + attr)
+        # Get connected attributes, find L to R, or R to L depending on what is selected
+        inU = findOppositeSlideConnection(ctrl, "outU")
+        if not inU:
+            continue
+        inV = findOppositeSlideConnection(ctrl, "outV")
+        if not inV:
+            continue
+
+        # Find Surface
+        surf = cmds.listConnections(ctrl + ".currentU", d=True, t="pointOnSurfaceInfo", et=True)[0]
+        nurbs = cmds.listConnections(surf + ".inputSurface", s=True, t="nurbsSurface", et=True)[0]
+
+        # Create component with Opposite side and opposite attributes
+        slideComponent = component(name=name, side=side, helperGeo = nurbs, uOutConnectionAttr = inU, vOutConnectionAttr = inV)
+
+        # Set the location and the attributes
+        for attr in attrs:
+            cmds.setAttr(slideComponent.ctrl + attr, attrsDict[ctrl + attr])
+
+        misc.pushCurveShape(ctrl, slideComponent.ctrl, True, True)
+
+
+        uMirror = cmds.getAttr(ctrl + ".baseU")
+        if uMirror < .5:
+            uMirror = abs(uMirror-0.5)
+            uMirror = .5 + uMirror
+        elif uMirror > .5:
+            uMirror = uMirror-0.5
+            uMirror = .5 - uMirror
+        for uAttr in (".baseU", ".initU"):
+            cmds.setAttr(slideComponent.ctrl + uAttr, uMirror)
+
+        # Normalize Control
+        normalizeSlidingCtrls([slideComponent.ctrl])
+
+        # Copy Curve shape, then mirror curve shape
+

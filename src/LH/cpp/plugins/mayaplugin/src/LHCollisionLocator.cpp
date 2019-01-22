@@ -407,7 +407,8 @@ void LHCollisionLocatorOverride::addUIDrawables(const MDagPath& objPath,
     drawManager.setColor(drawData->mColor);
     drawManager.setLineWidth(1.0);
     drawManager.lineStrip(drawData->shapePointsA, false);
-    drawManager.endDrawable();
+    drawManager.endDrawable()
+    ;
 }
 
 MStatus LHCollisionLocator::initialize() {

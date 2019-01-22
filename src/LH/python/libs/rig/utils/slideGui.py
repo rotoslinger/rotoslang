@@ -14,6 +14,10 @@ from maya import cmds
 import json
 from utils import faceWeights, lhDeformerExport, lhDeformerCmds
 import weightingUtils
+import slideUICmds
+from rigComponents import slidingCtrl
+reload(slidingCtrl)
+reload(slideUICmds)
 reload(weightingUtils)
 reload(faceWeights)
 reload(lhDeformerExport)
@@ -70,6 +74,7 @@ class slideDeformerGui(object):
                                        q = 1, 
                                        selectItem = 1)
         if deformer:
+            reloadType = cmds.checkBox(self.multiTransferOptionCheckBox, q=True, v=True)
             deformer_type = cmds.nodeType(deformer[0])
             lhDeformerCmds.refresh_paintable_attrs(deformer, deformer_type)
             self.geo_string = cmds.textFieldGrp(self.geo_filter, q = 1, text = 1)
@@ -127,7 +132,9 @@ class slideDeformerGui(object):
                                         selectItem = self.geo_selection)
                 except:
                     pass
-            
+            self.reloadWeightInfoSource()
+            self.reloadWeightInfoTarget()
+            '''
             if type == 1:
                 #---get weights
                 self.attrs = cmds.listAttr(deformer, 
@@ -404,7 +411,7 @@ class slideDeformerGui(object):
 #                                             sc =self.__select_weight_action)
                     except:
                         pass
-
+'''
     def __select_weight_action(self, *args):
         ""
         type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
@@ -500,16 +507,41 @@ class slideDeformerGui(object):
                                 e = 1, 
                                 append = self.geo_string)
 
-    def __reload_source(self, filter_string = "", list = []):
+    def reloadWeightInfoSource(self, *args):
+        self.reloadWeights(weightsTextScrollList =self.weights_source_list , filterTextGroup=self.source_filter)
+
+    def reloadWeightInfoTarget(self, *args):
+        self.reloadWeights(source=False, weightsTextScrollList = self.weights_target_list , filterTextGroup=self.target_filter)
+
+
+    def reloadWeights(self, source=True, weightsTextScrollList=None,
+                      filterTextGroup=None):
+
+        reloadType = cmds.checkBox(self.multiTransferOptionCheckBox, q=True, v=True)
+        index = 0
+        if reloadType and not source:
+            index = 1
+        type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+        deformer = cmds.textScrollList(self.deformer_list, 
+                                       q = 1, 
+                                       selectItem = 1)
+        if len(deformer) == 1:
+            index = 0
+                     
         type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
         deformer = cmds.textScrollList(self.deformer_list, 
                                        q = 1, 
                                        selectItem = 1)
         if type == 1:
             #---get weights
-            self.attrs = cmds.listAttr(deformer, 
-                                       ud = True, 
-                                       a = True)
+            attrDeformer = deformer
+
+            if reloadType:
+               attrDeformer = deformer[index]
+
+            self.attrs = cmds.listAttr(attrDeformer, 
+                                    ud = True, 
+                                    a = True)
             self.names = []
             for i in range(len(self.attrs)):
                 tmp_name = self.attrs[i].split(".")
@@ -517,14 +549,14 @@ class slideDeformerGui(object):
             self.weight_dict = dict(zip(self.names,self.attrs))
                  
             # filter source
-            self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
+            self.source_string = cmds.textFieldGrp(filterTextGroup, q = 1, text = 1)
             if self.source_string == "":
                 #---clear weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     ra = 1)
                 #---fill weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.names,
                                     sc =self.__select_weight_action)
@@ -532,11 +564,11 @@ class slideDeformerGui(object):
                 self.source_string = self.__filter(filter_string = self.source_string,
                                                     list = self.names)
                 #---clear weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     ra = 1)
                 #---fill weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.source_string,
                                     sc =self.__select_weight_action)
@@ -653,14 +685,14 @@ class slideDeformerGui(object):
             self.connections = flat_conn
             #---filter connections
             # filter source
-            self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
+            self.source_string = cmds.textFieldGrp(filterTextGroup, q = 1, text = 1)
             if self.source_string == "":
                 #---clear weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     ra = 1)
                 #---fill weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.connections,
                                     sc =self.__select_weight_action)
@@ -668,191 +700,375 @@ class slideDeformerGui(object):
                 self.source_string = self.__filter(filter_string = self.source_string,
                                                     list = self.connections)
                 #---clear weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     ra = 1)
                 #---fill weights from
-                cmds.textScrollList(self.weights_source_list,
+                cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.source_string,
                                     sc =self.__select_weight_action)
 
-    def __reload_target(self, filter_string = "", list = []):
-        type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
-        deformer = cmds.textScrollList(self.deformer_list, 
-                                       q = 1, 
-                                       selectItem = 1)
-        type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
-        deformer = cmds.textScrollList(self.deformer_list, 
-                                       q = 1, 
-                                       selectItem = 1)
-        if type == 1:
-            #---get weights
-            self.attrs = cmds.listAttr(deformer, 
-                                       ud = True, 
-                                       a = True)
-            self.names = []
-            for i in range(len(self.attrs)):
-                tmp_name = self.attrs[i].split(".")
-                self.names.append(tmp_name[1])
-            self.weight_dict = dict(zip(self.names,self.attrs))
+    # def __reload_source(self, filter_string = "", list = []):
+    #     type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+    #     deformer = cmds.textScrollList(self.deformer_list, 
+    #                                    q = 1, 
+    #                                    selectItem = 1)
+    #     if type == 1:
+    #         #---get weights
+    #         self.attrs = cmds.listAttr(deformer, 
+    #                                    ud = True, 
+    #                                    a = True)
+    #         self.names = []
+    #         for i in range(len(self.attrs)):
+    #             tmp_name = self.attrs[i].split(".")
+    #             self.names.append(tmp_name[1])
+    #         self.weight_dict = dict(zip(self.names,self.attrs))
                  
-            #---Filter Target
-            self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
-            if self.target_string == "":
-                #---clear weights to
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, 
-                                    ra = 1)
-                #---fill weights to
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, append = self.names)
-            else:
-                self.target_string = self.__filter(filter_string = self.target_string,
-                                                    list = self.names)
-                #---clear weights from
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, 
-                                    ra = 1)
-                #---fill weights from
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, 
-                                    append = self.target_string)
-        if type == 2:
-            # get curves
-            self.connections = []
-            if cmds.objExists(deformer[0] + ".uAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".uAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".vAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".vAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".nAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".nAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
+    #         # filter source
+    #         self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
+    #         if self.source_string == "":
+    #             #---clear weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 append = self.names,
+    #                                 sc =self.__select_weight_action)
+    #         else:
+    #             self.source_string = self.__filter(filter_string = self.source_string,
+    #                                                 list = self.names)
+    #             #---clear weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 append = self.source_string,
+    #                                 sc =self.__select_weight_action)
+    #     if type == 2:
+    #         # get curves
+    #         self.connections = []
+    #         if cmds.objExists(deformer[0] + ".uAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".uAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".vAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".vAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".nAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".nAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
                 
-            if cmds.objExists(deformer[0] + ".tAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".tAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
+    #         if cmds.objExists(deformer[0] + ".tAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".tAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
 
-            if cmds.objExists(deformer[0] + ".rAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".rAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".uAnimCurveArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".vAnimCurveArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if len(deformer)>1:
-                if cmds.objExists(deformer[1] + ".uAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".uAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".vAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".vAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".nAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".nAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
+    #         if cmds.objExists(deformer[0] + ".rAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".rAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".uAnimCurveArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".vAnimCurveArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if len(deformer)>1:
+    #             if cmds.objExists(deformer[1] + ".uAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".uAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".vAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".vAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".nAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".nAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
                     
-                if cmds.objExists(deformer[1] + ".tAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".tAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
+    #             if cmds.objExists(deformer[1] + ".tAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".tAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
 
-                if cmds.objExists(deformer[1] + ".rAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".rAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".uAnimCurveArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".vAnimCurveArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-            flat_conn = []
-            for i in range(len(self.connections)):
-                if self.connections[i]:
-                    for j in range(len(self.connections[i])):
-                        if self.connections[i][j]:
-                            flat_conn.append(self.connections[i][j])
-            self.connections = flat_conn
-            #---filter connections
-            #---Filter Target
-            self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
-            if self.target_string == "":
-                #---clear weights to
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, 
-                                    ra = 1)
-                #---fill weights to
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, append = self.connections,
-                                    sc =self.__select_weight_action)
-            else:
-                self.target_string = self.__filter(filter_string = self.target_string,
-                                                    list = self.connections)
-                #---clear weights from
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, 
-                                    ra = 1)
-                #---fill weights from
-                cmds.textScrollList(self.weights_target_list,
-                                    e = 1, 
-                                    append = self.target_string,
-                                    sc =self.__select_weight_action)
+    #             if cmds.objExists(deformer[1] + ".rAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".rAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".uAnimCurveArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".vAnimCurveArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #         flat_conn = []
+    #         for i in range(len(self.connections)):
+    #             if self.connections[i]:
+    #                 for j in range(len(self.connections[i])):
+    #                     if self.connections[i][j]:
+    #                         flat_conn.append(self.connections[i][j])
+    #         self.connections = flat_conn
+    #         #---filter connections
+    #         # filter source
+    #         self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
+    #         if self.source_string == "":
+    #             #---clear weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 append = self.connections,
+    #                                 sc =self.__select_weight_action)
+    #         else:
+    #             self.source_string = self.__filter(filter_string = self.source_string,
+    #                                                 list = self.connections)
+    #             #---clear weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights from
+    #             cmds.textScrollList(self.weights_source_list,
+    #                                 e = 1, 
+    #                                 append = self.source_string,
+    #                                 sc =self.__select_weight_action)
+    
+
+    # def __reload_target(self, filter_string = "", list = [], multiTransfer=False):
+    #     # type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+    #     # deformer = cmds.textScrollList(self.deformer_list, 
+    #     #                                q = 1, 
+    #     #                                selectItem = 1)
+    #     index = 0
+    #     if multiTransfer:
+    #         index = 1
+    #     type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+    #     deformer = cmds.textScrollList(self.deformer_list, 
+    #                                    q = 1, 
+    #                                    selectItem = 1)
+    #     if len(deformer) == 1:
+    #         index = 0
+
+    #     if type == 1:
+    #         #---get weights
+    #         self.attrs = cmds.listAttr(deformer[index], 
+    #                                    ud = True, 
+    #                                    a = True)
+    #         self.names = []
+    #         for i in range(len(self.attrs)):
+    #             tmp_name = self.attrs[i].split(".")
+    #             self.names.append(tmp_name[1])
+    #         self.weight_dict = dict(zip(self.names,self.attrs))
+                 
+    #         #---Filter Target
+    #         self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
+    #         if self.target_string == "":
+    #             #---clear weights to
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights to
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, append = self.names)
+    #         else:
+    #             self.target_string = self.__filter(filter_string = self.target_string,
+    #                                                 list = self.names)
+    #             #---clear weights from
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights from
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, 
+    #                                 append = self.target_string)
+    #     if type == 2:
+    #         # get curves
+    #         self.connections = []
+    #         if cmds.objExists(deformer[0] + ".uAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".uAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".vAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".vAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".nAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".nAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+                
+    #         if cmds.objExists(deformer[0] + ".tAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".tAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+
+    #         if cmds.objExists(deformer[0] + ".rAnimCurveUArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveUArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".rAnimCurveVArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveVArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".uAnimCurveArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if cmds.objExists(deformer[0] + ".vAnimCurveArray"):
+    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
+    #                                                          type = "animCurve",
+    #                                                          d = False))
+    #         if len(deformer)>1:
+    #             if cmds.objExists(deformer[1] + ".uAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".uAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".vAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".vAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".nAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".nAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+                    
+    #             if cmds.objExists(deformer[1] + ".tAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".tAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+
+    #             if cmds.objExists(deformer[1] + ".rAnimCurveUArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveUArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".rAnimCurveVArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveVArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".uAnimCurveArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #             if cmds.objExists(deformer[1] + ".vAnimCurveArray"):
+    #                 self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
+    #                                                              type = "animCurve",
+    #                                                              d = False))
+    #         flat_conn = []
+    #         for i in range(len(self.connections)):
+    #             if self.connections[i]:
+    #                 for j in range(len(self.connections[i])):
+    #                     if self.connections[i][j]:
+    #                         flat_conn.append(self.connections[i][j])
+    #         self.connections = flat_conn
+    #         #---filter connections
+    #         #---Filter Target
+    #         self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
+    #         if self.target_string == "":
+    #             #---clear weights to
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights to
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, append = self.connections,
+    #                                 sc =self.__select_weight_action)
+    #         else:
+    #             self.target_string = self.__filter(filter_string = self.target_string,
+    #                                                 list = self.connections)
+    #             #---clear weights from
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, 
+    #                                 ra = 1)
+    #             #---fill weights from
+    #             cmds.textScrollList(self.weights_target_list,
+    #                                 e = 1, 
+    #                                 append = self.target_string,
+    #                                 sc =self.__select_weight_action)
 
     def __findWeights(self, *args):
         cmds.textScrollList(self.deformer_list,
@@ -929,7 +1145,118 @@ class slideDeformerGui(object):
                             e = 1,
                             append = self.deformers,
                             sc = self.__selectDeformerBakeAction)
+
+    def findWeightsSlide(self, *args):
+        cmds.textScrollList(self.deformer_list_slide,
+                            e = 1,
+                            ra = 1)
+        self.slideDeformers = cmds.ls(type = "LHSlideDeformer")
+        self.vecDeformers = cmds.ls(type = "LHVectorDeformer")
+        self.curveRollDeformers = cmds.ls(type = "LHCurveRollDeformer")
+        self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
+        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers + self.weightDeformers
+    #         self.deformers.append(cmds.ls(type = "LHVectorDeformer"))
+
+        cmds.textScrollList(self.deformer_list_slide,
+                            e = 1,
+                            ra = 1)
+        cmds.textScrollList(self.deformer_list_slide,
+                            e = 1,
+                            append = self.deformers,
+                            sc = self.selectAttrsForSlide)
+
+
+    def selectAttrsForSlide(self, *args):
+        self.attr_channels = []
+        self.attr_names = []
+        deformer = cmds.textScrollList(self.deformer_list_slide, 
+                                        q = 1, 
+                                        selectItem = 1)
+        if deformer:
+            deformer_type = cmds.nodeType(deformer[0])
+            self.attr_names = cmds.listAttr(deformer, 
+                                        ud = True, 
+                                        s = True)
+            # filter source
+            self.attr_string = cmds.textFieldGrp(self.attr_filter_slide, q = 1, text = 1)
+            if self.attr_string == "":
+                #---clear weights from
+                cmds.textScrollList(self.attr_list_slide,
+                                    e = 1, 
+                                    ra = 1)
+                #---fill weights from
+                cmds.textScrollList(self.attr_list_slide,
+                                    e = 1, 
+                                    append = self.attr_names)
+            else:
+                self.attr_string = self.__filter(filter_string = self.attr_string,
+                                                    list = self.attr_names)
+                #---clear weights from
+                cmds.textScrollList(self.attr_list_slide,
+                                    e = 1, 
+                                    ra = 1)
+                #---fill weights from
+                cmds.textScrollList(self.attr_list_slide,
+                                    e = 1, 
+                                    append = self.attr_string)
+    def getSlideData(self):
+        # Only one Deformer should be selected
+        deformer = cmds.textScrollList(self.deformer_list_slide, 
+                                        q = 1, 
+                                        selectItem = 1)[0]
+        attrs = cmds.textScrollList(self.attr_list_slide, 
+                                        q = 1, 
+                                        selectItem = 1)
+        name = cmds.textFieldGrp(self.slideNameField, q = 1, text = 1)
+        slideSurf = cmds.textFieldGrp(self.slideSurfName, q = 1, text = 1)
+        return deformer, attrs, name, slideSurf
+
+    # for i in range(len(attrs)):
+    #     # find corresponding weights, anim curves, and pivots based on attr connection
+    #     coor_attrs = faceWeights.get_cooresponding_attrs(node = deformer[0], attr=attrs[i])
+    #     cmds.deleteAttr(deformer[0] +"."+ attrs[i])
+
+
+    def addSlideCtrl(self, *args):
+        deformer, attrs, name, slideSurf = self.getSlideData()
+        if len(attrs) != 2:
+            return
+        side = "C"
+        # if name is entered in the UI users must use this format L_Mouth (side_name)
+        if name:
+            if "_" in name:
+                side = name.split("_")[0]
+                name = name.split("_")[1]
+        else:
+            if "L_" in attrs[0]:
+                side = "L"
+            if "R_" in attrs[0]:
+                side = "R"
+            if "_" in attrs[0]:
+                name = attrs[0].split("_")[1]
+            if "LR" in name:
+                name = name.split("LR")[0]
         
+        slidingCtrl.component(name=name, side=side, helperGeo = slideSurf, uOutConnectionAttr = deformer + "." + attrs[0] , vOutConnectionAttr = deformer + "." + attrs[1])
+
+    def normalizeSlideCtrl(self, *args):
+        slidingCtrl.normalizeSlidingCtrls()
+
+    def mirrorSlideCtrl(self, *args):
+        pass
+
+    def toggleEnvelope(self, *args):
+        deformer = cmds.textScrollList(self.deformer_list_slide, 
+                                        q = 1, 
+                                        selectItem = 1)[0]
+        envVal = cmds.getAttr(deformer + ".envelope")
+        if envVal == 0:
+            cmds.setAttr(deformer + ".envelope", 1)
+        if envVal == 1:
+            cmds.setAttr(deformer + ".envelope", 0)
+
+
+
     def __mirror_weights(self, *args):
         type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
         side = cmds.radioButtonGrp(self.mirror_side, q = 1, sl = 1)
@@ -2417,6 +2744,8 @@ class slideDeformerGui(object):
         ###########################################################
         #---Weight Info Frame
         ###########################################################
+        
+
         self.deformer_list = cmds.textScrollList( numberOfRows = 8,
                                                   allowMultiSelection = 1,
                                                   h = 200)
@@ -2434,11 +2763,11 @@ class slideDeformerGui(object):
         self.source_filter = cmds.textFieldGrp( label='Source Filter', text='',
                                        cw2 = [70,180],
                                        cal = [(1,"left"),(2,"left")],
-                                       tcc = self.__reload_source)
+                                       tcc = self.reloadWeightInfoSource)
         self.target_filter = cmds.textFieldGrp( label='Target Filter', text='',
                                        cw2 = [70,180],
                                        cal = [(1,"left"),(2,"left")],
-                                       tcc = self.__reload_target)
+                                       tcc = self.reloadWeightInfoTarget)
         self.weights_source_list = cmds.textScrollList( numberOfRows = 8,
                                                       allowMultiSelection = 1,
                                                       h = 200,
@@ -2453,7 +2782,11 @@ class slideDeformerGui(object):
         cmds.text("")
         cmds.text(" ")
         cmds.text("  ")
-        
+        # self.layoutForMultiTransfer = cmds.rowColumnLayout(nc = 4)
+        cmds.setParent(self.layout_main)
+
+        self.multiTransferOptionCheckBox = cmds.checkBox( label='Load Different Deformers in Source and Target',
+                                                  w=80, al="right", value=False )
         
         ###########################################################
         #---Weight Calculator Frame
@@ -2784,146 +3117,219 @@ class slideDeformerGui(object):
 
         
         ###########################################################
-        #---Bake Deformer Frame
+        #---add Slide Controls Frame
         ###########################################################
 
         cmds.setParent(self.layout_main)
-        self.bake_frame = cmds.frameLayout(label = "Bake Deformer",
+        self.addSlideCtrlFrame = cmds.frameLayout(label = "Add Slide Ctrls",
                                        collapsable = True,
                                        collapse = True)
-#         self.layout33 = cmds.rowColumnLayout(nc = 1)
+        self.slideCtrlLayout = cmds.rowColumnLayout(nc = 2)
         #---row 1
-        self.get_deformers4 = cmds.button(label = "Get LH Deformers", 
-                                                c = self.__findWeights4,
+        self.get_deformers_slide = cmds.button(label = "Get LH Deformers", 
+                                                c = self.findWeightsSlide,
                                                 h = 30)
-        self.deformer_list4 = cmds.textScrollList( numberOfRows = 8,
-                                                  allowMultiSelection = False,
-                                                  h = 100)
-        self.attr_filter3 = cmds.textFieldGrp( label='Attr Filter', text='',
+        cmds.text("Attrs")
+
+        cmds.text("Deformers")
+        
+        
+#         self.layout = cmds.rowColumnLayout(nc = 1)
+        self.attr_filter_slide = cmds.textFieldGrp( label='Attr Filter', text='',
                                        cw2 = [60,180],
                                        cal = [(1,"left"),(2,"left")],
-                                        tcc = self.__selectDeformerBakeAction
+                                        tcc = self.selectAttrsForSlide
                                        )
-        cmds.text("WARNING: set all values will set values for all currently visible attributes UNDO IS NOT SUPPORTED")
-        self.bake_row3 = cmds.rowColumnLayout( numberOfColumns=6)
-        cmds.text(" Set All Values", w = 120, al = "left")
+        
 
-        
-        self.set_all_min = cmds.floatFieldGrp( label='  Min: ',
-                                               numberOfFields=1,
-                                               value1= 1,
-                                               cw2 = [30,70],
-                                               cal = [(1,"center"),(2,"center")],
-                                               cc = self.__set_all_min_bake
-                                               )
-        
-        self.set_all_max = cmds.floatFieldGrp( label='  Max: ',
-                                               numberOfFields=1,
-                                               value1= 1,
-                                               cw2 = [30,70],
-                                               cal = [(1,"center"),(2,"center")],
-                                               cc = self.__set_all_max_bake
-                                               )
+        self.deformer_list_slide = cmds.textScrollList( numberOfRows = 8,
+                                                  allowMultiSelection = False,
+                                                  h = 200)
+        self.attr_list_slide = cmds.textScrollList( numberOfRows = 8,
+                                             allowMultiSelection = True,
+                                             h = 200,
+#                                              sc = self.__select_geo
+                                             )
+        cmds.setParent(self.addSlideCtrlFrame)
+        self.layoutSlide = cmds.rowColumnLayout(nc = 1)
 
-        self.set_all_tween = cmds.intFieldGrp( label='  Betweens: ',
-                                                  numberOfFields=1,
-                                                  value1= 2,
-                                                  cw2 = [55,30],
-                                                  cal = [(1,"center"),(2,"center")],
-                                                  cc = self.__set_all_tween_bake
-#                                                   vcc = self.__set_all_tween_bake
-                                                  )
-#         self.undo_btn = cmds.button(label = "Set All",
-# #                                         c = self.__export_bake_dicts,
-#                                         w = 80)
-#         self.bake_row = cmds.rowColumnLayout( numberOfColumns=6)
-#         self.bake_row2 = cmds.rowColumnLayout( numberOfColumns=6, cat = [1,"left",10000], co = [1,"right",1000])
-#         cmds.setParent(self.bake_frame)
-#         self.bake_row2 = cmds.rowColumnLayout( numberOfColumns=2, co = [(1,"left",429)])
-# 
-#         cmds.text("            ")
-#         cmds.text("           ")
-#         cmds.text("          ")
-#         cmds.text("        ")
+        cmds.text("Enter the surface that will be used to slide on")
+        self.slideSurfName = cmds.textFieldGrp( label='Slide Surf Name', text='C_manipSurf_EX',
+                                cw2 = [100,180],
+                                cal = [(1,"left"),(2,"left")],
+                                )
 
-#         self.undo_btn = cmds.button(label = "Undo",
-#                                         c = self.__undo_bake_dict,
-#                                         w = 40)
-#         self.redo_btn = cmds.button(label = "Redo",
-#                                         c = self.__redo_bake_dict,
-#                                         w = 40)
-        cmds.setParent(self.bake_frame)
-        
-        self.bake_layout = cmds.scrollLayout(horizontalScrollBarThickness=16,
-                                             verticalScrollBarThickness=16,
-                                             h = 200)
-        self.bake_row4 = cmds.rowColumnLayout( numberOfColumns=3 )
+        cmds.text("Enter side and name ex: L_mouth ")
+        cmds.text("If not entered will try to automatically name")
+        self.slideNameField = cmds.textFieldGrp( label='Slide Ctrl Name', text='',
+                                cw2 = [100,180],
+                                cal = [(1,"left"),(2,"left")],
+                                )
+        cmds.text("Select LR attr first, then UD attr (U Parameter followed by V Parameter)")
+        self.addSelectedButton = cmds.button(label = "Add Slide Ctrl", 
+                                                c = self.addSlideCtrl,
+                                                h = 30, w = 520)
 
-        
-        
-        
-        cmds.setParent(self.bake_frame)
-        self.export_bake_frame = cmds.frameLayout(label = "Export Bake",
-                                       collapsable = True,
-                                       collapse = False)
-        
-        
-#         self.layout = cmds.rowColumnLayout(nc = 2)
-
-        self.export_bake_row = cmds.rowColumnLayout(nc = 2)
-        self.export_bake_file = cmds.textFieldGrp( label='File', text='',
-                                       cw2 = [40,360],
-                                       cal = [(1,"left"),(2,"left")])
-#                                        tcc = self.__reload_source)
-        self.export_bake_btn = cmds.button(label = "Browse",
-                                        c = self.__export_bake_file_browser,
-                                         w = 100)
-        self.export_bake_row = cmds.rowColumnLayout(nc = 1)
-        cmds.setParent(self.export_bake_frame)
-        
-        self.export_bake_btn = cmds.button(label = "Export Bake Values",
-                                        c = self.__export_bake_dicts,
-                                       w = 200)
+        cmds.text("Toggle Envelope for placing controls")
+        self.toggleEnvelopeButton = cmds.button(label = "Toggle Envelope", 
+                                        c = self.toggleEnvelope,
+                                        h = 30, w = 520)
 
 
+        cmds.text("Set Control to neutral position")
+        self.normalizeSlideButton = cmds.button(label = "Normalize Slide Control", 
+                                        c = self.normalizeSlideCtrl,
+                                        h = 30, w = 520)
+        cmds.text("Select Slide Ctrl on L or R side and run to mirror")
+        self.mirrorSlideButton = cmds.button(label = "Mirror Slide Control", 
+                                        c = self.mirrorSlideCtrl,
+                                        h = 30, w = 520)
 
+        cmds.text(" ")
 
-        cmds.setParent(self.bake_frame)
-        
-        self.import_bake_frame = cmds.frameLayout(label = "Import Bake",
-                                       collapsable = True,
-                                       collapse = False)
-        self.export_bake_row = cmds.rowColumnLayout(nc = 2)
-        self.import_bake_file = cmds.textFieldGrp( label='File', text='',
-                                                   cw2 = [40,360],
-                                                   cal = [(1,"left"),(2,"left")])
-        self.import_bake_button = cmds.button(label = "Browse",
-                                              c = self.__import_bake_file_browser,
-                                              w = 100)
-        self.export_bake_row = cmds.rowColumnLayout(nc = 1)
-        cmds.setParent(self.import_bake_frame)
-        
-        self.import_bake_btn = cmds.button(label = "Import Bake Values",
-                                        c = self.__import_bake_dicts,
-                                       w = 200)
-        self.bake_btn = cmds.button(label = "Bake all deformers",
-                                c = self.__bake,
-                               w = 200)
-
-        
-#         self.bake_layout = cmds.rowColumnLayout(nc = 1)
-#         self.bake_list = cmds.scrollLayout(horizontalScrollBarThickness=16,
-#                                  verticalScrollBarThickness=16, h = 200,
-#                                  width = 520)
-#         cmds.rowColumnLayout( numberOfColumns=3 )
-        
-#         for i in range(200):
-#             cmds.text()
-#             cmds.intField()
-#             cmds.intSlider()        
-#         self.attr_channels = []
-#         self.attr_names = []
         cmds.setParent(self.layout_main)
+
+#         ###########################################################
+#         #---Bake Deformer Frame
+#         ###########################################################
+
+#         cmds.setParent(self.layout_main)
+#         self.bake_frame = cmds.frameLayout(label = "Bake Deformer",
+#                                        collapsable = True,
+#                                        collapse = True)
+# #         self.layout33 = cmds.rowColumnLayout(nc = 1)
+#         #---row 1
+#         self.get_deformers4 = cmds.button(label = "Get LH Deformers", 
+#                                                 c = self.__findWeights4,
+#                                                 h = 30)
+#         self.deformer_list4 = cmds.textScrollList( numberOfRows = 8,
+#                                                   allowMultiSelection = False,
+#                                                   h = 100)
+#         self.attr_filter3 = cmds.textFieldGrp( label='Attr Filter', text='',
+#                                        cw2 = [60,180],
+#                                        cal = [(1,"left"),(2,"left")],
+#                                         tcc = self.__selectDeformerBakeAction
+#                                        )
+#         cmds.text("WARNING: set all values will set values for all currently visible attributes UNDO IS NOT SUPPORTED")
+#         self.bake_row3 = cmds.rowColumnLayout( numberOfColumns=6)
+#         cmds.text(" Set All Values", w = 120, al = "left")
+
+        
+#         self.set_all_min = cmds.floatFieldGrp( label='  Min: ',
+#                                                numberOfFields=1,
+#                                                value1= 1,
+#                                                cw2 = [30,70],
+#                                                cal = [(1,"center"),(2,"center")],
+#                                                cc = self.__set_all_min_bake
+#                                                )
+        
+#         self.set_all_max = cmds.floatFieldGrp( label='  Max: ',
+#                                                numberOfFields=1,
+#                                                value1= 1,
+#                                                cw2 = [30,70],
+#                                                cal = [(1,"center"),(2,"center")],
+#                                                cc = self.__set_all_max_bake
+#                                                )
+
+#         self.set_all_tween = cmds.intFieldGrp( label='  Betweens: ',
+#                                                   numberOfFields=1,
+#                                                   value1= 2,
+#                                                   cw2 = [55,30],
+#                                                   cal = [(1,"center"),(2,"center")],
+#                                                   cc = self.__set_all_tween_bake
+# #                                                   vcc = self.__set_all_tween_bake
+#                                                   )
+# #         self.undo_btn = cmds.button(label = "Set All",
+# # #                                         c = self.__export_bake_dicts,
+# #                                         w = 80)
+# #         self.bake_row = cmds.rowColumnLayout( numberOfColumns=6)
+# #         self.bake_row2 = cmds.rowColumnLayout( numberOfColumns=6, cat = [1,"left",10000], co = [1,"right",1000])
+# #         cmds.setParent(self.bake_frame)
+# #         self.bake_row2 = cmds.rowColumnLayout( numberOfColumns=2, co = [(1,"left",429)])
+# # 
+# #         cmds.text("            ")
+# #         cmds.text("           ")
+# #         cmds.text("          ")
+# #         cmds.text("        ")
+
+# #         self.undo_btn = cmds.button(label = "Undo",
+# #                                         c = self.__undo_bake_dict,
+# #                                         w = 40)
+# #         self.redo_btn = cmds.button(label = "Redo",
+# #                                         c = self.__redo_bake_dict,
+# #                                         w = 40)
+#         cmds.setParent(self.bake_frame)
+        
+#         self.bake_layout = cmds.scrollLayout(horizontalScrollBarThickness=16,
+#                                              verticalScrollBarThickness=16,
+#                                              h = 200)
+#         self.bake_row4 = cmds.rowColumnLayout( numberOfColumns=3 )
+
+        
+        
+        
+#         cmds.setParent(self.bake_frame)
+#         self.export_bake_frame = cmds.frameLayout(label = "Export Bake",
+#                                        collapsable = True,
+#                                        collapse = False)
+        
+        
+# #         self.layout = cmds.rowColumnLayout(nc = 2)
+
+#         self.export_bake_row = cmds.rowColumnLayout(nc = 2)
+#         self.export_bake_file = cmds.textFieldGrp( label='File', text='',
+#                                        cw2 = [40,360],
+#                                        cal = [(1,"left"),(2,"left")])
+# #                                        tcc = self.__reload_source)
+#         self.export_bake_btn = cmds.button(label = "Browse",
+#                                         c = self.__export_bake_file_browser,
+#                                          w = 100)
+#         self.export_bake_row = cmds.rowColumnLayout(nc = 1)
+#         cmds.setParent(self.export_bake_frame)
+        
+#         self.export_bake_btn = cmds.button(label = "Export Bake Values",
+#                                         c = self.__export_bake_dicts,
+#                                        w = 200)
+
+
+
+
+#         cmds.setParent(self.bake_frame)
+        
+#         self.import_bake_frame = cmds.frameLayout(label = "Import Bake",
+#                                        collapsable = True,
+#                                        collapse = False)
+#         self.export_bake_row = cmds.rowColumnLayout(nc = 2)
+#         self.import_bake_file = cmds.textFieldGrp( label='File', text='',
+#                                                    cw2 = [40,360],
+#                                                    cal = [(1,"left"),(2,"left")])
+#         self.import_bake_button = cmds.button(label = "Browse",
+#                                               c = self.__import_bake_file_browser,
+#                                               w = 100)
+#         self.export_bake_row = cmds.rowColumnLayout(nc = 1)
+#         cmds.setParent(self.import_bake_frame)
+        
+#         self.import_bake_btn = cmds.button(label = "Import Bake Values",
+#                                         c = self.__import_bake_dicts,
+#                                        w = 200)
+#         self.bake_btn = cmds.button(label = "Bake all deformers",
+#                                 c = self.__bake,
+#                                w = 200)
+
+        
+# #         self.bake_layout = cmds.rowColumnLayout(nc = 1)
+# #         self.bake_list = cmds.scrollLayout(horizontalScrollBarThickness=16,
+# #                                  verticalScrollBarThickness=16, h = 200,
+# #                                  width = 520)
+# #         cmds.rowColumnLayout( numberOfColumns=3 )
+        
+# #         for i in range(200):
+# #             cmds.text()
+# #             cmds.intField()
+# #             cmds.intSlider()        
+# #         self.attr_channels = []
+# #         self.attr_names = []
+#         cmds.setParent(self.layout_main)
         
         ###########################################################
         #---Import Deformers
@@ -2984,4 +3390,3 @@ class slideDeformerGui(object):
 
 
 
-#notes C_BLipCenterLR_ACV C_BLipCenterLRFalloff_ACV C_BLipCenterUD_ACV C_BLipCenterUDFalloff_ACV C_BLipLeftLR_ACV C_BLipLeftLRFalloff_ACV C_BLipLeftUD_ACV C_BLipLeftUDFalloff_ACV C_BLipLR_ACV C_BLipLRFalloff_ACV C_BLipMidLR_ACV C_BLipMidLRFalloff_ACV C_BLipMidUD_ACV C_BLipMidUDFalloff_ACV C_BLipRightLR_ACV C_BLipRightLRFalloff_ACV C_BLipRightUD_ACV C_BLipRightUDFalloff_ACV C_BLipUD_ACV C_BLipUDFalloff_ACV C_testFace_SLD_lSide C_TLipCenterLR_ACV C_TLipCenterLRFalloff_ACV C_TLipCenterUD_ACV C_TLipCenterUDFalloff_ACV C_TLipLeftLR_ACV C_TLipLeftLRFalloff_ACV C_TLipLeftUD_ACV C_TLipLeftUDFalloff_ACV C_TLipLR_ACV C_TLipLRFalloff_ACV C_TLipMidLR_ACV C_TLipMidLRFalloff_ACV C_TLipMidUD_ACV C_TLipMidUDFalloff_ACV C_TLipPinchLR_ACV C_TLipPinchLRFalloff_ACV C_TLipPinchUD_ACV C_TLipPinchUDFalloff_ACV C_TLipRightLR_ACV C_TLipRightLRFalloff_ACV C_TLipRightUD_ACV C_TLipRightUDFalloff_ACV C_TLipSneerLR_ACV C_TLipSneerLRFalloff_ACV C_TLipSneerUD_ACV C_TLipSneerUDFalloff_ACV C_TLipUD_ACV C_TLipUDFalloff_ACV L_BLipPinchLR_ACV L_BLipPinchLRFalloff_ACV L_BLipPinchUD_ACV L_BLipPinchUDFalloff_ACV L_BLipSneerLR_ACV L_BLipSneerLRFalloff_ACV L_BLipSneerUD_ACV L_BLipSneerUDFalloff_ACV L_mouthUD_ACV L_mouthUDFalloff_ACV L_side_ACV L_sideFalloff_ACV C_mouthLR_ACV C_mouthLRFalloff_ACV C_mouthUD_ACV C_mouthUDFalloff_ACV nTest1_ACV nTest1Falloff_ACV R_BLipPinchLR_ACV R_BLipPinchLRFalloff_ACV R_BLipPinchUD_ACV R_BLipPinchUDFalloff_ACV R_BLipSneerLR_ACV R_BLipSneerLRFalloff_ACV R_BLipSneerUD_ACV R_BLipSneerUDFalloff_ACV R_mouthUD_ACV R_mouthUDFalloff_ACV R_side_ACV R_sideFalloff_ACV rTest1_ACV rTest1Falloff_ACV
