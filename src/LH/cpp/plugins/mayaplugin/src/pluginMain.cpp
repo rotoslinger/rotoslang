@@ -15,6 +15,7 @@
 #include "LHCollisionDeformer.h"
 #include "LHLocator.h"
 #include "LHCollisionLocator.h"
+#include "nullTransform.h"
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
 
@@ -63,6 +64,14 @@ MStatus initializePlugin(MObject obj) {
 
   status = plugin.registerNode( "LHCollisionDeformer", LHCollisionDeformer::id, LHCollisionDeformer::creator,
 		  LHCollisionDeformer::initialize, MPxNode::kDeformerNode );
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerTransform( "nullTransform",
+                                    nullTransform::id,
+                                    &nullTransform::creator,
+                                    &nullTransform::initialize,
+                                    nullTMatrix::creator,
+                                    nullTMatrix::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode( "LHLocator", LHLocator::id, LHLocator::creator,
@@ -122,6 +131,9 @@ MStatus uninitializePlugin(MObject obj) {
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.deregisterNode(LHLocator::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.deregisterNode(nullTransform::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   if (!sUseLegacyDraw)

@@ -48,6 +48,8 @@ set(source_files
 	"src/threading.cpp"
 	"src/LHCollisionLocator.cpp"
 	"src/LHCollisionLocator.h"
+	"src/nullTransform.cpp"
+	"src/nullTransform.h"
 
 )
 

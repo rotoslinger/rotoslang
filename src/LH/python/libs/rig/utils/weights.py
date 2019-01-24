@@ -191,4 +191,94 @@ def import_skins(path):
 # import_skins(path)
 #############################################
 
-
+############################################################
+################## HOTKEY  COPY ##################################
+############################################################
+'''
+if cmds.optionVar(exists='weightName') == 1:
+    weightAttr = cmds.optionVar(q='weightName')
+    print weightAttr
+    weightAttrSplit = weightAttr.split(".")
+    #---get deformer
+    deformer = weightAttr.split(".")[1]
+    geo = cmds.deformer(deformer, q = True, g = True)
+    geoTransform = [cmds.listRelatives(i,parent = True)[0] for i in geo]
+    #---make sure selected are points, and are in the deformer
+    selected = cmds.ls(sl = True, fl = True)
+    vtx = [i for i in selected if ".vtx[" in i]
+    cv = [i for i in selected if ".cv[" in i]
+    points = vtx + cv
+    finalPoints = []
+    
+    weightAttrs = []
+    allWeightValues = []
+    for i in range(len(geoTransform)):
+        weightAttrs.append(weightAttrSplit[1]+"."+weightAttrSplit[2] + "s["+str(i)+"]." + weightAttrSplit[2])
+        allWeightValues.append(cmds.getAttr(weightAttrs[i]))
+    
+    final_points_indexes = []
+    initial_values = []
+    for i in range(len(geoTransform)):
+        tmp_final_idx = []
+        tmp_value = []
+        for j in range(len(points)):
+            if geoTransform[i] in points[j]:
+                finalPoints.append(points[j])
+                idx = points[j].split("[")[1]
+                idx = int(idx.split("]")[0])
+                tmp_final_idx.append(idx)
+                tmp_value.append(allWeightValues[i][idx])
+        final_points_indexes.append(tmp_final_idx)
+        initial_values.append(tmp_value)
+    final_weight = []
+    for i in range(len(initial_values)):
+        for j in range(len(initial_values[i])):
+            final_weight.append(initial_values[i][j])
+    if len(final_weight) != 0:
+        WEIGHTS = sum(final_weight)/len(final_weight)
+'''
+############################################################
+################## HOTKEY  Paste ##################################
+############################################################
+'''
+value = self.copied_weight
+if cmds.optionVar(exists='weightName') == 1:
+    weightAttr = cmds.optionVar(q='weightName')
+    weightAttrSplit = weightAttr.split(".")
+    #---get deformer
+    deformer = weightAttr.split(".")[1]
+    geo = cmds.deformer(deformer, q = True, g = True)
+    geoTransform = [cmds.listRelatives(i,parent = True)[0] for i in geo]
+    #---make sure selected are points, and are in the deformer
+    selected = cmds.ls(sl = True, fl = True)
+    vtx = [i for i in selected if ".vtx[" in i]
+    cv = [i for i in selected if ".cv[" in i]
+    points = vtx + cv
+    finalPoints = []
+    
+    weightAttrs = []
+    allWeightValues = []
+    for i in range(len(geoTransform)):
+        weightAttrs.append(weightAttrSplit[1]+"."+weightAttrSplit[2] + "s["+str(i)+"]." + weightAttrSplit[2])
+        allWeightValues.append(cmds.getAttr(weightAttrs[i]))
+    
+    final_points_indexes = []
+    initial_values = []
+    for i in range(len(geoTransform)):
+        tmp_final_idx = []
+        tmp_value = []
+        for j in range(len(points)):
+            if geoTransform[i] in points[j]:
+                finalPoints.append(points[j])
+                idx = points[j].split("[")[1]
+                idx = int(idx.split("]")[0])
+                tmp_final_idx.append(idx)
+                tmp_value.append(allWeightValues[i][idx])
+        final_points_indexes.append(tmp_final_idx)
+        initial_values.append(tmp_value)
+for i in range(len(geoTransform)):
+    for j in range(len(final_points_indexes[i])):
+        allWeightValues[i][final_points_indexes[i][j]] = value
+for i in range(len(allWeightValues)):
+    cmds.setAttr(weightAttrs[i],allWeightValues[i], typ='doubleArray')
+'''

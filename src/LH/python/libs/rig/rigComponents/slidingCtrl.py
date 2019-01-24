@@ -3,6 +3,7 @@ from rigComponents import base
 from utils.misc import formatName, create_ctl
 from utils import misc
 from utils import exportUtils
+from utils import faceWeights
 
 
 class component(base.component):
@@ -252,7 +253,7 @@ def findOppositeSlideConnection(ctrl, attr):
     if cmds.objExists(deformer + "." + outUAttrShort):
         return deformer + "." + outUAttrShort
 
-def mirrorSlidingCtrls(mayaObjects=None):
+def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False):
     if not mayaObjects: mayaObjects = cmds.ls(sl=True)
     for ctrl in mayaObjects:
         # Get name and side of selected control
@@ -289,6 +290,7 @@ def mirrorSlidingCtrls(mayaObjects=None):
         for attr in attrs:
             cmds.setAttr(slideComponent.ctrl + attr, attrsDict[ctrl + attr])
 
+        # Copy Curve shape, then mirror curve shape
         misc.pushCurveShape(ctrl, slideComponent.ctrl, True, True)
 
 
@@ -305,5 +307,106 @@ def mirrorSlidingCtrls(mayaObjects=None):
         # Normalize Control
         normalizeSlidingCtrls([slideComponent.ctrl])
 
-        # Copy Curve shape, then mirror curve shape
+def getSlideWeightAttrNames(attrName):
+    splitName = attrName.split(".")
+    deformer = splitName[0]
+    attr = splitName[1]
+    weights = "{0}Weight".format(attr)
+    animCurve = "{0}_ACV".format(attr)
+    animCurveFalloff = "{0}Falloff_ACV".format(attr)
+    return weights, animCurve, animCurveFalloff
+
+def getSide(name):
+    return name.split("_")[0]
+
+def cacheSlideDeformer(deformer, val):
+    cmds.setAttr(deformer + ".cacheWeights", val)
+    cmds.setAttr(deformer + ".cacheWeightMesh", val)
+    cmds.setAttr(deformer + ".cacheWeightCurves", val)
+
+def copyFlipSlideAnimCurves(side, flip, source, target):
+    faceWeights.copy_flip_anim_curves(side = side, 
+                                      center_frame = 0, 
+                                    flip = flip,
+                                    source = source,
+                                    target = target)
+
+def getWeightAttributes(deformerName):
+    sourceAttrs = cmds.listAttr(deformerName, 
+                    ud = True, 
+                    a = True,
+                    m=True)
+
+    sourceWeightNames = []
+    for i in range(len(sourceAttrs)):
+        tmp_name = sourceAttrs[i].split(".")
+        sourceWeightNames.append(tmp_name[1])
+    return dict(zip(sourceWeightNames,sourceAttrs))
+
+
+def copyWeightsFromSlideCtrls(sourceSlideCtrl=None, targetSlideCtrl=None, cache=True):
+    if not sourceSlideCtrl and not targetSlideCtrl:
+        sourceSlideCtrl = cmds.ls(sl=True)[0]
+        targetSlideCtrl = cmds.ls(sl=True)[1]
+
+    # getDeformer
+    deformer = cmds.listConnections(sourceSlideCtrl + ".outU", d=True, p=True, t="LHSlideDeformer", et=True)[0]
+    deformer = deformer.split(".")[0]
+
+    # get Mesh
+    geo = cmds.deformer(deformer, q = True, g = True)[0]
+
+    if not 'SYMMETRYDICT' in globals():
+        global SYMMETRYDICT
+        SYMMETRYDICT = faceWeights.create_symmetric_partners( geo = geo).symmetry_dict
+
+
+    # get sides, then see if they are opposite, if they are you will want to copy and flip, otherwise you just want to copy
+    flip = False
+    sourceSide = getSide(sourceSlideCtrl)
+    targetSide = getSide(targetSlideCtrl)
+    if sourceSide != targetSide:
+        flip=True
+
+    # get source attrs
+    for attr in ("outU", "outV"):
+        attrConnection = cmds.listConnections(sourceSlideCtrl + "." + attr, d=True, p=True, t="LHSlideDeformer", et=True)[0]
+        srcWeights, srcAnimCurve, srcAnimCurveFalloff = getSlideWeightAttrNames(attrConnection)
+        attrConnection = cmds.listConnections(targetSlideCtrl + "." + attr, d=True, p=True, t="LHSlideDeformer", et=True)[0]
+        targetWeights, targetAnimCurve, targetAnimCurveFalloff = getSlideWeightAttrNames(attrConnection)
+
+        try:
+            copyFlipSlideAnimCurves(sourceSide, flip, srcAnimCurve, targetAnimCurve)
+        except:
+            print "Unable to copy animation curve as there weren't enough points"
+        try:
+            copyFlipSlideAnimCurves(sourceSide, flip, srcAnimCurveFalloff, targetAnimCurveFalloff)
+        except:
+            print "Unable to copy animation curve as there weren't enough points"
+
+        sourceWeights = getWeightAttributes(deformer)
+        source = sourceWeights.get(srcWeights)
+        target = sourceWeights.get(targetWeights)
+        source = "{0}.{1}".format(deformer, source)
+        target = "{0}.{1}".format(deformer, target)
+        print sourceWeights
+        print source, srcWeights
+        print target, targetWeights
+
+        faceWeights.copy_double_array_weights(source = source,
+                                              target = [target],
+                                              flip = flip,
+                                              symmetry_dict = SYMMETRYDICT)
+
+
+    if cache:
+        cacheSlideDeformer(deformer, 0)
+        cmds.refresh()
+        cacheSlideDeformer(deformer, 1)
+
+
+        
+
+
+
 

@@ -12,10 +12,11 @@ if os not in sys.path:
 
 from maya import cmds
 import json
-from utils import faceWeights, lhDeformerExport, lhDeformerCmds
+from utils import faceWeights, lhDeformerExport, lhDeformerCmds, exportUtils
 import weightingUtils
 import slideUICmds
 from rigComponents import slidingCtrl
+reload(exportUtils)
 reload(slidingCtrl)
 reload(slideUICmds)
 reload(weightingUtils)
@@ -134,285 +135,8 @@ class slideDeformerGui(object):
                     pass
             self.reloadWeightInfoSource()
             self.reloadWeightInfoTarget()
-            '''
-            if type == 1:
-                #---get weights
-                self.attrs = cmds.listAttr(deformer, 
-                                           ud = True, 
-                                           a = True)
-                self.names = []
-                for i in range(len(self.attrs)):
-                    tmp_name = self.attrs[i].split(".")
-                    self.names.append(tmp_name[1])
-                self.weight_dict = dict(zip(self.names,self.attrs))
-                     
-                # filter source
-                self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
-                if self.source_string == "":
-                    #---clear weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        append = self.names,
-                                        sc =self.__select_weight_action)
-                    try:
-                        cmds.textScrollList(self.weights_source_list,
-                                            e = 1,
-                                            selectItem = self.slide_weight_select_src)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-                else:
-                    self.source_string = self.__filter(filter_string = self.source_string,
-                                                        list = self.names)
-                    #---clear weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        append = self.source_string,
-                                        sc =self.__select_weight_action)
-                    try:
-                        cmds.textScrollList(self.weights_source_list,
-                                            e = 1,
-                                            selectItem = self.slide_weight_select_src)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-                #---Filter Target
-                self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
-                if self.target_string == "":
-                    #---clear weights to
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights to
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1,
-                                        append = self.names)
-                    try:
-                        cmds.textScrollList(self.weights_target_list,
-                                            e = 1,
-                                            selectItem = self.slide_weight_select_trg)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-                else:
-                    self.target_string = self.__filter(filter_string = self.target_string,
-                                                        list = self.names)
-                    #---clear weights from
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights from
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1, 
-                                        append = self.target_string)
-                    try:
-                        cmds.textScrollList(self.weights_target_list,
-                                            e = 1,
-                                            selectItem = self.slide_weight_select_trg)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-                    
-            if type == 2:
-                # get curves
-                self.connections = []
-                if cmds.objExists(deformer[0] + ".uAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".uAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".vAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".vAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".nAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".nAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                    
-                if cmds.objExists(deformer[0] + ".tAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".tAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
 
-                if cmds.objExists(deformer[0] + ".rAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".rAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                    
-                if cmds.objExists(deformer[0] + ".uAnimCurveArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[0] + ".vAnimCurveArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                    
-                if len(deformer)>1:
-                    if cmds.objExists(deformer[1] + ".uAnimCurveUArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveUArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".uAnimCurveVArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveVArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".vAnimCurveUArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveUArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".vAnimCurveVArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveVArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".nAnimCurveUArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveUArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".nAnimCurveVArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveVArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                        
-                    if cmds.objExists(deformer[1] + ".tAnimCurveUArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveUArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".tAnimCurveVArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveVArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-    
-                    if cmds.objExists(deformer[1] + ".rAnimCurveUArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveUArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".rAnimCurveVArray"):
-                        self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveVArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".uAnimCurveArray"):
-                        self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    if cmds.objExists(deformer[1] + ".vAnimCurveArray"):
-                        self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-                                                                     type = "animCurve",
-                                                                     d = False))
-                    
-                flat_conn = []
-                for i in range(len(self.connections)):
-                    if self.connections[i]:
-                        for j in range(len(self.connections[i])):
-                            if self.connections[i][j]:
-                                flat_conn.append(self.connections[i][j])
-                self.connections = flat_conn
-    #             print self.connections
-                #---filter connections
-                # filter source
-                self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
-                if self.source_string == "":
-                    #---clear weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        append = self.connections,
-                                        sc =self.__select_weight_action)
-                    try:
-                        cmds.textScrollList(self.weights_source_list,
-                                            e = 1,
-                                            selectItem = self.slide_anim_curve_select_src)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-                else:
-                    self.source_string = self.__filter(filter_string = self.source_string,
-                                                        list = self.connections)
-                    #---clear weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights from
-                    cmds.textScrollList(self.weights_source_list,
-                                        e = 1, 
-                                        append = self.source_string,
-                                        sc =self.__select_weight_action)
-                    try:
-                        cmds.textScrollList(self.weights_source_list,
-                                            e = 1,
-                                            selectItem = self.slide_anim_curve_select_src)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-                    
-                #---Filter Target
-                self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
-                if self.target_string == "":
-                    #---clear weights to
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights to
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1, append = self.connections)
-                    try:
-                        cmds.textScrollList(self.weights_target_list,
-                                            e = 1,
-                                            selectItem = self.slide_anim_curve_select_trg)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-                else:
-                    self.target_string = self.__filter(filter_string = self.target_string,
-                                                        list = self.connections)
-                    #---clear weights from
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1, 
-                                        ra = 1)
-                    #---fill weights from
-                    cmds.textScrollList(self.weights_target_list,
-                                        e = 1, 
-                                        append = self.target_string)
-                    try:
-                        cmds.textScrollList(self.weights_target_list,
-                                            e = 1,
-                                            selectItem = self.slide_anim_curve_select_trg)
-#                                             sc =self.__select_weight_action)
-                    except:
-                        pass
-'''
-    def __select_weight_action(self, *args):
+    def selectSourceWeightAction(self, *args):
         ""
         type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
         self.__select_weights_src()
@@ -425,10 +149,8 @@ class slideDeformerGui(object):
             deformer = cmds.textScrollList(self.deformer_list, 
                                            q = 1, 
                                            selectItem = 1)
-            geo = cmds.deformer(deformer, q=True, geometry=True)
+            # geo = cmds.deformer(deformer, q=True, geometry=True)
             idx = len(weights_source)-1
-#     
-#             weights_source = self.weight_dict.get(weights_source[idx])
             try:
                 self.current_weights= "LHSlideDeformer." + deformer[0] + "." + weights_source[idx]
             except:
@@ -516,7 +238,7 @@ class slideDeformerGui(object):
 
     def reloadWeights(self, source=True, weightsTextScrollList=None,
                       filterTextGroup=None):
-
+        flipSourceTarget = cmds.checkBox(self.flipSourceTarget, q=True, v=True)
         reloadType = cmds.checkBox(self.multiTransferOptionCheckBox, q=True, v=True)
         index = 0
         if reloadType and not source:
@@ -527,7 +249,12 @@ class slideDeformerGui(object):
                                        selectItem = 1)
         if len(deformer) == 1:
             index = 0
-                     
+
+        if flipSourceTarget and reloadType and index == 0 and len(deformer) > 1:
+            index = 1
+        elif flipSourceTarget and reloadType and index == 1:
+            index = 0
+
         type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
         deformer = cmds.textScrollList(self.deformer_list, 
                                        q = 1, 
@@ -542,6 +269,7 @@ class slideDeformerGui(object):
             self.attrs = cmds.listAttr(attrDeformer, 
                                     ud = True, 
                                     a = True)
+            print attrDeformer, source, "SOURCE OR TARGET"
             self.names = []
             for i in range(len(self.attrs)):
                 tmp_name = self.attrs[i].split(".")
@@ -559,7 +287,7 @@ class slideDeformerGui(object):
                 cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.names,
-                                    sc =self.__select_weight_action)
+                                    sc =self.selectSourceWeightAction)
             else:
                 self.source_string = self.__filter(filter_string = self.source_string,
                                                     list = self.names)
@@ -571,111 +299,31 @@ class slideDeformerGui(object):
                 cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.source_string,
-                                    sc =self.__select_weight_action)
+                                    sc =self.selectSourceWeightAction)
         if type == 2:
             # get curves
+            animCurveAttrs = [".uAnimCurveUArray", ".uAnimCurveVArray", ".vAnimCurveUArray", ".vAnimCurveVArray",
+                                ".nAnimCurveUArray", ".nAnimCurveVArray", ".tAnimCurveUArray", ".tAnimCurveVArray",
+                                ".rAnimCurveVArray", ".uAnimCurveArray", ".vAnimCurveArray"]
             self.connections = []
-            if cmds.objExists(deformer[0] + ".uAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".uAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".vAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".vAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".nAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".nAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
-                
-            if cmds.objExists(deformer[0] + ".tAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".tAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
 
-            if cmds.objExists(deformer[0] + ".rAnimCurveUArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveUArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".rAnimCurveVArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveVArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".uAnimCurveArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if cmds.objExists(deformer[0] + ".vAnimCurveArray"):
-                self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-                                                             type = "animCurve",
-                                                             d = False))
-            if len(deformer)>1:
-                if cmds.objExists(deformer[1] + ".uAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".uAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".vAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".vAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".nAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".nAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                    
-                if cmds.objExists(deformer[1] + ".tAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".tAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
 
-                if cmds.objExists(deformer[1] + ".rAnimCurveUArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveUArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".rAnimCurveVArray"):
-                    self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveVArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".uAnimCurveArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
-                if cmds.objExists(deformer[1] + ".vAnimCurveArray"):
-                    self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-                                                                 type = "animCurve",
-                                                                 d = False))
+            srcIndex = 0
+            targetIndex = 1
+            if flipSourceTarget and reloadType:
+                srcIndex = 1
+                targetIndex = 0
+
+            if reloadType and source:
+                self.getCurveAttrs(animCurveAttrs, deformer[srcIndex])
+            elif not reloadType:
+                self.getCurveAttrs(animCurveAttrs, deformer[srcIndex])
+
+            if reloadType and not source and len(deformer)>1:
+                self.getCurveAttrs(animCurveAttrs, deformer[targetIndex])
+            elif not reloadType and len(deformer)>1:
+                self.getCurveAttrs(animCurveAttrs, deformer[targetIndex])
+
             flat_conn = []
             for i in range(len(self.connections)):
                 if self.connections[i]:
@@ -695,7 +343,7 @@ class slideDeformerGui(object):
                 cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.connections,
-                                    sc =self.__select_weight_action)
+                                    sc =self.selectSourceWeightAction)
             else:
                 self.source_string = self.__filter(filter_string = self.source_string,
                                                     list = self.connections)
@@ -707,368 +355,15 @@ class slideDeformerGui(object):
                 cmds.textScrollList(weightsTextScrollList,
                                     e = 1, 
                                     append = self.source_string,
-                                    sc =self.__select_weight_action)
+                                    sc =self.selectSourceWeightAction)
 
-    # def __reload_source(self, filter_string = "", list = []):
-    #     type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
-    #     deformer = cmds.textScrollList(self.deformer_list, 
-    #                                    q = 1, 
-    #                                    selectItem = 1)
-    #     if type == 1:
-    #         #---get weights
-    #         self.attrs = cmds.listAttr(deformer, 
-    #                                    ud = True, 
-    #                                    a = True)
-    #         self.names = []
-    #         for i in range(len(self.attrs)):
-    #             tmp_name = self.attrs[i].split(".")
-    #             self.names.append(tmp_name[1])
-    #         self.weight_dict = dict(zip(self.names,self.attrs))
-                 
-    #         # filter source
-    #         self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
-    #         if self.source_string == "":
-    #             #---clear weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 append = self.names,
-    #                                 sc =self.__select_weight_action)
-    #         else:
-    #             self.source_string = self.__filter(filter_string = self.source_string,
-    #                                                 list = self.names)
-    #             #---clear weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 append = self.source_string,
-    #                                 sc =self.__select_weight_action)
-    #     if type == 2:
-    #         # get curves
-    #         self.connections = []
-    #         if cmds.objExists(deformer[0] + ".uAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".uAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".vAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".vAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".nAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".nAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-                
-    #         if cmds.objExists(deformer[0] + ".tAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".tAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-
-    #         if cmds.objExists(deformer[0] + ".rAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".rAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".uAnimCurveArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".vAnimCurveArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if len(deformer)>1:
-    #             if cmds.objExists(deformer[1] + ".uAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".uAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".vAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".vAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".nAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".nAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-                    
-    #             if cmds.objExists(deformer[1] + ".tAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".tAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-
-    #             if cmds.objExists(deformer[1] + ".rAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".rAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".uAnimCurveArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".vAnimCurveArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #         flat_conn = []
-    #         for i in range(len(self.connections)):
-    #             if self.connections[i]:
-    #                 for j in range(len(self.connections[i])):
-    #                     if self.connections[i][j]:
-    #                         flat_conn.append(self.connections[i][j])
-    #         self.connections = flat_conn
-    #         #---filter connections
-    #         # filter source
-    #         self.source_string = cmds.textFieldGrp(self.source_filter, q = 1, text = 1)
-    #         if self.source_string == "":
-    #             #---clear weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 append = self.connections,
-    #                                 sc =self.__select_weight_action)
-    #         else:
-    #             self.source_string = self.__filter(filter_string = self.source_string,
-    #                                                 list = self.connections)
-    #             #---clear weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights from
-    #             cmds.textScrollList(self.weights_source_list,
-    #                                 e = 1, 
-    #                                 append = self.source_string,
-    #                                 sc =self.__select_weight_action)
-    
-
-    # def __reload_target(self, filter_string = "", list = [], multiTransfer=False):
-    #     # type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
-    #     # deformer = cmds.textScrollList(self.deformer_list, 
-    #     #                                q = 1, 
-    #     #                                selectItem = 1)
-    #     index = 0
-    #     if multiTransfer:
-    #         index = 1
-    #     type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
-    #     deformer = cmds.textScrollList(self.deformer_list, 
-    #                                    q = 1, 
-    #                                    selectItem = 1)
-    #     if len(deformer) == 1:
-    #         index = 0
-
-    #     if type == 1:
-    #         #---get weights
-    #         self.attrs = cmds.listAttr(deformer[index], 
-    #                                    ud = True, 
-    #                                    a = True)
-    #         self.names = []
-    #         for i in range(len(self.attrs)):
-    #             tmp_name = self.attrs[i].split(".")
-    #             self.names.append(tmp_name[1])
-    #         self.weight_dict = dict(zip(self.names,self.attrs))
-                 
-    #         #---Filter Target
-    #         self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
-    #         if self.target_string == "":
-    #             #---clear weights to
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights to
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, append = self.names)
-    #         else:
-    #             self.target_string = self.__filter(filter_string = self.target_string,
-    #                                                 list = self.names)
-    #             #---clear weights from
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights from
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, 
-    #                                 append = self.target_string)
-    #     if type == 2:
-    #         # get curves
-    #         self.connections = []
-    #         if cmds.objExists(deformer[0] + ".uAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".uAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".vAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".vAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".nAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".nAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".nAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-                
-    #         if cmds.objExists(deformer[0] + ".tAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".tAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".tAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-
-    #         if cmds.objExists(deformer[0] + ".rAnimCurveUArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveUArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".rAnimCurveVArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".rAnimCurveVArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".uAnimCurveArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if cmds.objExists(deformer[0] + ".vAnimCurveArray"):
-    #             self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-    #                                                          type = "animCurve",
-    #                                                          d = False))
-    #         if len(deformer)>1:
-    #             if cmds.objExists(deformer[1] + ".uAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".uAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".uAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".vAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".vAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".vAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".nAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".nAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".nAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-                    
-    #             if cmds.objExists(deformer[1] + ".tAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".tAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".tAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-
-    #             if cmds.objExists(deformer[1] + ".rAnimCurveUArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveUArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".rAnimCurveVArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[1] + ".rAnimCurveVArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".uAnimCurveArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[0] + ".uAnimCurveArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #             if cmds.objExists(deformer[1] + ".vAnimCurveArray"):
-    #                 self.connections.append(cmds.listConnections(deformer[0] + ".vAnimCurveArray",
-    #                                                              type = "animCurve",
-    #                                                              d = False))
-    #         flat_conn = []
-    #         for i in range(len(self.connections)):
-    #             if self.connections[i]:
-    #                 for j in range(len(self.connections[i])):
-    #                     if self.connections[i][j]:
-    #                         flat_conn.append(self.connections[i][j])
-    #         self.connections = flat_conn
-    #         #---filter connections
-    #         #---Filter Target
-    #         self.target_string = cmds.textFieldGrp(self.target_filter, q = 1, text = 1)
-    #         if self.target_string == "":
-    #             #---clear weights to
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights to
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, append = self.connections,
-    #                                 sc =self.__select_weight_action)
-    #         else:
-    #             self.target_string = self.__filter(filter_string = self.target_string,
-    #                                                 list = self.connections)
-    #             #---clear weights from
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, 
-    #                                 ra = 1)
-    #             #---fill weights from
-    #             cmds.textScrollList(self.weights_target_list,
-    #                                 e = 1, 
-    #                                 append = self.target_string,
-    #                                 sc =self.__select_weight_action)
+    def getCurveAttrs(self, curveAttrs, deformer):
+        for curveAttr in curveAttrs:
+            if not cmds.objExists(deformer + curveAttr):
+                continue
+            self.connections.append(cmds.listConnections(deformer + curveAttr,
+                                            type = "animCurve",
+                                            d = False))
 
     def __findWeights(self, *args):
         cmds.textScrollList(self.deformer_list,
@@ -1243,7 +538,7 @@ class slideDeformerGui(object):
         slidingCtrl.normalizeSlidingCtrls()
 
     def mirrorSlideCtrl(self, *args):
-        pass
+        slidingCtrl.mirrorSlidingCtrls()
 
     def toggleEnvelope(self, *args):
         deformer = cmds.textScrollList(self.deformer_list_slide, 
@@ -1319,15 +614,64 @@ class slideDeformerGui(object):
                                                center_frame = center_frame, 
                                                flip = False)
 
+    def getWeightAttributes(self, deformerName):
+        sourceAttrs = cmds.listAttr(deformerName, 
+                        ud = True, 
+                        a = True,
+                        m=True)
+
+        sourceWeightNames = []
+        for i in range(len(sourceAttrs)):
+            tmp_name = sourceAttrs[i].split(".")
+            sourceWeightNames.append(tmp_name[1])
+        return dict(zip(sourceWeightNames,sourceAttrs))
+
+
     def __copy_weights(self, *args):
-        type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+        reloadType = cmds.checkBox(self.multiTransferOptionCheckBox, q=True, v=True)
+        weightType = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+        if reloadType and weightType == 1:
+            flipSourceTarget = cmds.checkBox(self.flipSourceTarget, q=True, v=True)
+
+            deformer = cmds.textScrollList(self.deformer_list, 
+                                            q = 1, 
+                                            selectItem = 1)
+            sourceIdx = 0
+            targetIdx = 1
+            if flipSourceTarget:
+                sourceIdx = 1
+                targetIdx = 0
+
+            srcMesh = cmds.deformer(deformer[sourceIdx], q = True, g = True)[0]
+            destMesh = cmds.deformer(deformer[targetIdx], q = True, g = True)[0]
+
+            sourceWeights = self.getWeightAttributes(deformer[sourceIdx])
+            destWeights = self.getWeightAttributes(deformer[targetIdx])
+
+            tmp_source = cmds.textScrollList(self.weights_source_list, 
+                                q = 1, 
+                                selectItem = 1)[0]
+            source = sourceWeights.get(tmp_source)
+
+            tmp_target = cmds.textScrollList(self.weights_target_list, 
+                                           q = 1, 
+                                           selectItem = 1)
+            target = []
+            for i in tmp_target:
+                target.append(destWeights.get(i))
+
+            exportUtils.lhDeformerWeightTransfer(srcMesh, deformer[sourceIdx], destMesh, deformer[targetIdx], srcAttributes=[source], destAttrs=target)
+
+            
+
+
         deformer = cmds.textScrollList(self.deformer_list, 
                                        q = 1, 
                                        selectItem = 1)
         geo = cmds.textScrollList(self.geo_list, 
                                        q = 1, 
                                        selectItem = 1)
-        if type == 1:
+        if weightType == 1:
             tmp_source = cmds.textScrollList(self.weights_source_list, 
                                            q = 1, 
                                            selectItem = 1)[0]
@@ -1384,7 +728,7 @@ class slideDeformerGui(object):
                                                                       flip = flip,
                                                                       symmetry_dict = self.symmetry_dict
                                                                       )
-        if type == 2:
+        if weightType == 2:
             flip = cmds.checkBoxGrp(self.copy_options, 
                                         q = 1, 
                                          v1 = True)
@@ -1539,7 +883,7 @@ class slideDeformerGui(object):
             self.slide_weight_select_src = cmds.textScrollList(self.weights_source_list,
                                                          q = True, 
                                                          selectItem = True)
-#                                                          sc =self.__select_weight_action)
+#                                                          sc =self.selectSourceWeightAction)
         if self.type == 2:
             self.slide_anim_curve_select_src = cmds.textScrollList(self.weights_source_list,
                                                              q = True, 
@@ -1552,7 +896,7 @@ class slideDeformerGui(object):
             self.slide_weight_select_trg = cmds.textScrollList(self.weights_target_list,
                                                          q = True, 
                                                          selectItem = True)
-#                                                          sc =self.__select_weight_action)
+#                                                          sc =self.selectSourceWeightAction)
         if self.type == 2:
             self.slide_anim_curve_select_trg = cmds.textScrollList(self.weights_target_list,
                                                              q = True, 
@@ -2784,9 +2128,11 @@ class slideDeformerGui(object):
         cmds.text("  ")
         # self.layoutForMultiTransfer = cmds.rowColumnLayout(nc = 4)
         cmds.setParent(self.layout_main)
+        self.flipSourceTarget = cmds.checkBox( label='Flip Source and target',
+                                                  w=80, al="right", value=False, cc=self.__selectDeformerAction )
 
         self.multiTransferOptionCheckBox = cmds.checkBox( label='Load Different Deformers in Source and Target',
-                                                  w=80, al="right", value=False )
+                                                  w=80, al="right", value=False)
         
         ###########################################################
         #---Weight Calculator Frame
@@ -3174,13 +2520,13 @@ class slideDeformerGui(object):
         self.toggleEnvelopeButton = cmds.button(label = "Toggle Envelope", 
                                         c = self.toggleEnvelope,
                                         h = 30, w = 520)
-
-
         cmds.text("Set Control to neutral position")
         self.normalizeSlideButton = cmds.button(label = "Normalize Slide Control", 
                                         c = self.normalizeSlideCtrl,
                                         h = 30, w = 520)
         cmds.text("Select Slide Ctrl on L or R side and run to mirror")
+        self.mirrorWeights = cmds.checkBox( label='Mirror Weights',
+                                                  w=80, al="right", value=False )
         self.mirrorSlideButton = cmds.button(label = "Mirror Slide Control", 
                                         c = self.mirrorSlideCtrl,
                                         h = 30, w = 520)

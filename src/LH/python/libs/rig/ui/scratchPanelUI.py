@@ -1,27 +1,44 @@
 import sys
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
-from PyQt5.QtCore import QSize
+from PySide2 import QtWidgets, QtCore, QtGui
+from maya import OpenMayaUI as OpenMayaUI
+from shiboken2 import wrapInstance
 
-class HelloWindow(QMainWindow):
-    def __init__(self):
-        QMainWindow.__init__(self)
+'''
+@code
+from uiSSP.rigging.uiStackTest import uiStackTest
+uiStackTest.UiStackTest.openUI()
+@endcode
+'''
+class UiStackTest(QtWidgets.QWidget):
 
-        self.setMinimumSize(QSize(640, 480))
-        self.setWindowTitle("Hello world")
+    def __init__(self, parent=None, winTitle = "UI Stack", winName = None):
+        super(UiStackTest, self).__init__(parent)
+        #main widget setting
+        self.setWindowFlags(QtCore.Qt.Window)
+        self.setWindowTitle(winTitle)
+        self.setObjectName(winName)
 
-        centralWidget = QWidget(self)
-        self.setCentralWidget(centralWidget)
 
-        gridLayout = QGridLayout(self)
-        centralWidget.setLayout(gridLayout)
+    winWidth = 150
+    @classmethod
+    def openUI(self, winTitle = "UI Stack", winName = None):
+        if winName == None or winName == "":
+            winName = winTitle.replace(" ", "")
+        try:
+            try:
+                globals()[winName].close()
+                globals()[winName].deleteLater()
+            except:
+                pass
+            del globals()[winName]
+        except:
+            pass
+        ptr = OpenMayaUI.MQtUtil.mainWindow()
+        mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        globals()[winName] = UiStackTest(mayaWin, winTitle, winName)
+        globals()[winName].show()
+        return globals()[winName]
 
-        title = QLabel("Hello World from PyQt", self)
-        title.setAlignment(QtCore.Qt.AlignCenter)
-        gridLayout.addWidget(title, 0, 0)
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    mainWin = HelloWindow()
-    mainWin.show()
-    sys.exit( app.exec_() )
+
+

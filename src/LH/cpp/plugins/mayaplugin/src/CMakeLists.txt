@@ -29,6 +29,9 @@ set(SOURCE_FILES
 	"LHCollisionLocator.cpp"
 	"LHCollisionLocator.h"
 	"constants.h"
+	"nullTransform.cpp"
+	"nullTransform.h"
+
 
 )
 

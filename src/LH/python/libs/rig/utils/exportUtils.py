@@ -652,55 +652,13 @@ def comparePolyCount(srcMesh, baseMesh):
     return
 
 
-# def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
-#     # Get Attributes From Source
-#     attrs = cmds.listAttr(srcDeformer, ud = True, a = True, m=True)
-#     srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in attrs]
-#
-#     jointOff = cmds.joint(n="JntOFF_TEMP", p=(0,0,0))
-#     jointOn = cmds.joint(n="JntON_TEMP", p=(0,0,0))
-#     tmpMesh = cmds.duplicate(srcMesh, name = srcMesh + "TempWeightTransfer")[0]
-#
-#     srcSkin = cmds.skinCluster(jointOn, jointOff, tmpMesh, n = "TempSKIN", tsb=True)[0]
-#     srcVertCount = cmds.polyEvaluate(srcMesh, v=1) - 1
-#     dstVertCount = cmds.polyEvaluate(destMesh, v=1) - 1
-#
-#     dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)[0]
-#
-#     for srcAttr in srcAttributes:
-#         weight = cmds.getAttr(srcAttr)
-#         #---If weight hasn't been set, skip it
-#         if not weight:
-#             continue
-#         #---If weight isn't large enough, fill additional indexes with empty weight values
-#         if len(weight) < srcVertCount:
-#             difference = srcVertCount - len(weight)
-#             for i in range(srcVertCount):
-#                 if i > difference:
-#                     continue
-#                 weight.append(0.0)
-#
-#         empty = [1.0 for x in range(len(weight))]
-#         cmds.setAttr('{0}.weightList[0:{1}].weights[1]'.format(srcSkin, srcVertCount), *empty, size=len(empty))
-#         cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount), *weight, size=len(empty))
-#         # Only Use Skin Percent to normalize! It is crappy slow to set points....
-#         cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=True)
-#
-#         cmds.copySkinWeights( ss=srcSkin, ds=dstSkin, noMirror=True, ia="oneToOne")
-#
-#         destAttr = srcAttr.replace(srcDeformer, destDeformer)
-#         #---Get weights from dest skin cluster
-#         destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
-#         cmds.setAttr(destAttr, destWeight, typ='doubleArray')
-#
-#     cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)
-
-
-
-def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
+def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAttributes=None, destAttrs=None):
     # Get Attributes From Source
-    attrs = cmds.listAttr(srcDeformer, ud = True, a = True, m=True)
-    srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in attrs]
+    if not srcAttributes:
+        attrs = cmds.listAttr(srcDeformer, ud = True, a = True, m=True)
+        srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in attrs]
+    else:
+        srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in srcAttributes]
 
     jointOff = cmds.joint(n="JntOFF_TEMP", p=(0,0,0))
     jointOn = cmds.joint(n="JntON_TEMP", p=(0,0,0))
@@ -713,7 +671,8 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
 
     dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)[0]
     cmds.setAttr(dstSkin + ".envelope", 0)
-    for srcAttr in srcAttributes:
+    for idx, srcAttr in enumerate(srcAttributes):
+        print srcAttributes
         weight = cmds.getAttr(srcAttr)
         #---If weight hasn't been set, skip it
         if not weight:
@@ -748,97 +707,18 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
         except:
             print "weights could not be properly transfered for " + srcAttr
         # Only Use Skin Percent to normalize! It is crappy slow to set points....
-        #cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=False, prw=.01)
         cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=True)
 
-
-
-        cmds.copySkinWeights( ss=srcSkin, ds=dstSkin, noMirror=True, ia="oneToOne")
-
-        # print cmds.getAttr('{0}.weightList[0:{1}].weights[0]'.format(dstSkin, srcVertCount))
-        # cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)
-        # return
-
-
-        destAttr = srcAttr.replace(srcDeformer, destDeformer)
-        #---Get weights from dest skin cluster
-        destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
-        cmds.setAttr(destAttr, destWeight, typ='doubleArray')
+        cmds.copySkinWeights(ss=srcSkin, ds=dstSkin, noMirror=True, ia="oneToOne")
+        if not destAttrs:
+            destAttr = [srcAttr.replace(srcDeformer, destDeformer)]
+        else:
+            destAttr = destAttrs
+        for destAttrIt in destAttr:
+            fullDestAttrName = "{0}.{1}".format(destDeformer, destAttrIt)
+            #---Get weights from dest skin cluster
+            destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
+            cmds.setAttr(fullDestAttrName, destWeight, typ='doubleArray')
 
     cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)
-#
-# def getNodeNetwork(mayaObjList=None):
-#     if not mayaObjList: selection = cmds.ls(sl=True)
-#     for sel in selection:
-#         attrConnectDict = getConnectedAttrs(sel)
-#         if not attrConnectDict:
-#             continue
-#         print attrConnectDict
-#
-#
-#
-# def getConnectedAttrs(mayaObject):
-#     attrs = cmds.listAttr(mayaObject, ud=True, c=True)
-#     if not attrs:
-#         return
-#     attrConnectDict = {}
-#     attrConnectDict[mayaObject] = {}
-#
-#     testDict = {
-#         "NodeName":
-#             {
-#                 "srcAttrName": {
-#                     "srcNodeType": "nurbs",
-#                     "srcAttrType": "float",
-#                     "srcAttrUserDefined": True,
-#                     "srcAttr": "NodeName.UVal",
-#
-#                     "dstAttrName": "SLDNode",
-#                     "dstType": "PMANode",
-#                     "dstAttrType": "float",
-#                     "dstAttrUserDefined": False,
-#                     "dstAttr": "PMANode.OutputX"
-#                 }
-#             }
-#
-#     }
-#
-#     for a in attrs:
-#         fullAttrName = "{0}.{1}".format(mayaObject, a)
-#         connectionsNodes = cmds.listConnections(fullAttrName, c=True)
-#         connectionsAttributes = cmds.listConnections(fullAttrName, c=True, p=True)
-#         if not connectionsNodes:
-#             continue
-#         srcNodeType = cmds.nodeType(connectionsNodes[0])
-#         dstNodeType = cmds.nodeType(connectionsNodes[1])
-#
-#         print "TYPE", srcNodeType
-#         # src data
-#         attrConnectDict[mayaObject][fullAttrName]["srcNodeType"] = srcNodeType
-#         # attrConnectDict[mayaObject][fullAttrName]["srcAttrType"] = "TEMP"
-#         # attrConnectDict[mayaObject][fullAttrName]["srcAttrUserDefined"] = "TEMP"
-#         attrConnectDict[mayaObject][fullAttrName]["srcAttr"] = connectionsAttributes[0]
-#         # dst data
-#         attrConnectDict[mayaObject][fullAttrName]["dstAttrName"] = connectionsNodes[1]
-#         attrConnectDict[mayaObject][fullAttrName]["dstNodeType"] = dstNodeType
-#         attrConnectDict[mayaObject][fullAttrName]["dstAttrType"] = "TEMP"
-#         # attrConnectDict[mayaObject][fullAttrName]["dstAttrUserDefined"] = "TEMP"
-#         attrConnectDict[mayaObject][fullAttrName]["dstAttr"] = connectionsAttributes[1]
-#
-#
-#         print attrConnectDict
-#
-#         return
-#         #attrConnectDict[connections[0]] = (connections[1]
-#
-#
-# def getAllAttrData():
-#     {"attrName":
-#
-# def getAllNodeAttrValues():
-#     pass
-#
-#
-
-
 

@@ -145,3 +145,6 @@ src/LH/python/libs/rig/utils/exportUtils.pyc
 src/LH/python/libs/rig/utils/misc.pyc
 **/*.pyc
 src/LH/python/libs/rig/utils/misc.pyc
+src/LH/python/libs/rig/rigComponents/slidingCtrl.pyc
+src/LH/python/libs/rig/utils/exportUtils.pyc
+src/LH/python/libs/rig/utils/misc.pyc

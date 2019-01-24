@@ -2092,6 +2092,9 @@ def create_sec_bind_skel(children = [],
         cmds.scaleConstraint(name + "_JNT", new_name)
 
 def getShape(mayaObject):
+    # double check it isn't already a mesh, just in case a transform is passed in...
+    if cmds.objectType(mayaObject) == "mesh":
+        return mayaObject
     return cmds.listRelatives(mayaObject, shapes=True)[0]
 
 def getGeoData(mayaObject=None):
@@ -2208,4 +2211,45 @@ maya.cmds.setToolTo( tool )
 maya.cmds.deleteUI(tool)
 maya.mel.eval("SelectToolOptionsMarkingMenu;MarkingMenuPopDown;")
 '''
-    
+
+def getClosestUVOnMesh(pointX=None, pointY=None, pointZ=None, transform=None, mesh=None):
+    if not pointX and not pointY and not pointZ and not transform and not mesh:
+        # driver driven selection order
+        mesh = cmds.ls(sl=True)[0]
+        transform = cmds.ls(sl=True)[1]
+    if transform:
+        xform = cmds.xform(transform, q=True, a=True, ws=True, t=True)
+        pointX = xform[0]
+        pointY = xform[1]
+        pointZ = xform[2]
+    mesh = getShape(mesh)
+    closestPointNode = cmds.createNode("closestPointOnMesh")
+    cmds.connectAttr(mesh + ".outMesh", closestPointNode + ".inMesh")
+    cmds.setAttr(closestPointNode+".inPositionX", pointX)
+    cmds.setAttr(closestPointNode+".inPositionY", pointY)
+    cmds.setAttr(closestPointNode+".inPositionZ", pointZ)
+    u = cmds.getAttr(closestPointNode+".parameterU")
+    v = cmds.getAttr(closestPointNode+".parameterV")
+    cmds.delete(closestPointNode)
+    return u, v
+
+# def removeRotationFromPointOnPolyConstraint(pointOnPolyConstraint);
+
+def closestPointOnPolyConstraint(name="test_PPC", closestPointNodeName="test_CPM", driverMesh=None, drivenTransform=None ):
+    if not driverMesh and not drivenTransform:
+        # driver driven selection order
+        driverMesh = cmds.ls(sl=True)[0]
+        drivenTransform = cmds.ls(sl=True)[1]
+    driverMesh = getShape(driverMesh)
+    u, v = getClosestUVOnMesh(transform=drivenTransform, mesh=driverMesh)
+    # closestPointNode = cmds.createNode("closestPointOnMesh", n=closestPointNodeName)
+    # cmds.connectAttr(driverMesh + ".outMesh", closestPointNode + ".inMesh")
+    # cmds.connectAttr(closestPointNode + ".position", drivenTransform+".translate")
+
+    constraint = cmds.pointOnPolyConstraint(driverMesh,
+                                            drivenTransform,
+                                            name = name)[0]
+    cmds.disconnectAttr(constraint.)
+    cmds.setAttr(constraint + " .u0", u)
+    cmds.setAttr(constraint + " .v0", v)
+    return constraint
