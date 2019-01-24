@@ -3,16 +3,19 @@
 
 #include <maya/MStatus.h>
 #include <maya/MTypeId.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MFnMatrixAttribute.h>
 #include <maya/MMatrix.h>
 #include <maya/MGlobal.h>
 #include <maya/MString.h>
 #include <maya/MPxTransform.h>
 #include <maya/MPxTransformationMatrix.h>
 
-class nullTransform : public MPxTransform {
+
+class nullMatrixTransform : public MPxTransform {
  public:
-    nullTransform();
-    virtual ~nullTransform();
+    nullMatrixTransform();
+    virtual ~nullMatrixTransform();
     // virtual MStatus compute( const MPlug& plug, MDataBlock& data );
 
     virtual MPxTransformationMatrix* createTransformationMatrix();
@@ -24,7 +27,7 @@ class nullTransform : public MPxTransform {
     inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
-        MString txt( "[nullTransform] " );
+        MString txt( "[nullMatrixTransform] " );
         txt += msg ;
         txt += ", File: ";
         txt += sourceFile;
@@ -69,7 +72,7 @@ class nullTransform : public MPxTransform {
 
 ///////////////////////////////////////////////////////////
 
-class nullTMatrix : public MPxTransformationMatrix
+class nullMatrixTMatrix : public MPxTransformationMatrix
 {
     // A really simple implementation of MPxTransformationMatrix.
     // The methods include:
@@ -78,8 +81,8 @@ class nullTMatrix : public MPxTransformationMatrix
     // - The virtual asMatrix() method which passes the matrix 
     // back to Maya when the command "xform -q -ws -m" is invoked
     public:
-        nullTMatrix();
-        virtual ~nullTMatrix();
+        nullMatrixTMatrix();
+        virtual ~nullMatrixTMatrix();
         static void *creator();
         MMatrix asMatrix() const override;
         MMatrix asMatrix(double percent) const override;
@@ -87,3 +90,4 @@ class nullTMatrix : public MPxTransformationMatrix
     protected:		
         typedef MPxTransformationMatrix ParentClass;
 };
+

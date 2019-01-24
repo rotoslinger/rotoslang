@@ -50,6 +50,8 @@ set(source_files
 	"src/LHCollisionLocator.h"
 	"src/nullTransform.cpp"
 	"src/nullTransform.h"
+	"src/nullMatrixTransform.cpp"
+	"src/nullMatrixTransform.h"
 
 )
 

@@ -1,3 +1,4 @@
+#pragma once
 
 #include <maya/MIOStream.h>
 #include <maya/MPxNode.h>
