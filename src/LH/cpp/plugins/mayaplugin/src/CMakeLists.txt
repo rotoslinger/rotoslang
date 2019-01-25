@@ -31,8 +31,10 @@ set(SOURCE_FILES
 	"constants.h"
 	"nullTransform.cpp"
 	"nullTransform.h"
-	"nullMatrixTransform.cpp"
-	"nullMatrixTransform.h"
+#	"nullMatrixTransform.cpp"
+#	"nullMatrixTransform.h"
+	"LHGeometryConstraint.cpp"
+	"LHGeometryConstraint.h"
 
 
 

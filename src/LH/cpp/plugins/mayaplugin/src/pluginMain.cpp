@@ -16,7 +16,8 @@
 #include "LHLocator.h"
 #include "LHCollisionLocator.h"
 #include "nullTransform.h"
-#include "nullMatrixTransform.h"
+#include "LHGeometryConstraint.h"
+// #include "nullMatrixTransform.h"
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
 
@@ -63,6 +64,10 @@ MStatus initializePlugin(MObject obj) {
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  status = plugin.registerNode("LHGeometryConstraint", LHGeometryConstraint::id, LHGeometryConstraint::creator, LHGeometryConstraint::initialize);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
   status = plugin.registerNode( "LHCollisionDeformer", LHCollisionDeformer::id, LHCollisionDeformer::creator,
 		  LHCollisionDeformer::initialize, MPxNode::kDeformerNode );
   CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -75,12 +80,12 @@ MStatus initializePlugin(MObject obj) {
                                     nullTMatrix::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
-  status = plugin.registerTransform( "nullMatrixTransform",
-                                    nullMatrixTransform::id,
-                                    &nullMatrixTransform::creator,
-                                    &nullMatrixTransform::initialize,
-                                    nullMatrixTMatrix::creator,
-                                    nullMatrixTMatrix::id);
+  // status = plugin.registerTransform( "nullMatrixTransform",
+  //                                   nullMatrixTransform::id,
+  //                                   &nullMatrixTransform::creator,
+  //                                   &nullMatrixTransform::initialize,
+  //                                   nullMatrixTMatrix::creator,
+  //                                   nullMatrixTMatrix::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
@@ -136,6 +141,8 @@ MStatus uninitializePlugin(MObject obj) {
 //
 //  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+ status = plugin.deregisterNode(LHGeometryConstraint::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.deregisterNode(LHCollisionDeformer::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -146,8 +153,8 @@ MStatus uninitializePlugin(MObject obj) {
   status = plugin.deregisterNode(nullTransform::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
-  status = plugin.deregisterNode(nullMatrixTransform::id);
-  CHECK_MSTATUS_AND_RETURN_IT(status);
+  // status = plugin.deregisterNode(nullMatrixTransform::id);
+  // CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
   if (!sUseLegacyDraw)

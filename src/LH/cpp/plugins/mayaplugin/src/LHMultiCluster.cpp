@@ -87,3 +87,10 @@ MStatus LHMultiCluster::deform(MDataBlock& data, MItGeometry& itGeo,
   return MS::kSuccess;
 }
 
+//---For debugging the matrices
+//double sm[4][4];
+//baseMatrix.get(sm);
+//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[0][0] + sm[0][1] + sm[0][2] + sm[0][3]);
+//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[1][0] + sm[1][1] + sm[1][2] + sm[1][3]);
+//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[2][0] + sm[2][1] + sm[2][2] + sm[2][3]);
+//MGlobal::displayInfo(MString("THIS IS THE MATRIX")+sm[3][0] + sm[3][1] + sm[3][2] + sm[3][3]);

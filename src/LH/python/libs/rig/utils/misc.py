@@ -2213,10 +2213,12 @@ maya.mel.eval("SelectToolOptionsMarkingMenu;MarkingMenuPopDown;")
 '''
 
 def getClosestUVOnMesh(pointX=None, pointY=None, pointZ=None, transform=None, mesh=None):
+    debug=False
     if not pointX and not pointY and not pointZ and not transform and not mesh:
         # driver driven selection order
         mesh = cmds.ls(sl=True)[0]
         transform = cmds.ls(sl=True)[1]
+        debug = True
     if transform:
         xform = cmds.xform(transform, q=True, a=True, ws=True, t=True)
         pointX = xform[0]
@@ -2231,6 +2233,9 @@ def getClosestUVOnMesh(pointX=None, pointY=None, pointZ=None, transform=None, me
     u = cmds.getAttr(closestPointNode+".parameterU")
     v = cmds.getAttr(closestPointNode+".parameterV")
     cmds.delete(closestPointNode)
+    # for debug
+    if debug:
+        print u, v
     return u, v
 
 # def removeRotationFromPointOnPolyConstraint(pointOnPolyConstraint);
@@ -2249,7 +2254,6 @@ def closestPointOnPolyConstraint(name="test_PPC", closestPointNodeName="test_CPM
     constraint = cmds.pointOnPolyConstraint(driverMesh,
                                             drivenTransform,
                                             name = name)[0]
-    cmds.disconnectAttr(constraint.)
     cmds.setAttr(constraint + " .u0", u)
     cmds.setAttr(constraint + " .v0", v)
     return constraint
