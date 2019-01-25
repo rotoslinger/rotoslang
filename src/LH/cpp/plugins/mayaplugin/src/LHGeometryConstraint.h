@@ -24,19 +24,9 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnMesh.h>
 #include <maya/MFloatMatrix.h>
+#include <maya/MTransformationMatrix.h>
 
 #include <math.h>
-
-// class LHGeometryConstraintData : public MUserData
-// {
-//   public:
-//     LHGeometryConstraintData() : MUserData(false) {}
-//     virtual ~LHGeometryConstraintData() {}
-//     MFnMesh *mesh;
-//     short eOrientationType;
-//     double dU;
-//     double dV;
-// };
 
 class LHGeometryConstraint : public MPxNode {
  public:
@@ -50,12 +40,11 @@ class LHGeometryConstraint : public MPxNode {
 
     static MObject aMesh;
     static MObject aOutputMatrix;
-    static MObject aU;
-    static MObject aV;
-    static MObject aInputMatrix;
+    static MObject aParentMatrix;
     static MObject aAPointIdx;
     static MObject aBPointIdx;
     static MObject aCPointIdx;
+    static MObject aDPointIdx;
     static MObject aBaryWeight;
 
     inline MString FormatError( const MString &msg, const MString
