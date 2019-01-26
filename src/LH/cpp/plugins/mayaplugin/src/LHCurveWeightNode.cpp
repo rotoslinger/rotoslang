@@ -1,18 +1,18 @@
-#include "LHWeightNode.h"
+#include "LHCurveWeightNode.h"
 
-MTypeId LHWeightNode::id(0x00093019);
+MTypeId LHCurveWeightNode::id(0x00043568);
 
-MObject LHWeightNode::aOutputWeights;
-MObject LHWeightNode::aInputs;
-MObject LHWeightNode::aInputWeights;
-MObject LHWeightNode::aFactor;
-MObject LHWeightNode::aOperation;
-
-
-void* LHWeightNode::creator() { return new LHWeightNode; }
+MObject LHCurveWeightNode::aOutputWeights;
+MObject LHCurveWeightNode::aInputs;
+MObject LHCurveWeightNode::aInputWeights;
+MObject LHCurveWeightNode::aFactor;
+MObject LHCurveWeightNode::aOperation;
 
 
-MStatus LHWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, double val)
+void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
+
+
+MStatus LHCurveWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, double val)
 {
     int len = rDoubleArray.length();
     if (!len)
@@ -27,7 +27,7 @@ MStatus LHWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, doub
 }
 
 
-MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
+MDoubleArray LHCurveWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
                                                     MDoubleArray doubleArray2,
                                                     short operation)
 {
@@ -69,12 +69,12 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
 }
 
 
-MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
+MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
 {
     MStatus status;
-    if( plug == LHWeightNode::aOutputWeights)
+    if( plug == LHCurveWeightNode::aOutputWeights)
     {
-        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHWeightNode::aInputs, &status));
+        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHCurveWeightNode::aInputs, &status));
         CheckStatusReturn( status, "Unable to get inputs" );
         unsigned int elemCount = inputsArrayHandle.elementCount(&status);
         CheckStatusReturn( status, "Unable to get number of inputs" );
@@ -86,20 +86,20 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 
             status = inputsArrayHandle.jumpToElement(i);
             CheckStatusReturn( status, "Unable to jump to input element" );
-            double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aFactor ).asDouble();
-            short operation = inputsArrayHandle.inputValue().child( LHWeightNode::aOperation ).asShort();
-            MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHWeightNode::aInputWeights);
+            double dAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFactor ).asDouble();
+            short operation = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aOperation ).asShort();
+            MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aInputWeights);
             MObject oInputArray = hInputArray.data();
             MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
             MDoubleArray tempWeights;
             dataDoubleArrayFn.copyTo(tempWeights);
-            LHWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
+            LHCurveWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
             if (!finalWeights.length())
             {
                 finalWeights = tempWeights;
             }
             else
-                finalWeights = LHWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
+                finalWeights = LHCurveWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
 //            hInputArray.setClean();
 
         }
@@ -107,7 +107,7 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
         ////////Set the final weights
         MFnDoubleArrayData outputDoubleArrayFn;
         MObject oOutputArray = outputDoubleArrayFn.create(finalWeights);
-        MDataHandle handle = data.outputValue(LHWeightNode::aOutputWeights);
+        MDataHandle handle = data.outputValue(LHCurveWeightNode::aOutputWeights);
         handle.setMObject(oOutputArray);
 
 //        MGlobal::displayInfo(MString("DEBUG:  UPDATING ") + status);
@@ -123,7 +123,7 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 }
 
 
-MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
+MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
         if ( inPlug.attribute() != aInputs
@@ -163,7 +163,7 @@ MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
     }
 
 
-MStatus LHWeightNode::initialize()
+MStatus LHCurveWeightNode::initialize()
 {
     MFnTypedAttribute tAttr;
     MFnNumericAttribute nAttr;

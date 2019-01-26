@@ -60,7 +60,8 @@ set(source_files
 	"src/LHVectorDeformer.h"
 	"src/LHCurveRollDeformer.cpp"
 	"src/LHCurveRollDeformer.h"
-
+	"src/LHCurveWeightNode.cpp"
+	"src/LHCurveWeightNode.h"
 )
 
 add_library(collision SHARED ${source_files})

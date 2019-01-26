@@ -34,9 +34,9 @@
                 return MS::kFailure;    \
         }
 
-class LHWeightNode : public MPxNode {
+class LHCurveWeightNode : public MPxNode {
  public:
-  LHWeightNode() {};
+  LHCurveWeightNode() {};
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
   virtual MStatus setDependentsDirty(MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs);
@@ -62,7 +62,7 @@ class LHWeightNode : public MPxNode {
   inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
-        MString txt( "[LHWeightNode] " );
+        MString txt( "[LHCurveWeightNode] " );
         txt += msg ;
         txt += ", File: ";
         txt += sourceFile;
@@ -106,6 +106,7 @@ class LHWeightNode : public MPxNode {
 };
 
 ///////////////////////////////////////////////////////////
+
 
 
 

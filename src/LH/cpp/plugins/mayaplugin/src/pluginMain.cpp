@@ -20,6 +20,7 @@
 #include "LHSlideDeformer.h"
 #include "LHVectorDeformer.h"
 #include "LHCurveRollDeformer.h"
+#include "LHCurveWeightNode.h"
 
 // #include "nullMatrixTransform.h"
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
@@ -67,6 +68,12 @@ MStatus initializePlugin(MObject obj) {
 //		  LHMultiClusterThreaded::initialize, MPxNode::kDeformerNode );
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
+  status = plugin.registerNode("LHCurveWeightNode", LHCurveWeightNode::id, LHCurveWeightNode::creator, LHCurveWeightNode::initialize);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
   status = plugin.registerNode("LHCurveRollDeformer", LHCurveRollDeformer::id, LHCurveRollDeformer::creator,
                                LHCurveRollDeformer::initialize, MPxNode::kDeformerNode);
   CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -156,6 +163,12 @@ MStatus uninitializePlugin(MObject obj) {
 //
 //  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+ status = plugin.deregisterNode(LHCurveWeightNode::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
  status = plugin.deregisterNode(LHCurveRollDeformer::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);
 
