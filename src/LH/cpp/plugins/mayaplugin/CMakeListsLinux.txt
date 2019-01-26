@@ -58,6 +58,8 @@ set(source_files
 	"src/LHSlideDeformer.h"
 	"src/LHVectorDeformer.cpp"
 	"src/LHVectorDeformer.h"
+	"src/LHCurveRollDeformer.cpp"
+	"src/LHCurveRollDeformer.h"
 
 )
 

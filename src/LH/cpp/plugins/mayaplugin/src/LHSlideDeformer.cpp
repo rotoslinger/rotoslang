@@ -693,7 +693,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                                 std::vector < double > tempUPointVals;
                                 for (; !iter.isDone();)
                                 {
-                                    pt = iter.position();
+                                    //pt = iter.position();
                                     try
                                     {
                                         double remap = uCoord[i][iter.index()] * allUTimeLengthArray[i][j][k];
@@ -730,7 +730,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 
                                 for (; !iter.isDone();)
                                 {
-                                    pt = iter.position();
+                                    //pt = iter.position();
                                     try
                                     {
                                         double remap = vCoord[i][iter.index()] * allVTimeLengthArray[i][j][k];
