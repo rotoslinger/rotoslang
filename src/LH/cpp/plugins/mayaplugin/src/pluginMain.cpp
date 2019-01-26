@@ -17,6 +17,8 @@
 #include "LHCollisionLocator.h"
 #include "nullTransform.h"
 #include "LHGeometryConstraint.h"
+#include "LHSlideDeformer.h"
+#include "LHVectorDeformer.h"
 // #include "nullMatrixTransform.h"
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
@@ -63,6 +65,13 @@ MStatus initializePlugin(MObject obj) {
 //		  LHMultiClusterThreaded::initialize, MPxNode::kDeformerNode );
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+  status = plugin.registerNode("LHSlideDeformer", LHSlideDeformer::id, LHSlideDeformer::creator,
+                               LHSlideDeformer::initialize, MPxNode::kDeformerNode);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode("LHVectorDeformer", LHVectorDeformer::id, LHVectorDeformer::creator,
+                               LHVectorDeformer::initialize, MPxNode::kDeformerNode);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode("LHGeometryConstraint", LHGeometryConstraint::id, LHGeometryConstraint::creator, LHGeometryConstraint::initialize);
   CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -141,6 +150,9 @@ MStatus uninitializePlugin(MObject obj) {
 //
 //  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+ status = plugin.deregisterNode(LHVectorDeformer::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
+
  status = plugin.deregisterNode(LHGeometryConstraint::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -168,6 +180,8 @@ MStatus uninitializePlugin(MObject obj) {
   status = plugin.deregisterNode( LHCollisionLocator::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  status = plugin.deregisterNode(LHSlideDeformer::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
   return status;
 }

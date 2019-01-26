@@ -35,6 +35,10 @@ set(SOURCE_FILES
 #	"nullMatrixTransform.h"
 	"LHGeometryConstraint.cpp"
 	"LHGeometryConstraint.h"
+	"LHSlideDeformer.cpp"
+	"LHSlideDeformer.h"
+	"LHVectorDeformer.cpp"
+	"LHVectorDeformer.h"
 
 
 

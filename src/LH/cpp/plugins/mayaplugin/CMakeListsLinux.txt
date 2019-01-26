@@ -48,6 +48,16 @@ set(source_files
 	"src/threading.cpp"
 	"src/LHCollisionLocator.cpp"
 	"src/LHCollisionLocator.h"
+	"src/nullTransform.cpp"
+	"src/nullTransform.h"
+#	"src/nullMatrixTransform.cpp"
+#	"src/nullMatrixTransform.h"
+	"src/LHGeometryConstraint.cpp"
+	"src/LHGeometryConstraint.h"
+	"src/LHSlideDeformer.cpp"
+	"src/LHSlideDeformer.h"
+	"src/LHVectorDeformer.cpp"
+	"src/LHVectorDeformer.h"
 
 )
 
