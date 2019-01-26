@@ -1,5 +1,4 @@
 #pragma once
-#define _MApiVersion
 
 #include <maya/MStatus.h>
 #include <maya/MTypeId.h>

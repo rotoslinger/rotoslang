@@ -1,6 +1,5 @@
 #ifndef _LHREPULSORDEFORMER_H
 #define _LHREPULSORDEFORMER_H
-#define _MApiVersion
 
 #include <maya/MCppCompat.h>
 

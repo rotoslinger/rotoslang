@@ -11,6 +11,68 @@ MObject LHCurveWeightNode::aOperation;
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
 
+MStatus LHCurveWeightNode::initialize()
+{
+    MFnTypedAttribute tAttr;
+    MFnNumericAttribute nAttr;
+    MFnCompoundAttribute cAttr;
+    MFnEnumAttribute eAttr;
+
+    /////// Attrs for compound
+    aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
+    nAttr.setKeyable(true);
+    nAttr.setWritable(true);
+    nAttr.setStorable(true);
+    nAttr.setDefault(0.0);
+    nAttr.setChannelBox(true);
+    addAttribute(aFactor);
+
+    aInputWeights = tAttr.create("inputWeights", "iw", MFnNumericData::kDoubleArray);
+    tAttr.setKeyable(true);
+    tAttr.setArray(false);
+    tAttr.setUsesArrayDataBuilder(true);
+    addAttribute(aInputWeights);
+
+    aOperation = eAttr.create("operation", "op", 0);
+    eAttr.addField( "add", 0 );
+    eAttr.addField( "subtract", 1 );
+    eAttr.addField( "multiply", 2 );
+    eAttr.addField( "divide", 3 );
+    eAttr.setHidden( false );
+    eAttr.setKeyable( true );
+    eAttr.setWritable(true);
+    eAttr.setStorable(true);
+    eAttr.setChannelBox(true);
+    addAttribute(aOperation);
+
+    aInputs = cAttr.create("Inputs", "inputs");
+    cAttr.setKeyable(true);
+    cAttr.setArray(true);
+    cAttr.addChild( aInputWeights );
+    cAttr.addChild( aFactor );
+    cAttr.addChild( aOperation );
+    cAttr.setReadable(true);
+    cAttr.setWritable(true);
+    cAttr.setConnectable(true);
+    cAttr.setChannelBox(true);
+    addAttribute(aInputs);
+
+    aOutputWeights = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
+    tAttr.setKeyable(true);
+    tAttr.setArray(false);
+    tAttr.setWritable(true);
+    tAttr.setStorable(true);
+    tAttr.setUsesArrayDataBuilder(true);
+    addAttribute(aOutputWeights);
+
+    attributeAffects(aOperation, aOutputWeights);
+    attributeAffects(aInputWeights, aOutputWeights);
+    attributeAffects(aInputs, aOutputWeights);
+    attributeAffects(aFactor, aOutputWeights);
+
+    return MStatus::kSuccess;
+}
+
 
 MStatus LHCurveWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, double val)
 {
@@ -126,10 +188,10 @@ MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
 MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
-        if ( inPlug.attribute() != aInputs
-        and inPlug.attribute() != aFactor
-        and inPlug.attribute() != aInputWeights
-        and inPlug.attribute() != aOperation)
+        if ( (inPlug.attribute() != aInputs)
+        & (inPlug.attribute() != aFactor)
+        & (inPlug.attribute() != aInputWeights)
+        & (inPlug.attribute() != aOperation))
         {
             return MS::kSuccess;
         }
@@ -162,66 +224,4 @@ MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
         return MS::kSuccess;
     }
 
-
-MStatus LHCurveWeightNode::initialize()
-{
-    MFnTypedAttribute tAttr;
-    MFnNumericAttribute nAttr;
-    MFnCompoundAttribute cAttr;
-    MFnEnumAttribute eAttr;
-
-    /////// Attrs for compound
-    aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
-    nAttr.setKeyable(true);
-    nAttr.setWritable(true);
-    nAttr.setStorable(true);
-    nAttr.setDefault(0.0);
-    nAttr.setChannelBox(true);
-    addAttribute(aFactor);
-
-    aInputWeights = tAttr.create("inputWeights", "iw", MFnNumericData::kDoubleArray);
-    tAttr.setKeyable(true);
-    tAttr.setArray(false);
-    tAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aInputWeights);
-
-    aOperation = eAttr.create("operation", "op", 0);
-    eAttr.addField( "add", 0 );
-    eAttr.addField( "subtract", 1 );
-    eAttr.addField( "multiply", 2 );
-    eAttr.addField( "divide", 3 );
-    eAttr.setHidden( false );
-    eAttr.setKeyable( true );
-    eAttr.setWritable(true);
-    eAttr.setStorable(true);
-    eAttr.setChannelBox(true);
-    addAttribute(aOperation);
-
-    aInputs = cAttr.create("Inputs", "inputs");
-    cAttr.setKeyable(true);
-    cAttr.setArray(true);
-    cAttr.addChild( aInputWeights );
-    cAttr.addChild( aFactor );
-    cAttr.addChild( aOperation );
-    cAttr.setReadable(true);
-    cAttr.setWritable(true);
-    cAttr.setConnectable(true);
-    cAttr.setChannelBox(true);
-    addAttribute(aInputs);
-
-    aOutputWeights = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
-    tAttr.setKeyable(true);
-    tAttr.setArray(false);
-    tAttr.setWritable(true);
-    tAttr.setStorable(true);
-    tAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aOutputWeights);
-
-    attributeAffects(aOperation, aOutputWeights);
-    attributeAffects(aInputWeights, aOutputWeights);
-    attributeAffects(aInputs, aOutputWeights);
-    attributeAffects(aFactor, aOutputWeights);
-
-    return MStatus::kSuccess;
-}
 

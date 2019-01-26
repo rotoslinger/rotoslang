@@ -1,6 +1,5 @@
 #ifndef LHCOLLISIONEFORMER_H
 #define LHCOLLISIONEFORMER_H
-#define _MApiVersion
 // #define NOMINMAX
 // #include <maya/MCppCompat.h>
 #include <maya/MDataBlock.h>

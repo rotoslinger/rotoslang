@@ -10,7 +10,6 @@
 //==============================================================
 
 #include "LHMultiClusterThreaded.h"
-#include <maya/MFnPlugin.h>
 
 MTypeId LHMultiClusterThreaded::id(0x00833467);
 MObject LHMultiClusterThreaded::aInputs;

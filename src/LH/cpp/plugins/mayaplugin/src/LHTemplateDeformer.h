@@ -1,6 +1,5 @@
 #ifndef LHTEMPLATEDEFORMER_H
 #define LHTEMPLATEDEFORMER_H
-#define _MApiVersion
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>

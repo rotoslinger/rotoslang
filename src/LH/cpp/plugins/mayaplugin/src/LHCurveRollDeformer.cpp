@@ -212,7 +212,7 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     // Weight Mesh
     MFnMesh fnWeightMesh(oWeightMesh);
 
-    if ((uCoord.size() < numIndex) or (cacheWeightMeshAmt == 0))
+    if ((uCoord.size() < numIndex) || (cacheWeightMeshAmt == 0))
     {
         MMeshIntersector fnWeightIntersector;
         fnWeightIntersector.create(oWeightMesh);
@@ -326,7 +326,7 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //    MPlug weightCheck(thisMObj, aUWeightsParentArray );
 //    unsigned int weightSize = weightCheck.numConnectedChildren();
 
-    if (allWeightsArray.size() < numIndex or cacheWeightsAmt == 0)
+    if (allWeightsArray.size() < numIndex || cacheWeightsAmt == 0)
     {
         MObject allWeightParentArrays[]= {
 
@@ -436,7 +436,7 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 
 
 
-    if (allUAnimCurveWeights.size() < numIndex or cacheWeightCurvesAmt == 0)
+    if (allUAnimCurveWeights.size() < numIndex || cacheWeightCurvesAmt == 0)
     {
         if (weightMeshCheck == 1)
         {
@@ -731,7 +731,7 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     ////////   get closest param infos (cache if specified)    ////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Caches out closest point functions for sliding """
-    if (closestPoint.size() < numIndex or cacheParamsAmt == 0)
+    if (closestPoint.size() < numIndex || cacheParamsAmt == 0)
     {
         MObject oOutCurve = data.inputValue(aOutCurve).asNurbsCurveTransformed();
         MFnNurbsCurve* fnOutCurve = new MFnNurbsCurve( oOutCurve, &status);
@@ -838,7 +838,7 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     ////////   get tangents infos (cache if specified)    ////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Caches out closest point functions for sliding """
-    if (closestTangent.size() < numIndex or cacheTangentsAmt == 0)
+    if (closestTangent.size() < numIndex || cacheTangentsAmt == 0)
     {
 
         MObject oOutCurve = data.inputValue(aOutCurve).asNurbsCurveTransformed();
@@ -1022,9 +1022,9 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             //Make sure all vals is properly filled up
             for(i = 0; i < allVals[0].size(); i++ )
             {
-                if (allUAnimCurveWeights[mIndex][0].size() > i and allVAnimCurveWeights[mIndex][0].size() > i)
+                if (allUAnimCurveWeights[mIndex][0].size() > i && allVAnimCurveWeights[mIndex][0].size() > i)
                 {
-                    if (allUAnimCurveWeights[mIndex][0][i].size() >= idx+1 and allVAnimCurveWeights[mIndex][0][i].size() >= idx+1)
+                    if (allUAnimCurveWeights[mIndex][0][i].size() >= idx+1 && allVAnimCurveWeights[mIndex][0][i].size() >= idx+1)
                     {
                         allVals[0][i] = (allVals[0][i] *
                                          allUAnimCurveWeights[mIndex][0][i][idx] *
@@ -1067,11 +1067,11 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //        pt = pt * rW;
         for(j = 0; j < allVals[0].size(); j++ )
         {
-            if (closestTangent.size() > mIndex and closestPoint.size() > mIndex)
+            if (closestTangent.size() > mIndex && closestPoint.size() > mIndex)
         	{
-                if (closestTangent[0].size() > 1 and closestTangent[1].size() > 1 and closestPoint[0].size() > 1 and closestPoint[1].size() > 1)
+                if (closestTangent[0].size() > 1 && closestTangent[1].size() > 1 && closestPoint[0].size() > 1 && closestPoint[1].size() > 1)
                 {
-                    if (closestTangent[mIndex][0].length() > idx and closestTangent[mIndex][1].length() > idx and closestPoint[mIndex][0].length() > idx and closestPoint[mIndex][1].length() > idx)
+                    if (closestTangent[mIndex][0].length() > idx && closestTangent[mIndex][1].length() > idx && closestPoint[mIndex][0].length() > idx && closestPoint[mIndex][1].length() > idx)
                     {
                         // convert from radians
                         double degree = (allVals[0][j] * (3.14159265/180.0 ));

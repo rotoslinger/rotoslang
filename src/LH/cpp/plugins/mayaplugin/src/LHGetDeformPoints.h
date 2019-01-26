@@ -1,6 +1,5 @@
 #ifndef _LHGETDEFORMPOINTS_H
 #define _LHGETDEFORMPOINTS_H
-#include <maya/MCppCompat.h>
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>

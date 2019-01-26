@@ -1,6 +1,5 @@
 //    float myfloat = fabs(allWeightsArray[0][0][0].length());
 //    MGlobal::displayInfo(MString()+myfloat);
-#include <maya/MCppCompat.h>
 
 #include "LHVectorDeformer.h"
 
@@ -203,7 +202,7 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //    MArrayDataHandle geomBaseArrayHandle = data.inputArrayValue(aBaseGeoParent);
     // cache weight Mesh----
     // only worry about the weight mesh at scene load/mesh connection,
-    // or if weight mesh caching is off
+    // || if weight mesh caching is off
     MObject oWeightMesh = data.inputValue(aWeightMesh).asMeshTransformed();
     MPlug weightMeshCheckPlug(thisMObj, aWeightMesh );
     if (weightMeshCheckPlug.isConnected())
@@ -218,7 +217,7 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     // Weight Mesh
     MFnMesh fnWeightMesh(oWeightMesh);
 
-    if ((uCoord.size() < numIndex) or (cacheWeightMeshAmt == 0))
+    if ((uCoord.size() < numIndex) || (cacheWeightMeshAmt == 0))
     {
         MMeshIntersector fnWeightIntersector;
         fnWeightIntersector.create(oWeightMesh);
@@ -316,7 +315,7 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 
 //    allTPivots
 
-    if (allPivots.size() < numIndex or cachePivotsAmt == 0)
+    if (allPivots.size() < numIndex || cachePivotsAmt == 0)
     {
             //----dump all old info
 
@@ -442,7 +441,7 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //    MPlug weightCheck(thisMObj, aUWeightsParentArray );
 //    unsigned int weightSize = weightCheck.numConnectedChildren();
 
-    if (allWeightsArray.size() < numIndex or cacheWeightsAmt == 0)
+    if (allWeightsArray.size() < numIndex || cacheWeightsAmt == 0)
     {
         MObject allWeightParentArrays[]= {
                                           aTWeightsParentArray,
@@ -575,7 +574,7 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 
 
 
-    if (allUAnimCurveWeights.size() < numIndex or cacheWeightCurvesAmt == 0)
+    if (allUAnimCurveWeights.size() < numIndex || cacheWeightCurvesAmt == 0)
     {
         if (weightMeshCheck == 1)
         {
@@ -719,7 +718,7 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             }
 
             // AnimCURVE
-            // the idea here is to fine the time range of all the keys and convert that to  0-1 range
+            // the idea here is to fine the time range of all the keys && convert that to  0-1 range
             // in a perfect world the time would only range 0-1
             // but because we might want to be remotely accurate
             // a larger range will be needed
@@ -730,8 +729,8 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             // say the parameter is .8 * 7 = 5.6
             // this means we will get the value of the anim curve at 5.6
 
-            // of course this only works if the frame range starts at 0 and goes to 6
-            // what happens when someone decides to start on frame 98.3 and ends 7 frames later?
+            // of course this only works if the frame range starts at 0 && goes to 6
+            // what happens when someone decides to start on frame 98.3 && ends 7 frames later?
             // you simply subtract 98.3, then, then do the steps above.
 
             // if stuff exists already then dump it
@@ -963,9 +962,9 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             //Make sure all vals is properly filled up
             for(i = 0; i < allVals[0].size(); i++ )
             {
-                if (allUAnimCurveWeights[mIndex][0].size() > i and allVAnimCurveWeights[mIndex][0].size() > i)
+                if (allUAnimCurveWeights[mIndex][0].size() > i && allVAnimCurveWeights[mIndex][0].size() > i)
                 {
-                    if (allUAnimCurveWeights[mIndex][0][i].size() >= idx+1 and allVAnimCurveWeights[mIndex][0][i].size() >= idx+1)
+                    if (allUAnimCurveWeights[mIndex][0][i].size() >= idx+1 && allVAnimCurveWeights[mIndex][0][i].size() >= idx+1)
                     {
                         allVals[0][i] = (allVals[0][i] *
                                          allUAnimCurveWeights[mIndex][0][i][idx] *
@@ -986,9 +985,9 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 
             for(i = 0; i < allVals[1].size(); i++ )
             {
-                if (allUAnimCurveWeights[mIndex][1].size() > i and allVAnimCurveWeights[mIndex][1].size() > i)
+                if (allUAnimCurveWeights[mIndex][1].size() > i && allVAnimCurveWeights[mIndex][1].size() > i)
                 {
-                    if (allUAnimCurveWeights[mIndex][1][i].size() >= idx+1 and allVAnimCurveWeights[mIndex][1][i].size() >= idx+1)
+                    if (allUAnimCurveWeights[mIndex][1][i].size() >= idx+1 && allVAnimCurveWeights[mIndex][1][i].size() >= idx+1)
                     {
                         allVals[1][i] = (allVals[1][i] *
                                          allUAnimCurveWeights[mIndex][1][i][idx] *
@@ -1029,12 +1028,12 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                 rW = std::accumulate(allVals[1].begin(),allVals[1].end(),0.0);
             }
         }
-        if (tW == 0 and rW == 0)
+        if (tW == 0 && rW == 0)
         {
             MitGeo.next();
             continue;
         }
-        // order the translates and rotates based on user preference
+        // order the translates && rotates based on user preference
         // if 0 translates fire first
         // if 1 rotates fire first
         if (deformationOrder == 0)
@@ -1435,7 +1434,7 @@ MStatus LHVectorDeformer::initialize() {
     ///////////////////////////////////////////
 
 
-    //////Affects outputs and inputs
+    //////Affects outputs && inputs
 
     MObject outputGeom = MPxDeformerNode::outputGeom;
 

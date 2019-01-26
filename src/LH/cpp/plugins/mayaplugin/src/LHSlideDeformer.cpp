@@ -1,6 +1,5 @@
 //    float myfloat = fabs(allWeightsArray[0][0][0].length());
 //    MGlobal::displayInfo(MString()+myfloat);
-#include <maya/MCppCompat.h>
 
 #include "LHSlideDeformer.h"
 
@@ -186,7 +185,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     MObject oSurface = data.inputValue(aSurface).asNurbsSurfaceTransformed();
     MObject oSurfaceBase = data.inputValue(aSurfaceBase).asNurbsSurfaceTransformed();
 
-    if (oSurface.isNull() or oSurfaceBase.isNull())
+    if (oSurface.isNull() || oSurfaceBase.isNull())
     {
         return MS::kSuccess;
     }
@@ -258,7 +257,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     // Weight Mesh
     MFnMesh fnWeightMesh(oWeightMesh);
 
-    if ((uCoord.size() < numIndex) or (cacheWeightMeshAmt == 0))
+    if ((uCoord.size() < numIndex) || (cacheWeightMeshAmt == 0))
     {
         MMeshIntersector fnWeightIntersector;
         fnWeightIntersector.create(oWeightMesh);
@@ -358,7 +357,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //    MGlobal::displayInfo(MString()+iterGeoCount);
 
     ////////////////////////////////////////////////////////////////////
-    //get multiValues and multi weights
+    //get multiValues&&multi weights
     ////////////////////////////////////////////////////////////////////
     // to keep the size of code small,
     // we will put all u,v,n,r values into an array
@@ -376,7 +375,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //    MPlug weightCheck(thisMObj, aUWeightsParentArray );
 //    unsigned int weightSize = weightCheck.numConnectedChildren();
 
-    if (allWeightsArray.size() < numIndex or cacheWeightsAmt == 0)
+    if (allWeightsArray.size() < numIndex || cacheWeightsAmt == 0)
     {
         MObject allWeightParentArrays[]= {aUWeightsParentArray,
                                           aVWeightsParentArray,
@@ -493,7 +492,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 
 
 
-    if (allUAnimCurveWeights.size() < numIndex or cacheWeightCurvesAmt == 0)
+    if (allUAnimCurveWeights.size() < numIndex || cacheWeightCurvesAmt == 0)
     {
         if (weightMeshCheck == 1)
         {
@@ -638,7 +637,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             }
 
             // AnimCURVE
-            // the idea here is to fine the time range of all the keys and convert that to  0-1 range
+            // the idea here is to fine the time range of all the keys&&convert that to  0-1 range
             // in a perfect world the time would only range 0-1
             // but because we might want to be remotely accurate
             // a larger range will be needed
@@ -649,8 +648,8 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             // say the parameter is .8 * 7 = 5.6
             // this means we will get the value of the anim curve at 5.6
 
-            // of course this only works if the frame range starts at 0 and goes to 6
-            // what happens when someone decides to start on frame 98.3 and ends 7 frames later?
+            // of course this only works if the frame range starts at 0&&goes to 6
+            // what happens when someone decides to start on frame 98.3&&ends 7 frames later?
             // you simply subtract 98.3, then, then do the steps above.
 
             // if stuff exists already then dump it
@@ -794,7 +793,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     ////////   get closest param infos (cache if specified)    ////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Caches out closest point functions for sliding """
-    if (slideUVBasePt.size() < numIndex or cacheParamsAmt == 0)
+    if (slideUVBasePt.size() < numIndex || cacheParamsAmt == 0)
     {
         MNurbsIntersector fnBaseIntersector;
         fnBaseIntersector.create(oSurfaceBase);
@@ -882,7 +881,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //In most situations you can cache the surface base
 
-    if (rotMatrix.size() < numIndex or cacheBaseAmt == 0)
+    if (rotMatrix.size() < numIndex || cacheBaseAmt == 0)
     {
 
 
@@ -1092,9 +1091,9 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             {
                 for(i = 0; i < allVals[0].size(); i++ )
                 {
-                    if (allUAnimCurveWeights[mIndex][0].size() > i and allVAnimCurveWeights[mIndex][0].size() > i)
+                    if (allUAnimCurveWeights[mIndex][0].size() > i&&allVAnimCurveWeights[mIndex][0].size() > i)
                     {
-                        if (allUAnimCurveWeights[mIndex][0][i].size() >= idx+1 and allVAnimCurveWeights[mIndex][0][i].size() >= idx+1)
+                        if (allUAnimCurveWeights[mIndex][0][i].size() >= idx+1&&allVAnimCurveWeights[mIndex][0][i].size() >= idx+1)
                         {
                             allVals[0][i] = (allVals[0][i] *
                                              allUAnimCurveWeights[mIndex][0][i][idx] *
@@ -1117,9 +1116,9 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             {
                 for(i = 0; i < allVals[1].size(); i++ )
                 {
-                    if (allUAnimCurveWeights[mIndex][1].size() > i and allVAnimCurveWeights[mIndex][1].size() > i)
+                    if (allUAnimCurveWeights[mIndex][1].size() > i&&allVAnimCurveWeights[mIndex][1].size() > i)
                     {
-                        if (allUAnimCurveWeights[mIndex][1][i].size() >= idx+1 and allVAnimCurveWeights[mIndex][1][i].size() >= idx+1)
+                        if (allUAnimCurveWeights[mIndex][1][i].size() >= idx+1&&allVAnimCurveWeights[mIndex][1][i].size() >= idx+1)
                         {
                             allVals[1][i] = (allVals[1][i] *
                                              allUAnimCurveWeights[mIndex][1][i][idx] *
@@ -1141,10 +1140,10 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             {
                 for(i = 0; i < allVals[2].size(); i++ )
                 {
-                    if (allUAnimCurveWeights[mIndex][2].size() > i and allVAnimCurveWeights[mIndex][2].size() > i)
+                    if (allUAnimCurveWeights[mIndex][2].size() > i&&allVAnimCurveWeights[mIndex][2].size() > i)
                     {
 
-                        if (allUAnimCurveWeights[mIndex][2][i].size() >= idx+1 and allVAnimCurveWeights[mIndex][2][i].size() >= idx+1)
+                        if (allUAnimCurveWeights[mIndex][2][i].size() >= idx+1&&allVAnimCurveWeights[mIndex][2][i].size() >= idx+1)
                         {
                             allVals[2][i] = (allVals[2][i] *
                                              allUAnimCurveWeights[mIndex][2][i][idx] *
@@ -1196,7 +1195,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                 nW = std::accumulate(allVals[2].begin(),allVals[2].end(),0.0);
             }
         }
-        if (uW == 0 and vW == 0 and nW == 0)
+        if (uW == 0&&vW == 0&&nW == 0)
         {
             MitGeo.next();
             continue;
@@ -1206,9 +1205,9 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
         slideUBasePointParam = 0.0;
         slideVBasePointParam = 0.0;
         //Avoid crashing because of std::vector array size missmatch
-        if (slideUVBasePt.size() < mIndex or slideUVBasePt[mIndex].length() < idx
-        or slideUBasePtParam.size() < mIndex or slideUBasePtParam[mIndex].size() < idx
-        or slideVBasePtParam.size() < mIndex or slideVBasePtParam[mIndex].size() < idx)
+        if (slideUVBasePt.size() < mIndex || slideUVBasePt[mIndex].length() < idx
+        || slideUBasePtParam.size() < mIndex || slideUBasePtParam[mIndex].size() < idx
+        || slideVBasePtParam.size() < mIndex || slideVBasePtParam[mIndex].size() < idx)
         {
                     MitGeo.next();
                     continue;
@@ -1220,7 +1219,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
         slideUBasePointParam = slideUBasePtParam[mIndex][idx];
         slideVBasePointParam = slideVBasePtParam[mIndex][idx];
 
-        // get min and max parameter
+        // get min&&max parameter
 
         slideUValue = uW;
         slideUCheck = slideUBasePointParam + slideUValue;
@@ -1233,7 +1232,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
         rotSlideUValue = slideUCheck;
         rotSlideVValue = slideVCheck;
         // UCheck
-        if ((slideUCheck > uMinParam) or (slideUCheck < uMaxParam))
+        if ((slideUCheck > uMinParam) || (slideUCheck < uMaxParam))
         {
             slideUBasePointParamValue = rotSlideUValue;
         }
@@ -1247,7 +1246,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
         }
 
         // VCheck
-        if ((slideVCheck > vMinParam) or (slideVCheck < vMaxParam))
+        if ((slideVCheck > vMinParam) || (slideVCheck < vMaxParam))
         {
             slideVBasePointParamValue = rotSlideVValue;
         }
@@ -1260,12 +1259,12 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             slideVBasePointParamValue = vMaxParam;
         }
 
-        // use U and V attributes to drive sliding on a surface
-        // if surface goes further than the surface, find the last point traveled over, get the tangent in that direction, and have the pt travel on in that vector forever
+        // use U&&V attributes to drive sliding on a surface
+        // if surface goes further than the surface, find the last point traveled over, get the tangent in that direction,&&have the pt travel on in that vector forever
 
-        //// U and V on surface
-        if ((slideUCheck > uMinParam or slideUCheck < uMaxParam) and
-                (slideVCheck > vMinParam or slideVCheck < vMaxParam))
+        //// U&&V on surface
+        if ((slideUCheck > uMinParam || slideUCheck < uMaxParam) &&
+                (slideVCheck > vMinParam || slideVCheck < vMaxParam))
         {
             fnSurface.getPointAtParam( slideUBasePointParamValue,
                                        slideVBasePointParamValue,
@@ -1358,7 +1357,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
 //            yAxisVec = xAxisVec ^ zAxisVec;
 //            yAxisVec.normalize();
 
-            if (baseEuler.size() < mIndex or baseEuler[mIndex].size() < idx)
+            if (baseEuler.size() < mIndex || baseEuler[mIndex].size() < idx)
             {
                 MitGeo.next();
                 continue;
@@ -1807,7 +1806,7 @@ MStatus LHSlideDeformer::initialize() {
 
 
 
-    //////Affects outputs and inputs
+    //////Affects outputs&&inputs
 
     MObject outputGeom = MPxDeformerNode::outputGeom;
 

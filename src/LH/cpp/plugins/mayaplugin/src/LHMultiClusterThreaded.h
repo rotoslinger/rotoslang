@@ -1,6 +1,5 @@
 #ifndef LHMULTICLUSTERTHREADED_H
 #define LHMULTICLUSTERTHREADED_H
-#define _MApiVersion
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>

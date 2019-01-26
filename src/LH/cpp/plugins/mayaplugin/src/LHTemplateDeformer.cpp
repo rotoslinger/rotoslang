@@ -10,7 +10,6 @@
 //==============================================================
 
 #include "LHTemplateDeformer.h"
-#include <maya/MFnPlugin.h>
 
 MTypeId LHTemplateDeformer::id(0x00008467);
 MObject LHTemplateDeformer::aAmount;

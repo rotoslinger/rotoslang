@@ -5,7 +5,7 @@
 // #include "LHRepulsorDeformer.h"
 // #include "LHGetDeformPoints.h"
 // #include "LHTemplateNode.h"
-// #include "LHWeightNode.h"
+#include "LHWeightNode.h"
 // #include "LHTemplateDeformer.h"
 // #include "LHMultiCluster.h"
 // #include "LHComputeDeformer.h"
@@ -41,8 +41,6 @@ MStatus initializePlugin(MObject obj) {
 //  status = plugin.registerNode("LHTemplateNode", LHTemplateNode::id, LHTemplateNode::creator, LHTemplateNode::initialize);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 //
-//  status = plugin.registerNode("LHWeightNode", LHWeightNode::id, LHWeightNode::creator, LHWeightNode::initialize);
-//  CHECK_MSTATUS_AND_RETURN_IT(status);
 //
 //  status = plugin.registerNode("LHTemplateDeformer", LHTemplateDeformer::id, LHTemplateDeformer::creator,
 //                               LHTemplateDeformer::initialize, MPxNode::kDeformerNode);
@@ -69,7 +67,8 @@ MStatus initializePlugin(MObject obj) {
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 
-
+  status = plugin.registerNode("LHWeightNode", LHWeightNode::id, LHWeightNode::creator, LHWeightNode::initialize);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode("LHCurveWeightNode", LHCurveWeightNode::id, LHCurveWeightNode::creator, LHCurveWeightNode::initialize);
   CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -147,8 +146,6 @@ MStatus uninitializePlugin(MObject obj) {
 //  status = plugin.deregisterNode(LHTemplateNode::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 //
-//  status = plugin.deregisterNode(LHWeightNode::id);
-//  CHECK_MSTATUS_AND_RETURN_IT(status);
 //
 //  status = plugin.deregisterNode(LHMultiCluster::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -164,6 +161,8 @@ MStatus uninitializePlugin(MObject obj) {
 //  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 
+ status = plugin.deregisterNode(LHWeightNode::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHCurveWeightNode::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);

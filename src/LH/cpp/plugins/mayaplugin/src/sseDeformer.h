@@ -17,7 +17,6 @@
 //      The weights are set using the set editor or the
 //      percent command.
 //
-#define _MApiVersion
 #include <string.h>
 #include <float.h> // for FLT_MAX
 #include <maya/MIOStream.h>

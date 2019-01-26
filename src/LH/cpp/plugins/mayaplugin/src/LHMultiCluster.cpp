@@ -10,7 +10,6 @@
 //==============================================================
 
 #include "LHMultiCluster.h"
-#include <maya/MFnPlugin.h>
 
 MTypeId LHMultiCluster::id(0x00328467);
 MObject LHMultiCluster::aInputs;

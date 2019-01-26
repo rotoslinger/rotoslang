@@ -1,6 +1,4 @@
 #pragma once
-#define _MApiVersion
-
 #include <string.h>
 #include <maya/MIOStream.h>
 #include <math.h>
@@ -10,7 +8,6 @@
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnEnumAttribute.h>
 
-#include <maya/MFnPlugin.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 #include <maya/MPlug.h>
@@ -106,7 +103,6 @@ class LHWeightNode : public MPxNode {
 };
 
 ///////////////////////////////////////////////////////////
-
 
 
 

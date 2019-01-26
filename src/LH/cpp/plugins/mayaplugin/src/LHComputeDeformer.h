@@ -1,8 +1,6 @@
 #ifndef _LHCOMPUTEDEFORMER_H
 #define _LHCOMPUTEDEFORMER_H
-#define _MApiVersion
 
-#include <maya/MCppCompat.h>
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>

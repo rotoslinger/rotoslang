@@ -1,8 +1,5 @@
 #ifndef _LHTEMPLATENODE_H
 #define _LHTEMPLATENODE_H
-#define _MApiVersion
-
-#include <maya/MCppCompat.h>
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>

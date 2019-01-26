@@ -126,10 +126,10 @@ MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
-        if ( inPlug.attribute() != aInputs
-        and inPlug.attribute() != aFactor
-        and inPlug.attribute() != aInputWeights
-        and inPlug.attribute() != aOperation)
+        if ( (inPlug.attribute() != aInputs)
+        & (inPlug.attribute() != aFactor)
+        & (inPlug.attribute() != aInputWeights)
+        & (inPlug.attribute() != aOperation))
         {
             return MS::kSuccess;
         }

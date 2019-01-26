@@ -1,5 +1,4 @@
 #include "LHRepulsorDeformer.h"
-#include <maya/MFnPlugin.h>
 
 MTypeId LHRepulsorDeformer::id(0x00002398);
 MObject LHRepulsorDeformer::aRepulsorMatrix;
