@@ -22,6 +22,7 @@
 #include <maya/MFnDoubleArrayData.h>
 #include <maya/MPlugArray.h>
 #include <maya/MString.h>
+#include <maya/MFnMesh.h>
 
 
 #include <math.h>
@@ -55,6 +56,14 @@ class LHCurveWeightNode : public MPxNode {
   static  MObject         aInputs;
 
   static  MObject         aOutputWeights;
+  static  MObject         aMembershipWeights;
+  static  MObject         aCacheMembershipWeights;
+  static  MObject         aInputMesh;
+  static  MObject         aProjectionMesh;
+  static  MObject         aCacheWeightMesh;
+
+  // Used for caching
+  MDoubleArray membershipWeights;
 
 
   inline MString FormatError( const MString &msg, const MString

@@ -1,12 +1,51 @@
+//============================================== NOTES ==============================================
+//========================================= WHY ANIM CURVES? ==============================================
+// The purpose of this node is to create area weights that are independent of point count, spacing, and order
+// The Anim Curve is used to manipulate this weighting, instead of an MRampAttribute for example, for a
+// number of reasons.
+//
+// First and formost, the dynamic creation and use of MRampAttributes are clunky at best, at worst they are
+// impossible to add as a dynamic array that can grow and shrink in size because they rely on the creation of an
+// AEAttributeEditorTemplate file to even be viewable in the attribute editor.
+//
+// Second, when planning out weights it is important to be able to visualize what multiple curves are doing
+// on top of each other so you can see how one fades out and one fades in.
+//
+// Lastly, and perhaps more important, is the controlability of animation curves are much higher than curves created
+// with the MRampAttribute.  You get handles and control over tangents, the option to unify or break handles and all of
+// the commands and classes that are used to create/manipulate animation curves.  You can easily copy them, add
+// points, mirror, flip, or even simplify them.
+//
+//============================================== Implementation ==============================================
+// The 2-Dimensional nature of the anim curve means that we need to convert them to be 3-Dimensional coordinates.
+// The easiest way of doing this is to project them onto a static mesh, or thinking of it in a different way, you
+// project the 3-d points to the 2-dimensional range of the curve.
+// This "projection" is accomplished by creating a mesh with a clean 0-1 uv range that can be "wrapped" around the
+// geometry.
+// The points are then "projected" to the mesh's UVs using a closest point calculation.
+// Once the UV coordinates for each point are known you have their location in 2-D space.
+// We know that Length x Width = Area.  If you think of the V coordinates as Length and U coordinates as Width,
+// the problem is already almost solved.
+// You also must remap the range of the curve to be in a 0-1 range, just like the UV coordinates.  Once the curve
+// Is in the 0-1 range, you can think of the U-V cordinate as a point in time.
+// You need to have an animation curve for both the U and the V, and you must evaluate both to get the final area.
+// The U curve is easiest to visualize as the direct influence, while the V curve can be seen as a falloff
+// This could easily be flipped, depending on the orientation of the points and what angle you are viewing in.
+//=================================================================================================================
 #include "LHCurveWeightNode.h"
 
-MTypeId LHCurveWeightNode::id(0x00043568);
+MTypeId LHCurveWeightNode::id(0x35443568);
 
 MObject LHCurveWeightNode::aOutputWeights;
 MObject LHCurveWeightNode::aInputs;
 MObject LHCurveWeightNode::aInputWeights;
 MObject LHCurveWeightNode::aFactor;
 MObject LHCurveWeightNode::aOperation;
+MObject LHCurveWeightNode::aMembershipWeights;
+MObject LHCurveWeightNode::aCacheMembershipWeights;
+MObject LHCurveWeightNode::aInputMesh;
+MObject LHCurveWeightNode::aProjectionMesh;
+MObject LHCurveWeightNode::aCacheWeightMesh;
 
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
@@ -18,6 +57,13 @@ MStatus LHCurveWeightNode::initialize()
     MFnCompoundAttribute cAttr;
     MFnEnumAttribute eAttr;
 
+
+    aInputMesh = tAttr.create("inMesh", "inmesh", MFnData::kMesh);
+    addAttribute(aInputMesh);
+
+    aProjectionMesh = tAttr.create("projectionMesh", "pmesh", MFnData::kMesh);
+    addAttribute(aProjectionMesh);
+
     /////// Attrs for compound
     aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
     nAttr.setKeyable(true);
@@ -26,6 +72,12 @@ MStatus LHCurveWeightNode::initialize()
     nAttr.setDefault(0.0);
     nAttr.setChannelBox(true);
     addAttribute(aFactor);
+
+    aMembershipWeights = tAttr.create("membershipWeights", "mweights", MFnNumericData::kDoubleArray);
+    tAttr.setKeyable(true);
+    tAttr.setArray(false);
+    tAttr.setUsesArrayDataBuilder(true);
+    addAttribute(aMembershipWeights);
 
     aInputWeights = tAttr.create("inputWeights", "iw", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
@@ -65,6 +117,27 @@ MStatus LHCurveWeightNode::initialize()
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aOutputWeights);
 
+    aCacheMembershipWeights = nAttr.create("cacheMembershipWeights", "cmweights", MFnNumericData::kInt);
+    nAttr.setKeyable(false);
+    nAttr.setMin(0);
+    nAttr.setMax(1);
+    nAttr.setDefault(1);
+    nAttr.setChannelBox(true);
+    addAttribute(aCacheMembershipWeights);
+
+    aCacheWeightMesh = nAttr.create("cacheWeightMesh", "cwmesh", MFnNumericData::kInt);
+    nAttr.setKeyable(false);
+    nAttr.setMin(0);
+    nAttr.setMax(1);
+    nAttr.setDefault(1);
+    nAttr.setChannelBox(true);
+    addAttribute(aCacheWeightMesh);
+
+    attributeAffects(aCacheWeightMesh, aOutputWeights);
+    attributeAffects(aInputMesh, aOutputWeights);
+    attributeAffects(aProjectionMesh, aOutputWeights);
+    attributeAffects(aCacheMembershipWeights, aOutputWeights);
+    attributeAffects(aMembershipWeights, aOutputWeights);
     attributeAffects(aOperation, aOutputWeights);
     attributeAffects(aInputWeights, aOutputWeights);
     attributeAffects(aInputs, aOutputWeights);
@@ -140,7 +213,43 @@ MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
         CheckStatusReturn( status, "Unable to get inputs" );
         unsigned int elemCount = inputsArrayHandle.elementCount(&status);
         CheckStatusReturn( status, "Unable to get number of inputs" );
+        MObject oInputMesh = data.inputValue(aInputMesh).asMeshTransformed();
+        if (oInputMesh.isNull())
+        {
+            CheckStatusReturn( status, "Unable to get inMesh" );
+        }
+        MObject oProjectionMesh = data.inputValue(aProjectionMesh).asMeshTransformed();
+        if (oProjectionMesh.isNull())
+        {
+            CheckStatusReturn( status, "Unable to get projectionMesh" );
+        }
+        MFnMesh mInputMesh(oInputMesh);
+        int numVerts = mInputMesh.numVertices();
+        MFnMesh mProjectionMesh(oProjectionMesh);
+
+        int iCacheMemberWeights = data.inputValue(aCacheMembershipWeights).asInt();
+        if (!membershipWeights.length() || membershipWeights.length() != numVerts || !iCacheMemberWeights)
+        {
+            // Get Membership Weights, these will be used to ignore non membership points
+            MDataHandle hMembershipArray = data.inputValue( LHCurveWeightNode::aMembershipWeights);
+            MObject oMemebershipArray = hMembershipArray.data();
+            MFnDoubleArrayData membershipData(oMemebershipArray);
+            MDoubleArray membershipWeights;
+            membershipData.copyTo(membershipWeights);
+        }
+
         MDoubleArray finalWeights;
+
+        // MPointOnMesh ptOnMesh;
+        // fnWeightIntersector.getClosestPoint(pt, ptOnMesh);
+        // weightPt = ptOnMesh.getPoint();
+        // fnWeightMesh.getUVAtPoint( weightPt, uvCoord,
+        //                             MSpace::kObject );
+
+
+        // float ucoord = uvCoord[0];
+        // float vcoord = uvCoord[1];
+
 
         for (int i=0;i < elemCount;i++)
         {
@@ -162,7 +271,6 @@ MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
             }
             else
                 finalWeights = LHCurveWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
-//            hInputArray.setClean();
 
         }
 
