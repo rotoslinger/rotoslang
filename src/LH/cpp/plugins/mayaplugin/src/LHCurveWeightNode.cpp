@@ -142,6 +142,7 @@ MStatus LHCurveWeightNode::initialize()
     attributeAffects(aInputs, aOutputWeights);
     attributeAffects(aFactor, aOutputWeights);
 
+
     return MStatus::kSuccess;
 }
 
@@ -203,6 +204,50 @@ MDoubleArray LHCurveWeightNode::doubleArrayMathOperation(MDoubleArray doubleArra
 }
 
 
+MStatus LHCurveWeightNode::getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh)
+{
+    
+    oInputMesh = data.inputValue(LHCurveWeightNode::aInputMesh).asMeshTransformed();
+    if (oInputMesh.isNull())
+    {
+        MGlobal::displayInfo(MString("Unable to get inMesh"));
+        return MS::kFailure;
+
+    }
+    oProjectionMesh = data.inputValue(LHCurveWeightNode::aProjectionMesh).asMeshTransformed();
+    if (oProjectionMesh.isNull())
+        MGlobal::displayInfo(MString("Unable to get projectionMesh"));
+        return MS::kFailure;
+    return MS::kSuccess;
+}
+
+MDoubleArray getMembershipWeights(MDataBlock& data, MDoubleArray membershipWeights, int numVerts, int iCacheMemberWeights)
+{
+    MDoubleArray rMembershipWeights;
+    if (!membershipWeights.length() || membershipWeights.length() != numVerts || !iCacheMemberWeights)
+    {
+        // Get Membership Weights, these will be used to ignore non membership points
+        MDataHandle hMembershipArray = data.inputValue( LHCurveWeightNode::aMembershipWeights);
+        MObject oMemebershipArray = hMembershipArray.data();
+        MFnDoubleArrayData membershipData(oMemebershipArray);
+        membershipData.copyTo(rMembershipWeights);
+        return rMembershipWeights;
+    }
+    else
+    {
+        return membershipWeights;
+    }
+}
+
+MStatus getWeightMeshData(MObject oProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh)
+{
+    // if (!membershipWeights.length() || membershipWeights.length() != numVerts || !iCacheMemberWeights)
+
+
+    return MS::kSuccess;
+
+}
+
 MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
 {
     MStatus status;
@@ -212,43 +257,25 @@ MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
         CheckStatusReturn( status, "Unable to get inputs" );
         unsigned int elemCount = inputsArrayHandle.elementCount(&status);
         CheckStatusReturn( status, "Unable to get number of inputs" );
-        MObject oInputMesh = data.inputValue(aInputMesh).asMeshTransformed();
-        if (oInputMesh.isNull())
-        {
-            CheckStatusReturn( status, "Unable to get inMesh" );
-        }
-        MObject oProjectionMesh = data.inputValue(aProjectionMesh).asMeshTransformed();
-        if (oProjectionMesh.isNull())
-        {
-            CheckStatusReturn( status, "Unable to get projectionMesh" );
-        }
+
+        // Get mesh objects
+        MObject oInputMesh;
+        MObject oProjectionMesh;
+        status = getMeshData(data, oInputMesh, oProjectionMesh);
+        CheckStatusReturn( status, "Unable to get meshes" );
         MFnMesh mInputMesh(oInputMesh);
         int numVerts = mInputMesh.numVertices();
         MFnMesh mProjectionMesh(oProjectionMesh);
 
+        // Get membership weights
         int iCacheMemberWeights = data.inputValue(aCacheMembershipWeights).asInt();
-        if (!membershipWeights.length() || membershipWeights.length() != numVerts || !iCacheMemberWeights)
-        {
-            // Get Membership Weights, these will be used to ignore non membership points
-            MDataHandle hMembershipArray = data.inputValue( LHCurveWeightNode::aMembershipWeights);
-            MObject oMemebershipArray = hMembershipArray.data();
-            MFnDoubleArrayData membershipData(oMemebershipArray);
-            MDoubleArray membershipWeights;
-            membershipData.copyTo(membershipWeights);
-        }
-
+        membershipWeights = getMembershipWeights(data, membershipWeights, numVerts, iCacheMemberWeights);
         MDoubleArray finalWeights;
 
-        // MPointOnMesh ptOnMesh;
-        // fnWeightIntersector.getClosestPoint(pt, ptOnMesh);
-        // weightPt = ptOnMesh.getPoint();
-        // fnWeightMesh.getUVAtPoint( weightPt, uvCoord,
-        //                             MSpace::kObject );
-
-
-        // float ucoord = uvCoord[0];
-        // float vcoord = uvCoord[1];
-
+        // Get projection mesh data
+        int iCacheWeightMesh = data.inputValue(aCacheWeightMesh).asInt();
+        status = getWeightMeshData(oProjectionMesh, uCoords, vCoords, numVerts, iCacheWeightMesh);
+        CheckStatusReturn( status, "Unable to get weight mesh" );
 
         for (int i=0;i < elemCount;i++)
         {
