@@ -17,16 +17,15 @@
 // points, mirror, flip, or even simplify them.
 //
 //============================================== Implementation ==============================================
-// The 2-Dimensional nature of the anim curve means that we need to convert them to be 3-Dimensional coordinates.
+// The 2-Dimensional nature of the anim curve means that we need to convert them to 3-Dimensional coordinates.
 // The easiest way of doing this is to project them onto a static mesh, or thinking of it in a different way, you
 // project the 3-d points to the 2-dimensional range of the curve.
 // This "projection" is accomplished by creating a mesh with a clean 0-1 uv range that can be "wrapped" around the
 // geometry.
 // The points are then "projected" to the mesh's UVs using a closest point calculation.
 // Once the UV coordinates for each point are known you have their location in 2-D space.
-// We know that Length x Width = Area.  If you think of the V coordinates as Length and U coordinates as Width,
-// the problem is already almost solved.
-// You also must remap the range of the curve to be in a 0-1 range, just like the UV coordinates.  Once the curve
+// We know that Length x Width = Area.  You can think of the V coordinates as Length and U coordinates as Width.
+// We must remap range of the curve to be 0-1, just like the UV coordinates.  Once the curve
 // Is in the 0-1 range, you can think of the U-V cordinate as a point in time.
 // You need to have an animation curve for both the U and the V, and you must evaluate both to get the final area.
 // The U curve is easiest to visualize as the direct influence, while the V curve can be seen as a falloff
