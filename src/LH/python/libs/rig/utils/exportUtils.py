@@ -50,7 +50,7 @@ class meshData():
         self.parent                         = ""
         self.__create()
 
-    def __check(self):
+    def check(self):
         tmp = cmds.listRelatives(self.name, parent = True)
         if tmp:
             self.parent = tmp[0]
@@ -100,7 +100,7 @@ class meshData():
         self.uv_count = [i for i in uv_counts]
         self.uv_id = [i for i in uv_ids]
 
-    def __write_dict(self):
+    def write_dict(self):
         self.mesh = {"name"            : self.name,
                      "numVertices"     : self.numVertices ,
                      "numPolygons"     : self.numPolygons ,
@@ -116,13 +116,13 @@ class meshData():
                      }
 
     def __create(self):
-        self.__check()
+        self.check()
         self.__get_num_verts()
         self.__get_num_polygons()
         self.__get_vert_array()
         self.__get_counts_connects()
         self.__get_UVs()
-        self.__write_dict()
+        self.write_dict()
 
 
 def createMesh(mesh_dict, name=None, parent=None):
@@ -224,7 +224,7 @@ class nurbsSurfaceData():
         self.parent                         = ""#---MObject
         self.__get_nurbs()
 
-    def __check(self):
+    def check(self):
         tmp = cmds.listRelatives(self.name, parent = True)
         if tmp:
             self.parent = tmp[0]
@@ -238,7 +238,7 @@ class nurbsSurfaceData():
             raise Exception(self.name + " is not a recognizable nurbsSurface")
             quit()
 
-    def __get_cvs(self):
+    def get_cvs(self):
         points = OpenMaya.MPointArray()
         self.fn_nurbs.getCVs(points, OpenMaya.MSpace.kWorld)
         for i in range(points.length()):
@@ -246,7 +246,7 @@ class nurbsSurfaceData():
                                          points[i].y,
                                          points[i].z))
 
-    def __get_knot_sequences(self):
+    def get_knot_sequences(self):
         u_knots = OpenMaya.MDoubleArray()
         v_knots = OpenMaya.MDoubleArray()
         self.fn_nurbs.getKnotsInU(u_knots)
@@ -254,15 +254,15 @@ class nurbsSurfaceData():
         self.uKnotSequences = [i for i in u_knots]
         self.vKnotSequences = [i for i in v_knots]
 
-    def __get_degrees(self):
+    def get_degrees(self):
         self.degreeInU = self.fn_nurbs.degreeU()
         self.degreeInV = self.fn_nurbs.degreeV()
 
-    def __get_forms(self):
+    def get_forms(self):
         self.form = self.fn_nurbs.formInU()
         self.formV = self.fn_nurbs.formInV()
 
-    def __write_dict(self):
+    def write_dict(self):
         self.nurbs = {"name"              : self.name,
                      "controlVertices"    : self.controlVertices ,
                      "uKnotSequences"     : self.uKnotSequences ,
@@ -277,12 +277,12 @@ class nurbsSurfaceData():
                       }
 
     def __get_nurbs(self):
-        self.__check()
-        self.__get_cvs()
-        self.__get_knot_sequences()
-        self.__get_degrees()
-        self.__get_forms()
-        self.__write_dict()
+        self.check()
+        self.get_cvs()
+        self.get_knot_sequences()
+        self.get_degrees()
+        self.get_forms()
+        self.write_dict()
 
 
 def createNurbsSurface(nurbs_dict, name=None, parent=None):
@@ -312,7 +312,7 @@ def createNurbsSurface(nurbs_dict, name=None, parent=None):
 
 class nurbsCurveData():
     # ===============================================================================
-    # CLASS:         return_nurbs_curve_info
+    # CLASS:         nurbsCurveData
     # DESCRIPTION:   returns information that can be used to rebuild a nurbsSurface
     # USAGE:         set args and run
     # RETURN:        nurbs
@@ -340,6 +340,7 @@ class nurbsCurveData():
         @param name:                        name of the curve you want to
                                             export
         """
+        if not name: name = cmds.ls(sl=True)[0]
 
         #---args
         self.name                           = name
@@ -352,9 +353,9 @@ class nurbsCurveData():
         self.degree                         = 0 #---unsigned Int
         self.form                           = None #---MFnNurbsSurface::Form
         self.parent                         = ""#---MObject
-        self.__get_nurbsCurve()
+        self.get_nurbsCurve()
 
-    def __check(self):
+    def check(self):
         tmp = cmds.listRelatives(self.name, parent = True)
         if tmp:
             self.parent = tmp[0]
@@ -370,7 +371,7 @@ class nurbsCurveData():
             raise Exception(self.name + " is not a recognizable nurbsCurve")
             quit()
 
-    def __get_cvs(self):
+    def get_cvs(self):
         points = OpenMaya.MPointArray()
         self.fn_nurbsCurve.getCVs(points, self.space)
         for i in range(points.length()):
@@ -378,18 +379,18 @@ class nurbsCurveData():
                                          points[i].y,
                                          points[i].z))
 
-    def __get_knot_sequences(self):
+    def get_knot_sequences(self):
         knots = OpenMaya.MDoubleArray()
         self.fn_nurbsCurve.getKnots(knots)
         self.knots = [i for i in knots]
 
-    def __get_degrees(self):
+    def get_degrees(self):
         self.degree = self.fn_nurbsCurve.degree()
 
-    def __get_forms(self):
+    def get_forms(self):
         self.form = self.fn_nurbsCurve.form()
 
-    def __write_dict(self):
+    def write_dict(self):
         self.nurbsCurve = {"name"              : self.name,
                            "controlVertices"   : self.controlVertices ,
                            "knots"             : self.knots ,
@@ -399,16 +400,16 @@ class nurbsCurveData():
                            "type"              : "nurbsCurve"
                            }
 
-    def __get_nurbsCurve(self):
-        self.__check()
-        self.__get_cvs()
-        self.__get_knot_sequences()
-        self.__get_degrees()
-        self.__get_forms()
-        self.__write_dict()
+    def get_nurbsCurve(self):
+        self.check()
+        self.get_cvs()
+        self.get_knot_sequences()
+        self.get_degrees()
+        self.get_forms()
+        self.write_dict()
 
 
-def create_curve(curve_dict, name=None, parent=None):
+def create_curve(curve_dict, name=None, parent=None, color=None):
     #put everything back into m arrays
     #verts
     controlVertices = OpenMaya.MPointArray()
@@ -426,7 +427,19 @@ def create_curve(curve_dict, name=None, parent=None):
                           False,
                           )
     parentNameNewGeo(curve_dict, name, new_nurbsCurve, parent)
+    color(new_nurbsCurve, color)
     return new_nurbsCurve
+
+def color(shapeNode, color = [255,255,255]):
+    if not color:
+        return
+    cmds.setAttr(shapeNode.fullPathName() + ".overrideRGBColors", True)
+    cmds.setAttr(shapeNode.fullPathName() + ".overrideEnabled", True)
+    cmds.setAttr(shapeNode.fullPathName() + ".overrideColor", 1)
+
+    cmds.setAttr(shapeNode.fullPathName() + ".overrideColorR", color[0])
+    cmds.setAttr(shapeNode.fullPathName() + ".overrideColorG", color[1])
+    cmds.setAttr(shapeNode.fullPathName() + ".overrideColorB", color[2])
 
 def create_curve_2(curve_dict, name=None, parent=None):
     parentNode = OpenMaya.MSelectionList()

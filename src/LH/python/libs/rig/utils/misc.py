@@ -1854,7 +1854,8 @@ def cleanup_skel():
 
 
 # a function to print and format point positions for gl drawings in python
-def printPointsPY(object):
+def printPointsPY(object=None):
+    if not object: object = cmds.ls(sl=True)[0]
 #     curve = cmds.listRelatives(object, type = "nurbsCurve", )
     curveNode = OpenMaya.MSelectionList()
     curveNode.add(object)
