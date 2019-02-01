@@ -168,62 +168,6 @@ MStatus LHWeightNode::computeFloatArray(MDataBlock& data)
     return MS::kSuccess;
 }
 
-// MStatus LHWeightNode::multiplyKFloatArrayByVal(MFloatArray &rFloatArray, double val)
-// {
-//     int len = rFloatArray.length();
-//     if (!len)
-//     {
-//         return MS::kFailure;
-//     }
-//     for (int i= 0; i < len; ++i)
-//     {
-//         rFloatArray[i] = rFloatArray[i] * val;
-//     }
-//     return MS::kSuccess;
-// }
-
-
-// MFloatArray LHWeightNode::floatArrayMathOperation(MFloatArray floatArray1,
-//                                                     MFloatArray floatArray2,
-//                                                     short operation)
-// {
-//     MFloatArray rFloatArray;
-//     int length1 = floatArray1.length();
-//     int length2 = floatArray2.length();
-//     if (length1 != length2)
-//     {
-//         return rFloatArray;
-//     }
-//     for (int i=0;i < length1;i++)
-//     {
-
-//         switch( operation )
-//         {
-//             case 0 : // add
-//                 rFloatArray.append(floatArray1[i] + floatArray2[i]);
-//                 break;
-//             case 1 : // subtract
-//                 rFloatArray.append(floatArray1[i] - floatArray2[i]);
-//                 break;
-//             case 2 : // multiply
-//                 rFloatArray.append(floatArray1[i] * floatArray2[i]);
-//                 break;
-//             case 3 : // divide
-//                 if (floatArray1[i] == 0.0)
-//                 {
-//                     floatArray1[i] = .00001;
-//                 }
-//                 if (floatArray2[i] == 0.0)
-//                 {
-//                     floatArray2[i] = .00001;
-//                 }
-//                 rFloatArray.append(floatArray1[i] / floatArray2[i]);
-//                 break;
-//         }
-//     }
-//     return rFloatArray;
-// }
-
 void dirtyPlug(MPlug const & inPlug, MPlugArray  & affectedPlugs, MPlug outArrayPlug)
 {
     if (inPlug.isElement())
@@ -327,20 +271,13 @@ MStatus LHWeightNode::initialize()
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aOutputWeightsDoubleArray);
 
-
-
-
-
-
     attributeAffects(aOperation, aOutputWeightsDoubleArray);
     attributeAffects(aInputWeights, aOutputWeightsDoubleArray);
     attributeAffects(aInputs, aOutputWeightsDoubleArray);
     attributeAffects(aFactor, aOutputWeightsDoubleArray);
 
-
-
     aOutWeights = nAttr.create("outFloatWeights", "outflw", MFnNumericData::kFloat, 0.0);
-    nAttr.setKeyable(true);
+    nAttr.setKeyable(false);
     nAttr.setArray(true);
     nAttr.setWritable(true);
     nAttr.setStorable(true);
@@ -354,7 +291,7 @@ MStatus LHWeightNode::initialize()
     cAttr.setArray(true);
     cAttr.setChannelBox(true);
     cAttr.setConnectable(true);
-    cAttr.setKeyable(true);
+    cAttr.setKeyable(false);
     cAttr.setReadable(true);
     cAttr.setInternal(true);
     cAttr.setIndexMatters(true);
@@ -365,11 +302,6 @@ MStatus LHWeightNode::initialize()
     attributeAffects(aInputWeights, aOutputWeightsFloatArray);
     attributeAffects(aInputs, aOutputWeightsFloatArray);
     attributeAffects(aFactor, aOutputWeightsFloatArray);
-
-
-
-
-
 
     return MStatus::kSuccess;
 }

@@ -44,6 +44,7 @@ class LHCurveWeightNode : public MPxNode
                                                   short operation);
     virtual MStatus getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh);
     MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
+    virtual SchedulingType schedulingType()const{return kParallel;}
 
     static void *creator();
     static MStatus initialize();

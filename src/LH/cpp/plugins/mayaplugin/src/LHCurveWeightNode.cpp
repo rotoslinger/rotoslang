@@ -45,6 +45,8 @@ MObject LHCurveWeightNode::aCacheMembershipWeights;
 MObject LHCurveWeightNode::aInputMesh;
 MObject LHCurveWeightNode::aProjectionMesh;
 MObject LHCurveWeightNode::aCacheWeightMesh;
+MObject LHCurveWeightNode::aOutputWeightsFloatArray;
+MObject LHCurveWeightNode::aOutWeights;
 
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
@@ -109,7 +111,7 @@ MStatus LHCurveWeightNode::initialize()
     addAttribute(aInputs);
 
     aOutputWeights = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
-    tAttr.setKeyable(true);
+    tAttr.setKeyable(false);
     tAttr.setArray(false);
     tAttr.setWritable(true);
     tAttr.setStorable(true);
@@ -243,7 +245,7 @@ MDoubleArray getMembershipWeights(MDataBlock& data, MDoubleArray membershipWeigh
 
 MStatus LHCurveWeightNode::getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh)
 {
-    if (!uCoords.length() || uCoords.length() != numVerts || vCoords.length() || vCoords.length() != numVerts || !iCacheWeightMesh)
+    if (!uCoords.length() || uCoords.length() != numVerts || !vCoords.length() || vCoords.length() != numVerts || !iCacheWeightMesh)
     {
         fnWeightIntersector.create(oProjectionMesh);
         if (uCoords.length())
@@ -260,7 +262,6 @@ MStatus LHCurveWeightNode::getWeightMeshData(MObject oProjectionMesh, MFnMesh *m
         }
     }
     return MS::kSuccess;
-
 }
 
 MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
@@ -294,8 +295,6 @@ MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
 
         for (int i=0;i < elemCount;i++)
         {
-            MGlobal::displayInfo(MString("UPDATING"));
-
             status = inputsArrayHandle.jumpToElement(i);
             CheckStatusReturn( status, "Unable to jump to input element" );
             double dAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFactor ).asDouble();
