@@ -43,6 +43,10 @@ set(SOURCE_FILES
 	"LHCurveRollDeformer.h"
 	"LHCurveWeightNode.cpp"
 	"LHCurveWeightNode.h"
+	"LHKDoubleArrayToKFloatArray.cpp"
+	"LHKDoubleArrayToKFloatArray.h"
+	"LHWeightNodeFloat.cpp"
+	"LHWeightNodeFloat.h"
 
 
 

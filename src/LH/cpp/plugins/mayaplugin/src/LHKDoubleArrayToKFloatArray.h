@@ -1,5 +1,5 @@
-#ifndef _LHWEIGHTNODEFLOAT_H
-#define _LHWEIGHTNODEFLOAT_H
+#ifndef _LHDOUBLEARRAYTOKFLOATARRAY_H
+#define _LHDOUBLEARRAYTOKFLOATARRAY_H
 
 #include <string.h>
 #include <maya/MIOStream.h>
@@ -9,6 +9,7 @@
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnEnumAttribute.h>
+
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 #include <maya/MPlug.h>
@@ -19,50 +20,40 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNumericData.h>
-#include <maya/MFnFloatArrayData.h>
+#include <maya/MFnDoubleArrayData.h>
 #include <maya/MPlugArray.h>
 #include <maya/MString.h>
-#include <maya/MFloatArray.h>
-
+#include <maya/MObjectArray.h>
 
 #include <math.h>
 
-#define McheckErr(stat,msg)             \
-        if ( MS::kSuccess != stat ) {   \
-                cerr << msg;            \
-                return MS::kFailure;    \
-        }
 
-class LHWeightNodeFloat : public MPxNode {
+class LHKDoubleArrayToKFloatArray : public MPxNode {
  public:
-  LHWeightNodeFloat() {};
+  LHKDoubleArrayToKFloatArray() {};
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
   virtual MStatus setDependentsDirty(MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs);
-
-  virtual MStatus multiplyKFloatArrayByVal(MFloatArray &rFloatArray,
-                                         double val);
-  virtual MFloatArray floatArrayMathOperation(MFloatArray floatArray1,
-                                                MFloatArray floatArray2,
-                                                short operation);
   static void* creator();
   static MStatus initialize();
 
   static MTypeId id;
 
-  static  MObject         aInputWeights;
-  static  MObject         aFactor;
-  static  MObject         aOperation;
-  static  MObject         aInputs;
+  static  MObject         aInWeights;
+  static  MObject         aOutWeights;
+  static  MObject         aOutWeightList;
+  static  MObject         aBias;
+  static  MObject         aBiasOut;
 
-  static  MObject         aOutputWeights;
-  static  MObject         aWeightList;
 
+
+  //Output
+//  static MObject aOutputWeights;
 
   inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
-        MString txt( "[LHWeightNodeFloat] " );
+        MString txt( "[LHKDoubleArrayToKFloatArray] " );
         txt += msg ;
         txt += ", File: ";
         txt += sourceFile;

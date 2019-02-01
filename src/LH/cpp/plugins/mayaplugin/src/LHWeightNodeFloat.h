@@ -9,6 +9,8 @@
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnEnumAttribute.h>
+
+#include <maya/MFnPlugin.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 #include <maya/MPlug.h>
@@ -26,12 +28,6 @@
 
 
 #include <math.h>
-
-#define McheckErr(stat,msg)             \
-        if ( MS::kSuccess != stat ) {   \
-                cerr << msg;            \
-                return MS::kFailure;    \
-        }
 
 class LHWeightNodeFloat : public MPxNode {
  public:

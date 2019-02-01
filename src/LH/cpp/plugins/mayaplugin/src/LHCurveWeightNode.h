@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LHCURVEWEIGHTNODE_H
+#define _LHCURVEWEIGHTNODE_H
 
 #include <string.h>
 #include <maya/MIOStream.h>
@@ -24,16 +25,9 @@
 #include <maya/MString.h>
 #include <maya/MFnMesh.h>
 #include <maya/MFloatArray.h>
-
+#include <maya/MMeshIntersector.h>
 
 #include <math.h>
-
-#define McheckErr(stat, msg)  \
-    if (MS::kSuccess != stat) \
-    {                         \
-        cerr << msg;          \
-        return MS::kFailure;  \
-    }
 
 class LHCurveWeightNode : public MPxNode
 {
@@ -49,6 +43,7 @@ class LHCurveWeightNode : public MPxNode
                                                   MDoubleArray doubleArray2,
                                                   short operation);
     virtual MStatus getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh);
+    MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
 
     static void *creator();
     static MStatus initialize();
@@ -70,7 +65,11 @@ class LHCurveWeightNode : public MPxNode
     // Used for caching
     MDoubleArray membershipWeights;
     MFloatArray uCoords, vCoords;
-
+    MPointOnMesh ptOnMesh;
+    MPoint weightPt;
+    float2 uvCoord;
+    MMeshIntersector fnWeightIntersector;
+    MPoint pt;
     inline MString FormatError(const MString &msg, const MString &sourceFile, const int &sourceLine)
     {
         MString txt("[LHCurveWeightNode] ");
@@ -81,38 +80,39 @@ class LHCurveWeightNode : public MPxNode
         txt += sourceLine;
         return txt;
     }
-#define Error(msg)                                            \
-    {                                                         \
-        MString __txt = FormatError(msg, __FILE__, __LINE__); \
-        MGlobal::displayError(__txt);                         \
-        cerr << endl                                          \
-             << "Error: " << __txt;                           \
-    }
+    #define Error(msg)                                            \
+        {                                                         \
+            MString __txt = FormatError(msg, __FILE__, __LINE__); \
+            MGlobal::displayError(__txt);                         \
+            cerr << endl                                          \
+                << "Error: " << __txt;                           \
+        }
 
-#define CheckBool(result) \
-    if (!(result))        \
-    {                     \
-        Error(#result);   \
-    }
+    #define CheckBool(result) \
+        if (!(result))        \
+        {                     \
+            Error(#result);   \
+        }
 
-#define CheckStatus(stat, msg) \
-    if (!stat)                 \
-    {                          \
-        Error(msg);            \
-    }
+    #define CheckStatus(stat, msg) \
+        if (!stat)                 \
+        {                          \
+            Error(msg);            \
+        }
 
-#define CheckObject(obj, msg) \
-    if (obj.isNull())         \
-    {                         \
-        Error(msg);           \
-    }
+    #define CheckObject(obj, msg) \
+        if (obj.isNull())         \
+        {                         \
+            Error(msg);           \
+        }
 
-#define CheckStatusReturn(stat, msg) \
-    if (!stat)                       \
-    {                                \
-        Error(msg);                  \
-        return stat;                 \
-    }
+    #define CheckStatusReturn(stat, msg) \
+        if (!stat)                       \
+        {                                \
+            Error(msg);                  \
+            return stat;                 \
+        }
 };
 
 ///////////////////////////////////////////////////////////
+#endif

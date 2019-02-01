@@ -21,6 +21,8 @@
 #include "LHVectorDeformer.h"
 #include "LHCurveRollDeformer.h"
 #include "LHCurveWeightNode.h"
+#include "LHKDoubleArrayToKFloatArray.h"
+#include "LHWeightNodeFloat.h"
 
 // #include "nullMatrixTransform.h"
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
@@ -66,8 +68,19 @@ MStatus initializePlugin(MObject obj) {
 //		  LHMultiClusterThreaded::initialize, MPxNode::kDeformerNode );
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+  status = plugin.registerNode("LHWeightNodeFloat",
+                               LHWeightNodeFloat::id,
+                               LHWeightNodeFloat::creator,
+                               LHWeightNodeFloat::initialize);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode("LHWeightNode", LHWeightNode::id, LHWeightNode::creator, LHWeightNode::initialize);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode("LHKDoubleArrayToKFloatArray",
+                               LHKDoubleArrayToKFloatArray::id,
+                               LHKDoubleArrayToKFloatArray::creator,
+                               LHKDoubleArrayToKFloatArray::initialize);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode("LHCurveWeightNode", LHCurveWeightNode::id, LHCurveWeightNode::creator, LHCurveWeightNode::initialize);
@@ -161,8 +174,15 @@ MStatus uninitializePlugin(MObject obj) {
 //  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 
+ status = plugin.deregisterNode(LHWeightNodeFloat::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
  status = plugin.deregisterNode(LHWeightNode::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.deregisterNode(LHKDoubleArrayToKFloatArray::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHCurveWeightNode::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);

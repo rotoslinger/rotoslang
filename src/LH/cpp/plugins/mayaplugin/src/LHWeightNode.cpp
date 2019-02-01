@@ -2,7 +2,10 @@
 
 MTypeId LHWeightNode::id(0x00093019);
 
-MObject LHWeightNode::aOutputWeights;
+MObject LHWeightNode::aOutputWeightsDoubleArray;
+MObject LHWeightNode::aOutputWeightsFloatArray;
+MObject LHWeightNode::aOutWeights;
+
 MObject LHWeightNode::aInputs;
 MObject LHWeightNode::aInputWeights;
 MObject LHWeightNode::aFactor;
@@ -72,56 +75,184 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
 MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 {
     MStatus status;
-    if( plug == LHWeightNode::aOutputWeights)
+    if( plug == LHWeightNode::aOutputWeightsDoubleArray)
     {
-        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHWeightNode::aInputs, &status));
-        CheckStatusReturn( status, "Unable to get inputs" );
-        unsigned int elemCount = inputsArrayHandle.elementCount(&status);
-        CheckStatusReturn( status, "Unable to get number of inputs" );
-        MDoubleArray finalWeights;
-
-        for (int i=0;i < elemCount;i++)
-        {
-            MGlobal::displayInfo(MString("UPDATING"));
-
-            status = inputsArrayHandle.jumpToElement(i);
-            CheckStatusReturn( status, "Unable to jump to input element" );
-            double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aFactor ).asDouble();
-            short operation = inputsArrayHandle.inputValue().child( LHWeightNode::aOperation ).asShort();
-            MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHWeightNode::aInputWeights);
-            MObject oInputArray = hInputArray.data();
-            MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
-            MDoubleArray tempWeights;
-            dataDoubleArrayFn.copyTo(tempWeights);
-            LHWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
-            if (!finalWeights.length())
-            {
-                finalWeights = tempWeights;
-            }
-            else
-                finalWeights = LHWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
-//            hInputArray.setClean();
-
-        }
-
-        ////////Set the final weights
-        MFnDoubleArrayData outputDoubleArrayFn;
-        MObject oOutputArray = outputDoubleArrayFn.create(finalWeights);
-        MDataHandle handle = data.outputValue(LHWeightNode::aOutputWeights);
-        handle.setMObject(oOutputArray);
-
-//        MGlobal::displayInfo(MString("DEBUG:  UPDATING ") + status);
-
-        if (oOutputArray.isNull())
-        {
-            MGlobal::displayInfo(MString("The output is NULL"));
-            return MS::kSuccess;
-        }
+        LHWeightNode::computeDoubleArray(data);
     }
-
+    if( plug == LHWeightNode::aOutputWeightsFloatArray)
+    {
+        LHWeightNode::computeFloatArray(data);
+    }
     return MS::kSuccess;
 }
 
+MStatus LHWeightNode::computeDoubleArray(MDataBlock& data)
+{
+    MDoubleArray finalWeights;
+    MStatus status = LHWeightNode::getWeightsFromInputs(data, finalWeights);
+    CheckStatusReturn( status, "Unable to get weights" );
+
+    ////////Set the final weights
+    MFnDoubleArrayData outputDoubleArrayFn;
+    MObject oOutputArray = outputDoubleArrayFn.create(finalWeights);
+    MDataHandle handle = data.outputValue(LHWeightNode::aOutputWeightsDoubleArray);
+    handle.setMObject(oOutputArray);
+
+    if (oOutputArray.isNull())
+    {
+        MGlobal::displayInfo(MString("The output is NULL"));
+        return MS::kSuccess;
+    }
+}
+
+MStatus LHWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray &finalWeights)
+{
+    MStatus status;
+    MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHWeightNode::aInputs, &status));
+    CheckStatusReturn( status, "Unable to get inputs" );
+    unsigned int elemCount = inputsArrayHandle.elementCount(&status);
+    CheckStatusReturn( status, "Unable to get number of inputs" );
+    // MDoubleArray finalWeights;
+
+    for (int i=0;i < elemCount;i++)
+    {
+        status = inputsArrayHandle.jumpToElement(i);
+        CheckStatusReturn( status, "Unable to jump to input element" );
+        double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aFactor ).asDouble();
+        short operation = inputsArrayHandle.inputValue().child( LHWeightNode::aOperation ).asShort();
+        MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHWeightNode::aInputWeights);
+        MObject oInputArray = hInputArray.data();
+        MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
+        MDoubleArray tempWeights;
+        dataDoubleArrayFn.copyTo(tempWeights);
+        LHWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
+        if (!finalWeights.length())
+        {
+            finalWeights = tempWeights;
+        }
+        else
+            finalWeights = LHWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
+    }
+    if (finalWeights.length() && finalWeights.length() != 0)
+        return MS::kSuccess;
+    else
+        return MS::kFailure;
+
+}
+
+MStatus LHWeightNode::computeFloatArray(MDataBlock& data)
+{
+    MDoubleArray finalWeights;
+    MStatus status = LHWeightNode::getWeightsFromInputs(data, finalWeights);
+    CheckStatusReturn( status, "Unable to get weights" );
+    
+    MObject thisNode = thisMObject();
+    MPlug parent( thisNode, LHWeightNode::aOutputWeightsFloatArray) ;
+    MPlug parentElement;
+
+    for (unsigned int j = 0; j < parent.numElements(); ++j)
+    {
+        parentElement = parent.elementByLogicalIndex(j, &status);
+        CheckStatusReturn( status, "Unable to get unable to get parentElement" );
+
+        MPlug child = parentElement.child(LHWeightNode::aOutWeights, &status);
+        CheckStatusReturn( status, "Unable to get unable to get child" );
+
+        for (unsigned int i = 0; i < finalWeights.length(); ++i)
+        {
+            MPlug childWeight = child.elementByLogicalIndex(i);
+            float val = (float) finalWeights[i];
+            status = childWeight.setValue(val);
+        }
+    }
+    return MS::kSuccess;
+}
+
+// MStatus LHWeightNode::multiplyKFloatArrayByVal(MFloatArray &rFloatArray, double val)
+// {
+//     int len = rFloatArray.length();
+//     if (!len)
+//     {
+//         return MS::kFailure;
+//     }
+//     for (int i= 0; i < len; ++i)
+//     {
+//         rFloatArray[i] = rFloatArray[i] * val;
+//     }
+//     return MS::kSuccess;
+// }
+
+
+// MFloatArray LHWeightNode::floatArrayMathOperation(MFloatArray floatArray1,
+//                                                     MFloatArray floatArray2,
+//                                                     short operation)
+// {
+//     MFloatArray rFloatArray;
+//     int length1 = floatArray1.length();
+//     int length2 = floatArray2.length();
+//     if (length1 != length2)
+//     {
+//         return rFloatArray;
+//     }
+//     for (int i=0;i < length1;i++)
+//     {
+
+//         switch( operation )
+//         {
+//             case 0 : // add
+//                 rFloatArray.append(floatArray1[i] + floatArray2[i]);
+//                 break;
+//             case 1 : // subtract
+//                 rFloatArray.append(floatArray1[i] - floatArray2[i]);
+//                 break;
+//             case 2 : // multiply
+//                 rFloatArray.append(floatArray1[i] * floatArray2[i]);
+//                 break;
+//             case 3 : // divide
+//                 if (floatArray1[i] == 0.0)
+//                 {
+//                     floatArray1[i] = .00001;
+//                 }
+//                 if (floatArray2[i] == 0.0)
+//                 {
+//                     floatArray2[i] = .00001;
+//                 }
+//                 rFloatArray.append(floatArray1[i] / floatArray2[i]);
+//                 break;
+//         }
+//     }
+//     return rFloatArray;
+// }
+
+void dirtyPlug(MPlug const & inPlug, MPlugArray  & affectedPlugs, MPlug outArrayPlug)
+{
+    if (inPlug.isElement())
+    {
+        // First dirty the output output element first.
+        // Of course, dirty output element itself
+        MPlug elemPlug = outArrayPlug.elementByLogicalIndex(
+                                            inPlug.logicalIndex());
+        affectedPlugs.append(elemPlug);
+
+        // We also need to dirty the parent.
+        //
+        affectedPlugs.append(outArrayPlug);
+    }
+    else
+    {
+        // Mark the parent output plug as dirty.
+        //
+        affectedPlugs.append(outArrayPlug);
+
+        // Also visit each element.
+        //
+        unsigned int i,n = outArrayPlug.numElements();
+        for (i = 0; i < n; i++) {
+            MPlug elemPlug = outArrayPlug.elementByPhysicalIndex(i);
+            affectedPlugs.append(elemPlug);
+        }
+    }
+}
 
 MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
@@ -129,39 +260,18 @@ MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
         if ( (inPlug.attribute() != aInputs)
         & (inPlug.attribute() != aFactor)
         & (inPlug.attribute() != aInputWeights)
+        // & (inPlug.attribute() != aOutWeights)
         & (inPlug.attribute() != aOperation))
         {
             return MS::kSuccess;
         }
+        MPlug outArrayPlug(thisMObject(), aOutputWeightsDoubleArray);
+        dirtyPlug(inPlug, affectedPlugs, outArrayPlug);
+        MPlug outArrayPlugFloat(thisMObject(), aOutputWeightsFloatArray);
+        dirtyPlug(inPlug, affectedPlugs, outArrayPlugFloat);
 
-        MPlug outArrayPlug(thisMObject(), aOutputWeights);
-
-        if (inPlug.isElement()) {
-            // First dirty the output output element first.
-            // Of course, dirty output element itself
-            MPlug elemPlug = outArrayPlug.elementByLogicalIndex(
-                                                inPlug.logicalIndex());
-            affectedPlugs.append(elemPlug);
-
-            // We also need to dirty the parent.
-            //
-            affectedPlugs.append(outArrayPlug);
-        } else {
-            // Mark the parent output plug as dirty.
-            //
-            affectedPlugs.append(outArrayPlug);
-
-            // Also visit each element.
-            //
-            unsigned int i,n = outArrayPlug.numElements();
-            for (i = 0; i < n; i++) {
-                MPlug elemPlug = outArrayPlug.elementByPhysicalIndex(i);
-                affectedPlugs.append(elemPlug);
-            }
-        }
         return MS::kSuccess;
     }
-
 
 MStatus LHWeightNode::initialize()
 {
@@ -209,18 +319,57 @@ MStatus LHWeightNode::initialize()
     cAttr.setChannelBox(true);
     addAttribute(aInputs);
 
-    aOutputWeights = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
-    tAttr.setKeyable(true);
+    aOutputWeightsDoubleArray = tAttr.create("outWeightsDoubleArray", "owd", MFnNumericData::kDoubleArray);
+    tAttr.setKeyable(false);
     tAttr.setArray(false);
     tAttr.setWritable(true);
     tAttr.setStorable(true);
     tAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aOutputWeights);
+    addAttribute(aOutputWeightsDoubleArray);
 
-    attributeAffects(aOperation, aOutputWeights);
-    attributeAffects(aInputWeights, aOutputWeights);
-    attributeAffects(aInputs, aOutputWeights);
-    attributeAffects(aFactor, aOutputWeights);
+
+
+
+
+
+    attributeAffects(aOperation, aOutputWeightsDoubleArray);
+    attributeAffects(aInputWeights, aOutputWeightsDoubleArray);
+    attributeAffects(aInputs, aOutputWeightsDoubleArray);
+    attributeAffects(aFactor, aOutputWeightsDoubleArray);
+
+
+
+    aOutWeights = nAttr.create("outFloatWeights", "outflw", MFnNumericData::kFloat, 0.0);
+    nAttr.setKeyable(true);
+    nAttr.setArray(true);
+    nAttr.setWritable(true);
+    nAttr.setStorable(true);
+    nAttr.setInternal(true);
+    nAttr.setIndexMatters(true);
+    nAttr.setUsesArrayDataBuilder(true);
+
+    aOutputWeightsFloatArray = cAttr.create("outWeightsFloatArray", "wlf");
+    cAttr.addChild( aOutWeights );
+    cAttr.setHidden(false);
+    cAttr.setArray(true);
+    cAttr.setChannelBox(true);
+    cAttr.setConnectable(true);
+    cAttr.setKeyable(true);
+    cAttr.setReadable(true);
+    cAttr.setInternal(true);
+    cAttr.setIndexMatters(true);
+    cAttr.setUsesArrayDataBuilder(true);
+    addAttribute(aOutputWeightsFloatArray);
+
+    attributeAffects(aOperation, aOutputWeightsFloatArray);
+    attributeAffects(aInputWeights, aOutputWeightsFloatArray);
+    attributeAffects(aInputs, aOutputWeightsFloatArray);
+    attributeAffects(aFactor, aOutputWeightsFloatArray);
+
+
+
+
+
 
     return MStatus::kSuccess;
 }

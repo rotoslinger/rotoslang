@@ -19,17 +19,14 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNumericData.h>
 #include <maya/MFnDoubleArrayData.h>
+#include <maya/MFnFloatArrayData.h>
 #include <maya/MPlugArray.h>
 #include <maya/MString.h>
+#include <maya/MFloatArray.h>
 
 
 #include <math.h>
 
-#define McheckErr(stat,msg)             \
-        if ( MS::kSuccess != stat ) {   \
-                cerr << msg;            \
-                return MS::kFailure;    \
-        }
 
 class LHWeightNode : public MPxNode {
  public:
@@ -43,6 +40,15 @@ class LHWeightNode : public MPxNode {
   virtual MDoubleArray doubleArrayMathOperation(MDoubleArray doubleArray1,
                                                 MDoubleArray doubleArray2,
                                                 short operation);
+//   virtual MStatus multiplyKFloatArrayByVal(MFloatArray &rFloatArray,
+//                                          double val);
+//   virtual MFloatArray floatArrayMathOperation(MFloatArray floatArray1,
+//                                                 MFloatArray floatArray2,
+//                                                 short operation);
+virtual MStatus getWeightsFromInputs(MDataBlock& data, MDoubleArray &finalWeights);
+                         
+  virtual MStatus computeDoubleArray(MDataBlock& data);
+  virtual MStatus computeFloatArray(MDataBlock& data);
   static void* creator();
   static MStatus initialize();
 
@@ -53,7 +59,9 @@ class LHWeightNode : public MPxNode {
   static  MObject         aOperation;
   static  MObject         aInputs;
 
-  static  MObject         aOutputWeights;
+  static  MObject         aOutputWeightsDoubleArray;
+  static  MObject         aOutputWeightsFloatArray;
+  static  MObject         aOutWeights;
 
 
   inline MString FormatError( const MString &msg, const MString
