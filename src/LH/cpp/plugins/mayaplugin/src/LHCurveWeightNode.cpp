@@ -35,7 +35,7 @@
 
 MTypeId LHCurveWeightNode::id(0x35443568);
 
-MObject LHCurveWeightNode::aOutputWeights;
+MObject LHCurveWeightNode::aOutputWeightsDoubleArray;
 MObject LHCurveWeightNode::aInputs;
 MObject LHCurveWeightNode::aInputWeights;
 MObject LHCurveWeightNode::aFactor;
@@ -47,6 +47,8 @@ MObject LHCurveWeightNode::aProjectionMesh;
 MObject LHCurveWeightNode::aCacheWeightMesh;
 MObject LHCurveWeightNode::aOutputWeightsFloatArray;
 MObject LHCurveWeightNode::aOutWeights;
+MObject LHCurveWeightNode::aAnimCurveU;
+MObject LHCurveWeightNode::aAnimCurveV;
 
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
@@ -98,25 +100,33 @@ MStatus LHCurveWeightNode::initialize()
     eAttr.setChannelBox(true);
     addAttribute(aOperation);
 
+    aAnimCurveU = nAttr.create("AnimCurveU", "acu", MFnNumericData::kFloat);
+    nAttr.setKeyable(true);
+
+    aAnimCurveV = nAttr.create("AnimCurveV", "acv", MFnNumericData::kFloat);
+    nAttr.setKeyable(true);
+
     aInputs = cAttr.create("Inputs", "inputs");
     cAttr.setKeyable(true);
     cAttr.setArray(true);
     cAttr.addChild( aInputWeights );
     cAttr.addChild( aFactor );
     cAttr.addChild( aOperation );
+    cAttr.addChild( aAnimCurveU );
+    cAttr.addChild( aAnimCurveV );
     cAttr.setReadable(true);
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
     addAttribute(aInputs);
 
-    aOutputWeights = tAttr.create("outWeights", "ow", MFnNumericData::kDoubleArray);
+    aOutputWeightsDoubleArray = tAttr.create("outWeightsDoubleArray", "owd", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(false);
     tAttr.setArray(false);
     tAttr.setWritable(true);
     tAttr.setStorable(true);
     tAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aOutputWeights);
+    addAttribute(aOutputWeightsDoubleArray);
 
     aCacheMembershipWeights = nAttr.create("cacheMembershipWeights", "cmweights", MFnNumericData::kInt);
     nAttr.setKeyable(false);
@@ -134,16 +144,42 @@ MStatus LHCurveWeightNode::initialize()
     nAttr.setChannelBox(true);
     addAttribute(aCacheWeightMesh);
 
-    attributeAffects(aCacheWeightMesh, aOutputWeights);
-    attributeAffects(aInputMesh, aOutputWeights);
-    attributeAffects(aProjectionMesh, aOutputWeights);
-    attributeAffects(aCacheMembershipWeights, aOutputWeights);
-    attributeAffects(aMembershipWeights, aOutputWeights);
-    attributeAffects(aOperation, aOutputWeights);
-    attributeAffects(aInputWeights, aOutputWeights);
-    attributeAffects(aInputs, aOutputWeights);
-    attributeAffects(aFactor, aOutputWeights);
+    attributeAffects(aCacheWeightMesh, aOutputWeightsDoubleArray);
+    attributeAffects(aInputMesh, aOutputWeightsDoubleArray);
+    attributeAffects(aProjectionMesh, aOutputWeightsDoubleArray);
+    attributeAffects(aCacheMembershipWeights, aOutputWeightsDoubleArray);
+    attributeAffects(aMembershipWeights, aOutputWeightsDoubleArray);
+    attributeAffects(aOperation, aOutputWeightsDoubleArray);
+    attributeAffects(aInputWeights, aOutputWeightsDoubleArray);
+    attributeAffects(aInputs, aOutputWeightsDoubleArray);
+    attributeAffects(aFactor, aOutputWeightsDoubleArray);
 
+    aOutWeights = nAttr.create("outFloatWeights", "outflw", MFnNumericData::kFloat, 0.0);
+    nAttr.setKeyable(false);
+    nAttr.setArray(true);
+    nAttr.setWritable(true);
+    nAttr.setStorable(true);
+    nAttr.setInternal(true);
+    nAttr.setIndexMatters(true);
+    nAttr.setUsesArrayDataBuilder(true);
+
+    aOutputWeightsFloatArray = cAttr.create("outWeightsFloatArray", "wlf");
+    cAttr.addChild( aOutWeights );
+    cAttr.setHidden(false);
+    cAttr.setArray(true);
+    cAttr.setChannelBox(true);
+    cAttr.setConnectable(true);
+    cAttr.setKeyable(false);
+    cAttr.setReadable(true);
+    cAttr.setInternal(true);
+    cAttr.setIndexMatters(true);
+    cAttr.setUsesArrayDataBuilder(true);
+    addAttribute(aOutputWeightsFloatArray);
+
+    attributeAffects(aOperation, aOutputWeightsFloatArray);
+    attributeAffects(aInputWeights, aOutputWeightsFloatArray);
+    attributeAffects(aInputs, aOutputWeightsFloatArray);
+    attributeAffects(aFactor, aOutputWeightsFloatArray);
 
     return MStatus::kSuccess;
 }
@@ -263,75 +299,234 @@ MStatus LHCurveWeightNode::getWeightMeshData(MObject oProjectionMesh, MFnMesh *m
     }
     return MS::kSuccess;
 }
-
 MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
 {
-    MStatus status;
-    if( plug == LHCurveWeightNode::aOutputWeights)
+    if( plug == LHCurveWeightNode::aOutputWeightsDoubleArray)
     {
-        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHCurveWeightNode::aInputs, &status));
-        CheckStatusReturn( status, "Unable to get inputs" );
-        unsigned int elemCount = inputsArrayHandle.elementCount(&status);
-        CheckStatusReturn( status, "Unable to get number of inputs" );
-
-        // Get mesh objects
-        MObject oInputMesh;
-        MObject oProjectionMesh;
-        status = getMeshData(data, oInputMesh, oProjectionMesh);
-        CheckStatusReturn( status, "Unable to get meshes" );
-        MFnMesh *mInputMesh = new MFnMesh(oInputMesh);
-        int numVerts = mInputMesh->numVertices();
-        // MFnMesh mProjectionMesh(oProjectionMesh);
-
-        // Get membership weights
-        int iCacheMemberWeights = data.inputValue(aCacheMembershipWeights).asInt();
-        membershipWeights = getMembershipWeights(data, membershipWeights, numVerts, iCacheMemberWeights);
-        MDoubleArray finalWeights;
-
-        // Get projection mesh data
-        int iCacheWeightMesh = data.inputValue(aCacheWeightMesh).asInt();
-        status = getWeightMeshData(oProjectionMesh, mInputMesh, uCoords, vCoords, numVerts, iCacheWeightMesh);
-        CheckStatusReturn( status, "Unable to get weight mesh" );
-
-        for (int i=0;i < elemCount;i++)
-        {
-            status = inputsArrayHandle.jumpToElement(i);
-            CheckStatusReturn( status, "Unable to jump to input element" );
-            double dAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFactor ).asDouble();
-            short operation = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aOperation ).asShort();
-            MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aInputWeights);
-            MObject oInputArray = hInputArray.data();
-            MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
-            MDoubleArray tempWeights;
-            dataDoubleArrayFn.copyTo(tempWeights);
-            LHCurveWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
-            if (!finalWeights.length())
-            {
-                finalWeights = tempWeights;
-            }
-            else
-                finalWeights = LHCurveWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
-
-        }
-
-        ////////Set the final weights
-        MFnDoubleArrayData outputDoubleArrayFn;
-        MObject oOutputArray = outputDoubleArrayFn.create(finalWeights);
-        MDataHandle handle = data.outputValue(LHCurveWeightNode::aOutputWeights);
-        handle.setMObject(oOutputArray);
-
-//        MGlobal::displayInfo(MString("DEBUG:  UPDATING ") + status);
-
-        if (oOutputArray.isNull())
-        {
-            MGlobal::displayInfo(MString("The output is NULL"));
-            return MS::kSuccess;
-        }
+        LHCurveWeightNode::computeDoubleArray(data);
     }
-
+    if( plug == LHCurveWeightNode::aOutputWeightsFloatArray)
+    {
+        LHCurveWeightNode::computeFloatArray(data);
+    }
     return MS::kSuccess;
 }
 
+MStatus LHCurveWeightNode::computeDoubleArray(MDataBlock& data)
+{
+    MDoubleArray finalWeights;
+    MStatus status = LHCurveWeightNode::getWeightsFromInputs(data, finalWeights);
+    CheckStatusReturn( status, "Unable to get weights" );
+
+    ////////Set the final weights
+    MFnDoubleArrayData outputDoubleArrayFn;
+    MObject oOutputArray = outputDoubleArrayFn.create(finalWeights);
+    MDataHandle handle = data.outputValue(LHCurveWeightNode::aOutputWeightsDoubleArray);
+    handle.setMObject(oOutputArray);
+
+    if (oOutputArray.isNull())
+    {
+        MGlobal::displayInfo(MString("The output is NULL"));
+        return MS::kSuccess;
+    }
+}
+
+MStatus animCurveObjectCheck(MObject curve)
+{
+    if (curve.isNull())
+    {
+        return MS::kFailure;
+    } 
+    return MS::kSuccess;
+}
+
+MStatus LHCurveWeightNode::getAnimCurveInfo(MFnAnimCurve *fnAnimCurve, float &timeOffset, float &timeLength)
+{
+    numKeys = fnAnimCurve->numKeys();
+    if (!numKeys)
+    {
+        return MS::kFailure;
+    }
+    timeAtFirstKey = fnAnimCurve->time(0);
+    timeAtLastKey = fnAnimCurve->time(numKeys-1);
+    timeStart = timeAtFirstKey.value();
+    timeEnd = timeAtLastKey.value();
+    timeOffset = timeStart * -1;
+    timeLength = timeEnd + timeOffset;
+    return MS::kSuccess;
+}
+
+double remapcurveWeight(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength)
+{
+
+    double remap = coord * timeLength;
+    remap = remap - timeOffset;
+    MTime remapTime(remap);
+
+
+
+    return fnAnimCurve->evaluate(remapTime);
+}
+
+
+MStatus LHCurveWeightNode::getAnimCurvePlug(int currentElem, MPlug& rPCurve, MObject curveObject)
+{
+    MPlug pInputs( thisMObj, aInputs) ;
+    MPlug pInputElem = pInputs.elementByLogicalIndex(currentElem, &status);
+    CheckStatusReturn( status, "Unable to get unable to get parentElement" );
+
+    rPCurve = pInputElem.child(curveObject, &status);
+    CheckStatusReturn( status, "Unable to get unable to get child" );
+    return MS::kSuccess;
+}
+
+MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray& rWeights, int numVerts, int currentElem)
+{
+    // MObject oAnimCurveU = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aAnimCurveU).data();
+    // CheckStatusReturn( animCurveObjectCheck(oAnimCurveU), "Unable to get curveU" );
+    // MObject oAnimCurveV = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aAnimCurveV).data();
+    // CheckStatusReturn( animCurveObjectCheck(oAnimCurveV), "Unable to get curveV" );
+    MPlug pAnimCurveU;
+    status = LHCurveWeightNode::getAnimCurvePlug(currentElem, pAnimCurveU, aAnimCurveU);
+    CheckStatusReturn( animCurveObjectCheck(pAnimCurveU), "Unable to get curveU" );
+    MPlug pAnimCurveV;
+    status = LHCurveWeightNode::getAnimCurvePlug(currentElem, pAnimCurveV, aAnimCurveV);
+    CheckStatusReturn( animCurveObjectCheck(pAnimCurveV), "Unable to get curveV" );
+
+    MFnAnimCurve *fnAnimCurveU = new MFnAnimCurve(pAnimCurveU);
+    status = getAnimCurveInfo(fnAnimCurveU, timeOffsetU, timeLengthU);
+    CheckStatusReturn( status, "AnimCurveU does not have keys" );
+
+    MFnAnimCurve *fnAnimCurveV = new MFnAnimCurve(pAnimCurveV);
+    status =getAnimCurveInfo(fnAnimCurveV, timeOffsetV, timeLengthV);
+    CheckStatusReturn( status, "AnimCurveV does not have keys" );
+
+    if (rWeights.length())
+        rWeights.clear();
+
+    for (int i=0;i < numVerts;i++)
+    {
+        if (membershipWeights[i] == 0.0)
+        {
+            rWeights.append(0.0);
+            continue;
+        }
+
+        uWeight = remapcurveWeight(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU);
+        vWeight = remapcurveWeight(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV);
+        // MGlobal::displayInfo(MString("SETTING WEIGHTS")+uWeight);
+        rWeights.append(uWeight*vWeight);
+    }
+    return MS::kSuccess;
+}
+
+
+MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& finalWeights)
+{
+    // MStatus status;
+    thisMObj = thisMObject();
+
+    MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHCurveWeightNode::aInputs, &status));
+    CheckStatusReturn( status, "Unable to get inputs" );
+    unsigned int elemCount = inputsArrayHandle.elementCount(&status);
+    CheckStatusReturn( status, "Unable to get number of inputs" );
+
+    // Get mesh objects
+    MObject oInputMesh;
+    MObject oProjectionMesh;
+    status = getMeshData(data, oInputMesh, oProjectionMesh);
+    CheckStatusReturn( status, "Unable to get meshes" );
+    MFnMesh *mInputMesh = new MFnMesh(oInputMesh);
+    int numVerts = mInputMesh->numVertices();
+    // MFnMesh mProjectionMesh(oProjectionMesh);
+
+    // Get membership weights
+    int iCacheMemberWeights = data.inputValue(aCacheMembershipWeights).asInt();
+    membershipWeights = getMembershipWeights(data, membershipWeights, numVerts, iCacheMemberWeights);
+
+    // Get projection mesh data
+    int iCacheWeightMesh = data.inputValue(aCacheWeightMesh).asInt();
+    status = getWeightMeshData(oProjectionMesh, mInputMesh, uCoords, vCoords, numVerts, iCacheWeightMesh);
+    CheckStatusReturn( status, "Unable to get weight mesh" );
+
+    for (int i=0;i < elemCount;i++)
+    {
+        status = inputsArrayHandle.jumpToElement(i);
+        CheckStatusReturn( status, "Unable to jump to input element" );
+        double dAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFactor ).asDouble();
+        short operation = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aOperation ).asShort();
+        MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aInputWeights);
+
+        status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, animCurveWeights, numVerts, i);
+        CheckStatusReturn( status, "Unable to get Anim Curves" );
+
+        MObject oInputArray = hInputArray.data();
+        MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
+        MDoubleArray tempWeights;
+        dataDoubleArrayFn.copyTo(tempWeights);
+        LHCurveWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
+        if (!finalWeights.length())
+        {
+            finalWeights = tempWeights;
+        }
+        else
+            finalWeights = LHCurveWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
+    }
+    finalWeights = animCurveWeights;
+    if (finalWeights.length() && finalWeights.length() != 0)
+        return MS::kSuccess;
+    else
+        return MS::kFailure;
+}
+
+MStatus LHCurveWeightNode::computeFloatArray(MDataBlock& data)
+{
+    MDoubleArray finalWeights;
+    MStatus status = LHCurveWeightNode::getWeightsFromInputs(data, finalWeights);
+    CheckStatusReturn( status, "Unable to get weights" );
+    
+    MObject thisNode = thisMObject();
+    MPlug parent( thisNode, LHCurveWeightNode::aOutputWeightsFloatArray) ;
+    MPlug parentElement;
+
+    for (unsigned int j = 0; j < parent.numElements(); ++j)
+    {
+        parentElement = parent.elementByLogicalIndex(j, &status);
+        CheckStatusReturn( status, "Unable to get unable to get parentElement" );
+
+        MPlug child = parentElement.child(LHCurveWeightNode::aOutWeights, &status);
+        CheckStatusReturn( status, "Unable to get unable to get child" );
+
+        for (unsigned int i = 0; i < finalWeights.length(); ++i)
+        {
+            MPlug childWeight = child.elementByLogicalIndex(i);
+            float val = (float) finalWeights[i];
+            childWeight.setValue(val);
+            // MGlobal::displayInfo(MString("SETTING WEIGHTS")+val);
+        }
+    }
+    return MS::kSuccess;
+}
+
+void LHCurveWeightNode::dirtyPlug(MPlug const & inPlug, MPlugArray  & affectedPlugs, MPlug outArrayPlug)
+{
+    if (inPlug.isElement())
+    {
+        MPlug elemPlug = outArrayPlug.elementByLogicalIndex(
+                                            inPlug.logicalIndex());
+        affectedPlugs.append(elemPlug);
+        affectedPlugs.append(outArrayPlug);
+    }
+    else
+    {
+        affectedPlugs.append(outArrayPlug);
+        unsigned int i,n = outArrayPlug.numElements();
+        for (i = 0; i < n; i++) {
+            MPlug elemPlug = outArrayPlug.elementByPhysicalIndex(i);
+            affectedPlugs.append(elemPlug);
+        }
+    }
+}
 
 MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
@@ -339,37 +534,15 @@ MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
         if ( (inPlug.attribute() != aInputs)
         & (inPlug.attribute() != aFactor)
         & (inPlug.attribute() != aInputWeights)
+        // & (inPlug.attribute() != aOutWeights)
         & (inPlug.attribute() != aOperation))
         {
             return MS::kSuccess;
         }
+        MPlug outArrayPlug(thisMObject(), aOutputWeightsDoubleArray);
+        dirtyPlug(inPlug, affectedPlugs, outArrayPlug);
+        MPlug outArrayPlugFloat(thisMObject(), aOutputWeightsFloatArray);
+        dirtyPlug(inPlug, affectedPlugs, outArrayPlugFloat);
 
-        MPlug outArrayPlug(thisMObject(), aOutputWeights);
-
-        if (inPlug.isElement()) {
-            // First dirty the output output element first.
-            // Of course, dirty output element itself
-            MPlug elemPlug = outArrayPlug.elementByLogicalIndex(
-                                                inPlug.logicalIndex());
-            affectedPlugs.append(elemPlug);
-
-            // We also need to dirty the parent.
-            //
-            affectedPlugs.append(outArrayPlug);
-        } else {
-            // Mark the parent output plug as dirty.
-            //
-            affectedPlugs.append(outArrayPlug);
-
-            // Also visit each element.
-            //
-            unsigned int i,n = outArrayPlug.numElements();
-            for (i = 0; i < n; i++) {
-                MPlug elemPlug = outArrayPlug.elementByPhysicalIndex(i);
-                affectedPlugs.append(elemPlug);
-            }
-        }
         return MS::kSuccess;
     }
-
-

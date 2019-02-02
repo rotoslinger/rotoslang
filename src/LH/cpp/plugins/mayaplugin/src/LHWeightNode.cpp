@@ -74,7 +74,6 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
 
 MStatus LHWeightNode::compute( const MPlug& plug, MDataBlock& data)
 {
-    MStatus status;
     if( plug == LHWeightNode::aOutputWeightsDoubleArray)
     {
         LHWeightNode::computeDoubleArray(data);
