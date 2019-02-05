@@ -27,6 +27,8 @@
 #include <maya/MFloatArray.h>
 #include <maya/MMeshIntersector.h>
 #include <maya/MFnAnimCurve.h>
+#include <maya/MPointArray.h>
+#include <vector>
 
 #include <math.h>
 
@@ -39,14 +41,14 @@ class LHCurveWeightNode : public MPxNode
                                        MPlugArray &affectedPlugs);
 
     virtual MStatus getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh);
-    MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
+    MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
 
     virtual MStatus multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray,
                                               double val);
     virtual MDoubleArray doubleArrayMathOperation(MDoubleArray doubleArray1,
                                                   MDoubleArray doubleArray2,
                                                   short operation);
-    virtual MStatus getWeightsFromInputs(MDataBlock &data, MDoubleArray &finalWeights);
+    virtual MStatus getWeightsFromInputs(MDataBlock &data, MDoubleArray &finalWeights, std::vector<MDoubleArray>& finalWeightsArray);
     virtual MStatus getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray &rWeights, int numVerts, int currentElem);
 
     virtual MStatus computeDoubleArray(MDataBlock &data);
@@ -73,11 +75,18 @@ class LHCurveWeightNode : public MPxNode
     static MObject aInputMesh;
     static MObject aProjectionMesh;
     static MObject aCacheWeightMesh;
+    static MObject aOutputWeightsDoubleArrayParent;
+    static MObject aOutputWeightsFloatArrayParent;
     static MObject aOutputWeightsDoubleArray;
     static MObject aOutputWeightsFloatArray;
     static MObject aOutWeights;
     static MObject aAnimCurveU;
     static MObject aAnimCurveV;
+
+
+
+
+
     MObject thisMObj;
     MStatus status;
     // Used for caching
@@ -108,7 +117,8 @@ class LHCurveWeightNode : public MPxNode
     MDoubleArray animCurveWeights;
 
 
-
+    MPointArray testWeights;
+    MPoint pointOnPoint;
 
 
 
