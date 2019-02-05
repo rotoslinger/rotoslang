@@ -82,6 +82,40 @@ MStatus LHCurveWeightNode::initialize()
     nAttr.setChannelBox(true);
     addAttribute(aFactor);
 
+
+    // /////// Attrs for compound
+    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
+    // nAttr.setKeyable(true);
+    // nAttr.setWritable(true);
+    // nAttr.setStorable(true);
+    // nAttr.setDefault(0.0);
+    // nAttr.setChannelBox(true);
+    // addAttribute(aFactor);
+    // /////// Attrs for compound
+    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
+    // nAttr.setKeyable(true);
+    // nAttr.setWritable(true);
+    // nAttr.setStorable(true);
+    // nAttr.setDefault(0.0);
+    // nAttr.setChannelBox(true);
+    // addAttribute(aFactor);
+    // /////// Attrs for compound
+    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
+    // nAttr.setKeyable(true);
+    // nAttr.setWritable(true);
+    // nAttr.setStorable(true);
+    // nAttr.setDefault(0.0);
+    // nAttr.setChannelBox(true);
+    // addAttribute(aFactor);
+    // /////// Attrs for compound
+    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
+    // nAttr.setKeyable(true);
+    // nAttr.setWritable(true);
+    // nAttr.setStorable(true);
+    // nAttr.setDefault(0.0);
+    // nAttr.setChannelBox(true);
+    // addAttribute(aFactor);
+
     aMembershipWeights = tAttr.create("membershipWeights", "mweights", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
     tAttr.setArray(false);
