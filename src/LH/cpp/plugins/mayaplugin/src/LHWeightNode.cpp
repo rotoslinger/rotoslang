@@ -37,7 +37,10 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
     MDoubleArray rDoubleArray;
     int length1 = doubleArray1.length();
     int length2 = doubleArray2.length();
-    if (length1 != length2)
+
+    // Only check that the arrays match if you are performing an operation on both.
+    // The clamp doesn't care about doubleArray2, so no need to check.
+    if (operation != 4 && length1 != length2)
     {
         return rDoubleArray;
     }
@@ -67,8 +70,23 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
                 rDoubleArray.append(doubleArray1[i] / doubleArray2[i]);
                 break;
             case 4 : // clamp0to1
-            
-                rDoubleArray.append(std::max(0.0, std::min((doubleArray1[i] / doubleArray2[i]), 1.0)));
+                // This algorithm doesn't look at the weight map
+                // if (doubleArray1[i] < 0.0)
+                // {
+                //     rDoubleArray.append(0.0);
+                //     break;
+                // }
+                // else if (doubleArray1[i] > 1.0)
+                // {
+                //     rDoubleArray.append(1.0);
+                //     break;
+                // }
+                // else
+                // {
+                //     rDoubleArray.append(doubleArray1[i]);
+                //     break;
+                // }
+                rDoubleArray.append(std::max(0.0, std::min(doubleArray1[i], 1.0)));
                 break;
         }
     }
@@ -123,12 +141,18 @@ MStatus LHWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray &final
         CheckStatusReturn( status, "Unable to jump to input element" );
         double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aFactor ).asDouble();
         short operation = inputsArrayHandle.inputValue().child( LHWeightNode::aOperation ).asShort();
+        if (operation == 4 && dAmount == 0.0)
+        {
+            return MS::kSuccess;
+        }
         MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHWeightNode::aInputWeights);
         MObject oInputArray = hInputArray.data();
         MFnDoubleArrayData dataDoubleArrayFn(oInputArray);
         MDoubleArray tempWeights;
         dataDoubleArrayFn.copyTo(tempWeights);
-        LHWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
+        // This conditional makes sure not to multiply by the factor if clamping
+        if (operation != 4)
+            LHWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
         if (!finalWeights.length())
         {
             finalWeights = tempWeights;
@@ -136,6 +160,7 @@ MStatus LHWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray &final
         else
             finalWeights = LHWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
     }
+    MGlobal::displayInfo(MString("   ") + finalWeights.length());
     if (finalWeights.length() && finalWeights.length() != 0)
         return MS::kSuccess;
     else
