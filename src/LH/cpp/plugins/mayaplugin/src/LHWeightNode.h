@@ -1,4 +1,8 @@
 #pragma once
+#if defined _WIN32  || defined _WIN64
+#define NOMINMAX
+#endif
+
 #include <string.h>
 #include <maya/MIOStream.h>
 #include <math.h>
@@ -24,6 +28,7 @@
 #include <maya/MString.h>
 #include <maya/MFloatArray.h>
 #include <math.h>
+#include <algorithm>
 
 class LHWeightNode : public MPxNode
 {
@@ -56,6 +61,8 @@ class LHWeightNode : public MPxNode
     static MObject aOutputWeightsDoubleArray;
     static MObject aOutputWeightsFloatArray;
     static MObject aOutWeights;
+
+    double clampWeight;
 
     inline MString FormatError(const MString &msg, const MString &sourceFile, const int &sourceLine)
     {

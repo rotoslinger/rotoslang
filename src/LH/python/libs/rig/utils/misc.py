@@ -712,7 +712,6 @@ class create_ctl():
         if self.nullTransform:
             name = self.ctl
             parent = getParent(self.ctl)
-            print parent
             self.ctl = cmds.rename(self.ctl, self.ctl + "OLD")
             nullTrans = cmds.createNode("nullTransform", n=name, p=parent)
             shape = getShape(self.ctl)
@@ -2349,14 +2348,47 @@ def getBarycentricCoords(closestPoint, pointA, pointB, pointC):
     weightC = 1.0 - weightA - weightB
     return [weightA, weightB, weightC]
 
-def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translate=True, rotate=True, scale=False):
+def getSetMaintainOffset(transform=None, offsetTransform=None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
+    """
+    By giving a valid dictionary with translate and or rotate and or scale keys to the offsetTransform arg you will set offsets
+    If you set offsetTransform to None, you will get offsets
+
+    """
+    if not transform:
+        return
+
+    if not offsetTransform:
+        offsetTransform = {}
+        if maintainOffsetT:
+            offsetTransform["translate"] = cmds.xform(transform, q =True, ws=True, t=True)
+        if maintainOffsetR:
+            offsetTransform["rotate"] = cmds.xform(transform, q =True, ws=True, ro=True)
+        if maintainOffsetS:
+            offsetTransform["scale"] = cmds.xform(transform, q =True, ws=True, s=True)
+        return offsetTransform
+
+    if "translate" in offsetTransform:
+        cmds.xform(transform, ws=True, t=offsetTransform["translate"])
+    if "rotate" in offsetTransform:
+        cmds.xform(transform, ws=True, ro=offsetTransform["rotate"])
+    if "scale" in offsetTransform:
+        cmds.xform(transform, ws=True, s=offsetTransform["scale"])
+
+def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translate=True, rotate=True, scale=False,
+                  offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
+    """
+    suffix GCS
+    """
     if not driverMesh and not driven: 
         driverMesh = cmds.ls(sl=True)[0]
         driven = cmds.ls(sl=True)[1]
     driverMesh = getShape(driverMesh)
     if not name:
         name = "C_test_GCS"
-    constraint = cmds.createNode("LHGeometryConstraint", p=parent, n=name)
+    
+    offsetTransform = getSetMaintainOffset(offsetBuffer, None, maintainOffsetT, maintainOffsetR, maintainOffsetS)
+
+    constraint = cmds.createNode("LHGeometryConstraint", n=name)
     int_array, closest_point, pointA, pointB, pointC = getClosestPolygonToTransform(driverMesh, driven)
     pointIdAttrs = ["a", "b", "c", "d"]
     # just in case we get back an ngon, set a hard range....
@@ -2380,6 +2412,34 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
         cmds.connectAttr(decompose + ".outputRotate", driven + ".rotate" )
     if scale:
         cmds.connectAttr(decompose + ".outputScale", driven + ".scale" )
+    getSetMaintainOffset(offsetBuffer, offsetTransform)
+
+    return constraint
 
 
+def updateGeoConstraint(offsetBuffer, geoConstraint, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
+    offsetTransform = getSetMaintainOffset(offsetBuffer, None, maintainOffsetT, maintainOffsetR, maintainOffsetS)
+    mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
+    int_array, closest_point, pointA, pointB, pointC = getClosestPolygonToTransform(mesh, offsetBuffer)
+    pointIdAttrs = ["a", "b", "c", "d"]
+    # just in case we get back an ngon, set a hard range....
+    idRange = 4
+    if int_array.length() == 3:
+        pointIdAttrs = ["a", "b", "c"]
+        idRange = 3
+    for idx in range(idRange):
+        cmds.setAttr(geoConstraint + "." + pointIdAttrs[idx] + "PointIdx", int_array[idx])
+    weights = getBarycentricCoords(closest_point, pointA, pointB, pointC)
+    for idx, attrSuffix in enumerate(["X", "Y", "Z"]):
+        cmds.setAttr(geoConstraint + ".baryWeights" + attrSuffix, weights[idx])
+    getSetMaintainOffset(offsetBuffer, offsetTransform)
 
+def move(transform=None, translate=None, rotate=None, scale=None):
+    if not transform:
+        return
+    if translate:
+        cmds.xform(transform, ws=True, t=translate)
+    if rotate:
+        cmds.xform(transform, ws=True, ro=rotate)
+    if scale:
+        cmds.xform(transform, ws=True, s=scale)

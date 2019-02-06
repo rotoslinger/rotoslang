@@ -30,8 +30,10 @@ class component(object):
         self.createHier()
         self.createHelperGeo()
         self.createCtrl()
+        self.createGuide()
         self.createAttrs()
         self.createNodes()
+        self.componentName = "component"
 
     def createHier(self):
         self.cmptMasterParent = cmds.createNode("transform",
@@ -53,9 +55,15 @@ class component(object):
                                                                      self.name,
                                                                      "EX"),
                                                 parent=self.cmptMasterParent).fullPathName()
+    def addComponentTypeAttr(self, node):
+        cmds.addAttr(node, ln = "componentType", dt = "string", k=False)
+        cmds.setAttr(node + ".componentType", self.componentName, typ = "string", l=True)
 
     def createCtrl(self):
         return
+
+    def createGuide(self):
+        pass
 
     def createAttrs(self):
         return

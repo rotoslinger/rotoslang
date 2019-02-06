@@ -14,12 +14,22 @@ class component(base.component):
                  zSpeedDefault=.1,
                  curveData=None,
                  mesh = None,
+                 translate = None,
+                 rotate = None,
+                 scale = None,
+                 guide = False,
                  **kw):
         self.xSpeedDefault = xSpeedDefault
         self.ySpeedDefault = ySpeedDefault
         self.zSpeedDefault = zSpeedDefault
-
         self.curveData = curveData
+        self.mesh = mesh
+        self.translate = translate
+        self.rotate = rotate
+        self.scale = scale
+        self.componentName = "meshRivetCtrl"
+        self.guide = guide
+
         super(component, self).__init__(**kw)
 
     def createHier(self):
@@ -45,14 +55,16 @@ class component(base.component):
                                     orient=[180, 90, 0],
                                     offset=[0, 0, 1],
                                     scale=[1, 1, 1],
-                                    num_buffer=1,
+                                    num_buffer=2,
                                     lock_attrs=["sx", "sy", "sz"],
                                     # lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
                                     gimbal=True,
                                     size=.5,
                                     nullTransform = True)
-
+        self.buffer1 = self.ctrl.buffers[1]
+        self.buffer2 = self.ctrl.buffers[0]
         self.ctrl = self.ctrl.ctl
+
         if self.curveData:
             # get Curve data for transfer
             sourceCurve = cmds.listRelatives(self.ctrl, type = "nurbsCurve")[0]
@@ -63,7 +75,7 @@ class component(base.component):
             colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
             cmds.delete(sourceCurve)
             
-            # create curve
+            # create curve, set curve shape
             curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
             
             # transfer Curve data
@@ -73,13 +85,34 @@ class component(base.component):
             cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
             cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
             cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
+        misc.move(self.buffer2, self.translate, self.rotate, self.scale)
 
+    def addGuide(self):
+        if self.guide:
+            
 
     def createAttrs(self):
         inputAttrs = ["xSpeed", "ySpeed", "zSpeed"]
         for attr in inputAttrs:
             cmds.addAttr(self.ctrl, ln=attr, at="float",
                          dv=getattr(self, "{0}Default".format(attr)), k=True)
+        for node in self.cmptMasterParent, self.ctrl, self.locator, self.buffer1, self.buffer2:
+            self.addComponentTypeAttr(node)
+            cmds.addAttr(node, ln = "root", at = "message")
+            cmds.connectAttr(self.cmptMasterParent + ".message", node + ".root")
+        cmds.addAttr(self.cmptMasterParent, ln = "control", at = "message")
+        cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".control")
+        cmds.addAttr(self.cmptMasterParent, ln = "transform", at = "message")
+        cmds.connectAttr(self.buffer2 + ".message", self.cmptMasterParent + ".transform")
+        # cmds.addAttr(self.cmptMasterParent, ln = "xSpeed", at = "message")
+        # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".xSpeed")
+        # cmds.addAttr(self.cmptMasterParent, ln = "ySpeed", at = "message")
+        # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".ySpeed")
+        # cmds.addAttr(self.cmptMasterParent, ln = "zSpeed", at = "message")
+        # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".zSpeed")
 
     def createNodes(self):
-        misc.geoConstraint()
+        self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
+                                                name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=True,
+                                                scale=False, offsetBuffer = self.buffer2, maintainOffsetT=True, 
+                                                maintainOffsetR=True, maintainOffsetS=True)

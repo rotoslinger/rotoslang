@@ -66,6 +66,10 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
                 }
                 rDoubleArray.append(doubleArray1[i] / doubleArray2[i]);
                 break;
+            case 4 : // clamp0to1
+            
+                rDoubleArray.append(std::max(0.0, std::min((doubleArray1[i] / doubleArray2[i]), 1.0)));
+                break;
         }
     }
     return rDoubleArray;
@@ -243,6 +247,7 @@ MStatus LHWeightNode::initialize()
     eAttr.addField( "subtract", 1 );
     eAttr.addField( "multiply", 2 );
     eAttr.addField( "divide", 3 );
+    eAttr.addField( "clamp0to1", 4 );
     eAttr.setHidden( false );
     eAttr.setKeyable( true );
     eAttr.setWritable(true);
