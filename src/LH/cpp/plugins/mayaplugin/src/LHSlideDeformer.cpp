@@ -113,6 +113,9 @@ MStatus LHSlideDeformer::getAnimCurves(
         oChild.asFloat();
         MFnAnimCurve fnAnimCurve(oChild);
         int numKeys = fnAnimCurve.numKeys();
+        if (!numKeys)
+            return MS::kFailure;
+
         MTime timeAtFirstKey = fnAnimCurve.time(0);
         MTime timeAtLastKey = fnAnimCurve.time(numKeys-1);
         float timeStart = timeAtFirstKey.value();
@@ -574,12 +577,14 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                                           allAnimCurveUChildren[j],
                                           tmpUTimeLength,tmpUTimeOffset,
                                           tmpUAnimCurves);
+                            CheckStatusReturn( status, "Unable to get animCurve, make sure all anim curves have keys" );
                             //V
                             status = LHSlideDeformer::getAnimCurves(thisMObj,
                                           allAnimCurveVParents[j],
                                           allAnimCurveVChildren[j],
                                           tmpVTimeLength,tmpVTimeOffset,
                                           tmpVAnimCurves);
+                            CheckStatusReturn( status, "Unable to get animCurve, make sure all anim curves have keys" );
                         }
                         catch(...)
                         {

@@ -577,7 +577,8 @@ class create_ctl():
                  orient = [0,0,0],
                  offset = [0,0,0],
                  scale = [1,1,1],
-                 hide = False
+                 hide = False,
+                 nullTransform = False
                  ):
 
         """
@@ -655,6 +656,10 @@ class create_ctl():
         self.offset                 = offset
         self.scale                  = scale
         self.hide                   = hide
+        self.nullTransform          = nullTransform
+
+
+
         #---vars
         self.ctl                    = ""
         self.gimbal_ctl             = ""
@@ -704,6 +709,24 @@ class create_ctl():
                             offset = self.offset,
                             scale = self.scale,
                             hide = self.hide).ctl
+        if self.nullTransform:
+            name = self.ctl
+            parent = getParent(self.ctl)
+            print parent
+            self.ctl = cmds.rename(self.ctl, self.ctl + "OLD")
+            nullTrans = cmds.createNode("nullTransform", n=name, p=parent)
+            shape = getShape(self.ctl)
+            cmds.parent(shape, nullTrans, s=True, r=True)
+            cmds.delete(self.ctl)
+            self.ctl = nullTrans
+            if self.lock_attrs == ["all"]:
+                self.lock_attrs = ["tx","ty","tz","rx","ry","rz","sx","sy","sz","v"]
+            for i in range(len(self.lock_attrs)):
+                cmds.setAttr(self.ctl + "." + self.lock_attrs[i], 
+                            lock = True, 
+                            keyable = False, 
+                            channelBox = False)
+
 
     def __create_secondary(self):
         "creates ctl"
@@ -2258,3 +2281,107 @@ def closestPointOnPolyConstraint(name="test_PPC", closestPointNodeName="test_CPM
     cmds.setAttr(constraint + " .u0", u)
     cmds.setAttr(constraint + " .v0", v)
     return constraint
+
+def getParent(mayaObject):
+    return cmds.listRelatives( mayaObject, parent=True)[0]
+
+def getOMMesh(mayaObject):
+    meshNode = OpenMaya.MSelectionList()
+    meshNode.add(mayaObject)
+    pPath = OpenMaya.MDagPath()
+    meshNode.getDagPath(0,pPath)
+    return OpenMaya.MFnMesh(pPath)
+
+def getMPointFromTransform(mayaObject):
+    transformPoint = cmds.xform(mayaObject, 
+                                q =True, 
+                                ws=True, 
+                                t=True)
+    return OpenMaya.MPoint(transformPoint[0], transformPoint[1], transformPoint[2])
+
+
+def getClosestPolygonToTransform(meshObject, transform):
+    transformPoint = getMPointFromTransform(transform)
+    fnMesh = getOMMesh(meshObject)
+    closest_point = OpenMaya.MPoint()
+    util = OpenMaya.MScriptUtil()
+    util.createFromInt(0)
+    face_id = util.asIntPtr()
+    fnMesh.getClosestPoint(transformPoint,
+                            closest_point,
+                            OpenMaya.MSpace.kWorld,
+                            face_id)
+    face_id = OpenMaya.MScriptUtil(face_id).asInt()
+    point_ids = OpenMaya.MIntArray()
+    fnMesh.getPolygonVertices(face_id,point_ids)
+    # for i in point_ids:
+    #     print i, " POINT ID!!!"
+    return point_ids, closest_point
+
+def getBarycentricCoords(closestPoint, pointA, pointB, pointC)
+    vector0 = pointB - pointA
+    vector1 = pointC - pointA
+    vector2 = closestPoint - pointA
+    dot00 = vector0 * vector0
+    dot01 = vector0 * vector1
+    dot11 = vector1 * vector1
+    dot20 = vector2 * vector0
+    dot21 = vector2 * vector1
+    denominator = dot00 * dot11 - dot01 * dot01
+    weightA = (dot11 * dot20 - dot01 * dot21) / denominator
+    weightB = (dot00 * dot21 - dot01 * dot20) / denominator
+    weightC = 1.0 - weightA - weightB
+    return weightA, weightB, weightC
+
+# void Barycentric(Point p, Point a, Point b, Point c, float &u, float &v, float &w)
+# {
+#     Vector v0 = b - a, v1 = c - a, v2 = p - a;
+#     float d00 = Dot(v0, v0);
+#     float d01 = Dot(v0, v1);
+#     float d11 = Dot(v1, v1);
+#     float d20 = Dot(v2, v0);
+#     float d21 = Dot(v2, v1);
+#     float denom = d00 * d11 - d01 * d01;
+#     v = (d11 * d20 - d01 * d21) / denom;
+#     w = (d00 * d21 - d01 * d20) / denom;
+#     u = 1.0f - v - w;
+# }
+
+
+def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translate=True, rotate=True, scale=False):
+    if not driverMesh and not driven: 
+        driverMesh = cmds.ls(sl=True)[0]
+        driven = cmds.ls(sl=True)[1]
+    driverMesh = getShape(driverMesh)
+    if not name:
+        name = "C_test_GCS"
+    constraint = cmds.createNode("LHGeometryConstraint", p=parent, n=name)
+    int_array, closest_point = getClosestPolygonToTransform(driverMesh, driven)
+    pointIdAttrs = ["a", "b", "c", "d"]
+    # just in case we get back an ngon, set a hard range....
+    idRange = 4
+    if int_array.length() == 3:
+        pointIdAttrs = ["a", "b", "c"]
+        idRange = 3
+    for idx in range(idRange):
+        cmds.setAttr(constraint + "." + pointIdAttrs[idx] + "PointIdx", int_array[idx])
+
+    weightA, weightB, weightC = getBarycentricCoords(closest_point, pointA, pointB, pointC)
+
+
+    for i in ["X", "Y", "Z"]:
+        cmds.setAttr(constraint + ".baryWeights"+ i, 0.3333)
+    
+    cmds.connectAttr(driverMesh + ".worldMesh", constraint + ".inMesh" )
+    decompose = cmds.createNode("decomposeMatrix", n = name + "_DCP")
+    cmds.connectAttr(constraint + ".outputMatrix", decompose + ".inputMatrix")
+
+    if translate:
+        cmds.connectAttr(decompose + ".outputTranslate", driven + ".translate" )
+    if rotate:
+        cmds.connectAttr(decompose + ".outputRotate", driven + ".rotate" )
+    if scale:
+        cmds.connectAttr(decompose + ".outputScale", driven + ".scale" )
+
+
+

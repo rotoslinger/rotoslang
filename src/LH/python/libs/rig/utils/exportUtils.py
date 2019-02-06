@@ -665,13 +665,95 @@ def comparePolyCount(srcMesh, baseMesh):
     return
 
 
-def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAttributes=None, destAttrs=None):
+# def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAttributes=None, destAttrs=None):
+#     # Get Attributes From Source
+#     if not srcAttributes:
+#         attrs = cmds.listAttr(srcDeformer, ud = True, a = True, m=True)
+#         srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in attrs]
+#     else:
+#         srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in srcAttributes]
+
+#     jointOff = cmds.joint(n="JntOFF_TEMP", p=(0,0,0))
+#     jointOn = cmds.joint(n="JntON_TEMP", p=(0,0,0))
+#     tmpMesh = cmds.duplicate(srcMesh, name = srcMesh + "TempWeightTransfer")[0]
+
+#     srcSkin = cmds.skinCluster(jointOn, jointOff, tmpMesh, n = "TempSKIN", tsb=True)[0]
+#     cmds.setAttr(srcSkin + ".envelope", 0)
+#     srcVertCount = cmds.polyEvaluate(srcMesh, v=1) - 1
+#     dstVertCount = cmds.polyEvaluate(destMesh, v=1) - 1
+
+#     dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)[0]
+#     cmds.setAttr(dstSkin + ".envelope", 0)
+#     for idx, srcAttr in enumerate(srcAttributes):
+#         print srcAttributes
+#         weight = cmds.getAttr(srcAttr)
+#         #---If weight hasn't been set, skip it
+#         if not weight:
+#             continue
+#         #---If weight isn't large enough, fill additional indexes with empty weight values
+#         if len(weight) < srcVertCount:
+#             difference = srcVertCount - len(weight)
+#             for i in range(srcVertCount):
+#                 if i > difference:
+#                     continue
+#                 weight.append(0.0)
+#         empty = [1.0 for x in range(srcVertCount)]
+
+
+
+#         cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount), *weight, size=srcVertCount)
+#         attr = cmds.getAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount))
+#         print attr
+#         normAttrs = []
+#         for i in attr:
+#             if i < 1:
+#                 normAttrs.append(1.0-i)
+#                 continue
+#             if i == 1:
+#                 normAttrs.append(0.0)
+#                 continue
+#             if i == 0.0:
+#                 normAttrs.append(1.0)
+#                 continue
+#         try:
+#             cmds.setAttr('{0}.weightList[0:{1}].weights[1]'.format(srcSkin, srcVertCount), *normAttrs, size=srcVertCount)
+#         except:
+#             print "weights could not be properly transfered for " + srcAttr
+#         # Only Use Skin Percent to normalize! It is crappy slow to set points....
+#         cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=True)
+
+#         cmds.copySkinWeights(ss=srcSkin, ds=dstSkin, noMirror=True, ia="oneToOne")
+
+#         destAttr = srcAttr.replace(srcDeformer, destDeformer)
+#         #---Get weights from dest skin cluster
+#         destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
+#         cmds.setAttr(destAttr, destWeight, typ='doubleArray')
+
+
+
+#         # if not destAttrs:
+#         #     destAttr = [srcAttr.replace(srcDeformer, destDeformer)]
+#         # else:
+#         #     destAttr = destAttrs
+#         # for destAttrIt in destAttr:
+#         #     fullDestAttrName = "{0}.{1}".format(destDeformer, destAttrIt)
+#         #     #---Get weights from dest skin cluster
+#         #     destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
+#         #     cmds.setAttr(fullDestAttrName, destWeight, typ='doubleArray')
+
+#     cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)
+
+
+
+
+
+
+
+
+def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
     # Get Attributes From Source
-    if not srcAttributes:
-        attrs = cmds.listAttr(srcDeformer, ud = True, a = True, m=True)
-        srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in attrs]
-    else:
-        srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in srcAttributes]
+    attrs = cmds.listAttr(srcDeformer, ud = True, a = True, m=True)
+    srcAttributes = ["{0}.{1}".format(srcDeformer, x) for x in attrs]
 
     jointOff = cmds.joint(n="JntOFF_TEMP", p=(0,0,0))
     jointOn = cmds.joint(n="JntON_TEMP", p=(0,0,0))
@@ -684,8 +766,7 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAt
 
     dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)[0]
     cmds.setAttr(dstSkin + ".envelope", 0)
-    for idx, srcAttr in enumerate(srcAttributes):
-        print srcAttributes
+    for srcAttr in srcAttributes:
         weight = cmds.getAttr(srcAttr)
         #---If weight hasn't been set, skip it
         if not weight:
@@ -720,18 +801,21 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAt
         except:
             print "weights could not be properly transfered for " + srcAttr
         # Only Use Skin Percent to normalize! It is crappy slow to set points....
+        #cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=False, prw=.01)
         cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=True)
 
-        cmds.copySkinWeights(ss=srcSkin, ds=dstSkin, noMirror=True, ia="oneToOne")
-        if not destAttrs:
-            destAttr = [srcAttr.replace(srcDeformer, destDeformer)]
-        else:
-            destAttr = destAttrs
-        for destAttrIt in destAttr:
-            fullDestAttrName = "{0}.{1}".format(destDeformer, destAttrIt)
-            #---Get weights from dest skin cluster
-            destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
-            cmds.setAttr(fullDestAttrName, destWeight, typ='doubleArray')
+
+
+        cmds.copySkinWeights( ss=srcSkin, ds=dstSkin, noMirror=True, ia="oneToOne")
+
+        # print cmds.getAttr('{0}.weightList[0:{1}].weights[0]'.format(dstSkin, srcVertCount))
+        # cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)
+        # return
+
+
+        destAttr = srcAttr.replace(srcDeformer, destDeformer)
+        #---Get weights from dest skin cluster
+        destWeight = cmds.getAttr("{0}.weightList[0:{1}].weights[0]".format(dstSkin, dstVertCount))
+        cmds.setAttr(destAttr, destWeight, typ='doubleArray')
 
     cmds.delete(srcSkin, dstSkin, jointOff, jointOn, tmpMesh)
-
