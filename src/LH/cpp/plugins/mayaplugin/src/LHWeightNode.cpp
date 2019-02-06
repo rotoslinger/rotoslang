@@ -69,24 +69,13 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
                 }
                 rDoubleArray.append(doubleArray1[i] / doubleArray2[i]);
                 break;
-            case 4 : // clamp0to1
-                // This algorithm doesn't look at the weight map
-                // if (doubleArray1[i] < 0.0)
-                // {
-                //     rDoubleArray.append(0.0);
-                //     break;
-                // }
-                // else if (doubleArray1[i] > 1.0)
-                // {
-                //     rDoubleArray.append(1.0);
-                //     break;
-                // }
-                // else
-                // {
-                //     rDoubleArray.append(doubleArray1[i]);
-                //     break;
-                // }
+            case 4 : // clampStack
                 rDoubleArray.append(std::max(0.0, std::min(doubleArray1[i], 1.0)));
+                break;
+            case 5 : // clampPainted
+                clampWeight = std::max(0.0, std::min((doubleArray1[i]), 1.0));
+                // interp between clamped and non clamped
+                rDoubleArray.append(doubleArray1[i] + (clampWeight - doubleArray1[i]) * doubleArray2[i]);
                 break;
         }
     }
@@ -141,7 +130,7 @@ MStatus LHWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray &final
         CheckStatusReturn( status, "Unable to jump to input element" );
         double dAmount = inputsArrayHandle.inputValue().child( LHWeightNode::aFactor ).asDouble();
         short operation = inputsArrayHandle.inputValue().child( LHWeightNode::aOperation ).asShort();
-        if (operation == 4 && dAmount == 0.0)
+        if ((operation == 4 && dAmount == 0.0) || (operation == 5 && dAmount == 0.0))
         {
             return MS::kSuccess;
         }
@@ -151,7 +140,7 @@ MStatus LHWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray &final
         MDoubleArray tempWeights;
         dataDoubleArrayFn.copyTo(tempWeights);
         // This conditional makes sure not to multiply by the factor if clamping
-        if (operation != 4)
+        if (operation != 4 && operation != 5)
             LHWeightNode::multiplyKDoubleArrayByVal(tempWeights, dAmount);
         if (!finalWeights.length())
         {
@@ -160,7 +149,6 @@ MStatus LHWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray &final
         else
             finalWeights = LHWeightNode::doubleArrayMathOperation(finalWeights, tempWeights, operation);
     }
-    MGlobal::displayInfo(MString("   ") + finalWeights.length());
     if (finalWeights.length() && finalWeights.length() != 0)
         return MS::kSuccess;
     else
@@ -232,7 +220,6 @@ MStatus LHWeightNode::setDependentsDirty( MPlug const & inPlug,
         if ( (inPlug.attribute() != aInputs)
         & (inPlug.attribute() != aFactor)
         & (inPlug.attribute() != aInputWeights)
-        // & (inPlug.attribute() != aOutWeights)
         & (inPlug.attribute() != aOperation))
         {
             return MS::kSuccess;
@@ -272,7 +259,8 @@ MStatus LHWeightNode::initialize()
     eAttr.addField( "subtract", 1 );
     eAttr.addField( "multiply", 2 );
     eAttr.addField( "divide", 3 );
-    eAttr.addField( "clamp0to1", 4 );
+    eAttr.addField( "clampStack", 4 );
+    eAttr.addField( "clampPainted", 5 );
     eAttr.setHidden( false );
     eAttr.setKeyable( true );
     eAttr.setWritable(true);
