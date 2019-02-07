@@ -44,6 +44,8 @@
 #include <maya/MPxGPUDeformer.h>
 #include <maya/MGPUDeformerRegistry.h>
 #include <maya/MOpenCLInfo.h>
+#include <maya/MString.h>
+#include <maya/MGlobal.h>
 #include <clew/clew_cl.h>
 
 
@@ -81,8 +83,16 @@ public:
     virtual ~identityGPUDeformer();
 
     // Implementation of MPxGPUDeformer.
-    virtual MPxGPUDeformer::DeformerStatus evaluate(MDataBlock&, const MEvaluationNode&, const MPlug& plug, unsigned int, const MAutoCLMem, const MAutoCLEvent, MAutoCLMem, MAutoCLEvent&);
+    // virtual MPxGPUDeformer::DeformerStatus evaluate(MDataBlock&, const MEvaluationNode&, const MPlug& plug, unsigned int, const MAutoCLMem, const MAutoCLEvent, MAutoCLMem, MAutoCLEvent&);
+	virtual MPxGPUDeformer::DeformerStatus evaluate(MDataBlock& block, const MEvaluationNode& evaluationNode,
+													const MPlug& plug, const MGPUDeformerData& inputData,
+													MGPUDeformerData& outputData);
+
+
+
+
     virtual void terminate();
+    static MString pluginLoadPath;
 
 private:
     // Kernel

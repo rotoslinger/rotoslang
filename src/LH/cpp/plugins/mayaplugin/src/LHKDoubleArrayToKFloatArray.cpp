@@ -14,7 +14,7 @@ void* LHKDoubleArrayToKFloatArray::creator() { return new LHKDoubleArrayToKFloat
 MStatus LHKDoubleArrayToKFloatArray::compute( const MPlug& plug, MDataBlock& data)
 {
     MStatus status;
-    if(plug == LHKDoubleArrayToKFloatArray::aOutWeightList or plug == LHKDoubleArrayToKFloatArray::aBiasOut or plug == LHKDoubleArrayToKFloatArray::aOutWeights)
+    if(plug == LHKDoubleArrayToKFloatArray::aOutWeightList || plug == LHKDoubleArrayToKFloatArray::aBiasOut || plug == LHKDoubleArrayToKFloatArray::aOutWeights)
     {
         MDataHandle hInputArray = data.inputValue( LHKDoubleArrayToKFloatArray::aInWeights );
         MObject oInputArray = hInputArray.data();

@@ -32,7 +32,6 @@ static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW
 MStatus initializePlugin(MObject obj) {
   MStatus status;
   MFnPlugin plugin(obj, "Levi Harrison", "1.0", "Any");
-
 //  // Specify we are making a deformer node
 //  status = plugin.registerNode("LHRepulsorDeformer", LHRepulsorDeformer::id, LHRepulsorDeformer::creator,
 //                               LHRepulsorDeformer::initialize, MPxNode::kDeformerNode);
@@ -87,6 +86,7 @@ MStatus initializePlugin(MObject obj) {
       registrantId,
       identityGPUDeformer::getGPUDeformerInfo()
       );
+  identityGPUDeformer::pluginLoadPath = plugin.loadPath();
 
 
 

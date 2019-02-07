@@ -54,27 +54,6 @@ set(SOURCE_FILES
 
 )
 
-#set(CMAKE_C_COMPILER clang-omp CACHE STRING "C compiler" FORCE)
-#set(CMAKE_CXX_COMPILER clang-omp++ CACHE STRING "C++ compiler" FORCE)
-#
-#find_package(OpenMP REQUIRED)
-#
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}
-#${OpenMP_EXE_LINKER_FLAGS}")
-
-#include_directories("/Users/leviharrison/Desktop/dev/openmp/build/runtime/src")
-#include_directories("/usr/local/include")
-#include_directories("/usr/local/Cellar/llvm/3.4.2/include")
-
-# Test find openMP
-#find_package(OpenMP)
-#if (OPENMP_FOUND)
-#    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-#    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-#    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-#endif()
 
 
 find_package(OpenGL REQUIRED)
@@ -95,3 +74,5 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${MAYA_LIBRARIES})
 
 MAYA_PLUGIN(${PROJECT_NAME})
+
+install(FILES "LHTemplateGPUDeformer.cl" DESTINATION plug-ins)

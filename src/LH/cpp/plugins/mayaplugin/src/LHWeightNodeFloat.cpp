@@ -160,9 +160,9 @@ MStatus LHWeightNodeFloat::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
         if ( inPlug.attribute() != aInputs
-        and inPlug.attribute() != aFactor
-        and inPlug.attribute() != aInputWeights
-        and inPlug.attribute() != aOperation)
+        && inPlug.attribute() != aFactor
+        && inPlug.attribute() != aInputWeights
+        && inPlug.attribute() != aOperation)
         {
             return MS::kSuccess;
         }

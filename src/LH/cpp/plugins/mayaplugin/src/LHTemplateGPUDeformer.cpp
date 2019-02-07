@@ -28,6 +28,8 @@ identityNode::deform( MDataBlock& data,
                       const MMatrix& /*m*/,
                       unsigned int multiIndex)
 {
+    return MStatus::kSuccess;
+
     MStatus returnStatus;
     float env = data.inputValue(identityNode::envelope).asFloat();
     if (!env)
@@ -38,8 +40,9 @@ identityNode::deform( MDataBlock& data,
     MVector direction(1.0, 0.0, 0.0);
 
     for ( ; !itGeo.isDone(); itGeo.next()) {
-        MPoint pt = itGeo.position();
+        // MPoint pt = itGeo.position();
         itGeo.setPosition(itGeo.position() + (direction * amount));
+        // itGeo.setPosition(pt);
     }
     return returnStatus;
 }
@@ -65,98 +68,160 @@ bool identityGPUDeformer::validateNode(MDataBlock& block, const MEvaluationNode&
     // Support everything.
     return true;
 }
-
+MString identityGPUDeformer::pluginLoadPath;
 MPxGPUDeformer::DeformerStatus identityGPUDeformer::evaluate(
-    MDataBlock& block,
+    MDataBlock& data,
     const MEvaluationNode& evaluationNode,
     const MPlug& plug,
-    unsigned int numElements,
-    const MAutoCLMem inputBuffer,
-    const MAutoCLEvent inputEvent,
-    MAutoCLMem outputBuffer,
-    MAutoCLEvent& outputEvent
+    const MGPUDeformerData& inputData,
+    MGPUDeformerData& outputData
+    // unsigned int numElements,
+    // const MAutoCLMem inputBuffer,
+    // const MAutoCLEvent inputEvent,
+    // MAutoCLMem outputBuffer,
+    // MAutoCLEvent& outputEvent
     )
 {
-    cl_int err = CL_SUCCESS;    
-    
+
+    MGPUDeformerBuffer inputDeformerBuffer = inputData.getBuffer(sPositionsName());
+    const MAutoCLMem inputBuffer = inputDeformerBuffer.buffer();
+    unsigned int numElements = inputDeformerBuffer.elementCount();
+    const MAutoCLEvent inputEvent = inputDeformerBuffer.bufferReadyEvent();
+
+    // create the output buffer
+	MGPUDeformerBuffer outputDeformerBuffer = createOutputBuffer(inputDeformerBuffer);
+	MAutoCLEvent outputEvent;
+	MAutoCLMem outputBuffer = outputDeformerBuffer.buffer();
+
+    cl_int err = CL_SUCCESS;
+    MGlobal::displayInfo(MString("init ") + err);
+
+    float envelope = data.inputValue(identityNode::envelope).asFloat();
+    if (!envelope)
+        return MPxGPUDeformer::kDeformerSuccess;
+    float amount = data.inputValue(identityNode::aAmount).asFloat();
     // Setup OpenCL kernel.
     if ( !fKernel.get() )
     {
         // Get and compile the kernel.
-        const char* mayaLocation = getenv( "MAYA_LOCATION" );
 
-        MString openCLKernelFile( mayaLocation );
+        MString openCLKernelFile( identityGPUDeformer::pluginLoadPath );
         openCLKernelFile +="/LHTemplateGPUDeformer.cl";
 
         MString openCLKernelName("identity");
 
-        MAutoCLKernel kernel = MOpenCLInfo::getOpenCLKernel( openCLKernelFile, openCLKernelName );
-        if ( kernel.isNull() )
+        fKernel = MOpenCLInfo::getOpenCLKernel( openCLKernelFile, openCLKernelName );
+        if ( fKernel.isNull() )
         {
             return MPxGPUDeformer::kDeformerFailure;
-        }
-
-        fKernel = kernel;
-        
-        // Figure out a good work group size for our kernel.
-        fLocalWorkSize = 0;
-        fGlobalWorkSize = 0;
-        size_t retSize = 0;
-        err = clGetKernelWorkGroupInfo(
-            fKernel.get(),
-            MOpenCLInfo::getOpenCLDeviceId(),
-            CL_KERNEL_WORK_GROUP_SIZE,
-            sizeof(size_t),
-            &fLocalWorkSize,
-            &retSize
-            );
-        MOpenCLInfo::checkCLErrorStatus(err);
-        if ( err != CL_SUCCESS || retSize == 0 || fLocalWorkSize == 0)
-        {
-            return MPxGPUDeformer::kDeformerFailure;
-        }
-
-        // Global work size must be a multiple of local work size.
-        const size_t remain = numElements % fLocalWorkSize;
-        if ( remain )
-        {
-            fGlobalWorkSize = numElements + ( fLocalWorkSize - remain );
-        }
-        else
-        {
-            fGlobalWorkSize = numElements;
         }
     }
+
 
     // Set all of our kernel parameters.  Input buffer and output buffer may be changing every frame
     // so always set them.
     unsigned int parameterId = 0;
     err = clSetKernelArg(fKernel.get(), parameterId++, sizeof(cl_mem), (void*)outputBuffer.getReadOnlyRef());
     MOpenCLInfo::checkCLErrorStatus(err);
+    MGlobal::displayInfo(MString("1 ") + err);
     err = clSetKernelArg(fKernel.get(), parameterId++, sizeof(cl_mem), (void*)inputBuffer.getReadOnlyRef());
     MOpenCLInfo::checkCLErrorStatus(err);
+    MGlobal::displayInfo(MString("2 ") + err);
     err = clSetKernelArg(fKernel.get(), parameterId++, sizeof(cl_uint), (void*)&numElements);
+    MGlobal::displayInfo(MString("3 ") + err);
+    MOpenCLInfo::checkCLErrorStatus(err);
+    err = clSetKernelArg(fKernel.get(), parameterId++, sizeof(cl_float), (void*)&envelope);
+    MOpenCLInfo::checkCLErrorStatus(err);
+    err = clSetKernelArg(fKernel.get(), parameterId++, sizeof(cl_float), (void*)&amount);
     MOpenCLInfo::checkCLErrorStatus(err);
 
     // Set up our input events.  The input event could be NULL, in that case we need to pass
     // slightly different parameters into clEnqueueNDRangeKernel.
-    cl_event events[ 1 ] = { 0 };
-    cl_uint eventCount = 0;
-    if ( inputEvent.get() )
+    // cl_event events[ 1 ] = { 0 };
+    // cl_uint eventCount = 0;
+    // if ( inputEvent.get() )
+    // {
+    //     events[ eventCount++ ] = inputEvent.get();
+    // }
+
+
+    // size_t workGroupSize;
+    // size_t retSize;
+    // err = clGetKernelWorkGroupInfo(
+    //     fKernel.get(),
+    //     MOpenCLInfo::getOpenCLDeviceId(),
+    //     CL_KERNEL_WORK_GROUP_SIZE,
+    //     sizeof(size_t),
+    //     &workGroupSize,
+    //     &retSize);
+    // MOpenCLInfo::checkCLErrorStatus(err);
+
+    // Figure out a good work group size for our kernel.
+    fLocalWorkSize = 0;
+    fGlobalWorkSize = 0;
+    size_t retSize = 0;
+    err = clGetKernelWorkGroupInfo(
+        fKernel.get(),
+        MOpenCLInfo::getOpenCLDeviceId(),
+        CL_KERNEL_WORK_GROUP_SIZE,
+        sizeof(size_t),
+        &fLocalWorkSize,
+        &retSize
+        );
+
+    MOpenCLInfo::checkCLErrorStatus(err);
+
+
+    // size_t workGroupSize;
+    size_t localWorkSize = 256;
+    if (retSize > 0) {
+        localWorkSize = fLocalWorkSize;
+    }
+    // global work size must be a multiple of localWorkSize
+    size_t globalWorkSize = (localWorkSize - numElements % localWorkSize) + numElements;
+
+    // set up our input events.  The input event could be NULL, in that case we need to pass
+    // slightly different parameters into clEnqueueNDRangeKernel
+    unsigned int numInputEvents = 0;
+    if (inputEvent.get())
     {
-        events[ eventCount++ ] = inputEvent.get();
+        numInputEvents = 1;
     }
 
     // Run the kernel
+    //CL_INVALID_EVENT_WAIT_LIST
+
+    // cl_int err = CL_SUCCESS;
+    // cl_command_queue,
+ 	//cl_kernel
+ 	//cl_uint
+ 	//const size_t *
+ 	//const size_t *
+ 	//const size_t *
+ 	//cl_uint 
+ 	//const cl_event *
+ 	//cl_event *
+    MGlobal::displayInfo(MString("clEnqueueNDRangeKernel ") + err);
 
     err = clEnqueueNDRangeKernel(
-        MOpenCLInfo::getMayaDefaultOpenCLCommandQueue(), fKernel.get(), 1, NULL, &fGlobalWorkSize,
-        &fLocalWorkSize, eventCount, events, outputEvent.getReferenceForAssignment());
+        MOpenCLInfo::getMayaDefaultOpenCLCommandQueue(),//cl_command_queue
+        fKernel.get(), 	//cl_kernel
+        1, //cl_uint
+        NULL, //const size_t*
+        &globalWorkSize,
+        &localWorkSize,
+        numInputEvents,
+        numInputEvents ? inputEvent.getReadOnlyRef() : 0,
+        outputEvent.getReferenceForAssignment()//cl_event *
+        );
     MOpenCLInfo::checkCLErrorStatus(err);
+    MGlobal::displayInfo(MString("clEnqueueNDRangeKernel ") + err);
+
     if ( err != CL_SUCCESS )
     {
         return MPxGPUDeformer::kDeformerFailure;
     }
+    MGlobal::displayInfo(MString("Success") + err);
 
     return MPxGPUDeformer::kDeformerSuccess;
 }
