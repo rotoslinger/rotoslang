@@ -4,7 +4,7 @@ from utils.misc import formatName, create_ctl
 from utils import misc
 from utils import exportUtils
 from utils import faceWeights
-
+import elements
 
 
 class component(base.component):
@@ -85,11 +85,11 @@ class component(base.component):
             cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
             cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
             cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
-        misc.move(self.buffer2, self.translate, self.rotate, self.scale)
 
-    def addGuide(self):
+    def createGuide(self):
         if self.guide:
-            
+            self.guideShape = exportUtils.create_curve_2(elements.sphereSmall, "{0}_{1}_SHP".format(self.side, self.name), self.buffer2)
+
 
     def createAttrs(self):
         inputAttrs = ["xSpeed", "ySpeed", "zSpeed"]
@@ -110,9 +110,13 @@ class component(base.component):
         # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".ySpeed")
         # cmds.addAttr(self.cmptMasterParent, ln = "zSpeed", at = "message")
         # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".zSpeed")
+    def preConnect(self):
+        misc.move(self.buffer2, self.translate, self.rotate, self.scale)
 
     def createNodes(self):
         self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
                                                 name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=True,
                                                 scale=False, offsetBuffer = self.buffer2, maintainOffsetT=True, 
                                                 maintainOffsetR=True, maintainOffsetS=True)
+    
+    

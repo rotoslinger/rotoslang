@@ -32,7 +32,9 @@ class component(object):
         self.createCtrl()
         self.createGuide()
         self.createAttrs()
+        self.preConnect()
         self.createNodes()
+        self.postConnect()
         self.componentName = "component"
 
     def createHier(self):
@@ -68,7 +70,13 @@ class component(object):
     def createAttrs(self):
         return
 
+    def preConnect(self):
+        return
+
     def createNodes(self):
+        return
+
+    def postConnect(self):
         return
 
 
