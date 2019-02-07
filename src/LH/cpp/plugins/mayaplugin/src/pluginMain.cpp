@@ -23,6 +23,7 @@
 #include "LHCurveWeightNode.h"
 #include "LHKDoubleArrayToKFloatArray.h"
 #include "LHWeightNodeFloat.h"
+#include "LHTemplateGPUDeformer.h"
 
 // #include "nullMatrixTransform.h"
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
@@ -68,6 +69,28 @@ MStatus initializePlugin(MObject obj) {
 //		  LHMultiClusterThreaded::initialize, MPxNode::kDeformerNode );
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+  status = plugin.registerNode(
+            "identity" ,
+            identityNode::id ,
+            &identityNode::creator ,
+            &identityNode::initialize ,
+            MPxNode::kDeformerNode
+            );
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  MString nodeClassName("identity");
+  MString registrantId("mayaPluginExample");
+  MGPUDeformerRegistry::registerGPUDeformerCreator(
+      nodeClassName,
+      registrantId,
+      identityGPUDeformer::getGPUDeformerInfo()
+      );
+
+
+
+
   status = plugin.registerNode("LHWeightNodeFloat",
                                LHWeightNodeFloat::id,
                                LHWeightNodeFloat::creator,
@@ -224,7 +247,23 @@ MStatus uninitializePlugin(MObject obj) {
   status = plugin.deregisterNode(LHSlideDeformer::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
+  MString nodeClassName("identity");
+  MString registrantId("mayaPluginExample");
+  MGPUDeformerRegistry::deregisterGPUDeformerCreator(
+      nodeClassName,
+      registrantId
+      );
+
+  status = plugin.deregisterNode( identityNode::id );
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
   return status;
+
+
+
+
+  
 }
 
 

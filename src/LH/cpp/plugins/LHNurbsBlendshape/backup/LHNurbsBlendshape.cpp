@@ -1,7 +1,6 @@
 #include <maya/MCppCompat.h>
 
 #include "LHNurbsBlendshape.h"
-#include <maya/MFnPlugin.h>
 
 MTypeId LHNurbsBlend::id(0x00003652);
 MObject LHNurbsBlend::aBlendOldMesh;

@@ -47,7 +47,9 @@ set(SOURCE_FILES
 	"LHKDoubleArrayToKFloatArray.h"
 	"LHWeightNodeFloat.cpp"
 	"LHWeightNodeFloat.h"
-
+	"LHTemplateGPUDeformer.cpp"
+	"LHTemplateGPUDeformer.h"
+	"LHTemplateGPUDeformer.cl"
 
 
 )

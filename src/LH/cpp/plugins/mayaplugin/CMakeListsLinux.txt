@@ -17,8 +17,6 @@ endif()
 rez_find_packages(PREFIX pkgs AUTO)
 
 
-
-
 set(source_files
 	"src/pluginMain.cpp"
 #	"LHRepulsorDeformer.cpp"
@@ -29,8 +27,8 @@ set(source_files
 #	"LHTemplateNode.h"
 #	"LHTemplateDeformer.cpp"
 #	"LHTemplateDeformer.h"
-	"LHWeightNode.cpp"
-	"LHWeightNode.h"
+	"src/LHWeightNode.cpp"
+	"src/LHWeightNode.h"
 #	"LHMultiCluster.cpp"
 #	"LHMultiCluster.h"
 #	"LHComputeDeformer.cpp"
@@ -62,6 +60,10 @@ set(source_files
 	"src/LHCurveRollDeformer.h"
 	"src/LHCurveWeightNode.cpp"
 	"src/LHCurveWeightNode.h"
+	"src/LHKDoubleArrayToKFloatArray.cpp"
+	"src/LHKDoubleArrayToKFloatArray.h"
+	"src/LHWeightNodeFloat.cpp"
+	"src/LHWeightNodeFloat.h"
 )
 
 add_library(collision SHARED ${source_files})

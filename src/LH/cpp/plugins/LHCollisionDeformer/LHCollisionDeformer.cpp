@@ -11,7 +11,6 @@
 
 #include "LHCollisionDeformer.h"
 #include "threading.cpp"
-#include <maya/MFnPlugin.h>
 
 MTypeId LHCollisionDeformer::id(0x67438467);
 MObject LHCollisionDeformer::aBulgeAmount;
