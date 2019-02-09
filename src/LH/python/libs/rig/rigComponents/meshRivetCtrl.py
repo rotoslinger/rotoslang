@@ -1,9 +1,9 @@
 from maya import cmds
 from rigComponents import base
-from utils.misc import formatName, create_ctl
-from utils import misc
-from utils import exportUtils
-from utils import faceWeights
+from rig.utils.misc import formatName, create_ctl
+from rig.utils import misc
+from rig.utils import exportUtils
+from rig.utils import faceWeights
 import elements
 
 
@@ -32,9 +32,10 @@ class component(base.component):
                  szConnectionAttr=None,
 
                  normalConstraintPatch=None,
-
+                 selection=False,
 
                  **kw):
+
         self.speedTxDefault = speedTxDefault
         self.speedTyDefault = speedTyDefault
         self.speedTzDefault = speedTzDefault
@@ -58,6 +59,12 @@ class component(base.component):
         self.syConnectionAttr = syConnectionAttr
         self.szConnectionAttr = szConnectionAttr
         self.normalConstraintPatch = normalConstraintPatch
+
+        if not self.translate and not self.rotate and not self.scale and selection:
+            sel = cmds.ls(sl=True)[0]
+            self.translate = cmds.xform(sel, q=True, t=True)
+            self.rotate = cmds.xform(sel, q=True, ro=True)
+            self.scale = cmds.xform(sel, q=True, s=True)
 
 
         super(component, self).__init__(**kw)

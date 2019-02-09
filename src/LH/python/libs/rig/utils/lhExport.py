@@ -1,6 +1,6 @@
 import sys
 
-from utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
+from rig.utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
 from rigComponents import slidingCtrl
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -13,10 +13,10 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-from utils import exportUtils as xUtils
+from rig.utils import exportUtils as xUtils
 from maya import cmds, OpenMaya
 import json
-from utils import LHSlideDeformerCmds, LHVectorDeformerCmds, LHCurveRollDeformerCmds, misc
+from rig.utils import LHSlideDeformerCmds, LHVectorDeformerCmds, LHCurveRollDeformerCmds, misc
 reload(LHSlideDeformerCmds)
 reload(LHVectorDeformerCmds)
 reload(LHCurveRollDeformerCmds)
@@ -201,7 +201,7 @@ class lh_deformer_import(object):
                  ):
         #---args
         self.path                    = path
-        self.create_geo              = create_geo
+        self.create_geo              = create_
         self.create_deformer         = create_deformer
         self.set_weights             = set_weights
         self.set_curves              = set_curves

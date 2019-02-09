@@ -162,16 +162,33 @@ MStatus LHSlideDeformer::getAnimCurves(
     parentPlug.getExistingArrayAttributeIndices(curveIndex);
     int indexLength = curveIndex.length();
     int index=0;
+
     for (index=0; index < indexLength; ++index)
     {
+            // MGlobal::displayInfo( parentPlug.partialName() + MString(" plug is null at index ") + index);
+
         MPlug childPlug = parentPlug.connectionByPhysicalIndex(curveIndex[index]);
+        if (childPlug.isNull())
+        {
+            MGlobal::displayInfo( parentPlug.partialName() + MString(" plug is null at index ") + index);
+            return MS::kFailure;
+        }
         MPlug oChild = childPlug.child(0);
+        if (oChild.isNull())
+        {
+            MGlobal::displayInfo( parentPlug.partialName() + MString(" child plug is null at index ") + index);
+            return MS::kFailure;
+        }
         oChild.asFloat();
         MFnAnimCurve fnAnimCurve(oChild);
         int numKeys = fnAnimCurve.numKeys();
-        if (!numKeys)
-            return MS::kFailure;
 
+        if (!numKeys)
+        {
+            MGlobal::displayInfo( MString("NO KEYS"));
+            // MGlobal::displayInfo(oChild.partialName() + MString(" doesn't have any keys."));
+            return MS::kFailure;
+        }
         MTime timeAtFirstKey = fnAnimCurve.time(0);
         MTime timeAtLastKey = fnAnimCurve.time(numKeys-1);
         float timeStart = timeAtFirstKey.value();

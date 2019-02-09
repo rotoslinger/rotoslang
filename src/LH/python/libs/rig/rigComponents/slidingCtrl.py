@@ -1,9 +1,9 @@
 from maya import cmds
 from rigComponents import base
-from utils.misc import formatName, create_ctl
-from utils import misc
-from utils import exportUtils
-from utils import faceWeights
+from rig.utils.misc import formatName, create_ctl
+from rig.utils import misc
+from rig.utils import exportUtils
+from rig.utils import faceWeights
 
 
 class component(base.component):

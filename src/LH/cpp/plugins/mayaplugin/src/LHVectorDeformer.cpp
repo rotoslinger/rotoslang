@@ -85,13 +85,33 @@ MStatus LHVectorDeformer::getAnimCurves(
     parentPlug.getExistingArrayAttributeIndices(curveIndex);
     int indexLength = curveIndex.length();
     int index=0;
+
     for (index=0; index < indexLength; ++index)
     {
+            // MGlobal::displayInfo( parentPlug.partialName() + MString(" plug is null at index ") + index);
+
         MPlug childPlug = parentPlug.connectionByPhysicalIndex(curveIndex[index]);
+        if (childPlug.isNull())
+        {
+            MGlobal::displayInfo( parentPlug.partialName() + MString(" plug is null at index ") + index);
+            return MS::kFailure;
+        }
         MPlug oChild = childPlug.child(0);
+        if (oChild.isNull())
+        {
+            MGlobal::displayInfo( parentPlug.partialName() + MString(" child plug is null at index ") + index);
+            return MS::kFailure;
+        }
         oChild.asFloat();
         MFnAnimCurve fnAnimCurve(oChild);
         int numKeys = fnAnimCurve.numKeys();
+
+        if (!numKeys)
+        {
+            MGlobal::displayInfo( MString("NO KEYS"));
+            // MGlobal::displayInfo(oChild.partialName() + MString(" doesn't have any keys."));
+            return MS::kFailure;
+        }
         MTime timeAtFirstKey = fnAnimCurve.time(0);
         MTime timeAtLastKey = fnAnimCurve.time(numKeys-1);
         float timeStart = timeAtFirstKey.value();
@@ -105,6 +125,7 @@ MStatus LHVectorDeformer::getAnimCurves(
     }
     return MS::kSuccess ;
 }
+
 
 void* LHVectorDeformer::creator() { return new LHVectorDeformer; }
 
@@ -493,7 +514,6 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                             try
                             {
                                 MArrayDataHandle arrayHandleParentParent(data.inputArrayValue( allWeightParentArrays[j] ));
-                                unsigned int countParentParent = arrayHandleParentParent.elementCount();
                                 arrayHandleParentParent.jumpToArrayElement(connectedArray[k]);
 
                                 //parent
@@ -501,12 +521,21 @@ MStatus LHVectorDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                                 MArrayDataHandle hArrayHandleParentArray(hArrayHandleParent);
 
                                 //child
-                                hArrayHandleParentArray.jumpToElement(i);
-                                MDataHandle handle(hArrayHandleParentArray.inputValue() );
-                                MDataHandle child(handle.child( allWeightChildren[j] ) );
-
-                                MFnDoubleArrayData newData(child.data());
-                                tmp = MFnDoubleArrayData(child.data()).array();
+                                status = hArrayHandleParentArray.jumpToElement(i);
+                                if (!status)
+                                    for(ii = 0; ii < iterGeoCount; ii++ )
+                                        tmp.append(1.0);
+                                else
+                                {
+                                    // CheckStatusReturn( status, "Unable to jump to element" );
+                                    MDataHandle handle(hArrayHandleParentArray.inputValue(&status) );
+                                    CheckStatusReturn( status, "Unable to get handle" );
+                                    MDataHandle child(handle.child( allWeightChildren[j] ) );
+                                    MFnDoubleArrayData newData(child.data());
+                                    tmp = MFnDoubleArrayData(child.data()).array();
+                                    // MGlobal::displayInfo(MString("STATUS") + status);
+                                }
+                                
                             }
                             catch(...)
                             {

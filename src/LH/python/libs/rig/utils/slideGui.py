@@ -12,12 +12,16 @@ if os not in sys.path:
 
 from maya import cmds
 import json
-from utils import faceWeights, lhDeformerExport, lhDeformerCmds, exportUtils
+import faceWeights, lhDeformerExport, lhDeformerCmds, exportUtils
 import weightingUtils
 import slideUICmds
 from rigComponents import slidingCtrl
+from rigComponents import meshRivetCtrl
+from rig.utils import misc
+reload(misc)
 reload(exportUtils)
 reload(slidingCtrl)
+reload(meshRivetCtrl)
 reload(slideUICmds)
 reload(weightingUtils)
 reload(faceWeights)
@@ -504,7 +508,8 @@ class slideDeformerGui(object):
                                         selectItem = 1)
         name = cmds.textFieldGrp(self.slideNameField, q = 1, text = 1)
         slideSurf = cmds.textFieldGrp(self.slideSurfName, q = 1, text = 1)
-        return deformer, attrs, name, slideSurf
+        geoName = cmds.textFieldGrp(self.constraintGeoName, q = 1, text = 1)
+        return deformer, attrs, name, slideSurf, geoName
 
     # for i in range(len(attrs)):
     #     # find corresponding weights, anim curves, and pivots based on attr connection
@@ -513,9 +518,26 @@ class slideDeformerGui(object):
 
 
     def addSlideCtrl(self, *args):
-        deformer, attrs, name, slideSurf = self.getSlideData()
-        if len(attrs) != 2:
+        deformer, unsortedAttrs, name, slideSurf, geoName = self.getSlideData()
+
+
+        if len(unsortedAttrs) != 2:
             return
+        # force the attribute order... selection order is not understood by the textScrollList
+        # make sure you have u then V
+        print unsortedAttrs[0]
+        attrs = ["", ""]
+        if "uValue" in cmds.listConnections(deformer + "." + unsortedAttrs[0], d=True,p=True)[0]:
+            attrs[0] = unsortedAttrs[0]
+        elif "vValue" in cmds.listConnections(deformer + "." + unsortedAttrs[0], d=True,p=True)[0]:
+            attrs[1] = unsortedAttrs[0]
+        if "uValue" in cmds.listConnections(deformer + "." + unsortedAttrs[1], d=True,p=True)[0]:
+            attrs[0] = unsortedAttrs[1]
+        elif "vValue" in cmds.listConnections(deformer + "." + unsortedAttrs[1], d=True,p=True)[0]:
+            attrs[1] = unsortedAttrs[1]
+
+        # print attrs
+        # return
         side = "C"
         # if name is entered in the UI users must use this format L_Mouth (side_name)
         if name:
@@ -531,11 +553,49 @@ class slideDeformerGui(object):
                 name = attrs[0].split("_")[1]
             if "LR" in name:
                 name = name.split("LR")[0]
-        
-        slidingCtrl.component(name=name, side=side, helperGeo = slideSurf, uOutConnectionAttr = deformer + "." + attrs[0] , vOutConnectionAttr = deformer + "." + attrs[1])
+        componentType = cmds.radioButtonGrp(self.add_component_type, q = 1, sl = 1)
+        if componentType == 1:
+            slidingCtrl.component(name=name, side=side, helperGeo = slideSurf, uOutConnectionAttr = deformer + "." + attrs[0] , vOutConnectionAttr = deformer + "." + attrs[1])
+        elif componentType == 2:
+            meshRivetCtrl.component(name=name, guide=True, side=side, normalConstraintPatch = slideSurf,
+            txConnectionAttr = deformer + "." + attrs[0] , tyConnectionAttr = deformer + "." + attrs[1], mesh = geoName, selection=True)
+
+
+
+# class component(base.component):
+#     def __init__(self,
+#                  speedTxDefault=.1,
+#                  speedTyDefault=.1,
+#                  speedTzDefault=.1,
+#                  curveData=None,
+#                  mesh = None,
+#                  translate = None,
+#                  rotate = None,
+#                  scale = None,
+#                  guide = False,
+                 
+#                  txConnectionAttr=None,
+#                  tyConnectionAttr=None,
+#                  tzConnectionAttr=None,
+
+#                  rxConnectionAttr=None,
+#                  ryConnectionAttr=None,
+#                  rzConnectionAttr=None,
+
+#                  sxConnectionAttr=None,
+#                  syConnectionAttr=None,
+#                  szConnectionAttr=None,
+
+#                  normalConstraintPatch=None,
+
+
 
     def normalizeSlideCtrl(self, *args):
-        slidingCtrl.normalizeSlidingCtrls()
+        componentType = cmds.radioButtonGrp(self.add_component_type, q = 1, sl = 1)
+        if componentType == 1:
+            slidingCtrl.normalizeSlidingCtrls()
+        if componentType == 2:
+            misc.updateGeoConstraint()
 
     def mirrorSlideCtrl(self, *args):
         slidingCtrl.mirrorSlidingCtrls()
@@ -2484,6 +2544,10 @@ class slideDeformerGui(object):
         ###########################################################
 
         cmds.setParent(self.layout_main)
+        
+        # self.addComponentType = cmds.checkBox( label='Flip Source and target',
+        #                                     w=80, al="right", value=False, cc=self.__selectDeformerAction )
+
         self.addSlideCtrlFrame = cmds.frameLayout(label = "Add Slide Ctrls",
                                        collapsable = True,
                                        collapse = True)
@@ -2515,21 +2579,40 @@ class slideDeformerGui(object):
                                              )
         cmds.setParent(self.addSlideCtrlFrame)
         self.layoutSlide = cmds.rowColumnLayout(nc = 1)
+        self.add_component_type = cmds.radioButtonGrp(label = "Type:", 
+                            labelArray2=['Slide Ctrl', 'Stick Ctrl'], 
+                            numberOfRadioButtons = 2,
+                            sl = 2,
+                            cw3 = [80,70,30],
+                            cal = [(1,"left"),(2,"left"),(3,"left")],
+                            onc = self.addComponentTypeAction
+                            )
 
-        cmds.text("Enter the surface that will be used to slide on")
-        self.slideSurfName = cmds.textFieldGrp( label='Slide Surf Name', text='C_manipSurf_EX',
+
+        self.slideSurfaceInstruction = cmds.text("Enter the surface that will be used to slide on")
+        self.slideSurfName = cmds.textFieldGrp( label='Surf Name', text='C_mouthSurface_EX',
                                 cw2 = [100,180],
                                 cal = [(1,"left"),(2,"left")],
                                 )
+
+
 
         cmds.text("Enter side and name ex: L_mouth ")
         cmds.text("If not entered will try to automatically name")
-        self.slideNameField = cmds.textFieldGrp( label='Slide Ctrl Name', text='',
+        self.slideNameField = cmds.textFieldGrp( label='Ctrl Name', text='',
                                 cw2 = [100,180],
                                 cal = [(1,"left"),(2,"left")],
                                 )
+        self.constraintGeoInstruction = cmds.text("For Stick Controls")
+        self.constraintGeoInstruction = cmds.text("Enter the geo that will be used to constrain the control")
+        self.constraintGeoName = cmds.textFieldGrp( label='Geo Name', text='C_body_HI',
+                                cw2 = [100,180],
+                                cal = [(1,"left"),(2,"left")],
+                                )
+
+
         cmds.text("Select LR attr first, then UD attr (U Parameter followed by V Parameter)")
-        self.addSelectedButton = cmds.button(label = "Add Slide Ctrl", 
+        self.addSelectedButton = cmds.button(label = "Add Ctrl", 
                                                 c = self.addSlideCtrl,
                                                 h = 30, w = 520)
 
@@ -2538,7 +2621,7 @@ class slideDeformerGui(object):
                                         c = self.toggleEnvelope,
                                         h = 30, w = 520)
         cmds.text("Set Control to neutral position")
-        self.normalizeSlideButton = cmds.button(label = "Normalize Slide Control", 
+        self.normalizeSlideButton = cmds.button(label = "Update Nuetral Pose", 
                                         c = self.normalizeSlideCtrl,
                                         h = 30, w = 520)
         cmds.text("Select Slide Ctrl on L or R side and run to mirror")
@@ -2746,6 +2829,13 @@ class slideDeformerGui(object):
                                         c = self.__export,
                                        w = 200)
 #         cmds.text("Select one or more point")
+    def addComponentTypeAction(self, *args):
+        componentType = cmds.radioButtonGrp(self.add_component_type, q = 1, sl = 1)
+        print componentType
+        if componentType == 1:
+            cmds.text(self.slideSurfaceInstruction, e=True, label = "Enter the surface that will be used to slide on")
+        if componentType == 2:
+            cmds.text(self.slideSurfaceInstruction, e=True, label = "Enter the surface that will be used to aim at")
 
     def show(self):
         self.__createUiElements()

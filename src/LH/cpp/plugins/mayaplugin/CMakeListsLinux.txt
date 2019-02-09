@@ -16,6 +16,7 @@ endif()
 
 rez_find_packages(PREFIX pkgs AUTO)
 
+include_directories(src)
 
 set(source_files
 	"src/pluginMain.cpp"
@@ -61,15 +62,19 @@ set(source_files
 	"src/LHCurveWeightNode.cpp"
 	"src/LHCurveWeightNode.h"
 	"src/LHKDoubleArrayToKFloatArray.cpp"
-	"src/LHKDoubleArrayToKFloatArray.h"
+#	"src/LHKDoubleArrayToKFloatArray.h"
 	"src/LHWeightNodeFloat.cpp"
-	"src/LHWeightNodeFloat.h"
+#	"src/LHWeightNodeFloat.h"
 	"src/LHTemplateGPUDeformer.cpp"
-	"src/LHTemplateGPUDeformer.h"
+#	"src/LHTemplateGPUDeformer.h"
 	"src/LHTemplateGPUDeformer.cl"
 
 )
-
+#message("SOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" ${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
 add_library(collision SHARED ${source_files})
 set_target_properties(collision PROPERTIES PREFIX "")
 

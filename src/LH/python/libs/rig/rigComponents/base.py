@@ -1,5 +1,5 @@
 from maya import cmds
-from utils import elements, misc
+from rig.utils import elements, misc
 
 
 class component(object):

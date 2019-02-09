@@ -1,8 +1,8 @@
 import json
 import time
 
-from utils import exportUtils as xUtils, LHSlideDeformerCmds
-from utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
+from rig.utils import exportUtils as xUtils, LHSlideDeformerCmds
+from rig.utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
 from maya import cmds
 from lhExport import lh_deformer_export, lh_deformer_import
 
