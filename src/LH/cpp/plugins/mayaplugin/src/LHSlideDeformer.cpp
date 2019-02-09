@@ -85,8 +85,64 @@ MObject LHSlideDeformer::aNAnimCurveVParent;
 //////////////// R ////////////////////////////
 //R Values
 
+MStatus LHSlideDeformer::RetrieveWeightsForAllIndicies(MObject weightsParentParent, MObject weightsParent, MObject weights, int numIndex, std::vector<MDoubleArray> &weightsArray,
+                                                       MPlug inPlug, MDataBlock &data)
+{
+
+    MStatus status;
+    if (weightsArray.size())
+    {
+        weightsArray.clear();
+    }
+    for (i = 0; i < numIndex; ++i)
+    {
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //Find out how many points are in each piece of geo that will be deformed, if non fail safely and create a dummy count of 0
+        MArrayDataHandle ahInput = data.inputArrayValue(weightsParentParent, &status);
+        CheckStatusReturn(status, "Unable to Make ahInput");
+        status = ahInput.jumpToElement(i);
+        CheckStatusReturn(status, "Unable to jump to element");
+
+        if (status == MS::kSuccess)
+        {
+            // if status fails set array to 0
+            MDataHandle dhInput = ahInput.inputValue(&status);
+            CheckStatusReturn(status, "Unable to dhInput");
+
+            MDataHandle dhWeightChild = dhInput.child(inputGeom);
+            // if (!dhWeightChild.isNull())
+            CheckStatusReturn(status, "Unable to ahWeightChild");
+            return MS::kSuccess;
+
+            MItGeometry iter(dhWeightChild, false, &status);
+            CheckStatusReturn(status, "Unable to Make iterGeo");
+
+            return MS::kSuccess;
 
 
+            iterGeoCount = iter.count(&status);
+            CheckStatusReturn(status, "Unable to Make iterGeoCount");
+            return MS::kSuccess;
+        }
+        if (iterGeoCount > 0)
+        {
+            if (rWeights.length())
+                rWeights.clear();
+            status = getPlugWeightValues(weightsParent, weights, iterGeoCount, i, rWeights);
+            CheckStatusReturn(status, "Unable to get weightsArray");
+            weightsArray.push_back(rWeights);
+        }
+        else
+        {
+            if (dummyWeights.length())
+                dummyWeights.clear();
+            dummyWeights.setLength(1);
+            dummyWeights[0] = 0.0;
+            weightsArray.push_back(dummyWeights);
+        }
+    }
+    return MS::kSuccess;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////// get anim curves ////////////////////////////////////////////////////
@@ -375,9 +431,10 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////   get all weights (cache if specified)      ////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    MPlug weightCheck(thisMObj, aUWeightsParentArray );
-//    unsigned int weightSize = weightCheck.numConnectedChildren();
+   MPlug weightCheck(thisMObj, aUWeightsParentArray );
+   unsigned int weightSize = weightCheck.numConnectedChildren();
 
+    // if (allWeightsArray.size() < numIndex || cacheWeightsAmt == 0)
     if (allWeightsArray.size() < numIndex || cacheWeightsAmt == 0)
     {
         MObject allWeightParentArrays[]= {aUWeightsParentArray,
@@ -397,7 +454,6 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
         for(i = 0; i < numIndex; i++ )
         {
             status = geomArrayHandle.jumpToElement( i );
-//                CheckStatusReturn( status, "Unable to jump to element" );
             if (status == MS::kSuccess)
             {
                 success = 1;
@@ -409,12 +465,9 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             // if you find a connection, get the weights
             if (success == 1)
             {
-//              tmpAllWeightsArray = [];
                 std::vector < std::vector < MDoubleArray > > tmpAllWeightsArray;
                 for(j = 0; j < 3; j++ )
                 {
-//              for j in range(len(allWeightParentArrays)):
-//                  tempWeights = [];
                     std::vector < MDoubleArray > tempWeights;
                     MPlug weightArrayCheck(thisMObj, allWeightParentArrays[j] );
                     MIntArray connectedArray;
@@ -427,21 +480,31 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                             try
                             {
                                 MArrayDataHandle arrayHandleParentParent(data.inputArrayValue( allWeightParentArrays[j] ));
-//                                unsigned int countParentParent = arrayHandleParentParent.elementCount();
                                 arrayHandleParentParent.jumpToArrayElement(connectedArray[k]);
 
                                 //parent
                                 MDataHandle hArrayHandleParent = arrayHandleParentParent.inputValue().child(allWeightParents[j]);
                                 MArrayDataHandle hArrayHandleParentArray(hArrayHandleParent);
-//                                unsigned int countParent = hArrayHandleParentArray.elementCount();
 
                                 //child
-                                hArrayHandleParentArray.jumpToElement(i);
-                                MDataHandle handle(hArrayHandleParentArray.inputValue() );
-                                MDataHandle child(handle.child( allWeightChildren[j] ) );
-                                MFnDoubleArrayData newData(child.data());
-                                tmp = MFnDoubleArrayData(child.data()).array();
-//                                tmp = OpenMaya.MFnDoubleArrayData(child.data()).array()
+                                status = hArrayHandleParentArray.jumpToElement(i);
+                                if (!status)
+                                    for(ii = 0; ii < iterGeoCount; ii++ )
+                                        tmp.append(1.0);
+                                else
+                                {
+                                    // CheckStatusReturn( status, "Unable to jump to element" );
+                                    MDataHandle handle(hArrayHandleParentArray.inputValue(&status) );
+                                    CheckStatusReturn( status, "Unable to get handle" );
+                                    MDataHandle child(handle.child( allWeightChildren[j] ) );
+                                    MFnDoubleArrayData newData(child.data());
+                                    tmp = MFnDoubleArrayData(child.data()).array();
+                                    // MGlobal::displayInfo(MString("STATUS") + status);
+                                }
+                                
+
+
+
                             }
                             catch(...)
                             {
@@ -450,7 +513,9 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                                     tmp.append(1.0);
                             }
                             tempWeights.push_back(tmp);
+
                         }
+                        // MGlobal::displayInfo(MString("Size") + tempWeights.size());
                         tmpAllWeightsArray.push_back(tempWeights);
                     }
                     else
@@ -464,6 +529,7 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
                     }
                 }
                 allWeightsArray.push_back(tmpAllWeightsArray);
+                // return MS::kSuccess;
             }
             else if (success == 0)
             {
@@ -478,6 +544,68 @@ MStatus LHSlideDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
             }
         }
     }
+//         MObject allWeightParentArrays[]= {aUWeightsParentArray,
+//                                           aVWeightsParentArray,
+//                                           aNWeightsParentArray};
+//         MObject allWeightParents[] = {aUWeightsParent,
+//                                       aVWeightsParent,
+//                                       aNWeightsParent};
+//         MObject allWeightChildren[] = {aUWeights,
+//                                        aVWeights,
+//                                        aNWeights};
+
+    // std::vector < std::vector < std::vector < MDoubleArray > > > allWeightsArray;
+    // tempW = allWeightsArray[mIndex][i][j][idx];
+    // return MS::kSuccess;
+//     // if (allWeightsArray.size() < numIndex || cacheWeightsAmt == 0)
+
+	// if((!allWeightsArray.size() ||  allWeightsArray.size() < numIndex) || !cacheWeightsAmt)
+    // {
+    //     if (allWeightsArray.size())
+    //         allWeightsArray.clear();
+    //     // for(i = 0; i < numIndex; i++ )
+    //     // {
+    //     //     status = geomArrayHandle.jumpToElement( i );
+    //     std::vector <MDoubleArray> aUWeightsArrayTemp;
+    //     std::vector <MDoubleArray> aVWeightsArrayTemp;
+    //     std::vector <MDoubleArray> aNWeightsArrayTemp;
+    //     status = LHSlideDeformer::RetrieveWeightsForAllIndicies(aUWeightsParentArray, aUWeightsParent, aUWeights, numIndex, aUWeightsArrayTemp, geomPlug, data);
+    //     CheckStatusReturn( status, "Unable to get U Weights" );
+    //     return MS::kSuccess;
+
+    //     status = LHSlideDeformer::RetrieveWeightsForAllIndicies(aVWeightsParentArray, aVWeightsParent, aVWeights, numIndex, aVWeightsArrayTemp, geomPlug, data);
+    //     CheckStatusReturn( status, "Unable to get V Weights" );
+
+    //     status = LHSlideDeformer::RetrieveWeightsForAllIndicies(aNWeightsParentArray, aNWeightsParent, aNWeights, numIndex, aNWeightsArrayTemp, geomPlug, data);
+    //     CheckStatusReturn( status, "Unable to get N Weights" );
+    //     std::vector < std::vector < MDoubleArray > > allWeightArrays;
+    //     allWeightArrays.push_back(aUWeightsArrayTemp);
+    //     allWeightArrays.push_back(aVWeightsArrayTemp);
+    //     allWeightArrays.push_back(aNWeightsArrayTemp);
+    //     allWeightsArray.push_back(allWeightArrays);
+    // }
+    // return MS::kSuccess;
+
+
+
+
+
+
+
+
+	// if((!collisionWeightsArray.size() || collisionWeightsArray.size() < numIndex) || !cacheWeights)
+    // {
+    //     status = LHCollisionDeformer::RetrieveWeightsForAllIndicies(aWeightsParent, aCollisionWeights, numIndex, collisionWeightsArray, inPlug, data);
+    //     CheckStatusReturn( status, "Unable to get collision Weights" );
+    // }
+
+
+
+
+
+
+
+//     }
 //    float myfloat = fabs(allWeightsArray[0][0][0].length());
 //    MGlobal::displayInfo(MString()+myfloat);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////

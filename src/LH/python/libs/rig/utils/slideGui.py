@@ -704,6 +704,15 @@ class slideDeformerGui(object):
                                 tmp_target = []
                                 src_deformer = deformer[0]
                                 trg_deformer = deformer[0]
+
+                                # sourceAttr = src_deformer + "." + weights_split[0] + "[" + str(index) + "]." + weights_split[1]
+                                # sourceWeights = cmds.getAttr(sourceAttr)
+
+                                # print cmds.polyEvaluate(geo_tmp, v=1), "numVERTS"
+                                # print "LENGTH TARGET", len(sourceWeights)
+
+
+
                                 if len(deformer)>1:
                                     trg_deformer = deformer[1]
                                 for j in range(len(target)):
@@ -716,6 +725,14 @@ class slideDeformerGui(object):
                                                       +"]."
                                                       +targets_split[1],
                                                       )
+
+                                    # sourceAttr = src_deformer + "." + weights_split[0] + "[" + str(index) + "]." + weights_split[1]
+                                    sourceAttr = tmp_target[j]
+                                    sourceWeights = cmds.getAttr(sourceAttr)
+
+                                    print cmds.polyEvaluate(geo_tmp, v=1), "numVERTS"
+                                    print "LENGTH TARGET", len(sourceWeights)
+
                                 faceWeights.copy_double_array_weights(source = src_deformer
                                                                       +"."
                                                                       + weights_split[0]

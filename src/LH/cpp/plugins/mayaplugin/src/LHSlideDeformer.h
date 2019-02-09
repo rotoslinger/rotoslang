@@ -64,6 +64,8 @@ class LHSlideDeformer : public MPxDeformerNode {
                                 std::vector <float> &returnTimeLength,
                                 std::vector <float> &returnTimeOffset,
                                 std::vector <MFnAnimCurve*> &returnAnimCurve);
+  virtual MStatus RetrieveWeightsForAllIndicies(MObject weightsParentParent, MObject weightsParent, MObject weights, int numIndex, std::vector <MDoubleArray> &weightsArray,
+                                              MPlug inPlug, MDataBlock& data);
   static void* creator();
   static MStatus initialize();
   virtual SchedulingType schedulingType() const { return kParallel; }
@@ -114,6 +116,8 @@ class LHSlideDeformer : public MPxDeformerNode {
   static MObject aNAnimCurveUParent;
   static MObject aNAnimCurveV;
   static MObject aNAnimCurveVParent;
+  MDoubleArray rWeights;
+  MDoubleArray dummyWeights;
 
   // Global cache vars
 //  std::array <int,2>t;
@@ -196,52 +200,85 @@ class LHSlideDeformer : public MPxDeformerNode {
 ;
   MQuaternion rotateX, rotateY, rotateZ;
   MEulerRotation rotateEuler;
-};
-
-inline MString FormatError( const MString &msg, const MString
-                              &sourceFile, const int &sourceLine ) 
-{
-    MString txt( "[LHSlideDeformer] " );
-    txt += msg ; 
-    txt += ", File: "; 
-    txt += sourceFile; 
-    txt += " Line: "; 
-    txt += sourceLine; 
-    return txt; 
-}
-#define Error( msg ) \
-    { \
-    MString __txt = FormatError( msg, __FILE__, __LINE__ ); \
-    MGlobal::displayError( __txt ); \
-    cerr << endl << "Error: " << __txt; \
-    } \
-
-#define CheckBool( result ) \
-    if( !(result) ) \
-        { \
-        Error( #result ); \
+        inline MString FormatError( const MString &msg, const MString
+                                        &sourceFile, const int &sourceLine )
+        {
+            MString txt( "[LHCollisionDeformer] " );
+            txt += msg ;
+            txt += ", File: ";
+            txt += sourceFile;
+            txt += " Line: ";
+            txt += sourceLine;
+            return txt;
         }
+        #define Error( msg ) \
+            { \
+            MString __txt = FormatError( msg, __FILE__, __LINE__ ); \
+            MGlobal::displayError( __txt ); \
+            cerr << endl << "Error: " << __txt; \
+            } \
 
-#define CheckStatus( stat, msg ) \
-    if( !stat ) \
-        { \
-        Error( msg ); \
-        } 
+        #define CheckBool( result ) \
+            if( !(result) ) \
+                { \
+                Error( #result ); \
+                }
 
-#define CheckObject( obj, msg ) \
-    if(obj.isNull() ) \
-        { \
-        Error( msg ); \
-        } 
+        #define CheckStatus( stat, msg ) \
+            if( !stat ) \
+                { \
+                Error( msg ); \
+                }
 
-#define CheckStatusReturn( stat, msg ) \
-    if( !stat ) \
-        { \
-        Error( msg ); \
-        return stat; \
-        } 
+        #define CheckObject( obj, msg ) \
+            if(obj.isNull() ) \
+                { \
+                Error( msg ); \
+                }
+
+        #define CheckStatusReturn( stat, msg ) \
+            if( !stat ) \
+                { \
+                Error( msg ); \
+                return stat; \
+                }
+  inline MStatus getPlugWeightValues(MObject &weightParent,MObject &weightChild,
+                                          int MitGeoCount, int mIndex,
+                                          MDoubleArray &returnWeightlist)
+  {
+      MStatus status;
+
+      returnWeightlist.setLength(MitGeoCount) ;
+
+      MObject thisNode = thisMObject();
+      MPlug parent( thisNode, weightParent) ;
+      double weight;
+      MPlug parentElement = parent.elementByLogicalIndex(mIndex, &status);
+      CheckStatusReturn( status, "Unable to get unable to get parentElement" );
+
+      MPlug child = parentElement.child(weightChild, &status);
+      CheckStatusReturn( status, "Unable to get unable to get child" );
+
+      for (int i = 0; i < MitGeoCount; ++i)
+      {
+          MPlug childWeight = child.elementByLogicalIndex(i);
+          status = childWeight.getValue(weight);
+          if (status != MS::kSuccess)
+          {
+              returnWeightlist[i] = 1.0 ;
+            }
+          else
+          {
+              returnWeightlist[i] = weight;
+          }
+      }
+      return status;
+  }
 
 
 
 
+
+
+};
 #endif
