@@ -427,10 +427,10 @@ def create_curve(curve_dict, name=None, parent=None, color=None):
                           False,
                           )
     parentNameNewGeo(curve_dict, name, new_nurbsCurve, parent)
-    color(new_nurbsCurve, color)
+    color_curve(new_nurbsCurve, color)
     return new_nurbsCurve
 
-def color(shapeNode, color = [255,255,255]):
+def color_curve(shapeNode, color = [255,255,255]):
     if not color:
         return
     cmds.setAttr(shapeNode.fullPathName() + ".overrideRGBColors", True)

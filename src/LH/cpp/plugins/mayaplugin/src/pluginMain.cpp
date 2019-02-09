@@ -24,8 +24,8 @@
 #include "LHKDoubleArrayToKFloatArray.h"
 #include "LHWeightNodeFloat.h"
 #include "LHTemplateGPUDeformer.h"
+#include "nullMatrixTransform.h"
 
-// #include "nullMatrixTransform.h"
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
 
@@ -137,12 +137,12 @@ MStatus initializePlugin(MObject obj) {
                                     nullTMatrix::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
-  // status = plugin.registerTransform( "nullMatrixTransform",
-  //                                   nullMatrixTransform::id,
-  //                                   &nullMatrixTransform::creator,
-  //                                   &nullMatrixTransform::initialize,
-  //                                   nullMatrixTMatrix::creator,
-  //                                   nullMatrixTMatrix::id);
+  status = plugin.registerTransform( "nullMatrixTransform",
+                                    nullMatrixTransform::id,
+                                    &nullMatrixTransform::creator,
+                                    &nullMatrixTransform::initialize,
+                                    nullMatrixTMatrix::creator,
+                                    nullMatrixTMatrix::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
@@ -229,8 +229,8 @@ MStatus uninitializePlugin(MObject obj) {
   status = plugin.deregisterNode(nullTransform::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
-  // status = plugin.deregisterNode(nullMatrixTransform::id);
-  // CHECK_MSTATUS_AND_RETURN_IT(status);
+  status = plugin.deregisterNode(nullMatrixTransform::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
   if (!sUseLegacyDraw)

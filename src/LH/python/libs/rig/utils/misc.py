@@ -2375,7 +2375,7 @@ def getSetMaintainOffset(transform=None, offsetTransform=None, maintainOffsetT=T
         cmds.xform(transform, ws=True, s=offsetTransform["scale"])
 
 def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translate=True, rotate=True, scale=False,
-                  offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
+                  offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None):
     """
     suffix GCS
     """
@@ -2408,8 +2408,10 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
 
     if translate:
         cmds.connectAttr(decompose + ".outputTranslate", driven + ".translate" )
-    if rotate:
+    if rotate and not normalConstraintPatch:
         cmds.connectAttr(decompose + ".outputRotate", driven + ".rotate" )
+    elif normalConstraintPatch:
+        cmds.normalConstraint(normalConstraintPatch, driven)
     if scale:
         cmds.connectAttr(decompose + ".outputScale", driven + ".scale" )
     getSetMaintainOffset(offsetBuffer, offsetTransform)
@@ -2417,7 +2419,12 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     return constraint
 
 
-def updateGeoConstraint(offsetBuffer, geoConstraint, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
+def updateGeoConstraint(offsetBuffer=False, geoConstraint=False, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
+    if not offsetBuffer:
+        offsetBuffer = cmds.ls(sl=True)[0]
+    if not geoConstraint:
+        geoConstraint = cmds.listConnections(cmds.ls(sl=True)[0] + ".geoConstraint")[0]
+
     offsetTransform = getSetMaintainOffset(offsetBuffer, None, maintainOffsetT, maintainOffsetR, maintainOffsetS)
     mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
     int_array, closest_point, pointA, pointB, pointC = getClosestPolygonToTransform(mesh, offsetBuffer)

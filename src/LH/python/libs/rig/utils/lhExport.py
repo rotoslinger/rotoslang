@@ -145,11 +145,13 @@ class lh_deformer_export(object):
                         parent = cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True)[0]
                     self.manipDict[key]["parent"] = parent
                     if "helperGeo" not in self.manipDict[key].keys():
-                        pointOnSurface = cmds.listConnections(key, t="pointOnSurfaceInfo")[0]
-                        surf = cmds.listConnections(pointOnSurface, p=True, t="nurbsSurface", s=True)[0]
-                        surfaceShape = surf.split(".")[0]
-                        self.manipDict[key]["helperGeo"] = cmds.listRelatives(surfaceShape, parent=True)[0]
-                        self.manipDict[key]["helperGeoData"] = xUtils.nurbsSurfaceData(name=surfaceShape).nurbs
+                        pointOnSurface = cmds.listConnections(key, t="pointOnSurfaceInfo")
+                        if pointOnSurface:
+                            pointOnSurface = pointOnSurface[0]
+                            surf = cmds.listConnections(pointOnSurface, p=True, t="nurbsSurface", s=True)[0]
+                            surfaceShape = surf.split(".")[0]
+                            self.manipDict[key]["helperGeo"] = cmds.listRelatives(surfaceShape, parent=True)[0]
+                            self.manipDict[key]["helperGeoData"] = xUtils.nurbsSurfaceData(name=surfaceShape).nurbs
                     self.manipDict[key]["uSpeedDefault"]= cmds.getAttr(key + ".uSpeed")
                     self.manipDict[key]["vSpeedDefault"]= cmds.getAttr(key + ".vSpeed")
                     self.manipDict[key]["initUDefault"]= cmds.getAttr(key + ".initU")
@@ -183,7 +185,7 @@ class lh_deformer_export(object):
         self.getTransferGeo()
         self.getCurves()
         self.getWeights()
-        self.getDirectManips()
+        # self.getDirectManips()
         self.pack()
         self.export()
 
@@ -380,6 +382,6 @@ class lh_deformer_import(object):
         self.setTransferWeights()
         self.transfer()
         self.finalize()
-        self.createDirectManip()
+        # self.createDirectManip()
 
 # def weightTransfer(srcMesh, destMesh, srcDeformer, destDeformer, attributes):

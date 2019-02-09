@@ -48,8 +48,8 @@ set(source_files
 	"src/LHCollisionLocator.h"
 	"src/nullTransform.cpp"
 	"src/nullTransform.h"
-#	"src/nullMatrixTransform.cpp"
-#	"src/nullMatrixTransform.h"
+	"src/nullMatrixTransform.cpp"
+	"src/nullMatrixTransform.h"
 	"src/LHGeometryConstraint.cpp"
 	"src/LHGeometryConstraint.h"
 	"src/LHSlideDeformer.cpp"
@@ -64,6 +64,10 @@ set(source_files
 	"src/LHKDoubleArrayToKFloatArray.h"
 	"src/LHWeightNodeFloat.cpp"
 	"src/LHWeightNodeFloat.h"
+	"src/LHTemplateGPUDeformer.cpp"
+	"src/LHTemplateGPUDeformer.h"
+	"src/LHTemplateGPUDeformer.cl"
+
 )
 
 add_library(collision SHARED ${source_files})

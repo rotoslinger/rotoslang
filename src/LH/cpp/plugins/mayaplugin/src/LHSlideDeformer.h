@@ -66,7 +66,8 @@ class LHSlideDeformer : public MPxDeformerNode {
                                 std::vector <MFnAnimCurve*> &returnAnimCurve);
   static void* creator();
   static MStatus initialize();
- 
+  virtual SchedulingType schedulingType() const { return kParallel; }
+
   static MTypeId id;
   // tAttrs
   static MObject aSurface;

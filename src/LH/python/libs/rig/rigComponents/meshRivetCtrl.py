@@ -9,19 +9,35 @@ import elements
 
 class component(base.component):
     def __init__(self,
-                 xSpeedDefault=.1,
-                 ySpeedDefault=.1,
-                 zSpeedDefault=.1,
+                 speedTxDefault=.1,
+                 speedTyDefault=.1,
+                 speedTzDefault=.1,
                  curveData=None,
                  mesh = None,
                  translate = None,
                  rotate = None,
                  scale = None,
                  guide = False,
+                 
+                 txConnectionAttr=None,
+                 tyConnectionAttr=None,
+                 tzConnectionAttr=None,
+
+                 rxConnectionAttr=None,
+                 ryConnectionAttr=None,
+                 rzConnectionAttr=None,
+
+                 sxConnectionAttr=None,
+                 syConnectionAttr=None,
+                 szConnectionAttr=None,
+
+                 normalConstraintPatch=None,
+
+
                  **kw):
-        self.xSpeedDefault = xSpeedDefault
-        self.ySpeedDefault = ySpeedDefault
-        self.zSpeedDefault = zSpeedDefault
+        self.speedTxDefault = speedTxDefault
+        self.speedTyDefault = speedTyDefault
+        self.speedTzDefault = speedTzDefault
         self.curveData = curveData
         self.mesh = mesh
         self.translate = translate
@@ -29,6 +45,20 @@ class component(base.component):
         self.scale = scale
         self.componentName = "meshRivetCtrl"
         self.guide = guide
+
+        self.txConnectionAttr = txConnectionAttr
+        self.tyConnectionAttr = tyConnectionAttr
+        self.tzConnectionAttr = tzConnectionAttr
+
+        self.rxConnectionAttr = rxConnectionAttr
+        self.ryConnectionAttr = ryConnectionAttr
+        self.rzConnectionAttr = rzConnectionAttr
+
+        self.sxConnectionAttr = sxConnectionAttr
+        self.syConnectionAttr = syConnectionAttr
+        self.szConnectionAttr = szConnectionAttr
+        self.normalConstraintPatch = normalConstraintPatch
+
 
         super(component, self).__init__(**kw)
 
@@ -92,10 +122,9 @@ class component(base.component):
 
 
     def createAttrs(self):
-        inputAttrs = ["xSpeed", "ySpeed", "zSpeed"]
+        inputAttrs = ["speedTx", "speedTy", "speedTz"]
         for attr in inputAttrs:
-            cmds.addAttr(self.ctrl, ln=attr, at="float",
-                         dv=getattr(self, "{0}Default".format(attr)), k=True)
+            cmds.setAttr(self.ctrl + "." + attr, getattr(self, "{0}Default".format(attr)))
         for node in self.cmptMasterParent, self.ctrl, self.locator, self.buffer1, self.buffer2:
             self.addComponentTypeAttr(node)
             cmds.addAttr(node, ln = "root", at = "message")
@@ -104,19 +133,32 @@ class component(base.component):
         cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".control")
         cmds.addAttr(self.cmptMasterParent, ln = "transform", at = "message")
         cmds.connectAttr(self.buffer2 + ".message", self.cmptMasterParent + ".transform")
-        # cmds.addAttr(self.cmptMasterParent, ln = "xSpeed", at = "message")
-        # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".xSpeed")
-        # cmds.addAttr(self.cmptMasterParent, ln = "ySpeed", at = "message")
-        # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".ySpeed")
-        # cmds.addAttr(self.cmptMasterParent, ln = "zSpeed", at = "message")
-        # cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".zSpeed")
+
     def preConnect(self):
-        misc.move(self.buffer2, self.translate, self.rotate, self.scale)
+        misc.move(self.locator, self.translate, self.rotate, self.scale)
+        # misc.move(self.buffer2, self.translate, self.rotate, self.scale)
 
     def createNodes(self):
         self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
-                                                name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=True,
+                                                name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=False,
                                                 scale=False, offsetBuffer = self.buffer2, maintainOffsetT=True, 
-                                                maintainOffsetR=True, maintainOffsetS=True)
-    
-    
+                                                maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=self.normalConstraintPatch)
+
+        # make the geo constraint much easier to find on the guide
+        cmds.addAttr(self.buffer2, ln = "geoConstraint", at = "message")
+        cmds.connectAttr(self.geoConstraint + ".message", self.buffer2 + ".geoConstraint")
+
+
+        driverAttributes = ["txOut", "tyOut", "tzOut",
+                            "rx", "ry", "rz",
+                            "sx", "sy", "sz"]
+        for idx, attr in enumerate([self.txConnectionAttr, self.tyConnectionAttr, self.tzConnectionAttr,
+                                   self.rxConnectionAttr, self.ryConnectionAttr, self.rzConnectionAttr,
+                                   self.sxConnectionAttr, self.syConnectionAttr, self.szConnectionAttr]):
+            if not attr:
+                continue
+            cmds.connectAttr("{0}.{1}".format(self.ctrl, driverAttributes[idx]), attr, f=True)
+
+def updateWithGeoConstraint():
+    cmds.addAttr(cmds.ls(sl=True)[0], ln = "geoConstraint", at = "message")
+    cmds.connectAttr(cmds.ls(sl=True)[1] + ".message", cmds.ls(sl=True)[0] + ".geoConstraint")
