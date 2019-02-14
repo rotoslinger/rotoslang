@@ -792,7 +792,12 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
                 continue
             if i == 1:
                 normAttrs.append(0.0)
-                continue
+                continue        if not hasattr(self, "guideState"):
+            # By default guides will be connected
+            self.guideState = True
+        return self.guideState
+
+
             if i == 0.0:
                 normAttrs.append(1.0)
                 continue

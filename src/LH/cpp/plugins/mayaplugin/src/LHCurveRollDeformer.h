@@ -77,6 +77,8 @@ class LHCurveRollDeformer : public MPxDeformerNode {
   static MObject aBaseGeo;
   static MObject aBaseGeoParent;
   static MObject aUseBaseGeo;
+  static MObject aNegate;
+  static MObject aSensitivity;
 
   // nAttrs
 

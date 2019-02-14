@@ -33,6 +33,7 @@ class component(base.component):
 
                  normalConstraintPatch=None,
                  selection=False,
+                 mirror=False,
 
                  **kw):
 
@@ -59,12 +60,13 @@ class component(base.component):
         self.syConnectionAttr = syConnectionAttr
         self.szConnectionAttr = szConnectionAttr
         self.normalConstraintPatch = normalConstraintPatch
+        self.mirror = mirror
 
         if not self.translate and not self.rotate and not self.scale and selection:
             sel = cmds.ls(sl=True)[0]
-            self.translate = cmds.xform(sel, q=True, t=True)
-            self.rotate = cmds.xform(sel, q=True, ro=True)
-            self.scale = cmds.xform(sel, q=True, s=True)
+            self.translate = cmds.xform(sel, q=True, t=True, ws=True)
+            self.rotate = cmds.xform(sel, q=True, ro=True, ws=True)
+            self.scale = cmds.xform(sel, q=True, s=True,ws=True)
 
 
         super(component, self).__init__(**kw)
@@ -144,6 +146,11 @@ class component(base.component):
     def preConnect(self):
         misc.move(self.locator, self.translate, self.rotate, self.scale)
         # misc.move(self.buffer2, self.translate, self.rotate, self.scale)
+        # if self.mirror:
+        #     cmds.xform(self.cmptMasterParent, ws=True, s=[-1,1,1])
+
+        #     # cmds.setAttr(self.cmptMasterParent + ".sx", -1)
+        #     cmds.refresh()
 
     def createNodes(self):
         self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
@@ -169,3 +176,146 @@ class component(base.component):
 def updateWithGeoConstraint():
     cmds.addAttr(cmds.ls(sl=True)[0], ln = "geoConstraint", at = "message")
     cmds.connectAttr(cmds.ls(sl=True)[1] + ".message", cmds.ls(sl=True)[0] + ".geoConstraint")
+    
+def findOppositeSlideConnection(ctrl, attr):
+    outU = cmds.listConnections(ctrl + "." + attr, d=True, p=True, t="LHSlideDeformer", et=True)[0]
+    if not outU:
+        return
+    outUAttrShort = outU.split(".")[1]
+    deformer = outU.split(".")[0]
+    if not "L_" and not "R_" in outUAttrShort:
+        return
+    if "L_" in outUAttrShort:
+        outUAttrShort = outUAttrShort.replace("L_", "R_")
+    elif "R_" in outUAttrShort:
+        outUAttrShort = outUAttrShort.replace("R_", "L_")
+
+    if cmds.objExists(deformer + "." + outUAttrShort):
+        return deformer + "." + outUAttrShort
+
+def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False, guide=False, normalConstraintPatch="C_mouthSurface_EX", geo="C_body_HI", flip=False):
+    if not mayaObjects: mayaObjects = cmds.ls(sl=True)
+    for ctrl in mayaObjects:
+        # Get name and side of selected control
+        side=""
+        if not "L_" and not "R_" in ctrl:
+            continue
+        if "L_" in ctrl:
+            side = "R"
+        if "R_" in ctrl:
+            side = "L"
+        name = ctrl.split("_")[1]
+        # Get location of control and all attributes
+        attrsDict = {}
+        attrs = (".speedTx",".speedTy", ".speedTz", ".rotateOrder", ".vis", ".gimbal_vis")
+        for attr in attrs:
+            attrsDict[ctrl + attr] = cmds.getAttr(ctrl + attr)
+        # Get connected attributes, find L to R, or R to L depending on what is selected
+        inU = findOppositeSlideConnection(ctrl, "txOut")
+        if not inU:
+            continue
+        inV = findOppositeSlideConnection(ctrl, "tyOut")
+        if not inV:
+            continue
+
+        # Find Surface
+
+        # surf = cmds.listConnections(ctrl + ".currentU", d=True, t="pointOnSurfaceInfo", et=True)[0]
+        # nurbs = cmds.listConnections(surf + ".inputSurface", s=True, t="nurbsSurface", et=True)[0]
+
+        # Create component with Opposite side and opposite attributes
+        # slideComponent = component(name=name, side=side, helperGeo = nurbs, uOutConnectionAttr = inU, vOutConnectionAttr = inV)
+
+        # Get opposite side
+        locator = cmds.listRelatives(ctrl, f=True, p=True)[0]
+        locator = cmds.listRelatives(locator,f=True, p=True)[0]
+        locator = cmds.listRelatives(locator,f=True, p=True)[0]
+        translate = cmds.xform(locator, q=True, t=True, ws=True)
+        rotate = cmds.xform(locator, q=True, ro=True, ws=True)
+        scale = cmds.xform(locator, q=True, s=True,ws=True)
+        
+        rotate = [rotate[0], rotate[1]+180.0, rotate[2]]
+
+        dummyParent = cmds.createNode("transform")
+        dummy = cmds.createNode("transform", p=dummyParent)
+
+        misc.move(dummy, translate, rotate, None)
+
+        cmds.xform(dummyParent, ws=True, s=[-1,1,1])
+        translate = cmds.xform(dummy, q=True, t=True, ws=True)
+        rotate = cmds.xform(dummy, q=True, ro=True, ws=True)
+
+        cmds.delete(dummy, dummyParent)
+
+
+        # cmds.xform(self.cmptMasterParent, ws=True, s=[-1,1,1])
+
+
+        rivetComponent = component(name=name, guide=guide, side=side, normalConstraintPatch = normalConstraintPatch,
+        txConnectionAttr = inU, tyConnectionAttr = inV, mesh = geo, selection=False, mirror=True, translate=translate, rotate=rotate, scale=scale)
+
+        # Set the location and the attributes
+
+        for attr in attrs:
+            cmds.setAttr(rivetComponent.ctrl + attr, attrsDict[ctrl + attr])
+
+        # Copy Curve shape, then mirror curve shape
+        misc.pushCurveShape(ctrl, rivetComponent.ctrl, mirror=True, inheritColor=True)
+        if flip:
+            speedTx = cmds.getAttr(rivetComponent.ctrl + ".speedTx")
+            cmds.setAttr(rivetComponent.ctrl + ".speedTx", speedTx * -1.0)
+                # if self.mirror:
+
+        #     # cmds.setAttr(self.cmptMasterParent + ".sx", -1)
+        #     cmds.refresh()
+
+
+        # misc.updateGeoConstraint(offsetBuffer = rivetComponent.buffer2)
+        # uMirror = cmds.getAttr(ctrl + ".baseU")
+        # if uMirror < .5:
+        #     uMirror = abs(uMirror-0.5)
+        #     uMirror = .5 + uMirror
+        # elif uMirror > .5:
+        #     uMirror = uMirror-0.5
+        #     uMirror = .5 - uMirror
+        # for uAttr in (".baseU", ".initU"):
+        #     cmds.setAttr(slideComponent.ctrl + uAttr, uMirror)
+
+        # # Normalize Control
+        # normalizeSlidingCtrls([slideComponent.ctrl])
+
+def getSlideWeightAttrNames(attrName):
+    splitName = attrName.split(".")
+    deformer = splitName[0]
+    attr = splitName[1]
+    weights = "{0}Weight".format(attr)
+    animCurve = "{0}_ACV".format(attr)
+    animCurveFalloff = "{0}Falloff_ACV".format(attr)
+    return weights, animCurve, animCurveFalloff
+
+def getSide(name):
+    return name.split("_")[0]
+
+def cacheSlideDeformer(deformer, val):
+    cmds.setAttr(deformer + ".cacheWeights", val)
+    cmds.setAttr(deformer + ".cacheWeightMesh", val)
+    cmds.setAttr(deformer + ".cacheWeightCurves", val)
+
+def copyFlipSlideAnimCurves(side, flip, source, target):
+    faceWeights.copy_flip_anim_curves(side = side, 
+                                      center_frame = 0, 
+                                    flip = flip,
+                                    source = source,
+                                    target = target)
+
+def getWeightAttributes(deformerName):
+    sourceAttrs = cmds.listAttr(deformerName, 
+                    ud = True, 
+                    a = True,
+                    m=True)
+
+    sourceWeightNames = []
+    for i in range(len(sourceAttrs)):
+        tmp_name = sourceAttrs[i].split(".")
+        sourceWeightNames.append(tmp_name[1])
+    return dict(zip(sourceWeightNames,sourceAttrs))

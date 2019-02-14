@@ -11,6 +11,8 @@ MObject LHCurveRollDeformer::aWeightMesh;
 MObject LHCurveRollDeformer::aVecCurve;
 MObject LHCurveRollDeformer::aOutCurve;
 MObject LHCurveRollDeformer::aInCurve;
+MObject LHCurveRollDeformer::aNegate;
+MObject LHCurveRollDeformer::aSensitivity;
 
 // baseGeoAttrs
 MObject LHCurveRollDeformer::aBaseGeo;
@@ -154,6 +156,13 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
     int cacheWeightCurvesAmt = data.inputValue(aCacheWeightCurves).asInt();
     int cacheParamsAmt = data.inputValue(aCacheParams).asInt();
     int cacheTangentsAmt = data.inputValue(aCacheTangents).asInt();
+    int negate = data.inputValue(aNegate).asInt();
+    float flipVal = 1.0;
+    if (negate)
+    {
+        flipVal = -1.0;
+    }
+    float sensitivity = data.inputValue(aSensitivity).asFloat();
     // typed attrs
     MObject oWeightMesh = data.inputValue(aWeightMesh).asMeshTransformed();
 
@@ -203,7 +212,7 @@ MStatus LHCurveRollDeformer::deform(MDataBlock& data, MItGeometry& MitGeo,
         {
 
             arrayHandle.jumpToElement(j);
-            tmpValArray.push_back(arrayHandle.inputValue().child( allValChildren[i] ).asFloat());
+            tmpValArray.push_back(arrayHandle.inputValue().child( allValChildren[i] ).asFloat() * sensitivity * flipVal);
         }
         allValsArray.push_back(tmpValArray);
 
@@ -1235,6 +1244,13 @@ MStatus LHCurveRollDeformer::initialize() {
     aInCurve = tAttr.create("inCurve", "iCurve", MFnData::kNurbsCurve);
     addAttribute( aInCurve );
 
+    aNegate = nAttr.create("negate", "negate", MFnNumericData::kInt);
+    nAttr.setKeyable(true);
+    nAttr.setMin(0);
+    nAttr.setMax(1);
+    nAttr.setDefault(0);
+    addAttribute(aNegate);
+
 
     // cache attributes
     aUseBaseGeo = nAttr.create("useBaseGeo", "uBaseGeo", MFnNumericData::kInt);
@@ -1374,6 +1390,11 @@ MStatus LHCurveRollDeformer::initialize() {
     cAttr.setUsesArrayDataBuilder(true);
     addAttribute(aRAnimCurveVParent);
 
+    aSensitivity = nAttr.create("sensitivity", "sensitivity", MFnNumericData::kFloat);
+    nAttr.setKeyable(true);
+    nAttr.setChannelBox(true);
+    nAttr.setDefault(1.0);
+    addAttribute(aSensitivity);
 
     ///////////////////////////////////////////
     /////////////// OUTPUTS ///////////////////
@@ -1412,6 +1433,8 @@ MStatus LHCurveRollDeformer::initialize() {
     attributeAffects(aRWeights, outputGeom);
     attributeAffects(aRWeightsParent, outputGeom);
     attributeAffects(aRWeightsParentArray, outputGeom);
+    attributeAffects(aNegate, outputGeom);
+    attributeAffects(aSensitivity, outputGeom);
 
 //    attributeAffects(aRPivotArray, outputGeom);
 //    attributeAffects(aTPivotArray, outputGeom);

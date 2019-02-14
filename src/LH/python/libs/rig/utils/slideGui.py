@@ -520,12 +520,13 @@ class slideDeformerGui(object):
     def addSlideCtrl(self, *args):
         deformer, unsortedAttrs, name, slideSurf, geoName = self.getSlideData()
 
+        print unsortedAttrs, "UNSORTED ATTRS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
         if len(unsortedAttrs) != 2:
             return
         # force the attribute order... selection order is not understood by the textScrollList
         # make sure you have u then V
-        print unsortedAttrs[0]
+        print unsortedAttrs[0], "UNSORTED ATTRS"
         attrs = ["", ""]
         if "uValue" in cmds.listConnections(deformer + "." + unsortedAttrs[0], d=True,p=True)[0]:
             attrs[0] = unsortedAttrs[0]
@@ -535,6 +536,11 @@ class slideDeformerGui(object):
             attrs[0] = unsortedAttrs[1]
         elif "vValue" in cmds.listConnections(deformer + "." + unsortedAttrs[1], d=True,p=True)[0]:
             attrs[1] = unsortedAttrs[1]
+        
+        if not attrs[0] and not attrs[1]:
+            attrs[0] = unsortedAttrs[0]
+            attrs[1] = unsortedAttrs[1]
+        # print attrs, "ATTRS"
 
         # print attrs
         # return
@@ -557,6 +563,7 @@ class slideDeformerGui(object):
         if componentType == 1:
             slidingCtrl.component(name=name, side=side, helperGeo = slideSurf, uOutConnectionAttr = deformer + "." + attrs[0] , vOutConnectionAttr = deformer + "." + attrs[1])
         elif componentType == 2:
+            # print deformer + "." + attrs[0], deformer + "." + attrs[1]
             meshRivetCtrl.component(name=name, guide=True, side=side, normalConstraintPatch = slideSurf,
             txConnectionAttr = deformer + "." + attrs[0] , tyConnectionAttr = deformer + "." + attrs[1], mesh = geoName, selection=True)
 
