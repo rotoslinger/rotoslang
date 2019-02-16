@@ -784,7 +784,7 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
 
         cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount), *weight, size=srcVertCount)
         attr = cmds.getAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount))
-        print attr
+        # print attr
         normAttrs = []
         for i in attr:
             if i < 1:
@@ -792,12 +792,11 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
                 continue
             if i == 1:
                 normAttrs.append(0.0)
-                continue        if not hasattr(self, "guideState"):
-            # By default guides will be connected
-            self.guideState = True
-        return self.guideState
-
-
+                continue
+            # if not hasattr(self, "guideState"):
+            #     # By default guides will be connected
+            #     self.guideState = True
+            #     return self.guideState
             if i == 0.0:
                 normAttrs.append(1.0)
                 continue

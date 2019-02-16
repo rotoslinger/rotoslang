@@ -1,7 +1,10 @@
 import sys
 
 from rig.utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
-from rigComponents import slidingCtrl
+from rigComponents import slidingCtrl, elements, meshRivetCtrl
+reload(slidingCtrl)
+reload(elements)
+reload(meshRivetCtrl)
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
@@ -117,6 +120,58 @@ class lh_deformer_export(object):
         except:
             pass
 
+    def getStickyObjectsCrappy(self, ctrl):
+        buffer1 = cmds.listRelatives(ctrl, p=True)[0]
+        buffer2 = cmds.listRelatives(buffer1, p=True)[0]
+        locator = cmds.listRelatives(buffer2, p=True)[0]
+        root = cmds.listRelatives(locator, p=True)[0]
+
+        # Will Likely need to be replaced when we come up with a better way of constraining the up vector
+        normalConstraint = cmds.listConnections(locator + ".rx")
+        normalConstraintGeo = None
+        if normalConstraint:
+            # print normalConstraint[0], "THIS THING"
+            normalConstraintGeo = cmds.listConnections(normalConstraint[0] + ".target[0].targetGeometry")
+            if normalConstraintGeo:
+                normalConstraintGeo = normalConstraintGeo[0]
+            # print normalConstraintGeo
+        geoConstraint = cmds.listConnections(buffer2 + ".geoConstraint")[0]
+        mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
+        return buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo
+
+    def getStickyControls(self):
+        self.meshRivetManips = {}
+
+        # attrs that might be connected
+        # attrs = [".txOut", ".tyOut", ".tzOut", ".tx", ".ty", ".tz", ".rx", ".ry", ".rz", ".sx", ".sy", ".sz",
+        #          ".speedTx",".speedTy", ".speedTz", ".rotateOrder", ".vis", ".gimbal_vis"]
+        attrs = elements.MESH_RIVET_ATTRS
+        stickControls = cmds.ls(et="nullTransform")
+        for ctrl in stickControls:
+            if ctrl not in self.meshRivetManips.keys():
+                self.meshRivetManips[ctrl] = {}
+            buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = self.getStickyObjectsCrappy(ctrl)
+
+            name = key.split("_")
+            self.manipDict[ctrl]["name"] = name[1]
+            self.manipDict[ctrl]["side"] = name[0]
+            self.manipDict[ctrl]["suffix"] = name[2]
+            parent = False
+            if cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True):
+                parent = cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True)[0]
+            self.manipDict[key]["parent"] = parent
+
+            # self.manipDict[key]["uSpeedDefault"]= cmds.getAttr(key + ".uSpeed")
+            # self.manipDict[key]["vSpeedDefault"]= cmds.getAttr(key + ".vSpeed")
+
+
+            # print buffer1, buffer2, locator, geoConstraint
+            if "geoConstraintGeo" not in self.meshRivetManips[ctrl].keys():
+                    self.meshRivetManips[ctrl]["geoConstraintGeo"] = xUtils.meshData(name=mesh).mesh
+            if normalConstraintGeo and "surfaceConstraintGeo" not in self.meshRivetManips[ctrl].keys():
+                    self.meshRivetManips[ctrl]["surfaceConstraintGeo"] = xUtils.nurbsSurfaceData(name=normalConstraintGeo).nurbs
+        # mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
+        #print stickControls
 
     def getDirectManips(self):
         #--- get the user defined attributes on the deformer, check connections, if connected to direct manip export
@@ -185,6 +240,7 @@ class lh_deformer_export(object):
         self.getTransferGeo()
         self.getCurves()
         self.getWeights()
+        # self.getStickyControls()
         # self.getDirectManips()
         self.pack()
         self.export()
@@ -201,7 +257,7 @@ class lh_deformer_import(object):
                  ):
         #---args
         self.path                    = path
-        self.create_geo              = create_
+        self.create_geo              = create_geo
         self.create_deformer         = create_deformer
         self.set_weights             = set_weights
         self.set_curves              = set_curves
@@ -385,3 +441,195 @@ class lh_deformer_import(object):
         # self.createDirectManip()
 
 # def weightTransfer(srcMesh, destMesh, srcDeformer, destDeformer, attributes):
+class lh_component_export(object):
+    def __init__(self,
+                 type = "meshRivetCtrl",
+                 path = "",
+                 ):
+        # self.name = name
+        self.path = path
+        # self.manipDict = {}
+        self.create()
+
+    def getStickyObjectsCrappy(self, ctrl):
+        buffer1 = cmds.listRelatives(ctrl, p=True)[0]
+        buffer2 = cmds.listRelatives(buffer1, p=True)[0]
+        locator = cmds.listRelatives(buffer2, p=True)[0]
+        root = cmds.listRelatives(locator, p=True)[0]
+
+        # Will Likely need to be replaced when we come up with a better way of constraining the up vector
+        normalConstraint = cmds.listConnections(locator + ".rx")
+        normalConstraintGeo = None
+        if normalConstraint:
+            # print normalConstraint[0], "THIS THING"
+            normalConstraintGeo = cmds.listConnections(normalConstraint[0] + ".target[0].targetGeometry")
+            if normalConstraintGeo:
+                normalConstraintGeo = normalConstraintGeo[0]
+            # print normalConstraintGeo
+        geoConstraint = cmds.listConnections(buffer2 + ".geoConstraint")[0]
+        mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
+        return buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo
+
+    def getManips(self):
+        self.manipDict = {}
+
+        # attrs that might be connected
+        attributes = [".txOut", ".tyOut", ".tzOut", ".tx", ".ty", ".tz", ".rx", ".ry", ".rz", ".sx", ".sy", ".sz",
+                 ".speedTx",".speedTy", ".speedTz", ".rotateOrder", ".vis", ".gimbal_vis"]
+        stickControls = cmds.ls(et="nullTransform")
+        self.manipDict["controls"] = {}
+        for ctrl in stickControls:
+            if ctrl not in self.manipDict.keys():
+                self.manipDict["controls"][ctrl] = {}
+            buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = self.getStickyObjectsCrappy(ctrl)
+            self.manipDict["controls"][ctrl]["buffer1"] = buffer1
+            self.manipDict["controls"][ctrl]["buffer2"] = buffer2
+            self.manipDict["controls"][ctrl]["locator"] = locator
+            self.manipDict["controls"][ctrl]["geoConstraint"] = geoConstraint
+            self.manipDict["controls"][ctrl]["root"] = root
+
+            name = ctrl.split("_")
+            self.manipDict["controls"][ctrl]["name"] = name[1]
+            self.manipDict["controls"][ctrl]["side"] = name[0]
+            self.manipDict["controls"][ctrl]["suffix"] = name[2]
+            parent = False
+            if cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True):
+                parent = cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True)[0]
+            self.manipDict["controls"][ctrl]["parent"] = parent
+            self.manipDict["controls"][ctrl]["attrVals"] = {}
+            self.manipDict["controls"][ctrl]["attrConnections"] = {}
+            for attr in attributes:
+                # print ctrl + attr
+                attrName = ctrl + attr
+                if not cmds.objExists(attrName):
+                    continue
+                self.manipDict["controls"][ctrl]["attrVals"][attrName] = cmds.getAttr(attrName)
+                con = None
+                tmpConnection = cmds.listConnections(attrName, p=True, d=True, scn=True)
+                if tmpConnection:
+                    # convert to string if it exists
+                    con = [str(x) for x in tmpConnection]
+                self.manipDict["controls"][ctrl]["attrConnections"][attrName] = con
+
+            self.manipDict["controls"][ctrl]["translate"] = cmds.xform(locator, q=True, t=True, ws=True)
+            self.manipDict["controls"][ctrl]["rotate"] = cmds.xform(locator, q=True, ro=True, ws=True)
+            self.manipDict["controls"][ctrl]["scale"] = cmds.xform(locator, q=True, s=True,ws=True)
+
+            self.manipDict["controls"][ctrl]["translateOffset"] = cmds.xform(buffer2, q=True, t=True, ws=True)
+            self.manipDict["controls"][ctrl]["rotateOffset"] = cmds.xform(buffer2, q=True, ro=True, ws=True)
+            self.manipDict["controls"][ctrl]["scaleOffset"] = cmds.xform(buffer2, q=True, s=True,ws=True)
+
+            self.manipDict["controls"][ctrl]["geoConstraintGeoName"] = mesh
+            self.manipDict["controls"][ctrl]["normalConstraintGeoName"] = normalConstraintGeo
+
+            if "geoConstraintGeo" not in self.manipDict.keys():
+                    self.manipDict["geoConstraintGeo"] = {}
+            if mesh not in self.manipDict["geoConstraintGeo"].keys():
+                    self.manipDict["geoConstraintGeo"][mesh] = xUtils.meshData(name=mesh).mesh
+            if normalConstraintGeo and "normalConstraintGeo" not in self.manipDict.keys():
+                    self.manipDict["normalConstraintGeo"] = {}
+            if normalConstraintGeo and normalConstraintGeo not in self.manipDict["normalConstraintGeo"].keys():
+                    self.manipDict["normalConstraintGeo"][normalConstraintGeo] = xUtils.nurbsSurfaceData(name=normalConstraintGeo).nurbs
+
+    def export(self):
+        file = open(self.path, "wb")
+        json.dump(self.manipDict, file, sort_keys=False, indent=2)
+        file.close()
+
+    def create(self):
+        self.getManips()
+        self.export()
+
+
+class lh_component_import(object):
+    def __init__(self,
+                 path = "",
+                 create_geo = True,
+                 ):
+        #---args
+        self.path                    = path
+        self.create_geo              = create_geo
+
+        self.create()
+
+    def getFileData(self):
+        file = open(self.path, "rb")
+        self.manipDict = json.load(file)
+        file.close()
+
+    # def unpack(self):
+    #     "imports the dictionary, separates all of the info for later use"
+    #     if "manipDict" in self.dict.keys():
+    #         self.manipDict   = self.dict["manipDict"]
+
+    
+    def createComponents(self):
+        """
+        Attrs that will be unpacked as second layer keys:
+        rotateOffset
+        geoConstraintGeo
+        rotate
+        translateOffset
+        suffix
+        parent
+        attrConnections
+        surfaceConstraintGeo
+        scale
+        attrVals
+        translate
+        scaleOffset
+        side
+        name
+        """
+        # Find all of the mesh's, or create them if they don't exist yet
+
+        for key in self.manipDict["geoConstraintGeo"].keys():
+            meshName = self.manipDict["geoConstraintGeo"][key]["name"]
+            if not cmds.objExists(meshName):
+                xUtils.createMesh(self.manipDict["geoConstraintGeo"][key],
+                                  name=meshName,
+                                  parent=self.manipDict["geoConstraintGeo"][key]["parent"])
+        if "normalConstraintGeo" in self.manipDict.keys():
+            for key in self.manipDict["normalConstraintGeo"].keys():
+                nurbsName = self.manipDict["normalConstraintGeo"][key]["name"]
+                if not cmds.objExists(nurbsName):
+                    xUtils.createNurbsSurface(self.manipDict["normalConstraintGeo"][key],
+                                            name=nurbsName,
+                                            parent=self.manipDict["normalConstraintGeo"][key]["parent"])
+        attributes = elements.MESH_RIVET_ATTRS
+
+        for key in self.manipDict["controls"].keys():
+            ctrlDict = self.manipDict["controls"][key]
+            if not cmds.objExists(key):
+                rivetComponent = meshRivetCtrl.component(name=ctrlDict["name"],
+                                                        guide=True,
+                                                        side=ctrlDict["side"],
+                                                        normalConstraintPatch = ctrlDict["normalConstraintGeoName"],
+                                                        mesh = ctrlDict["geoConstraintGeoName"],
+                                                        selection=False,
+                                                        translate=ctrlDict["translate"],
+                                                        rotate=ctrlDict["rotate"],
+                                                        scale=ctrlDict["scale"])
+            
+            cmds.xform(ctrlDict["buffer2"], ws=True, t=ctrlDict["translateOffset"])
+            cmds.xform(ctrlDict["buffer2"], ws=True, ro=ctrlDict["rotateOffset"])
+            cmds.xform(ctrlDict["buffer2"], ws=True, s=ctrlDict["scaleOffset"])
+            ctrl = key
+            for attr in attributes:
+                attrName = ctrl + attr
+                if not cmds.objExists(attrName):
+                    continue
+                if cmds.getAttr(attrName, se=True):
+                    cmds.setAttr(attrName, ctrlDict["attrVals"][attrName])
+                if not ctrlDict["attrConnections"][attrName]:
+                    continue
+                for connectedAttr in ctrlDict["attrConnections"][attrName]:
+                    connectedAttrName = str(connectedAttr)
+                    print connectedAttrName
+                    if not cmds.objExists(connectedAttrName):
+                        continue
+                    cmds.connectAttr(attrName, connectedAttrName, f=True)
+
+    def create(self):
+        self.getFileData()
+        self.createComponents()
