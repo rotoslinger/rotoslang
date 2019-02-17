@@ -25,6 +25,7 @@
 #include "LHWeightNodeFloat.h"
 #include "LHTemplateGPUDeformer.h"
 #include "nullMatrixTransform.h"
+#include "LHMultiWrap.h"
 
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
@@ -112,6 +113,11 @@ MStatus initializePlugin(MObject obj) {
   status = plugin.registerNode("LHCurveRollDeformer", LHCurveRollDeformer::id, LHCurveRollDeformer::creator,
                                LHCurveRollDeformer::initialize, MPxNode::kDeformerNode);
   CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode("LHMultiWrap", LHMultiWrap::id, LHMultiWrap::creator,
+                               LHMultiWrap::initialize, MPxNode::kDeformerNode);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
 
   status = plugin.registerNode("LHSlideDeformer", LHSlideDeformer::id, LHSlideDeformer::creator,
                                LHSlideDeformer::initialize, MPxNode::kDeformerNode);
@@ -212,6 +218,9 @@ MStatus uninitializePlugin(MObject obj) {
 
 
  status = plugin.deregisterNode(LHCurveRollDeformer::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
+
+ status = plugin.deregisterNode(LHMultiWrap::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHVectorDeformer::id);

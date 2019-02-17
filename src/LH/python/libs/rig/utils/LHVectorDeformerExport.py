@@ -1,7 +1,7 @@
 import json
 from maya import cmds
-from utils import exportUtils as xUtils, LHVectorDeformerCmds
-from utils.exportUtils import set_anim_curve_data
+from rig.utils import exportUtils as xUtils, LHVectorDeformerCmds
+from rig.utils.exportUtils import set_anim_curve_data
 from lhExport import lh_deformer_export, lh_deformer_import
 
 
@@ -23,7 +23,6 @@ class exportDeformer(lh_deformer_export):
     ###############################################################################
     def createInstanceVariables(self):
         #---vars
-        self.geo_membership                 = []
         self.weight_geo                     = {}
         self.base_geo                       = []
         self.t_pivots                       = []
@@ -126,7 +125,8 @@ class exportDeformer(lh_deformer_export):
         self.vector_dict["base_geo"] = self.base_geo
         self.vector_dict["t_pivots"] = self.t_pivots
         self.vector_dict["r_pivots"] = self.r_pivots
-        self.vector_dict["geo_membership"] = self.geo_membership
+        if not self.geo_membership: 
+            self.geo_membership   = self.dict["geo_membership"]
         self.vector_dict["deformer_weights"] = self.deformer_weights
         self.vector_dict["weightGeo"] = self.weightGeo
         self.vector_dict["control"] = self.control
@@ -202,7 +202,7 @@ class importDeformer(lh_deformer_import):
         self.lockAttrs               = []
         self.ihi                     = None
         self.side                    = ""
-        self.short_name              = ""
+        # self.short_name              = ""
         self.tNames                  = {}
         self.rNames                  = {}
 
@@ -214,14 +214,16 @@ class importDeformer(lh_deformer_import):
         self.r_pivots         = self.dict["r_pivots"]
         self.anim_curves      = self.dict["anim_curves"]
         self.weights          = self.dict["weights"]
-        self.geo_membership   = self.dict["geo_membership"]
+        if not self.geo_membership: 
+            self.geo_membership   = self.dict["geo_membership"]
         self.deformer_weights = self.dict["deformer_weights"]
         self.geoms            = self.dict["geoms"]
         self.control          = self.dict["control"]
         self.lockAttrs        = self.dict["lockAttrs"]
         self.ihi              = self.dict["ihi"]
         self.side             = self.dict["side"]
-        self.short_name       = self.dict["short_name"]
+        if not self.short_name:
+            self.short_name       = self.dict["short_name"]
         self.tNames           = self.dict["tNames"]
         self.rNames           = self.dict["rNames"]
         self.transferGeo      = self.dict["transferGeo"]
@@ -316,5 +318,6 @@ class importDeformer(lh_deformer_import):
             cmds.setAttr(self.deformer + ".cacheWeights", 1)
             cmds.setAttr(self.deformer + ".cacheWeightMesh", 1)
             cmds.setAttr(self.deformer + ".cacheWeightCurves", 1)
-
+        if self.transferDeformer:
+            cmds.delete(self.transferDeformer)
 

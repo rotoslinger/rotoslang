@@ -231,7 +231,6 @@ class importDeformer(lh_deformer_import):
     def create_instance_variables(self):
         #---vars
         self.dict                    = {}
-        self.geo_membership          = []
         self.driver_surface          = {}
         self.weight_geo              = {}
         self.anim_curves             = {}
@@ -245,7 +244,7 @@ class importDeformer(lh_deformer_import):
         self.lockAttrs               = []
         self.ihi                     = None
         self.side                    = ""
-        self.short_name              = ""
+        # self.short_name              = ""
         self.uNames                  = []
         self.vNames                  = []
         self.nNames                  = []
@@ -262,14 +261,16 @@ class importDeformer(lh_deformer_import):
         self.anim_curves      = self.dict["anim_curves"]
         self.weights          = self.dict["weights"]
         # self.driverSurface    = self.dict["driverSurface"]
-        self.geo_membership   = self.dict["geo_membership"]
+        if not self.geo_membership: 
+            self.geo_membership   = self.dict["geo_membership"]
         self.deformer_weights = self.dict["deformer_weights"]
         self.geoms            = self.dict["geoms"]
         self.control          = self.dict["control"]
         self.lockAttrs        = self.dict["lockAttrs"]
         self.ihi              = self.dict["ihi"]
         self.side             = self.dict["side"]
-        self.short_name       = self.dict["short_name"]
+        if not self.short_name:
+            self.short_name       = self.dict["short_name"]
         self.uNames           = self.dict["uNames"]
         self.vNames           = self.dict["vNames"]
         self.nNames           = self.dict["nNames"]
@@ -390,3 +391,5 @@ class importDeformer(lh_deformer_import):
         cmds.setAttr(self.deformer + ".cacheWeightMesh", 1)
         cmds.setAttr(self.deformer + ".cacheWeightCurves", 1)
         cmds.setAttr(self.deformer + ".cacheBase", 1)
+        if self.transferDeformer:
+            cmds.delete(self.transferDeformer)

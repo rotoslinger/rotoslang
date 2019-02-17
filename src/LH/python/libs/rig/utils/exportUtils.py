@@ -766,6 +766,10 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
 
     dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)[0]
     cmds.setAttr(dstSkin + ".envelope", 0)
+    print srcDeformer, srcAttributes
+    print srcDeformer
+    print srcDeformer
+
     for srcAttr in srcAttributes:
         weight = cmds.getAttr(srcAttr)
         #---If weight hasn't been set, skip it
@@ -784,7 +788,7 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer):
 
         cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount), *weight, size=srcVertCount)
         attr = cmds.getAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount))
-        # print attr
+        print attr
         normAttrs = []
         for i in attr:
             if i < 1:

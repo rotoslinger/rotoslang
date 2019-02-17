@@ -9,9 +9,9 @@ if "darwin" in os:
     os = mac
 if os not in sys.path:
     sys.path.append(os)
-from utils import exportUtils as xUtils
+from rig.utils import exportUtils as xUtils
 from maya import cmds
-from utils import LHCurveRollDeformerCmds
+from rig.utils import LHCurveRollDeformerCmds
 from lhExport import lh_deformer_export, lh_deformer_import
 
 class exportDeformer(lh_deformer_export):
@@ -224,7 +224,6 @@ class importDeformer(lh_deformer_import):
     def create_instance_variables(self):
         #---vars
         self.dict                    = {}
-        self.geo_membership          = []
         self.weight_geo              = {}
         self.anim_curves             = {}
         self.weights                 = {}
@@ -235,7 +234,7 @@ class importDeformer(lh_deformer_import):
         self.lockAttrs               = []
         self.ihi                     = None
         self.side                    = ""
-        self.short_name              = ""
+        # self.short_name              = ""
         self.rNames                  = {}
         self.in_curve                = ""
         self.out_curve               = ""
@@ -249,14 +248,16 @@ class importDeformer(lh_deformer_import):
         self.out_curve        = self.dict["out_curve"]
         self.anim_curves      = self.dict["anim_curves"]
         self.weights          = self.dict["weights"]
-        self.geo_membership   = self.dict["geo_membership"]
+        if not self.geo_membership:
+            self.geo_membership   = self.dict["geo_membership"]
         self.deformer_weights = self.dict["deformer_weights"]
         self.geoms            = self.dict["geoms"]
         self.control          = self.dict["control"]
         self.lockAttrs        = self.dict["lockAttrs"]
         self.ihi              = self.dict["ihi"]
         self.side             = self.dict["side"]
-        self.short_name       = self.dict["short_name"]
+        if not self.short_name:
+            self.short_name       = self.dict["short_name"]
         self.rNames           = self.dict["rNames"]
         self.transferGeo      = self.dict["transferGeo"]
 
@@ -337,6 +338,8 @@ class importDeformer(lh_deformer_import):
             cmds.setAttr(self.deformer + ".cacheWeights", 1)
             cmds.setAttr(self.deformer + ".cacheWeightMesh", 1)
             cmds.setAttr(self.deformer + ".cacheWeightCurves", 1)
+        if self.transferDeformer:
+            cmds.delete(self.transferDeformer)
 
 
 

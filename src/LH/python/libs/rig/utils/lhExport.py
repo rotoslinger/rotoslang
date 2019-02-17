@@ -249,6 +249,8 @@ class lh_deformer_export(object):
 class lh_deformer_import(object):
     def __init__(self,
                  path = "",
+                 short_name = "",
+                 geo_membership = [],
                  create_geo = True,
                  create_deformer = True,
                  set_weights = True,
@@ -257,6 +259,8 @@ class lh_deformer_import(object):
                  ):
         #---args
         self.path                    = path
+        self.short_name              = short_name
+        self.geo_membership          = geo_membership
         self.create_geo              = create_geo
         self.create_deformer         = create_deformer
         self.set_weights             = set_weights
@@ -287,9 +291,12 @@ class lh_deformer_import(object):
         """Creates base"""
         self.baseGeo = []
         for i in self.geo_membership:
-            tmp = cmds.duplicate(i, name = i + "Base")[0]
-            cmds.setAttr(tmp+".v",0)
-            self.baseGeo.append(tmp)
+            if not cmds.objExists(i+"Base"):
+                tmp = cmds.duplicate(i, name = i + "Base")[0]
+                cmds.setAttr(tmp+".v",0)
+                self.baseGeo.append(tmp)
+            else:
+                self.baseGeo.append(i+"Base")
 
     def createTransferGeo(self):
         if not self.transferWeights:

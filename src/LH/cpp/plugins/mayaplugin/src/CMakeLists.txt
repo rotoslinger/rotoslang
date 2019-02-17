@@ -50,6 +50,8 @@ set(SOURCE_FILES
 	"LHTemplateGPUDeformer.cpp"
 	"LHTemplateGPUDeformer.h"
 	"LHTemplateGPUDeformer.cl"
+	"LHMultiWrap.h"
+	"LHMultiWrap.cpp"
 
 
 )
