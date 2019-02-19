@@ -1,6 +1,4 @@
-#ifndef LHMultiWrap_H
-#define LHMultiWrap_H
-
+#pragma once
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MGlobal.h>
@@ -36,4 +34,3 @@ class LHMultiWrap : public MPxDeformerNode {
   std::vector <MIntArray> vertIndexArray;
 
 };
-#endif

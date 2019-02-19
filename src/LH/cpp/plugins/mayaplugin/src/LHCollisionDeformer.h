@@ -1,7 +1,7 @@
-#ifndef LHCOLLISIONEFORMER_H
-#define LHCOLLISIONEFORMER_H
+#pragma once
 // #define NOMINMAX
 // #include <maya/MCppCompat.h>
+#include "formatErrorMacros.h"
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MGlobal.h>
@@ -376,6 +376,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
         double halfRadius;
         double bulgeClampStart;
         double bulgeClampEnd;
+
         inline MString FormatError( const MString &msg, const MString
                                         &sourceFile, const int &sourceLine )
         {
@@ -387,37 +388,7 @@ class LHCollisionDeformer : public MPxDeformerNode {
             txt += sourceLine;
             return txt;
         }
-        #define Error( msg ) \
-            { \
-            MString __txt = FormatError( msg, __FILE__, __LINE__ ); \
-            MGlobal::displayError( __txt ); \
-            cerr << endl << "Error: " << __txt; \
-            } \
 
-        #define CheckBool( result ) \
-            if( !(result) ) \
-                { \
-                Error( #result ); \
-                }
-
-        #define CheckStatus( stat, msg ) \
-            if( !stat ) \
-                { \
-                Error( msg ); \
-                }
-
-        #define CheckObject( obj, msg ) \
-            if(obj.isNull() ) \
-                { \
-                Error( msg ); \
-                }
-
-        #define CheckStatusReturn( stat, msg ) \
-            if( !stat ) \
-                { \
-                Error( msg ); \
-                return stat; \
-                }
 
     inline MStatus getPlugWeightValues(MObject &weightParent,MObject &weightChild,
                                            int MitGeoCount, int mIndex,
@@ -488,4 +459,3 @@ class LHCollisionDeformer : public MPxDeformerNode {
         }
     }
 };
-#endif

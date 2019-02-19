@@ -52,6 +52,8 @@ set(SOURCE_FILES
 	"LHTemplateGPUDeformer.cl"
 	"LHMultiWrap.h"
 	"LHMultiWrap.cpp"
+	"LHSlideSimple.h"
+	"LHSlideSimple.cpp"
 
 
 )

@@ -1,5 +1,6 @@
 // #include <maya/MCppCompat.h>
 #define _MApiVersion
+#include "formatErrorMacros.h"
 
 #include <maya/MFnPlugin.h>
 // #include "LHRepulsorDeformer.h"
@@ -26,6 +27,7 @@
 #include "LHTemplateGPUDeformer.h"
 #include "nullMatrixTransform.h"
 #include "LHMultiWrap.h"
+#include "LHSlideSimple.h"
 
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
@@ -116,6 +118,10 @@ MStatus initializePlugin(MObject obj) {
 
   status = plugin.registerNode("LHMultiWrap", LHMultiWrap::id, LHMultiWrap::creator,
                                LHMultiWrap::initialize, MPxNode::kDeformerNode);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode("LHSlideSimple", LHSlideSimple::id, LHSlideSimple::creator,
+                               LHSlideSimple::initialize, MPxNode::kDeformerNode);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
@@ -221,6 +227,9 @@ MStatus uninitializePlugin(MObject obj) {
  CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHMultiWrap::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
+
+ status = plugin.deregisterNode(LHSlideSimple::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHVectorDeformer::id);

@@ -337,3 +337,34 @@ std::vector<std::vector<int>> coneIntArray = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                                                 25, 26, 29, 32, 34},
                                                 {27, 28, 30, 31, 33}};
 
+#define Error( msg ) \
+    { \
+    MString __txt = FormatError( msg, __FILE__, __LINE__ ); \
+    MGlobal::displayError( __txt ); \
+    cerr << endl << "Error: " << __txt; \
+    } \
+
+#define CheckBool( result ) \
+    if( !(result) ) \
+        { \
+        Error( #result ); \
+        }
+
+#define CheckStatus( stat, msg ) \
+    if( !stat ) \
+        { \
+        Error( msg ); \
+        }
+
+#define CheckObject( obj, msg ) \
+    if(obj.isNull() ) \
+        { \
+        Error( msg ); \
+        }
+
+#define CheckStatusReturn( stat, msg ) \
+    if( !stat ) \
+        { \
+        Error( msg ); \
+        return stat; \
+        }

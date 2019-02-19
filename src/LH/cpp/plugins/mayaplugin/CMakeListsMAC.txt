@@ -73,7 +73,8 @@ if(LINUX)
         "src/LHTemplateGPUDeformer.cpp"
         "src/LHTemplateGPUDeformer.h"
         "src/LHTemplateGPUDeformer.cl"
-
+        "src/LHMultiWrap.h"
+        "src/LHMultiWrap.cpp"
     )
 
     add_library(collision SHARED ${source_files})

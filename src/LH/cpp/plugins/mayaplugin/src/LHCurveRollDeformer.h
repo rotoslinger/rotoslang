@@ -1,6 +1,5 @@
-#ifndef _LHCURVEROLLDEFORMER_H
-#define _LHCURVEROLLDEFORMER_H
-
+#pragma once
+#include "formatErrorMacros.h"
 #include <maya/MDataBlock.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDagNode.h>
@@ -196,107 +195,6 @@ class LHCurveRollDeformer : public MPxDeformerNode {
       txt += sourceLine;
       return txt;
   }
-  #define Error( msg ) \
-      { \
-      MString __txt = FormatError( msg, __FILE__, __LINE__ ); \
-      MGlobal::displayError( __txt ); \
-      cerr << endl << "Error: " << __txt; \
-      } \
 
-  #define CheckBool( result ) \
-      if( !(result) ) \
-          { \
-          Error( #result ); \
-          }
-
-  #define CheckStatus( stat, msg ) \
-      if( !stat ) \
-          { \
-          Error( msg ); \
-          }
-
-  #define CheckObject( obj, msg ) \
-      if(obj.isNull() ) \
-          { \
-          Error( msg ); \
-          }
-
-  #define CheckStatusReturn( stat, msg ) \
-      if( !stat ) \
-          { \
-          Error( msg ); \
-          return stat; \
-          }
-
-//  inline MStatus getPlugWeightValues(MObject &weightParent,MObject &weightChild,
-//                                         int MitGeoCount, int mIndex,
-//                                         MDoubleArray &returnWeightlist)
-//  {
-//      MStatus status;
-//      returnWeightlist.setLength(MitGeoCount) ;
-//
-//      MObject thisNode = thisMObject();
-//      MPlug parent( thisNode, weightParent) ;
-//      double weight;
-//      MPlug parentElement = parent.elementByLogicalIndex(mIndex, &status);
-//      CheckStatusReturn( status, "Unable to get unable to get parentElement" );
-//
-//      MPlug child = parentElement.child(weightChild, &status);
-//      CheckStatusReturn( status, "Unable to get unable to get child" );
-//
-//      for (unsigned int i = 0; i < MitGeoCount; ++i)
-//      {
-//          MPlug childWeight = child.elementByLogicalIndex(i);
-//          status = childWeight.getValue(weight);
-//          if (status != MS::kSuccess)
-//          {
-//              returnWeightlist[i] = 1.0 ;
-//           }
-//          else
-//          {
-//              returnWeightlist[i] = weight;
-//          }
-//      }
-//      return status;
-//  }
 };
 
-
-//inline MStatus getPlugWeightValues(MObjectArray &weightParentArray,
-//                                   MObjectArray &weightParent,
-//                                   MObjectArray &weightChild,
-//                                   int MitGeoCount,
-//                                   int mIndex,
-//                                   std::vector < std::vector < std::vector < MDoubleArray > > > &returnWeightlist)
-//{
-//    MStatus status;
-//    returnWeightlist.setLength(MitGeoCount) ;
-//
-//    MObject thisNode = thisMObject();
-//    MPlug parent( thisNode, weightParent) ;
-//    double weight;
-//    MPlug parentElement = parent.elementByLogicalIndex(mIndex, &status);
-//    CheckStatusReturn( status, "Unable to get unable to get parentElement" );
-//
-//    MPlug child = parentElement.child(weightChild, &status);
-//    CheckStatusReturn( status, "Unable to get child" );
-//
-//    for (unsigned int i = 0; i < MitGeoCount; ++i)
-//    {
-//        MPlug childWeight = child.elementByLogicalIndex(i);
-//        status = childWeight.getValue(weight);
-//        if (status != MS::kSuccess)
-//        {
-//            returnWeightlist[i] = 1.0 ;
-//         }
-//        else
-//        {
-//            returnWeightlist[i] = weight;
-//        }
-//    }
-//    return status;
-//}
-
-
-
-#endif
