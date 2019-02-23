@@ -72,6 +72,8 @@ set(source_files
 	"src/LHMultiWrap.h"
 	"src/LHSlideSimple.cpp"
 	"src/LHSlideSimple.h"
+	"src/LHNakedLocator.cpp"
+	"src/LHNakedLocator.h"
 
 )
 #message("SOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" ${COLLISION_PLUGINS})

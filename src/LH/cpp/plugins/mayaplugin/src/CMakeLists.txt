@@ -54,6 +54,8 @@ set(SOURCE_FILES
 	"LHMultiWrap.cpp"
 	"LHSlideSimple.h"
 	"LHSlideSimple.cpp"
+	"LHNakedLocator.cpp"
+	"LHNakedLocator.h"
 
 
 )
