@@ -35,7 +35,6 @@ class LHNakedLocator : public MPxLocatorNode
     static void *creator();
     static MStatus initialize();
     virtual bool isBounded() const;
-    virtual MBoundingBox boundingBox() const;
     virtual void draw(M3dView &view, const MDagPath &path,
                       M3dView::DisplayStyle style,
                       M3dView::DisplayStatus status);
@@ -51,6 +50,7 @@ class LHNakedLocator : public MPxLocatorNode
     static  MObject         aColorR;
     static  MObject         aColorG;
     static  MObject         aColorB;
+    static  MObject         aInvertMatrix;
 
     MDoubleArray faceIds;
     float r;
@@ -59,12 +59,7 @@ class LHNakedLocator : public MPxLocatorNode
     double tx;
     double ty;
     double tz;
-    // double drawFaces;
-    // int type;
-    // int orient;
-    // float size;
     int cachePlugs;
-    // int load;
 };
 
 class LHNakedLocatorData : public MUserData
@@ -74,15 +69,15 @@ class LHNakedLocatorData : public MUserData
     virtual ~LHNakedLocatorData() {}
     double size;
     MColor mColor;
-    MPointArray shapePoints;
-    MMatrix mWorldMatrix;
+    // MPointArray shapePoints;
+    MMatrix mWorldInverseMatrix;
     int cachePlugs;
     float r;
     float g;
     float b;
     MDoubleArray faceIds;
     MObject oGeo;
-
+    MPointArray geoPoints;
 };
 
 
@@ -96,8 +91,6 @@ public:
   virtual MHWRender::DrawAPI supportedDrawAPIs() const;
   virtual bool isBounded(const MDagPath& objPath,
                          const MDagPath& cameraPath) const;
-  virtual MBoundingBox boundingBox(const MDagPath& objPath,
-                                   const MDagPath& cameraPath) const;
   virtual MUserData* prepareForDraw(const MDagPath& objPath,
                                     const MDagPath& cameraPath,
                                     const MFrameContext& frameContext,
@@ -107,7 +100,7 @@ public:
                               MHWRender::MUIDrawManager& drawManager,
                               const MHWRender::MFrameContext& frameContext,
                               const MUserData* data);
-  // virtual LHNakedLocatorData getPlugValuesFromLocatorNode(const MDagPath &objPath) const;
+  MVector normal;
 
 
 private:
