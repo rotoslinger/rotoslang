@@ -82,3 +82,16 @@ class component(object):
         return
 
 
+def getComponents(componentType="componentType"):
+    componentTemp = cmds.ls(et="nullTransform")
+    component=[]
+    for comp in componentTemp:
+        parent = cmds.listRelatives(comp, parent=True)
+        if not parent:
+            continue
+        parent = parent[0]
+        if not cmds.objExists(parent + ".componentType"):
+            continue
+        if cmds.getAttr(parent + ".componentType") == componentType:
+            component.append(comp)
+    return component

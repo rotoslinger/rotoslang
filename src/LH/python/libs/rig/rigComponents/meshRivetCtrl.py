@@ -311,3 +311,29 @@ def getWeightAttributes(deformerName):
         tmp_name = sourceAttrs[i].split(".")
         sourceWeightNames.append(tmp_name[1])
     return dict(zip(sourceWeightNames,sourceAttrs))
+
+def getRivetParts(ctrl):
+    buffer1 = cmds.listRelatives(ctrl, p=True)[0]
+    buffer2 = cmds.listRelatives(buffer1, p=True)[0]
+    locator = cmds.listRelatives(buffer2, p=True)[0]
+    root = cmds.listRelatives(locator, p=True)[0]
+
+    # Will Likely need to be replaced when we come up with a better way of constraining the up vector
+    normalConstraint = cmds.listConnections(locator + ".rx")
+    normalConstraintGeo = None
+    if normalConstraint:
+        # print normalConstraint[0], "THIS THING"
+        normalConstraintGeo = cmds.listConnections(normalConstraint[0] + ".target[0].targetGeometry")
+        if normalConstraintGeo:
+            normalConstraintGeo = normalConstraintGeo[0]
+        # print normalConstraintGeo
+    geoConstraint = cmds.listConnections(buffer2 + ".geoConstraint")[0]
+    mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
+    return buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo
+
+def rivetGuidesVis(vis=False):
+    controls = base.getComponents("meshRivetCtrl")
+    for control in controls:
+        buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = getRivetParts(control)
+        guideShape = cmds.listRelatives(buffer2, s=True)[0]
+        cmds.setAttr(guideShape + ".v", vis)

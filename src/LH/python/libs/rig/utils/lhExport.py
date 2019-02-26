@@ -557,12 +557,14 @@ class lh_component_import(object):
     def __init__(self,
                  path = "",
                  create_geo = True,
-                 geo_name = None
+                 geo_name = None,
+                 guides = False
                  ):
         #---args
         self.path                    = path
         self.create_geo              = create_geo
         self.geo_name                = geo_name
+        self.guides                  = guides
 
         self.create()
 
@@ -628,7 +630,6 @@ class lh_component_import(object):
                                                         rotate=ctrlDict["rotate"],
                                                         scale=ctrlDict["scale"],
                                                         curveData=ctrlDict["nurbsShape"])
-
             cmds.xform(ctrlDict["buffer2"], ws=True, t=ctrlDict["translateOffset"])
             cmds.xform(ctrlDict["buffer2"], ws=True, ro=ctrlDict["rotateOffset"])
             cmds.xform(ctrlDict["buffer2"], ws=True, s=ctrlDict["scaleOffset"])
@@ -647,7 +648,13 @@ class lh_component_import(object):
                     if not cmds.objExists(connectedAttrName):
                         continue
                     cmds.connectAttr(attrName, connectedAttrName, f=True)
+    
+    def cleanup(self):
+        if not self.guides:
+            meshRivetCtrl.rivetGuidesVis(False)
+
 
     def create(self):
         self.getFileData()
         self.createComponents()
+        self.cleanup()
