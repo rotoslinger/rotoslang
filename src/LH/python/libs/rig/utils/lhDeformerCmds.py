@@ -509,6 +509,8 @@ def refresh_paintable_attrs(deformer_name, deformer_type ):
     cmds.makePaintable(deformer_type, ca = True, attrType = "doubleArray", shapeMode='deformer')
     # get all double array attributes
     attrs = cmds.listAttr(deformer_name, ud = True, a = True)
+    if not attrs:
+        return
     for i in attrs:
         paint = i.split(".")[1]
 #         cmds.makePaintable()

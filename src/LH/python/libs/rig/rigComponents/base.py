@@ -1,7 +1,6 @@
 from maya import cmds
 from rig.utils import elements, misc
 
-
 class component(object):
     def __init__(self,
                  side="C",
@@ -44,6 +43,9 @@ class component(object):
                                                              self.suffix),
                                                 ss=False)
         if self.parent and cmds.objExists(self.parent):
+            cmds.parent(self.cmptMasterParent, self.parent)
+        elif self.parent and not cmds.objExists(self.parent):
+            self.parent = cmds.createNode("transform", n=self.parent)
             cmds.parent(self.cmptMasterParent, self.parent)
 
     def createHelperGeo(self):

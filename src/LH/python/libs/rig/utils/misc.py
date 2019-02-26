@@ -1930,12 +1930,6 @@ def printIntArray():
             pointArray += intName + "}"
     print pointArray
 
-def setFaceIdsOnLocator(locatorName):
-    faces = cmds.ls(sl = True, fl=True)
-    faces = [x.split("[")[1] for x in faces]
-    faces = [x.split("]")[0] for x in faces]
-    faces = [int(x) for x in faces]
-    cmds.setAttr(locatorName + ".faceIds", faces, type = "doubleArray")
 # setFaceIdsOnLocator("C_bLip_LOC")
 
 def rename_wild_card_attributes(deformer, string, rename_string):
@@ -2450,3 +2444,53 @@ def move(transform=None, translate=None, rotate=None, scale=None):
         cmds.xform(transform, ws=True, ro=rotate)
     if scale:
         cmds.xform(transform, ws=True, s=scale)
+
+def getSideColors(side):
+    if side == "C":
+        return (1,1,0)
+    if side == "L":
+        return (0,0,1)
+    if side == "R":
+        return (1,0,0)
+
+def setFaceIdsOnLocator(locatorName, faces=None):
+    if not faces:
+        faces = cmds.ls(sl = True, fl=True)
+    faces = [x.split("[")[1] for x in faces]
+    faces = [x.split("]")[0] for x in faces]
+    faces = [int(x) for x in faces]
+    cmds.setAttr(locatorName + ".faceIds", faces, type = "doubleArray")
+
+def createNakedLocator( name, side, geom, controlParent, parent, faces):
+    locator = cmds.createNode("LHNakedLocator", p=parent, n=name)
+    geom = getShape(geom)
+    cmds.connectAttr(geom + ".worldMesh", locator + ".geom")
+    cmds.connectAttr(controlParent + ".worldInverseMatrix", locator + ".nakedInverseMatrix")
+    setFaceIdsOnLocator(locator, faces)
+    colors = getSideColors(side)
+    for idx, color in enumerate(["r", "g", "b"]):
+        cmds.setAttr(locator + "." + color, colors[idx])
+    return locator
+
+def addNakedLocatorToControl(control=None, side= None, controlParent=None, geom=None, faces=None, locator=None, name=None):
+    if not control:
+        control = cmds.ls(sl=True)[0]
+    if not faces:
+        faces = cmds.ls(sl=True, fl=True)[1:]
+    if not name:
+        if "_CTL" in control:
+            name = control.replace("_CTL", "Naked_SHP")
+        else:
+            name = "{0}nakedSHP".format(name)
+    if not geom:
+        geom = faces[0].split(".")[0]
+    if not side:
+        side = control.split("_")[0]
+    if not controlParent:
+        print control
+        controlParent = cmds.listRelatives(control, parent=True)[0]
+        print controlParent
+    if not locator:
+        createNakedLocator( name, side, geom, controlParent, control, faces)
+        # locator = cmds.createNode("LHNakedLocator", p=control, n=name)
+

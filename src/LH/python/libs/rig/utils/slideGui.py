@@ -167,10 +167,10 @@ class slideDeformerGui(object):
                 self.current_weights= "LHCurveRollDeformer." + deformer[0] + "." + weights_source[idx]
             except:
                 pass
-            try:
-                self.current_weights= "LHWeightDeformer." + deformer[0] + "." + weights_source[idx]
-            except:
-                pass
+            # try:
+            #     self.current_weights= "LHWeightDeformer." + deformer[0] + "." + weights_source[idx]
+            # except:
+            #     pass
             # Check if any of the geo from the deformer is selected before switching the paint channels
 
             # shapes = [cmds.listRelatives(i, shapes=True)[0] for i in cmds.ls(sl=True) if cmds.ls(sl=True) and cmds.listRelatives(i, shapes=True)]
@@ -247,7 +247,7 @@ class slideDeformerGui(object):
         index = 0
         if reloadType and not source:
             index = 1
-        type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+        weightType = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
         deformer = cmds.textScrollList(self.deformer_list, 
                                        q = 1, 
                                        selectItem = 1)
@@ -259,11 +259,32 @@ class slideDeformerGui(object):
         elif flipSourceTarget and reloadType and index == 1:
             index = 0
 
-        type = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
+        weightType = cmds.radioButtonGrp(self.weight_type, q = 1, sl = 1)
         deformer = cmds.textScrollList(self.deformer_list, 
                                        q = 1, 
                                        selectItem = 1)
-        if type == 1:
+
+        deformerType = cmds.objectType(deformer[index])
+        print deformerType
+        if deformerType == "cluster":
+            # filter source
+            self.source_string = cmds.textFieldGrp(filterTextGroup, q = 1, text = 1)
+            if self.source_string == "":
+                self.names = [deformer[index] + ".Weights"]
+                self.source_string = self.__filter(filter_string = self.source_string,
+                                                    list = self.names)
+                #---clear weights from
+                cmds.textScrollList(weightsTextScrollList,
+                                    e = 1, 
+                                    ra = 1)
+                #---fill weights from
+                cmds.textScrollList(weightsTextScrollList,
+                                    e = 1, 
+                                    append = self.source_string,
+                                    sc =self.selectSourceWeightAction)
+            return
+                                       
+        if weightType == 1:
             #---get weights
             attrDeformer = deformer
 
@@ -273,7 +294,6 @@ class slideDeformerGui(object):
             self.attrs = cmds.listAttr(attrDeformer, 
                                     ud = True, 
                                     a = True)
-            print attrDeformer, source, "SOURCE OR TARGET"
             self.names = []
             for i in range(len(self.attrs)):
                 tmp_name = self.attrs[i].split(".")
@@ -304,7 +324,7 @@ class slideDeformerGui(object):
                                     e = 1, 
                                     append = self.source_string,
                                     sc =self.selectSourceWeightAction)
-        if type == 2:
+        if weightType == 2:
             # get curves
             animCurveAttrs = [".uAnimCurveUArray", ".uAnimCurveVArray", ".vAnimCurveUArray", ".vAnimCurveVArray",
                                 ".nAnimCurveUArray", ".nAnimCurveVArray", ".tAnimCurveUArray", ".tAnimCurveVArray",
@@ -376,8 +396,9 @@ class slideDeformerGui(object):
         self.slideDeformers = cmds.ls(type = "LHSlideDeformer")
         self.vecDeformers = cmds.ls(type = "LHVectorDeformer")
         self.curveRollDeformers = cmds.ls(type = "LHCurveRollDeformer")
-        self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
-        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers + self.weightDeformers
+        # self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
+        self.clusterDeformers = cmds.ls(type = "cluster")
+        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers  + self.clusterDeformers
 #         self.deformers.append(cmds.ls(type = "LHVectorDeformer"))
 
         cmds.textScrollList(self.deformer_list,
@@ -395,8 +416,8 @@ class slideDeformerGui(object):
         self.slideDeformers = cmds.ls(type = "LHSlideDeformer")
         self.vecDeformers = cmds.ls(type = "LHVectorDeformer")
         self.curveRollDeformers = cmds.ls(type = "LHCurveRollDeformer")
-        self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
-        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers + self.weightDeformers
+        # self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
+        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers
 #         self.deformers.append(cmds.ls(type = "LHVectorDeformer"))
 
         cmds.textScrollList(self.deformer_list2,
@@ -414,8 +435,8 @@ class slideDeformerGui(object):
         self.slideDeformers = cmds.ls(type = "LHSlideDeformer")
         self.vecDeformers = cmds.ls(type = "LHVectorDeformer")
         self.curveRollDeformers = cmds.ls(type = "LHCurveRollDeformer")
-        self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
-        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers + self.weightDeformers
+        # self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
+        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers
 #         self.deformers.append(cmds.ls(type = "LHVectorDeformer"))
 
         cmds.textScrollList(self.deformer_list3,
@@ -433,8 +454,8 @@ class slideDeformerGui(object):
         self.slideDeformers = cmds.ls(type = "LHSlideDeformer")
         self.vecDeformers = cmds.ls(type = "LHVectorDeformer")
         self.curveRollDeformers = cmds.ls(type = "LHCurveRollDeformer")
-        self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
-        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers + self.weightDeformers
+        # self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
+        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers
 #         self.deformers.append(cmds.ls(type = "LHVectorDeformer"))
 
         cmds.textScrollList(self.deformer_list4,
@@ -452,8 +473,8 @@ class slideDeformerGui(object):
         self.slideDeformers = cmds.ls(type = "LHSlideDeformer")
         self.vecDeformers = cmds.ls(type = "LHVectorDeformer")
         self.curveRollDeformers = cmds.ls(type = "LHCurveRollDeformer")
-        self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
-        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers + self.weightDeformers
+        # self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
+        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers
     #         self.deformers.append(cmds.ls(type = "LHVectorDeformer"))
 
         cmds.textScrollList(self.deformer_list_slide,

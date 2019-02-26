@@ -163,6 +163,22 @@ class slideDeformerCmd():
             quit()
     def __getShape(self):
         """gets shape"""
+        """
+        self.driverShape = cmds.listRelatives(self.driverSurface, shapes = True)[0]
+        self.weightGeoShape = cmds.listRelatives(self.weightGeo, shapes = True)[0]
+        for i in range(len(self.geoms)):
+            temp = cmds.listRelatives(self.geoms[i], shapes = True)
+            if temp:
+                self.geomShapes.append(temp[0])
+            else:
+                self.geomShapes.append(self.geoms[i])
+
+        for i in range(len(self.weightBase)):
+            temp = cmds.listRelatives(self.weightBase[i], shapes = True)[0]
+            self.weightBaseShapes.append(temp)
+        print self.driverShape, self.weightGeoShape
+
+        """
         try:
             self.driverShape = cmds.listRelatives(self.driverSurface, shapes = True)[0]
             self.weightGeoShape = cmds.listRelatives(self.weightGeo, shapes = True)[0]
@@ -213,6 +229,10 @@ class slideDeformerCmd():
     def __createBase(self):
         """creates base geo"""
         self.baseName = self.__nameBase()
+        if cmds.objExists(self.baseName):
+            self.baseShape = self.baseName + "Shape"
+            self.baseGeo = self.baseName
+            return
         self.baseGeo,self.baseShape = self.__duplicateMeshClean(self.driverSurface, self.baseName)
 
     def __nameBase(self):
@@ -369,6 +389,8 @@ class slideDeformerCmd():
     def __connectSlideDeformer(self):
         """makes all connections into the slide deformer"""
         #----connect shapes
+
+        print self.driverShape, self.baseShape
         cmds.connectAttr(self.driverShape + '.worldSpace',
                          self.returnDeformer + '.surface',
                          force=True)

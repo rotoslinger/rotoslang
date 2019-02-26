@@ -290,13 +290,15 @@ class lh_deformer_import(object):
     def createBase(self):
         """Creates base"""
         self.baseGeo = []
+
         for i in self.geo_membership:
-            if not cmds.objExists(i+"Base"):
-                tmp = cmds.duplicate(i, name = i + "Base")[0]
+            shapeParent = cmds.listRelatives(i, parent=True)[0]
+            if not cmds.objExists(shapeParent+"Base"):
+                tmp = cmds.duplicate(shapeParent, name = shapeParent + "Base")[0]
                 cmds.setAttr(tmp+".v",0)
                 self.baseGeo.append(tmp)
             else:
-                self.baseGeo.append(i+"Base")
+                self.baseGeo.append(shapeParent+"Base")
 
     def createTransferGeo(self):
         if not self.transferWeights:
@@ -488,6 +490,8 @@ class lh_component_export(object):
         for ctrl in stickControls:
             if ctrl not in self.manipDict.keys():
                 self.manipDict["controls"][ctrl] = {}
+            ctrlShape = cmds.listRelatives(ctrl, type = "nurbsCurve")[0]
+            self.manipDict["controls"][ctrl]["nurbsShape"] = xUtils.nurbsCurveData(name = ctrlShape, space=OpenMaya.MSpace.kObject).nurbsCurve
             buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = self.getStickyObjectsCrappy(ctrl)
             self.manipDict["controls"][ctrl]["buffer1"] = buffer1
             self.manipDict["controls"][ctrl]["buffer2"] = buffer2
@@ -500,8 +504,9 @@ class lh_component_export(object):
             self.manipDict["controls"][ctrl]["side"] = name[0]
             self.manipDict["controls"][ctrl]["suffix"] = name[2]
             parent = False
-            if cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True):
-                parent = cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True)[0]
+            if cmds.listRelatives(root, parent=True):
+                parent = cmds.listRelatives(root, parent=True)[0]
+                # print "PARENT!!!!!!", parent
             self.manipDict["controls"][ctrl]["parent"] = parent
             self.manipDict["controls"][ctrl]["attrVals"] = {}
             self.manipDict["controls"][ctrl]["attrConnections"] = {}
@@ -552,10 +557,12 @@ class lh_component_import(object):
     def __init__(self,
                  path = "",
                  create_geo = True,
+                 geo_name = None
                  ):
         #---args
         self.path                    = path
         self.create_geo              = create_geo
+        self.geo_name                = geo_name
 
         self.create()
 
@@ -604,20 +611,24 @@ class lh_component_import(object):
                                             name=nurbsName,
                                             parent=self.manipDict["normalConstraintGeo"][key]["parent"])
         attributes = elements.MESH_RIVET_ATTRS
-
         for key in self.manipDict["controls"].keys():
             ctrlDict = self.manipDict["controls"][key]
             if not cmds.objExists(key):
+                if not self.geo_name:
+                    self.geo_name = ctrlDict["geoConstraintGeoName"]
+                # print "PAAARENT", ctrlDict["parent"]
                 rivetComponent = meshRivetCtrl.component(name=ctrlDict["name"],
+                                                        parent=ctrlDict["parent"],
                                                         guide=True,
                                                         side=ctrlDict["side"],
                                                         normalConstraintPatch = ctrlDict["normalConstraintGeoName"],
-                                                        mesh = ctrlDict["geoConstraintGeoName"],
+                                                        mesh = self.geo_name,
                                                         selection=False,
                                                         translate=ctrlDict["translate"],
                                                         rotate=ctrlDict["rotate"],
-                                                        scale=ctrlDict["scale"])
-            
+                                                        scale=ctrlDict["scale"],
+                                                        curveData=ctrlDict["nurbsShape"])
+
             cmds.xform(ctrlDict["buffer2"], ws=True, t=ctrlDict["translateOffset"])
             cmds.xform(ctrlDict["buffer2"], ws=True, ro=ctrlDict["rotateOffset"])
             cmds.xform(ctrlDict["buffer2"], ws=True, s=ctrlDict["scaleOffset"])
@@ -632,7 +643,7 @@ class lh_component_import(object):
                     continue
                 for connectedAttr in ctrlDict["attrConnections"][attrName]:
                     connectedAttrName = str(connectedAttr)
-                    print connectedAttrName
+                    # print connectedAttrName
                     if not cmds.objExists(connectedAttrName):
                         continue
                     cmds.connectAttr(attrName, connectedAttrName, f=True)

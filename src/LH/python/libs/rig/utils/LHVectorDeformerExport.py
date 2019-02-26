@@ -125,8 +125,7 @@ class exportDeformer(lh_deformer_export):
         self.vector_dict["base_geo"] = self.base_geo
         self.vector_dict["t_pivots"] = self.t_pivots
         self.vector_dict["r_pivots"] = self.r_pivots
-        if not self.geo_membership: 
-            self.geo_membership   = self.dict["geo_membership"]
+        self.vector_dict["geo_membership"] = self.geo_membership
         self.vector_dict["deformer_weights"] = self.deformer_weights
         self.vector_dict["weightGeo"] = self.weightGeo
         self.vector_dict["control"] = self.control

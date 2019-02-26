@@ -1,5 +1,6 @@
 from maya import cmds
 from rigComponents import base
+reload(base)
 from rig.utils.misc import formatName, create_ctl
 from rig.utils import misc
 from rig.utils import exportUtils
@@ -70,15 +71,6 @@ class component(base.component):
 
 
         super(component, self).__init__(**kw)
-
-    def createHier(self):
-        self.cmptMasterParent = cmds.createNode("transform",
-                                                n=misc.formatName(self.side,
-                                                                self.name,
-                                                                self.suffix),
-                                                ss=False)
-        if self.parent and cmds.objExists(self.parent):
-            cmds.parent(self.cmptMasterParent, self.parent)
 
     def createHelperGeo(self):
         return

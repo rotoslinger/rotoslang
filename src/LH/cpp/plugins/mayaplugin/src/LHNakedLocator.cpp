@@ -223,6 +223,7 @@ MUserData* LHNakedLocatorOverride::prepareForDraw(const MDagPath& objPath, const
                     fnGeo.getPoint(facePointIds[j], pt);
                     // pt = pt + (pt - normal) * .5;
                     data->geoPoints.append(pt * plugData.mWorldInverseMatrix);
+                    // data->geoPoints.append(pt);
                 }
             }
         }
@@ -259,7 +260,7 @@ MStatus LHNakedLocator::initialize() {
   MFnMatrixAttribute mAttr;
 
   //Main Matrix
-  aInvertMatrix = mAttr.create("nakedInvertMatrix", "nimatrix");
+  aInvertMatrix = mAttr.create("nakedInverseMatrix", "nimatrix");
   mAttr.setWritable(true);
   mAttr.setStorable(true);
   addAttribute( aInvertMatrix );
@@ -289,17 +290,17 @@ MStatus LHNakedLocator::initialize() {
   addAttribute(aCachePlugs);
 
 
-  aColorR = nAttr.create( "Color_R", "cr", MFnNumericData::kFloat);
+  aColorR = nAttr.create( "colorR", "r", MFnNumericData::kFloat);
   nAttr.setKeyable(true);
   nAttr.setWritable(true);
   addAttribute(aColorR);
 
-  aColorG = nAttr.create( "Color_G", "cg", MFnNumericData::kFloat);
+  aColorG = nAttr.create( "colorG", "g", MFnNumericData::kFloat);
   nAttr.setKeyable(true);
   nAttr.setWritable(true);
   addAttribute(aColorG);
 
-  aColorB = nAttr.create( "Color_B", "cb", MFnNumericData::kFloat);
+  aColorB = nAttr.create( "colorB", "b", MFnNumericData::kFloat);
   nAttr.setKeyable(true);
   nAttr.setWritable(true);
   addAttribute(aColorB);
