@@ -27,9 +27,6 @@ class meshData(object):
         """
         @type  name:                        string
         @param name:                        name of the geo you want to get data from
-
-        @type  filter:                      list of ints
-        @param import_path:                 intArray of points you want to export
         """
 
         #---args
@@ -67,8 +64,6 @@ class meshData(object):
         self.numVertices = self.fn_mesh.numVertices()
 
     def get_num_polygons(self):
-        if self.filter:
-            return
         self.numPolygons = self.fn_mesh.numPolygons()
 
     def get_vert_array(self):
@@ -90,8 +85,6 @@ class meshData(object):
             mesh_iter.next()
 
     def get_UVs(self):
-        if self.filter:
-            return
         tmp_U_float_array = OpenMaya.MFloatArray()
         tmp_V_float_array = OpenMaya.MFloatArray()
         self.fn_mesh.getUVs(tmp_U_float_array,tmp_V_float_array)
@@ -126,78 +119,6 @@ class meshData(object):
         self.get_counts_connects()
         self.get_UVs()
         self.write_dict()
-
-
-class meshDataFiltered(meshData):
-    def __init__(self, filterArray, **kw):
-        self.filterArray = filterArray
-        super(meshDataFiltered, self).__init__(**kw)
-
-    def getNumVerts(self):
-        if self.filterArray:
-            # for idx in filter
-            return
-        self.numVertices = len(self.filterArray)
-
-    def get_num_polygons(self):
-        # if self.filter:
-            return
-        # self.numPolygons = self.fn_mesh.numPolygons()
-
-    def get_vert_array(self):
-        vertexArray = []
-        points = OpenMaya.MPointArray()
-        self.fn_mesh.getPoints(points, OpenMaya.MSpace.kWorld)
-        for i in range(len(self.filterArray)):
-            vertexArray.append((points[self.filterArray[i]].x, points[self.filterArray[i]].y, points[self.filterArray[i]].z))
-
-        # points = OpenMaya.MPointArray()
-        # self.fn_mesh.getPoints(points, OpenMaya.MSpace.kWorld)
-        # for i in range(points.length()):
-        #     self.vertexArray.append((points[i].x,
-        #                              points[i].y,
-        #                              points[i].z))
-
-    def get_counts_connects(self):
-        polyCounts = []
-        polygonConnects = []
-        polyIdxList = []
-        mesh_iter = OpenMaya.MItMeshPolygon(self.mesh_path)
-        while mesh_iter.isDone() == False :
-            temp_vert_ids = OpenMaya.MIntArray()
-            mesh_iter.getVertices(temp_vert_ids)
-            # If the vert isn't in our filter, skip the face
-            for i in range(temp_vert_ids.length()):
-                if temp_vert_ids[i] not in self.filterArray:
-                    mesh_iter.next()
-            self.polygonCounts.append(mesh_iter.polygonVertexCount())
-            polyIdxList.append(mesh_iter.index())
-            for i in range(temp_vert_ids.length()):
-                self.polygonConnects.append(temp_vert_ids[i])
-            mesh_iter.next()
-        self.numPolygons = len(polyIdxList)
-
-
-        # mesh_iter = OpenMaya.MItMeshPolygon(self.mesh_path)
-        # while mesh_iter.isDone() == False :
-        #     temp_vert_ids = OpenMaya.MIntArray()
-        #     self.polygonCounts.append(mesh_iter.polygonVertexCount())
-        #     mesh_iter.getVertices(temp_vert_ids)
-        #     for i in range(temp_vert_ids.length()):
-        #         self.polygonConnects.append(temp_vert_ids[i])
-        #     mesh_iter.next()
-
-    def get_UVs(self):
-        tmp_U_float_array = OpenMaya.MFloatArray()
-        tmp_V_float_array = OpenMaya.MFloatArray()
-        self.fn_mesh.getUVs(tmp_U_float_array,tmp_V_float_array)
-        self.uArray = [i for i in tmp_U_float_array]
-        self.vArray = [i for i in tmp_V_float_array]
-        uv_counts = OpenMaya.MIntArray()
-        uv_ids = OpenMaya.MIntArray()
-        self.fn_mesh.getAssignedUVs(uv_counts,uv_ids)
-        self.uv_count = [i for i in uv_counts]
-        self.uv_id = [i for i in uv_ids]
 
 def createMesh(mesh_dict, name=None, parent=None):
     #put everything back into m arrays
@@ -235,6 +156,82 @@ def createMesh(mesh_dict, name=None, parent=None):
 
     new_mesh.assignUVs(uv_counts,uv_id)
     parentNameNewGeo(mesh_dict, name, new_mesh, parent)
+    return new_mesh
+def create_curve_2(curve_dict, name=None, parent=None, createNewParent=True):
+    if parent and not cmds.objExists(parent) and createNewParent:
+        parent = cmds.createNode("transform", name=parent)
+    parentNode = OpenMaya.MSelectionList()
+    parentNode.add(parent)
+    parentPath = OpenMaya.MDagPath()
+    parentNode.getDagPath(0,parentPath)
+    parentMObject = parentPath.transform()
+
+    #verts
+    controlVertices = OpenMaya.MPointArray()
+    [controlVertices.append(OpenMaya.MPoint(i[0],i[1],i[2]))for i in curve_dict.get("controlVertices")]
+    #counts
+    uKnots = OpenMaya.MDoubleArray()
+    [uKnots.append(i) for i in curve_dict.get("knots")]
+    #connects
+    new_nurbsCurve = OpenMaya.MFnNurbsCurve()
+    newShape = new_nurbsCurve.create(controlVertices,
+                                    uKnots,
+                                    curve_dict.get("degree"),
+                                    curve_dict.get("form"),
+                                    False,
+                                    False,
+                                    parentMObject
+                                    )
+    nurbsCurve_path = OpenMaya.MDagPath()
+    path = nurbsCurve_path.getAPathTo(newShape)
+    cmds.rename(path.fullPathName(), name)
+    return new_nurbsCurve
+
+
+def createMeshNew(mesh_dict, name=None, parent=None):
+    newTransform = cmds.createNode("transform", name=name, parent=parent )
+    transformNode = OpenMaya.MSelectionList()
+    transformNode.add(newTransform)
+    transformPath = OpenMaya.MDagPath()
+    transformNode.getDagPath(0,transformPath)
+    transformMObject = transformPath.transform()
+
+    #put everything back into m arrays
+    #verts
+    vertexArray = OpenMaya.MPointArray()
+    [vertexArray.append(OpenMaya.MPoint(i[0],i[1],i[2])) for i in mesh_dict.get("vertexArray")]
+    #counts
+    counts = OpenMaya.MIntArray()
+    [counts.append(i) for i in mesh_dict.get("polygonCounts")]
+    #connects
+    connects = OpenMaya.MIntArray()
+    [connects.append(i) for i in mesh_dict.get("polygonConnects")]
+    #uarray
+    uArray = OpenMaya.MFloatArray()
+    [uArray.append(i) for i in mesh_dict.get("uArray")]
+    #uarray
+    vArray = OpenMaya.MFloatArray()
+    [vArray.append(i) for i in mesh_dict.get("vArray")]
+
+    #uv_counts
+    uv_counts = OpenMaya.MIntArray()
+    [uv_counts.append(i) for i in mesh_dict.get("polygonCounts")]
+    #uv_id
+    uv_id = OpenMaya.MIntArray()
+    [uv_id.append(i) for i in mesh_dict.get("polygonConnects")]
+
+    new_mesh = OpenMaya.MFnMesh()
+    new_mesh.create(mesh_dict.get("numVertices"),
+                    mesh_dict.get("numPolygons"),
+                                         vertexArray,
+                                         counts,
+                                         connects,
+                                         uArray,
+                                         vArray,
+                                         transformMObject)
+    cmds.rename(new_mesh.fullPathName(), name+"Shape")
+    new_mesh.assignUVs(uv_counts,uv_id)
+
     return new_mesh
 
 def parentCheck(parent):

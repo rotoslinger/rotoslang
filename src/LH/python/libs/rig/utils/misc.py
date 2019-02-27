@@ -2285,6 +2285,13 @@ def getOMMesh(mayaObject):
     meshNode.getDagPath(0,pPath)
     return OpenMaya.MFnMesh(pPath)
 
+def getDag(mayaObject):
+    meshNode = OpenMaya.MSelectionList()
+    meshNode.add(mayaObject)
+    pPath = OpenMaya.MDagPath()
+    meshNode.getDagPath(0,pPath)
+    return pPath
+
 def getMPointFromTransform(mayaObject):
     transformPoint = cmds.xform(mayaObject, 
                                 q =True, 
