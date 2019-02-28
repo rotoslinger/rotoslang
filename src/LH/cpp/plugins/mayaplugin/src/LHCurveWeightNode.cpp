@@ -38,9 +38,6 @@ MTypeId LHCurveWeightNode::id(0x35443568);
 MObject LHCurveWeightNode::aOutputWeightsDoubleArrayParent;
 MObject LHCurveWeightNode::aOutputWeightsDoubleArray;
 MObject LHCurveWeightNode::aInputs;
-MObject LHCurveWeightNode::aInputWeights;
-MObject LHCurveWeightNode::aFactor;
-MObject LHCurveWeightNode::aOperation;
 MObject LHCurveWeightNode::aMembershipWeights;
 MObject LHCurveWeightNode::aCacheMembershipWeights;
 MObject LHCurveWeightNode::aInputMesh;
@@ -51,10 +48,6 @@ MObject LHCurveWeightNode::aOutputWeightsFloatArray;
 MObject LHCurveWeightNode::aOutWeights;
 MObject LHCurveWeightNode::aAnimCurveU;
 MObject LHCurveWeightNode::aAnimCurveV;
-// MObject LHCurveWeightNode::aScaleU;
-// MObject LHCurveWeightNode::aSlideU;
-// MObject LHCurveWeightNode::aScaleV;
-// MObject LHCurveWeightNode::aSlide;
     
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
@@ -73,72 +66,11 @@ MStatus LHCurveWeightNode::initialize()
     aProjectionMesh = tAttr.create("projectionMesh", "pmesh", MFnData::kMesh);
     addAttribute(aProjectionMesh);
 
-    /////// Attrs for compound
-    aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
-    nAttr.setKeyable(true);
-    nAttr.setWritable(true);
-    nAttr.setStorable(true);
-    nAttr.setDefault(0.0);
-    nAttr.setChannelBox(true);
-    addAttribute(aFactor);
-
-
-    // /////// Attrs for compound
-    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
-    // nAttr.setKeyable(true);
-    // nAttr.setWritable(true);
-    // nAttr.setStorable(true);
-    // nAttr.setDefault(0.0);
-    // nAttr.setChannelBox(true);
-    // addAttribute(aFactor);
-    // /////// Attrs for compound
-    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
-    // nAttr.setKeyable(true);
-    // nAttr.setWritable(true);
-    // nAttr.setStorable(true);
-    // nAttr.setDefault(0.0);
-    // nAttr.setChannelBox(true);
-    // addAttribute(aFactor);
-    // /////// Attrs for compound
-    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
-    // nAttr.setKeyable(true);
-    // nAttr.setWritable(true);
-    // nAttr.setStorable(true);
-    // nAttr.setDefault(0.0);
-    // nAttr.setChannelBox(true);
-    // addAttribute(aFactor);
-    // /////// Attrs for compound
-    // aFactor = nAttr.create( "factor", "f", MFnNumericData::kDouble);
-    // nAttr.setKeyable(true);
-    // nAttr.setWritable(true);
-    // nAttr.setStorable(true);
-    // nAttr.setDefault(0.0);
-    // nAttr.setChannelBox(true);
-    // addAttribute(aFactor);
-
     aMembershipWeights = tAttr.create("membershipWeights", "mweights", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
     tAttr.setArray(false);
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aMembershipWeights);
-
-    aInputWeights = tAttr.create("inputWeights", "iw", MFnNumericData::kDoubleArray);
-    tAttr.setKeyable(true);
-    tAttr.setArray(false);
-    tAttr.setUsesArrayDataBuilder(true);
-    addAttribute(aInputWeights);
-
-    aOperation = eAttr.create("operation", "op", 0);
-    eAttr.addField( "add", 0 );
-    eAttr.addField( "subtract", 1 );
-    eAttr.addField( "multiply", 2 );
-    eAttr.addField( "divide", 3 );
-    eAttr.setHidden( false );
-    eAttr.setKeyable( true );
-    eAttr.setWritable(true);
-    eAttr.setStorable(true);
-    eAttr.setChannelBox(true);
-    addAttribute(aOperation);
 
     aAnimCurveU = nAttr.create("AnimCurveU", "acu", MFnNumericData::kFloat);
     nAttr.setKeyable(true);
@@ -149,9 +81,6 @@ MStatus LHCurveWeightNode::initialize()
     aInputs = cAttr.create("Inputs", "inputs");
     cAttr.setKeyable(true);
     cAttr.setArray(true);
-    cAttr.addChild( aInputWeights );
-    cAttr.addChild( aFactor );
-    cAttr.addChild( aOperation );
     cAttr.addChild( aAnimCurveU );
     cAttr.addChild( aAnimCurveV );
     cAttr.setReadable(true);
@@ -231,78 +160,15 @@ MStatus LHCurveWeightNode::initialize()
     attributeAffects(aProjectionMesh, aOutputWeightsDoubleArray);
     attributeAffects(aCacheMembershipWeights, aOutputWeightsDoubleArray);
     attributeAffects(aMembershipWeights, aOutputWeightsDoubleArray);
-    attributeAffects(aOperation, aOutputWeightsDoubleArray);
-    attributeAffects(aInputWeights, aOutputWeightsDoubleArray);
     attributeAffects(aInputs, aOutputWeightsDoubleArray);
-    attributeAffects(aFactor, aOutputWeightsDoubleArray);
 
     attributeAffects(aCacheWeightMesh, aOutputWeightsFloatArray);
     attributeAffects(aInputMesh, aOutputWeightsFloatArray);
     attributeAffects(aProjectionMesh, aOutputWeightsFloatArray);
     attributeAffects(aCacheMembershipWeights, aOutputWeightsFloatArray);
     attributeAffects(aMembershipWeights, aOutputWeightsFloatArray);
-    attributeAffects(aOperation, aOutputWeightsFloatArray);
-    attributeAffects(aInputWeights, aOutputWeightsFloatArray);
     attributeAffects(aInputs, aOutputWeightsFloatArray);
-    attributeAffects(aFactor, aOutputWeightsFloatArray);
     return MStatus::kSuccess;
-}
-
-
-MStatus LHCurveWeightNode::multiplyKDoubleArrayByVal(MDoubleArray &rDoubleArray, double val)
-{
-    int len = rDoubleArray.length();
-    if (!len)
-    {
-        return MS::kFailure;
-    }
-    for (int i= 0; i < len; ++i)
-    {
-        rDoubleArray[i] = rDoubleArray[i] * val;
-    }
-    return MS::kSuccess;
-}
-
-
-MDoubleArray LHCurveWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
-                                                    MDoubleArray doubleArray2,
-                                                    short operation)
-{
-    MDoubleArray rDoubleArray;
-    int length1 = doubleArray1.length();
-    int length2 = doubleArray2.length();
-    if (length1 != length2)
-    {
-        return rDoubleArray;
-    }
-    for (int i=0;i < length1;i++)
-    {
-
-        switch( operation )
-        {
-            case 0 : // add
-                rDoubleArray.append(doubleArray1[i] + doubleArray2[i]);
-                break;
-            case 1 : // subtract
-                rDoubleArray.append(doubleArray1[i] - doubleArray2[i]);
-                break;
-            case 2 : // multiply
-                rDoubleArray.append(doubleArray1[i] * doubleArray2[i]);
-                break;
-            case 3 : // divide
-                if (doubleArray1[i] == 0.0)
-                {
-                    doubleArray1[i] = .00001;
-                }
-                if (doubleArray2[i] == 0.0)
-                {
-                    doubleArray2[i] = .00001;
-                }
-                rDoubleArray.append(doubleArray1[i] / doubleArray2[i]);
-                break;
-        }
-    }
-    return rDoubleArray;
 }
 
 
@@ -524,9 +390,6 @@ MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& 
     {
         status = inputsArrayHandle.jumpToElement(i);
         CheckStatusReturn( status, "Unable to jump to input element" );
-        double dAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFactor ).asDouble();
-        short operation = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aOperation ).asShort();
-        MDataHandle hInputArray = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aInputWeights);
 
         status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, finalWeights, numVerts, i);
         CheckStatusReturn( status, "Unable to get Anim Curves" );
@@ -577,8 +440,6 @@ MStatus LHCurveWeightNode::computeFloatArray(MDataBlock& data)
     return MS::kSuccess;
 }
 
-
-
 void LHCurveWeightNode::dirtyPlug(MPlug const & inPlug, MPlugArray  & affectedPlugs, MPlug outArrayPlug)
 {
     if (inPlug.isElement())
@@ -603,9 +464,6 @@ MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
                                             MPlugArray  & affectedPlugs)
     {
         if ( (inPlug.attribute() != aInputs)
-        & (inPlug.attribute() != aFactor)
-        & (inPlug.attribute() != aInputWeights)
-        & (inPlug.attribute() != aOperation)
         & (inPlug.attribute() != aAnimCurveU)
         & (inPlug.attribute() != aAnimCurveV)
         & (inPlug.attribute() != aMembershipWeights)

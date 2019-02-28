@@ -28,7 +28,8 @@ def calimari(skinCluster, mesh, bias, hide=True):
     tmpMesh = cmds.listRelatives(tmpMeshTransform, shapes=True)
     tmpSkinCluster = cmds.skinCluster(jnts, tmpMeshTransform, mi=1)[0]
     cmds.copySkinWeights(ss=skinCluster, ds=tmpSkinCluster, noMirror=True, ia="oneToOne")
-    # skincluster always locks transforms, unlock them
+    cmds.skinCluster(tmpSkinCluster, e=True, mi=1)
+    # skincluster always locks transforms, unlock them so you can constrain later
     misc.lock_attrs(tmpMeshTransform, unhide=True)
     
     for idx, jnt in enumerate(jnts):

@@ -265,7 +265,6 @@ class slideDeformerGui(object):
                                        selectItem = 1)
 
         deformerType = cmds.objectType(deformer[index])
-        print deformerType
         if deformerType == "cluster":
             # filter source
             self.source_string = cmds.textFieldGrp(filterTextGroup, q = 1, text = 1)

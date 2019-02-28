@@ -248,8 +248,8 @@ class importDeformer(lh_deformer_import):
         self.out_curve        = self.dict["out_curve"]
         self.anim_curves      = self.dict["anim_curves"]
         self.weights          = self.dict["weights"]
-        if not self.geo_membership:
-            self.geo_membership   = self.dict["geo_membership"]
+        # if not self.geo_membership:
+        #     self.geo_membership   = self.dict["geo_membership"]
         self.deformer_weights = self.dict["deformer_weights"]
         self.geoms            = self.dict["geoms"]
         self.control          = self.dict["control"]

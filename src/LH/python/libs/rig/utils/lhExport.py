@@ -283,6 +283,9 @@ class lh_deformer_import(object):
         "imports the dictionary, separates all of the info for later use"
         if "manipDict" in self.dict.keys():
             self.manipDict   = self.dict["manipDict"]
+        print self.geo_membership
+        if not self.geo_membership:
+            self.geo_membership = self.dict["geo_membership"]
 
     def createGeo(self):
         return
@@ -290,9 +293,13 @@ class lh_deformer_import(object):
     def createBase(self):
         """Creates base"""
         self.baseGeo = []
-
+        print self.geo_membership
         for i in self.geo_membership:
-            shapeParent = cmds.listRelatives(i, parent=True)[0]
+            shapeParent = cmds.listRelatives(i, parent=True)
+            if shapeParent:
+                shapeParent = shapeParent[0]
+            if not shapeParent:
+                shapeParent = i
             if not cmds.objExists(shapeParent+"Base"):
                 tmp = cmds.duplicate(shapeParent, name = shapeParent + "Base")[0]
                 cmds.setAttr(tmp+".v",0)

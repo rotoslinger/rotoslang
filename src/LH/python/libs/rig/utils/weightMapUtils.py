@@ -41,11 +41,11 @@ def createWeightMapOnDeformer(deformer=None,
                               weightName=PREFIX+"WeightMap",
                               dataType="doubleArray",
                               defaultValue=1.0, addAttr=True,
-                              makePaintable=True,
-                              deformerType="LHCollisionDeformer"):
+                              makePaintable=True):
     mesh = getCleanShape(mesh)
     if not mesh:
         return
+    deformerType = cmds.objectType(deformer)
     # Single
     returnAttrs = []
     if addAttr:
@@ -55,6 +55,52 @@ def createWeightMapOnDeformer(deformer=None,
         cmds.makePaintable(deformerType, weightName)
     returnAttrs.append(deformer + "." + weightName)
     return returnAttrs
+
+def createMultiWeightMapOnDeformer(deformer=None,
+                              mesh = None,
+                              weightName=None,
+                              dataType="doubleArray",
+                              defaultValue=1.0, addAttr=True,
+                              makePaintable=True):
+    mesh = getCleanShape(mesh)
+    if not mesh or not weightName:
+        return
+    deformerType = cmds.objectType(deformer)
+    # Single
+    returnAttrs = []
+    compoundName = weightName + 'Weights'
+    weightMapName = weightName + 'Weight'
+    print 
+    if addAttr and not cmds.objExists(deformer + "." + compoundName):
+        cmds.addAttr(deformer,
+                        longName = compoundName,
+                        numberOfChildren = 1, 
+                        attributeType = 'compound',
+                        multi = True, 
+                        indexMatters=True)
+        cmds.addAttr(deformer, 
+                        longName = weightMapName,
+                        dataType = 'doubleArray',
+                        parent = compoundName)
+        setDefaultMultiWeightsWithDeformer(mesh, deformer, weightMapName, compoundName , dataType=dataType, defaultValue=defaultValue)
+    if makePaintable:
+        cmds.makePaintable(deformerType, weightMapName, attrType='doubleArray', shapeMode='deformer')
+    returnAttrs.append(deformer + "." + weightMapName)
+    return returnAttrs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def setDefaultWeights(name, attrName, dataType, defaultValue=1.0):
@@ -66,6 +112,13 @@ def setDefaultWeightsWithDeformer(meshName, deformerName, attrName, dataType, de
     polyCount = cmds.polyEvaluate(meshName, v=True)
     defaultVals = [defaultValue for x in range(polyCount)]
     cmds.setAttr(deformerName + "." + attrName, defaultVals, type=dataType)
+
+def setDefaultMultiWeightsWithDeformer(meshName, deformerName, attrName, multiAttrName, dataType, defaultValue=1.0):
+    polyCount = cmds.polyEvaluate(meshName, v=True)
+    defaultVals = [defaultValue for x in range(polyCount)]
+    finalAttrName = "{0}.{1}[0].{2}".format(deformerName, multiAttrName, attrName)
+    cmds.setAttr(finalAttrName, defaultVals, type=dataType)
+
 
 def removeWeightMapOnObject(mayaObject=None,
                             weightName=PREFIX+"WeightMap",
@@ -279,7 +332,7 @@ def addCapsuleWeightMap(name=None, deformer=None, attr=None, idx=None, mesh=None
     print "ACTUALLY CREATING ", idx
     createWeightMapOnDeformer(deformer=deformer, mesh=mesh, weightName=name, dataType="doubleArray",
                             defaultValue=1.0, addAttr=addAttr,
-                            makePaintable=True, deformerType="LHCollisionDeformer")
+                            makePaintable=True)
     if addAttr:
         cmds.connectAttr(deformer + "." + name, attr)
     

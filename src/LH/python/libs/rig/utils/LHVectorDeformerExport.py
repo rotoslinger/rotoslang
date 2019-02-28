@@ -190,7 +190,7 @@ class importDeformer(lh_deformer_import):
     def create_instance_variables(self):
         #---vars
         self.dict                    = {}
-        self.geo_membership          = []
+        # self.geo_membership          = []
         self.weight_geo              = {}
         self.anim_curves             = {}
         self.weights                 = {}
@@ -213,8 +213,8 @@ class importDeformer(lh_deformer_import):
         self.r_pivots         = self.dict["r_pivots"]
         self.anim_curves      = self.dict["anim_curves"]
         self.weights          = self.dict["weights"]
-        if not self.geo_membership: 
-            self.geo_membership   = self.dict["geo_membership"]
+        # if not self.geo_membership:
+        #     self.geo_membership   = self.dict["geo_membership"]
         self.deformer_weights = self.dict["deformer_weights"]
         self.geoms            = self.dict["geoms"]
         self.control          = self.dict["control"]
