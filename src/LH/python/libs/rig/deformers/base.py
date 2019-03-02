@@ -2,6 +2,7 @@ from maya import cmds
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
 reload(misc)
+import copy
 
 """
 sld = cmds.ls(typ="LHSlideDeformer")
@@ -101,40 +102,38 @@ class Node(object):
             return
         self.node = cmds.createNode(self.nodeType, n=self.name, p=self.parent)
 
-    def availableElemCheck(self):
-
-        if self.inputMultiAttrToAddTo:
+    def availableElemCheck(self, multiAttrToCheck):
+        availableInputElem = 0
+        if multiAttrToCheck:
             allElemsConnected = 0
-            self.availableInputElem = -1
-            numElements = len(cmds.getAttr(self.inputMultiAttrToAddTo, mi=True))
-            node, attr = self.extractNodeAttr(self.inputMultiAttrToAddTo)
+            availableInputElem = -1
+            numElements = cmds.getAttr(multiAttrToCheck, mi=True)
+            if not numElements:
+                return 0
+            numElements = len(numElements)
+            node, attr = self.extractNodeAttr(multiAttrToCheck)
             for elemIdx in range(numElements):
                 isConnections = False
                 for child in cmds.attributeQuery(attr, node=node, lc=True):
-                    connections = cmds.listConnections("{0}[{1}].{2}".format(self.inputMultiAttrToAddTo, elemIdx, child))
+                    connections = cmds.listConnections("{0}[{1}].{2}".format(multiAttrToCheck, elemIdx, child))
+                    print connections
                     if connections:
                         isConnections = True
                 # If none of the children are connected, you know the element is free to be connected to
                 if not isConnections:
-                    self.availableInputElem = elemIdx
+                    availableInputElem = elemIdx
+                    print "BREAKING", elemIdx
                     break
-            if self.availableInputElem == -1:
-                self.availableInputElem = numElements
-                # for attr in self.inputMultiTestAttrs:
-                #     print attr
-                # print self.inputMultiAttrToAddTo
-        quit()
-        #         testAttr = attributeMap.format(self.node, elem)
-        #         connections = cmds.listConnections(testAttr)
-        #         if not connections:
-        #
-        #     if numElements > self.inputMultiElementOffset:
-        #         self.inputMultiElementOffset = numElements
-        #
-        # self.outputMultiAttrToAddTo = outputMultiAttrToAddTo
-        #
-        # self.availableInputElem = 0
-        # self.availableOutputElem = 0
+            if availableInputElem == -1:
+                availableInputElem = numElements
+
+        return availableInputElem
+
+    def inputElemCheck(self):
+        self.availableInputElem = self.availableElemCheck(self.inputMultiAttrToAddTo)
+
+    def outputElemCheck(self):
+        self.availableOutputElem = self.availableElemCheck(self.outputMultiAttrToAddTo)
 
     @staticmethod
     def getNodeAgnostic(nodeType, name, parent):
@@ -243,8 +242,11 @@ class Node(object):
     def connectMultiInputViaMap(self, attr, inputAttrMap, idx):
         # Check outputs, make sure connections don't already exist.
         destAttr = inputAttrMap.format(self.node, idx)
+        print idx, "AAAAAAAAAAAAAAAAAAA"
+
         if self.connectionCheck(attr, destAttr):
             return
+        print idx
         cmds.connectAttr(attr, inputAttrMap.format(self.node, idx), f=False)
 
 
@@ -259,45 +261,69 @@ class Node(object):
                                    self.nodeFloatPlugMap: self.floatAttrs,
                                    self.nodeEnumPlugMap: self.enumAttrs}
 
+    # def elementCheck(self):
+
+
     def inputElementCheck(self):
-        return
-        # firstEmptyElement=0
-        # for attributeMap in self.inputConnectionMap.keys():
-        #     print attributeMap
-        #     if not self.inputConnectionMap[attributeMap]:
-        #         continue
-        #     if not "[" in attributeMap and not "]" in attributeMap:
-        #         continue
-        #     for idx, sourceAttr in enumerate(self.inputConnectionMap[attributeMap]):
-        #         dstAttr = attributeMap.format(self.node, idx)
-        #         # if already connected remove from dictionary
-        #         if self.connectionCheck(dstAttr, sourceAttr):
-        #             self.inputConnectionMap.pop(attributeMap, None)
-        #             continue
-        #         # Check connections
-        #         print "SOURCE ", sourceAttr, "DEST ATTR", dstAttr
-        #         connections = cmds.listConnections(dstAttr, s=True, p=True)
-        #         if connections:
-        #             # print "CONNECTIONS", connections
-        #             attrName = self.findCompoundAttr(dstAttr)
-        #             numElements = len(cmds.getAttr(self.node + "." + attrName, mi=True))
-        #             for elem in range(numElements):
-        #                 testAttr = attributeMap.format(self.node, elem)
-        #                 connections = cmds.listConnections(testAttr)
-        #                 if not connections:
-        #
-        #             if numElements > self.inputMultiElementOffset:
-        #                 self.inputMultiElementOffset = numElements
-        # quit()
+        # return
+        print "THIS IS WHAT WE START WITH", self.inputConnectionMap
+        # Create a copy of the input connections to iterate over
+        inputConnectionMapCopy = copy.deepcopy(self.inputConnectionMap)
+        firstEmptyElement=0
+        for attributeMap in inputConnectionMapCopy.keys():
+            print attributeMap
+            if not inputConnectionMapCopy[attributeMap]:
+                continue
+            if not "[" in attributeMap and not "]" in attributeMap:
+                continue
+            for idx, sourceAttr in enumerate(inputConnectionMapCopy[attributeMap]):
+                print sourceAttr, "THE CURRENT ONE"
+                dstAttr = attributeMap.format(self.node, idx)
+                print "THIS IS THE ONE WE ARE CHECKING", sourceAttr, self.inputConnectionMap[attributeMap]
+                # if already connected remove from dictionary
+                if self.connectionCheck(dstAttr, sourceAttr):
+                    print "removing", attributeMap, "BOTH"
+                    self.inputConnectionMap[attributeMap].remove(sourceAttr)
+                    continue
+                # Check connections
+                # print "SOURCE ", sourceAttr, "DEST ATTR", dstAttr
+                connections = cmds.listConnections(sourceAttr, s=True, p=True)
+                if connections:
+                    if sourceAttr in self.inputConnectionMap[attributeMap]:
+                        self.inputConnectionMap[attributeMap].remove(sourceAttr)
+                        print "removing", sourceAttr, "source attributes"
+                    continue
+                # connections = cmds.listConnections(dstAttr, s=True, p=True)
+                # # print connections
+                # if connections:
+                #     if sourceAttr in self.inputConnectionMap[attributeMap]:
+                #         self.inputConnectionMap[attributeMap].remove(sourceAttr)
+                #         print "removing", sourceAttr, "source attributes"
+                #     continue
+                    # self.inputConnectionMap.pop(attributeMap, None)
+
+                    # print "CONNECTIONS", connections
+                    # attrName = self.findCompoundAttr(dstAttr)
+                    # numElements = len(cmds.getAttr(self.node + "." + attrName, mi=True))
+                    # for elem in range(numElements):
+                    #     testAttr = attributeMap.format(self.node, elem)
+                    #     connections = cmds.listConnections(testAttr)
+                    #     if not connections:
+        
+                    # if numElements > self.inputMultiElementOffset:
+                    #     self.inputMultiElementOffset = numElements
+        print "THIS IS WHAT IS LEFT", self.inputConnectionMap,  "THE COPY", inputConnectionMapCopy
                 # print connections
                 # # currentIndex =
                 #
                 # print "INPUTS ", srcAttr
+        # quit()
 
     def inputConnections(self):
         """
         For multi index connections only
         """
+        print "AVAILABLE INPUT", self.availableInputElem
         for attributeMap in self.inputConnectionMap.keys():
             if not self.inputConnectionMap[attributeMap]:
                 continue
@@ -330,7 +356,8 @@ class Node(object):
 
     def create(self):
         self.getNode()
-        self.availableElemCheck()
+        self.inputElemCheck()
+        self.outputElemCheck()
         self.initDriverNodes()
         self.getDriverNodes()
         self.getAttrs()
