@@ -1,6 +1,7 @@
 from maya import cmds
-from rig.utils import weightMapUtils
+from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
+reload(misc)
 
 """
 sld = cmds.ls(typ="LHSlideDeformer")
@@ -28,14 +29,29 @@ class Node(object):
                  enumNode = None,
                  inKDoubleArrayAttrs = [],
                  inFloatAttrs = [],
-                 inEnumVals = [],
                  inEnumAttrs = [],
+                 inKDoubleArrayVals=[],
+                 inFloatVals=[],
+                 inEnumVals=[],
                  enumNames = [],
                  nodeKDoublePlugMap="",
                  nodeFloatPlugMap="",
                  nodeEnumPlugMap="",
-                 outKDoubleArrayAttr =""):
+                 outKDoubleArrayAttr ="",
+                 inputMultiAttrToAddTo="",
+                 outputMultiAttrToAddTo=""):
 
+        self.inputMultiAttrToAddTo = inputMultiAttrToAddTo
+        self.inputMultiTestAttrs = []
+        self.outputMultiAttrToAddTo = outputMultiAttrToAddTo
+        self.outputMultiTestAttrs = []
+
+        self.availableInputElem = 0
+        self.availableOutputElem = 0
+
+        # This index will be used to offset the element connections
+        # This is used when elements already exist, so new ones need to be created
+        self.inputMultiElementOffset = 0
         self.nodeType = nodeType
         self.name = name
         self.parent = parent
@@ -44,6 +60,8 @@ class Node(object):
         self.floatNode = floatNode
         self.enumNode = enumNode
         self.kDoubleArrayNode = kDoubleArrayNode
+
+        # Where to put all of the new attributes.  If you want them all on one node just use the attrNode arg
         for node in ["floatNode", "enumNode"]:
             if self.attrNode and not getattr(self, node):
                 setattr(self, node, self.attrNode)
@@ -51,13 +69,22 @@ class Node(object):
         self.inKDoubleArrayAttrs = inKDoubleArrayAttrs
         self.inFloatAttrs = inFloatAttrs
         self.inEnumAttrs = inEnumAttrs
+
+        self.inKDoubleArrayVals = inKDoubleArrayVals
+        self.inFloatVals = inFloatVals
         self.inEnumVals = inEnumVals
+
         self.enumNames = enumNames
+
         self.outKDoubleArrayAttr = outKDoubleArrayAttr
+
         self.floatPlugNames = []
         self.kDoubleArrayPlugNames = []
         self.enumPlugNames = []
+
         self.inputConnectionMap = {}
+        self.inputConnectionMap = {}
+        self.setAttrMap = {}
         self.outputConnectionMap = {}
         self.doubleArrayAttrs = []
         self.floatAttrs = []
@@ -65,8 +92,7 @@ class Node(object):
         self.nodeKDoublePlugMap = nodeKDoublePlugMap
         self.nodeFloatPlugMap = nodeFloatPlugMap
         self.nodeEnumPlugMap = nodeEnumPlugMap
-        # Where to put all of the new attributes.  If you want them all on one node just use the attrNode arg
-
+        self.outputConnectionMapMulti = {}
         # super(Node, self).__init__(**kw)
 
     def getNode(self):
@@ -75,23 +101,91 @@ class Node(object):
             return
         self.node = cmds.createNode(self.nodeType, n=self.name, p=self.parent)
 
-    def attrCheck(self, node, attrs, attrType=None, enumName=None, k=False, weightmap=False):
+    def availableElemCheck(self):
+
+        if self.inputMultiAttrToAddTo:
+            allElemsConnected = 0
+            self.availableInputElem = -1
+            numElements = len(cmds.getAttr(self.inputMultiAttrToAddTo, mi=True))
+            node, attr = self.extractNodeAttr(self.inputMultiAttrToAddTo)
+            for elemIdx in range(numElements):
+                isConnections = False
+                for child in cmds.attributeQuery(attr, node=node, lc=True):
+                    connections = cmds.listConnections("{0}[{1}].{2}".format(self.inputMultiAttrToAddTo, elemIdx, child))
+                    if connections:
+                        isConnections = True
+                # If none of the children are connected, you know the element is free to be connected to
+                if not isConnections:
+                    self.availableInputElem = elemIdx
+                    break
+            if self.availableInputElem == -1:
+                self.availableInputElem = numElements
+                # for attr in self.inputMultiTestAttrs:
+                #     print attr
+                # print self.inputMultiAttrToAddTo
+        quit()
+        #         testAttr = attributeMap.format(self.node, elem)
+        #         connections = cmds.listConnections(testAttr)
+        #         if not connections:
+        #
+        #     if numElements > self.inputMultiElementOffset:
+        #         self.inputMultiElementOffset = numElements
+        #
+        # self.outputMultiAttrToAddTo = outputMultiAttrToAddTo
+        #
+        # self.availableInputElem = 0
+        # self.availableOutputElem = 0
+
+    @staticmethod
+    def getNodeAgnostic(nodeType, name, parent):
+        if cmds.objExists(name):
+            return name
+        return cmds.createNode(nodeType, n=name, p=parent)
+
+    def getNodeAgnosticMultiple(self, nodeType=None, names=[], parent=None):
+        retNodes = []
+        for name in names:
+            retNodes.append(self.getNodeAgnostic(nodeType, name, parent))
+        return retNodes
+
+    def initDriverNodes(self):
+        return
+
+    def getDriverNodes(self):
+        return
+
+    @staticmethod
+    def initKeyframes(animCurves):
+        for animCurve in animCurves:
+            oCurve = misc.getOMAnimCurve(animCurve)
+            if not oCurve.numKeys():
+                cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                 hierarchy="none", controlPoints=0,
+                                 shape=0, time=0)
+
+    def attrCheck(self, node, attrs, attrType=None, enumName=None, k=False, weightmap=False, defaultVals=[]):
         if not node:
             return
         retAttrs = []
-        for attr in attrs:
-            # print node, attr
+        for idx, attr in enumerate(attrs):
+            dv = 1
+            if defaultVals:
+                dv = defaultVals[idx]
             fullName = node + "." + attr
             if cmds.objExists(fullName):
                 retAttrs.append(fullName)
+                # update dv
+                if defaultVals:
+                    cmds.addAttr(fullName, e=True, dv=dv)
+                    cmds.setAttr(fullName, dv)
                 continue
             if weightmap:
                 weightMapUtils.createWeightMapOnObject(node, attr)
             else:
                 if attrType == "enum":
-                    cmds.addAttr(node, at=attrType, ln=attr, enumName=enumName, k=k)
+                    cmds.addAttr(node, at=attrType, ln=attr, enumName=enumName, k=k, dv=dv)
                 else:
-                    cmds.addAttr(node, at=attrType, ln=attr, k=k)
+                    cmds.addAttr(node, at=attrType, ln=attr, k=k, dv=dv)
 
             retAttrs.append(fullName)
         return retAttrs
@@ -101,57 +195,154 @@ class Node(object):
         self.doubleArrayAttrs = self.attrCheck(node=self.kDoubleArrayNode,
                                                attrs=self.inKDoubleArrayAttrs,
                                                attrType=None,
-                                               weightmap=True)
+                                               weightmap=True,
+                                               defaultVals=self.inKDoubleArrayVals)
         self.floatAttrs = self.attrCheck(node=self.floatNode,
                                          attrs=self.inFloatAttrs,
                                          attrType="float",
-                                         k=True)
+                                         k=True,
+                                         defaultVals=self.inFloatVals)
         self.enumAttrs = self.attrCheck(node=self.enumNode,
                                         attrs=self.inEnumAttrs,
                                         attrType="enum",
                                         enumName=self.enumNames,
-                                        k=True)
+                                        k=True,
+                                        defaultVals=self.inEnumVals)
+
     @staticmethod
     def extractNodeAttr(fullAttrName):
         names = fullAttrName.split(".")
         node, attr = names[0], names[-1]
         return node, attr
 
-    def setDefaultAttrs(self):
-        return
+    def initSetMultiAttrs(self):
+        if not self.doubleArrayAttrs:
+            self.setAttrMap[self.nodeKDoublePlugMap] = self.inKDoubleArrayVals
+        if not self.floatAttrs:
+            self.setAttrMap[self.nodeFloatPlugMap] = self.inFloatVals
+        if not self.enumAttrs:
+            self.setAttrMap[self.nodeEnumPlugMap] = self.inEnumVals
+
+    def setMultiAttrs(self):
+        for attributeMap in self.setAttrMap.keys():
+            if not self.setAttrMap[attributeMap]:
+                continue
+            for idx, val in enumerate(self.setAttrMap[attributeMap]):
+                # Get the attr first in order to create the element if it doesn't already exist
+                cmds.getAttr(attributeMap.format(self.node, idx))
+                cmds.setAttr(attributeMap.format(self.node, idx), val)
+
+    @staticmethod
+    def connectionCheck(srcAttr, destAttr):
+        connections = cmds.listConnections(destAttr, d=True, p=True)
+        # make case insensitive, because of short names
+        if connections and srcAttr.lower() in [x.lower() for x in connections]:
+            return True
+        return False
+
+    def connectMultiInputViaMap(self, attr, inputAttrMap, idx):
+        # Check outputs, make sure connections don't already exist.
+        destAttr = inputAttrMap.format(self.node, idx)
+        if self.connectionCheck(attr, destAttr):
+            return
+        cmds.connectAttr(attr, inputAttrMap.format(self.node, idx), f=False)
+
+
+    def connectOutputViaMap(self, outputAttrMap, attr):
+        destAttr = outputAttrMap.format(self.node)
+        if self.connectionCheck(attr, destAttr):
+            return
+        cmds.connectAttr(destAttr, attr, f=False)
 
     def initInputConnections(self):
-        return
+        self.inputConnectionMap = {self.nodeKDoublePlugMap: self.doubleArrayAttrs,
+                                   self.nodeFloatPlugMap: self.floatAttrs,
+                                   self.nodeEnumPlugMap: self.enumAttrs}
 
-    def inputMultiConnections(self):
+    def inputElementCheck(self):
+        return
+        # firstEmptyElement=0
+        # for attributeMap in self.inputConnectionMap.keys():
+        #     print attributeMap
+        #     if not self.inputConnectionMap[attributeMap]:
+        #         continue
+        #     if not "[" in attributeMap and not "]" in attributeMap:
+        #         continue
+        #     for idx, sourceAttr in enumerate(self.inputConnectionMap[attributeMap]):
+        #         dstAttr = attributeMap.format(self.node, idx)
+        #         # if already connected remove from dictionary
+        #         if self.connectionCheck(dstAttr, sourceAttr):
+        #             self.inputConnectionMap.pop(attributeMap, None)
+        #             continue
+        #         # Check connections
+        #         print "SOURCE ", sourceAttr, "DEST ATTR", dstAttr
+        #         connections = cmds.listConnections(dstAttr, s=True, p=True)
+        #         if connections:
+        #             # print "CONNECTIONS", connections
+        #             attrName = self.findCompoundAttr(dstAttr)
+        #             numElements = len(cmds.getAttr(self.node + "." + attrName, mi=True))
+        #             for elem in range(numElements):
+        #                 testAttr = attributeMap.format(self.node, elem)
+        #                 connections = cmds.listConnections(testAttr)
+        #                 if not connections:
+        #
+        #             if numElements > self.inputMultiElementOffset:
+        #                 self.inputMultiElementOffset = numElements
+        # quit()
+                # print connections
+                # # currentIndex =
+                #
+                # print "INPUTS ", srcAttr
+
+    def inputConnections(self):
         """
         For multi index connections only
         """
         for attributeMap in self.inputConnectionMap.keys():
+            if not self.inputConnectionMap[attributeMap]:
+                continue
             for idx, attr in enumerate(self.inputConnectionMap[attributeMap]):
-                self.connectMultiInputViaMap(attr, attributeMap, idx)
-
-    def connectMultiInputViaMap(self, attr, inputAttrMap, idx):
-        cmds.connectAttr(attr, inputAttrMap.format(self.node, idx), f=True)
-
-    def connectOutputViaMap(self, outputAttrMap, attr):
-        cmds.connectAttr(outputAttrMap.format(self.node), attr, f=True)
+                self.connectMultiInputViaMap(attr, attributeMap, idx + self.availableInputElem)
 
     def initOutputConnections(self):
         return
+
+    def outputElementCheck(self):
+        for outputAttrMap in self.outputConnectionMap.keys():
+            print "OUTPUTS ", outputAttrMap
+        for outputAttrMap in self.outputConnectionMapMulti.keys():
+            print "OUTPUTS ", outputAttrMap
 
     def outputConnections(self):
         for outputAttrMap in self.outputConnectionMap.keys():
             self.connectOutputViaMap(outputAttrMap, self.outputConnectionMap[outputAttrMap])
 
+    def outputConnectionsMulti(self):
+        for outputAttrMap in self.outputConnectionMapMulti.keys():
+            # print "CONNECTING!!!!!!!!!!!!!!!!!", outputAttrMap, self.outputConnectionMapMulti[outputAttrMap]
+            # in case the attributes don't exist yet
+            destAttr = self.outputConnectionMapMulti[outputAttrMap]
+            cmds.getAttr(outputAttrMap)
+            cmds.getAttr(self.outputConnectionMapMulti[outputAttrMap])
+            if self.connectionCheck(outputAttrMap, destAttr):
+                return
+            cmds.connectAttr(outputAttrMap, destAttr, f=False)
+
     def create(self):
         self.getNode()
+        self.availableElemCheck()
+        self.initDriverNodes()
+        self.getDriverNodes()
         self.getAttrs()
-        self.setDefaultAttrs()
+        self.initSetMultiAttrs()
+        self.setMultiAttrs()
         self.initInputConnections()
-        self.inputMultiConnections()
+        self.inputElementCheck()
+        self.inputConnections()
         self.initOutputConnections()
+        self.outputElementCheck()
         self.outputConnections()
+        self.outputConnectionsMulti()
 
     @staticmethod
     def findCompoundAttr(attributeName):
@@ -197,6 +388,7 @@ class WeightStack(Node):
                  inFactorAttrs=None,
                  inOperationAttrs=None,
                  outWeightAttr="",
+                 inOperationVals=None,
                  **kw):
         super(WeightStack, self).__init__(**kw)
 
@@ -209,6 +401,8 @@ class WeightStack(Node):
             self.inEnumAttrs = inOperationAttrs
         if not self.outKDoubleArrayAttr:
             self.outKDoubleArrayAttr = outWeightAttr
+        if not self.inEnumVals:
+            self.inEnumVals = inOperationVals
         self.enumNames = "add=0:subtract=1:multiply=2:divide=3:clampStack=4:clampPainted=5"
         self.nodeType = "LHWeightNode"
         self.geomNode = geomNode
@@ -227,10 +421,14 @@ class WeightStack(Node):
         # If you need to weight another geometry, you should create another weight map stack
         self.outputWeightsFloatMap = "{0}.outWeightsFloatArray[0]"
 
-    def initInputConnections(self):
-        self.inputConnectionMap = {"{0}.inputs[{1}].inputWeights": self.doubleArrayAttrs,
-                                   "{0}.inputs[{1}].factor": self.floatAttrs,
-                                   "{0}.inputs[{1}].operation": self.enumAttrs}
+        self.inputMultiAttrToAddTo = self.name + ".inputs"
+        self.inputMultiTestAttrs = ["inputWeights", "factor", "operation"]
+
+
+    # def initInputConnections(self):
+    #     self.inputConnectionMap = {self.nodeKDoublePlugMap: self.doubleArrayAttrs,
+    #                                self.nodeFloatPlugMap: self.floatAttrs,
+    #                                self.nodeEnumPlugMap: self.enumAttrs}
 
     def initOutputConnections(self):
         testAttr = self.outKDoubleArrayAttr
@@ -243,23 +441,117 @@ class WeightStack(Node):
             outputAttrMap = self.outputWeightsFloatMap
         self.outputConnectionMap = {outputAttrMap: self.outKDoubleArrayAttr}
 
-    # def find(self):
-    #     pass
-    #
 
 class CurveWeights(Node):
     def __init__(self,
-                 inMesh = None,
-                 projectionMesh = None,
-                 membershipWeights = None,
-                 inUWeightCurves = [],
-                 inUFalloffCurves=[],
-                 inVWeightCurves = [],
-                 inVFalloffCurves = [],
-                 outWeightAttrs=[],
+                 geomNode=None,
+                 projectionMesh=None,
+                 weightNames = [],
+                 # vNames = [],
+                 outWeightStackNode="",
+                 outAttrs=[],
+                 animCurveSuffix="ACV",
                  **kw):
-        self.nodeType = "LHCurveWeightNode"
         super(CurveWeights, self).__init__(**kw)
+        self.nodeType = "LHCurveWeightNode"
+
+        self.geomNode = misc.getShape(geomNode)
+        self.kDoubleArrayNode = self.geomNode
+
+        self.projectionMesh = projectionMesh
+        self.membershipWeightsAttr = self.name + "_MembershipWeights"
+        self.inKDoubleArrayAttrs = [self.membershipWeightsAttr]
+        self.animCurveSuffix = animCurveSuffix
+
+        # Sort the names
+        self.weightNames = ["{0}_{1}".format(x, self.animCurveSuffix) for x in weightNames]
+        self.weightNamesFalloff = ["{0}Falloff_{1}".format(x, self.animCurveSuffix) for x in weightNames]
+        # self.vNames = ["{0}_{1}".format(x, self.animCurveSuffix) for x in vNames]
+        # self.vNamesFalloff = ["{0}Falloff_{1}".format(x, self.animCurveSuffix) for x in vNames]
+
+        self.outWeightStackNode = outWeightStackNode
+        self.outAttrs = outAttrs
+        self.uAnimCurves=[]
+        self.uAnimCurvesFalloff = []
+        self.vAnimCurves=[]
+        self.vAnimCurvesFalloff = []
+        self.outputMap = "{0}.outDoubleWeights[{1}].outWeightsDoubleArray"
+
+        self.inputMultiAttrToAddTo = self.name + ".inputs"
+        self.inputMultiTestAttrs = ["inputWeights", "factor", "operation"]
+
+        self.outputMultiAttrToAddTo = outWeightStackNode + ".inputs"
+        self.outputMultiTestAttrs = ["inputWeights", "factor", "operation"]
+
+
+
+    def getDriverNodes(self):
+        self.projectionMesh = misc.getShape(self.projectionMesh)
+        self.geomNode = misc.getShape(self.geomNode)
+        self.weightCurves = self.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
+        self.weightCurvesFalloff = self.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
+        # self.vCurves = self.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.vNames, parent=None)
+        # self.vCurvesFalloff = self.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.vNamesFalloff, parent=None)
+        # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
+        self.initKeyframes(self.weightCurves + self.weightCurvesFalloff)
+
+    def initInputConnections(self):
+        super(CurveWeights, self).initInputConnections()
+        self.inputConnectionMap["{0}.membershipWeights"] = [self.kDoubleArrayNode + "." + self.membershipWeightsAttr]
+        self.inputConnectionMap["{0}.projectionMesh"] = [self.projectionMesh + ".worldMesh"]
+        self.inputConnectionMap["{0}.inMesh"] = [self.geomNode + ".worldMesh"]
+
+        self.uCurveOutAttrs = ["{0}.output".format(x) for x in self.weightCurves]
+        self.vCurveOutAttrs = ["{0}.output".format(x) for x in self.weightCurvesFalloff]
+
+        self.inputConnectionMap["{0}.inputs[{1}].AnimCurveU"] = self.uCurveOutAttrs
+        self.inputConnectionMap["{0}.inputs[{1}].AnimCurveV"] = self.vCurveOutAttrs
+
+    def findWeightStackElements(self):
+        if not cmds.objExists(self.outWeightStackNode):
+            return
+            # self.outWeightStackNode = cmds.createNode("LHWeightNode", n=self.outWeightStackNode)
+        numOutGoingElements = cmds.getAttr(self.node + ".inputs", mi=True)
+        if numOutGoingElements:
+            numOutGoingElements = len(numOutGoingElements)
+        else:
+            numOutGoingElements = 0
+        numInputElements = cmds.getAttr(self.outWeightStackNode + ".inputs", mi=True)
+        if numInputElements:
+            numInputElements = len(numInputElements)
+        else:
+            numInputElements = 0
+        return numOutGoingElements, numInputElements
+
+    def initOutputConnections(self):
+        # Check inputs to determing outputs
+        if self.outWeightStackNode:
+            numOutGoingElements, numInputElements = self.findWeightStackElements()
+            print numOutGoingElements, numInputElements
+            # return
+            for idx in range(numOutGoingElements):
+                outputMap = self.outputMap.format(self.node, idx + self.availableInputElem)
+                # print outputMap
+                self.outputConnectionMapMulti[outputMap] = "{0}.inputs[{1}].inputWeights".format(self.outWeightStackNode, idx + self.availableOutputElem)
+        # print self.outputConnectionMapMulti
+
+        # testAttr = self.outKDoubleArrayAttr
+        # if "[" in self.outKDoubleArrayAttr:
+        #     testAttr = self.outKDoubleArrayAttr.split("[")[0]
+        # print testAttr
+        # node, attr = self.extractNodeAttr(testAttr)
+        # print node, attr
+        # isMulti = cmds.attributeQuery(attr, node=node, multi=True)
+        # outputAttrMap = self.outputWeightsDoubleMap
+        # if isMulti:
+        #     outputAttrMap = self.outputWeightsFloatMap
+        #
+        # print outputAttrMap, self.outKDoubleArrayAttr
+        # self.outputConnectionMap = {outputAttrMap: self.outKDoubleArrayAttr}
+
+    def outputConnections(self):
+        return
+
 
 #==================Base Class for Creating Custom Deformers============
 #===============================================================================

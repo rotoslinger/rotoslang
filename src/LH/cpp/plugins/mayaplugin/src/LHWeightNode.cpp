@@ -278,6 +278,7 @@ MStatus LHWeightNode::initialize()
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
+    cAttr.setIndexMatters(false);
     addAttribute(aInputs);
 
     aOutputWeightsDoubleArray = tAttr.create("outWeightsDoubleArray", "owd", MFnNumericData::kDoubleArray);
@@ -299,7 +300,7 @@ MStatus LHWeightNode::initialize()
     nAttr.setWritable(true);
     nAttr.setStorable(true);
     nAttr.setInternal(true);
-    nAttr.setIndexMatters(true);
+    nAttr.setIndexMatters(false);
     nAttr.setUsesArrayDataBuilder(true);
 
     aOutputWeightsFloatArray = cAttr.create("outWeightsFloatArray", "wlf");
@@ -311,7 +312,7 @@ MStatus LHWeightNode::initialize()
     cAttr.setKeyable(false);
     cAttr.setReadable(true);
     cAttr.setInternal(true);
-    cAttr.setIndexMatters(true);
+    cAttr.setIndexMatters(false);
     cAttr.setUsesArrayDataBuilder(true);
     addAttribute(aOutputWeightsFloatArray);
 

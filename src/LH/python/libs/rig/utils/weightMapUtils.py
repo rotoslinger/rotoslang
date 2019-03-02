@@ -70,7 +70,6 @@ def createMultiWeightMapOnDeformer(deformer=None,
     returnAttrs = []
     compoundName = weightName + 'Weights'
     weightMapName = weightName + 'Weight'
-    print 
     if addAttr and not cmds.objExists(deformer + "." + compoundName):
         cmds.addAttr(deformer,
                         longName = compoundName,
@@ -87,21 +86,6 @@ def createMultiWeightMapOnDeformer(deformer=None,
         cmds.makePaintable(deformerType, weightMapName, attrType='doubleArray', shapeMode='deformer')
     returnAttrs.append(deformer + "." + weightMapName)
     return returnAttrs
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def setDefaultWeights(name, attrName, dataType, defaultValue=1.0):
     polyCount = cmds.polyEvaluate(name, v=True)

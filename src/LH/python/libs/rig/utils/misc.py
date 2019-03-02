@@ -18,6 +18,7 @@ from maya import cmds
 import maya.OpenMaya as OpenMaya
 from fnmatch import fnmatch
 import exportUtils
+import maya.OpenMayaAnim as OpenMayaAnim
 
 
 #===============================================================================
@@ -2284,6 +2285,15 @@ def getOMMesh(mayaObject):
     pPath = OpenMaya.MDagPath()
     meshNode.getDagPath(0,pPath)
     return OpenMaya.MFnMesh(pPath)
+
+def getOMAnimCurve(mayaObject):
+    curveNode = OpenMaya.MSelectionList()
+    curveNode.add(mayaObject)
+    curvePlug = OpenMaya.MPlug()
+    curveNode.getPlug(0, curvePlug)
+    curveNode = curvePlug.node()
+    return OpenMayaAnim.MFnAnimCurve(curveNode)
+
 
 def getDag(mayaObject):
     meshNode = OpenMaya.MSelectionList()

@@ -87,6 +87,7 @@ MStatus LHCurveWeightNode::initialize()
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
+    cAttr.setIndexMatters(false);
     addAttribute(aInputs);
 
     aOutputWeightsDoubleArray = tAttr.create("outWeightsDoubleArray", "owd", MFnNumericData::kDoubleArray);
@@ -113,13 +114,13 @@ MStatus LHCurveWeightNode::initialize()
     nAttr.setChannelBox(true);
     addAttribute(aCacheWeightMesh);
 
-    aOutWeights = nAttr.create("outFloatWeights", "outflw", MFnNumericData::kFloat, 0.0);
+    aOutWeights = nAttr.create("outFloatWeight", "outflw", MFnNumericData::kFloat, 0.0);
     nAttr.setKeyable(false);
     nAttr.setArray(true);
     nAttr.setWritable(true);
     nAttr.setStorable(true);
     nAttr.setInternal(true);
-    nAttr.setIndexMatters(true);
+    nAttr.setIndexMatters(false);
     nAttr.setUsesArrayDataBuilder(true);
 
     aOutputWeightsFloatArray = cAttr.create("outWeightsFloatArray", "wlf");
@@ -131,11 +132,11 @@ MStatus LHCurveWeightNode::initialize()
     cAttr.setKeyable(false);
     cAttr.setReadable(true);
     cAttr.setInternal(true);
-    cAttr.setIndexMatters(true);
+    cAttr.setIndexMatters(false);
     cAttr.setUsesArrayDataBuilder(true);
     addAttribute(aOutputWeightsFloatArray);
 
-    aOutputWeightsFloatArrayParent = cAttr.create("OutFloatWeights", "outfloatweights");
+    aOutputWeightsFloatArrayParent = cAttr.create("outFloatWeights", "outfloatweights");
     cAttr.setKeyable(true);
     cAttr.setArray(true);
     cAttr.addChild( aOutputWeightsFloatArray );
@@ -143,9 +144,10 @@ MStatus LHCurveWeightNode::initialize()
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
+    cAttr.setIndexMatters(false);
     addAttribute(aOutputWeightsFloatArrayParent);
 
-    aOutputWeightsDoubleArrayParent = cAttr.create("OutDoubleWeights", "outDoubleweights");
+    aOutputWeightsDoubleArrayParent = cAttr.create("outDoubleWeights", "outDoubleweights");
     cAttr.setKeyable(true);
     cAttr.setArray(true);
     cAttr.addChild( aOutputWeightsDoubleArray );
@@ -153,6 +155,8 @@ MStatus LHCurveWeightNode::initialize()
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
+    cAttr.setIndexMatters(false);
+
     addAttribute(aOutputWeightsDoubleArrayParent);
 
     attributeAffects(aCacheWeightMesh, aOutputWeightsDoubleArray);
