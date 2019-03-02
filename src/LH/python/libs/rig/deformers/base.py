@@ -442,6 +442,10 @@ class WeightStack(Node):
         self.outputConnectionMap = {outputAttrMap: self.outKDoubleArrayAttr}
 
 
+# stack = base.WeightStack(name="TestWeights", geomNode="BASE", attrNode = "pSphere1",inWeightAttrs=["test1", "test2"], inFactorAttrs=["fTest1", "fTest2"], inOperationAttrs = [], outWeightAttr="cluster1.weightList[0]")
+# stack.create()
+
+
 class CurveWeights(Node):
     def __init__(self,
                  geomNode=None,
@@ -551,6 +555,9 @@ class CurveWeights(Node):
 
     def outputConnections(self):
         return
+
+# curveWeights = base.CurveWeights(name="TestCurveWeights", geomNode="BASE", attrNode = "pSphere1", projectionMesh="pPlane1", weightNames=["L_innerLR", "L_outerLR"], outWeightStackNode="TestWeights")
+# curveWeights.create()
 
 
 #==================Base Class for Creating Custom Deformers============
