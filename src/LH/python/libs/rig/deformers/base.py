@@ -107,22 +107,24 @@ class Node(object):
         if multiAttrToCheck:
             allElemsConnected = 0
             availableInputElem = -1
+            if not cmds.objExists(multiAttrToCheck):
+                return 0
             numElements = cmds.getAttr(multiAttrToCheck, mi=True)
             if not numElements:
                 return 0
             numElements = len(numElements)
             node, attr = self.extractNodeAttr(multiAttrToCheck)
+            if not node:
+                return 0
             for elemIdx in range(numElements):
                 isConnections = False
                 for child in cmds.attributeQuery(attr, node=node, lc=True):
                     connections = cmds.listConnections("{0}[{1}].{2}".format(multiAttrToCheck, elemIdx, child))
-                    print connections
                     if connections:
                         isConnections = True
                 # If none of the children are connected, you know the element is free to be connected to
                 if not isConnections:
                     availableInputElem = elemIdx
-                    print "BREAKING", elemIdx
                     break
             if availableInputElem == -1:
                 availableInputElem = numElements
@@ -242,11 +244,8 @@ class Node(object):
     def connectMultiInputViaMap(self, attr, inputAttrMap, idx):
         # Check outputs, make sure connections don't already exist.
         destAttr = inputAttrMap.format(self.node, idx)
-        print idx, "AAAAAAAAAAAAAAAAAAA"
-
         if self.connectionCheck(attr, destAttr):
             return
-        print idx
         cmds.connectAttr(attr, inputAttrMap.format(self.node, idx), f=False)
 
 
@@ -260,70 +259,40 @@ class Node(object):
         self.inputConnectionMap = {self.nodeKDoublePlugMap: self.doubleArrayAttrs,
                                    self.nodeFloatPlugMap: self.floatAttrs,
                                    self.nodeEnumPlugMap: self.enumAttrs}
+        # self.inputConnectionMap = {self.nodeKDoublePlugMap: self.doubleArrayAttrs,
+        #                            self.nodeFloatPlugMap: self.floatAttrs,
+        #                            self.nodeEnumPlugMap: self.enumAttrs}
 
     # def elementCheck(self):
 
 
     def inputElementCheck(self):
         # return
-        print "THIS IS WHAT WE START WITH", self.inputConnectionMap
         # Create a copy of the input connections to iterate over
         inputConnectionMapCopy = copy.deepcopy(self.inputConnectionMap)
         firstEmptyElement=0
         for attributeMap in inputConnectionMapCopy.keys():
-            print attributeMap
             if not inputConnectionMapCopy[attributeMap]:
                 continue
             if not "[" in attributeMap and not "]" in attributeMap:
                 continue
+            print "WEIGHT SEARCH ", self.nodeKDoublePlugMap, self.doubleArrayAttrs, "attrMap", attributeMap
             for idx, sourceAttr in enumerate(inputConnectionMapCopy[attributeMap]):
-                print sourceAttr, "THE CURRENT ONE"
                 dstAttr = attributeMap.format(self.node, idx)
-                print "THIS IS THE ONE WE ARE CHECKING", sourceAttr, self.inputConnectionMap[attributeMap]
                 # if already connected remove from dictionary
                 if self.connectionCheck(dstAttr, sourceAttr):
-                    print "removing", attributeMap, "BOTH"
                     self.inputConnectionMap[attributeMap].remove(sourceAttr)
-                    continue
-                # Check connections
-                # print "SOURCE ", sourceAttr, "DEST ATTR", dstAttr
+                    continue 
                 connections = cmds.listConnections(sourceAttr, s=True, p=True)
                 if connections:
                     if sourceAttr in self.inputConnectionMap[attributeMap]:
                         self.inputConnectionMap[attributeMap].remove(sourceAttr)
-                        print "removing", sourceAttr, "source attributes"
                     continue
-                # connections = cmds.listConnections(dstAttr, s=True, p=True)
-                # # print connections
-                # if connections:
-                #     if sourceAttr in self.inputConnectionMap[attributeMap]:
-                #         self.inputConnectionMap[attributeMap].remove(sourceAttr)
-                #         print "removing", sourceAttr, "source attributes"
-                #     continue
-                    # self.inputConnectionMap.pop(attributeMap, None)
-
-                    # print "CONNECTIONS", connections
-                    # attrName = self.findCompoundAttr(dstAttr)
-                    # numElements = len(cmds.getAttr(self.node + "." + attrName, mi=True))
-                    # for elem in range(numElements):
-                    #     testAttr = attributeMap.format(self.node, elem)
-                    #     connections = cmds.listConnections(testAttr)
-                    #     if not connections:
         
-                    # if numElements > self.inputMultiElementOffset:
-                    #     self.inputMultiElementOffset = numElements
-        print "THIS IS WHAT IS LEFT", self.inputConnectionMap,  "THE COPY", inputConnectionMapCopy
-                # print connections
-                # # currentIndex =
-                #
-                # print "INPUTS ", srcAttr
-        # quit()
-
     def inputConnections(self):
         """
         For multi index connections only
         """
-        print "AVAILABLE INPUT", self.availableInputElem
         for attributeMap in self.inputConnectionMap.keys():
             if not self.inputConnectionMap[attributeMap]:
                 continue
@@ -334,10 +303,9 @@ class Node(object):
         return
 
     def outputElementCheck(self):
-        for outputAttrMap in self.outputConnectionMap.keys():
-            print "OUTPUTS ", outputAttrMap
-        for outputAttrMap in self.outputConnectionMapMulti.keys():
-            print "OUTPUTS ", outputAttrMap
+        return
+        # for outputAttrMap in self.outputConnectionMap.keys():
+        # for outputAttrMap in self.outputConnectionMapMulti.keys():
 
     def outputConnections(self):
         for outputAttrMap in self.outputConnectionMap.keys():
@@ -345,7 +313,6 @@ class Node(object):
 
     def outputConnectionsMulti(self):
         for outputAttrMap in self.outputConnectionMapMulti.keys():
-            # print "CONNECTING!!!!!!!!!!!!!!!!!", outputAttrMap, self.outputConnectionMapMulti[outputAttrMap]
             # in case the attributes don't exist yet
             destAttr = self.outputConnectionMapMulti[outputAttrMap]
             cmds.getAttr(outputAttrMap)
@@ -405,8 +372,6 @@ class Node(object):
         self.findInputAttrsMulti()
         self.findOutputConnections()
         self.findOther()
-
-
 
 class WeightStack(Node):
     def __init__(self,
@@ -513,7 +478,8 @@ class CurveWeights(Node):
 
         self.outputMultiAttrToAddTo = outWeightStackNode + ".inputs"
         self.outputMultiTestAttrs = ["inputWeights", "factor", "operation"]
-
+        self.numOutGoingElements = 0
+        self.outgoingElements = []
 
 
     def getDriverNodes(self):
@@ -540,7 +506,7 @@ class CurveWeights(Node):
 
     def findWeightStackElements(self):
         if not cmds.objExists(self.outWeightStackNode):
-            return
+            # return
             # self.outWeightStackNode = cmds.createNode("LHWeightNode", n=self.outWeightStackNode)
         numOutGoingElements = cmds.getAttr(self.node + ".inputs", mi=True)
         if numOutGoingElements:
@@ -554,8 +520,17 @@ class CurveWeights(Node):
             numInputElements = 0
         return numOutGoingElements, numInputElements
 
+    def getOutgoingElems(self):
+        numOutGoingElements = cmds.getAttr(self.node + ".inputs", mi=True)
+        if numOutGoingElements:
+            self.numOutGoingElements = len(numOutGoingElements)
+        for elem in range(self.numOutGoingElements):
+            print "OUTGOING", self.outputConnectionMapMulti
+
+
     def initOutputConnections(self):
         # Check inputs to determing outputs
+        self.getOutgoingElems()
         if self.outWeightStackNode:
             numOutGoingElements, numInputElements = self.findWeightStackElements()
             print numOutGoingElements, numInputElements
@@ -586,6 +561,9 @@ class CurveWeights(Node):
 # curveWeights = base.CurveWeights(name="TestCurveWeights", geomNode="BASE", attrNode = "pSphere1", projectionMesh="pPlane1", weightNames=["L_innerLR", "L_outerLR"], outWeightStackNode="TestWeights")
 # curveWeights.create()
 
+
+def createBoth():
+    return
 
 #==================Base Class for Creating Custom Deformers============
 #===============================================================================
