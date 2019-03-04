@@ -16,8 +16,8 @@ from utils import misc
 reload(misc)
 
 #===============================================================================
-#CLASS:         create_holster_rig
-#DESCRIPTION:   creates the holster rig
+#CLASS:         create_rivet_rig
+#DESCRIPTION:   creates the rivet rig
 #USAGE:         set args and run
 #RETURN:        align_attr, reverse_node, align_constraint, world_transform
 #REQUIRES:      maya.cmds
@@ -26,7 +26,7 @@ reload(misc)
 #Version        1.0.0
 #===============================================================================
 
-class create_holster_rig():
+class create_rivet_rig():
     def __init__(self, 
                  sides = ["C"],
                  names = [],
@@ -118,7 +118,8 @@ class create_holster_rig():
         self.debug                    = debug
         self.lock_transform_attrs     = lock_transform_attrs
         #---vars
-        self.ctls                    = []
+        self.ctls                     = []
+        self.geo                      = []
 
         self.__create()
 
@@ -148,11 +149,11 @@ class create_holster_rig():
     def __create_parents(self):
         """ create groups for skeleton and rig """
         self.skel_parent = cmds.createNode("transform",
-                                          n = "C_holsterSkel_GRP",
+                                          n = "C_rivetSkel_GRP",
                                           p = self.skel_parent)
 
         self.rig_parent = cmds.createNode("transform",
-                                          n = "C_holsterRig_GRP",
+                                          n = "C_rivetRig_GRP",
                                           p = self.rig_parent)
 
     def __create_rigs(self):
@@ -175,6 +176,7 @@ class create_holster_rig():
                                                    hide = False,
                                                    global_scale = "",
                                                    debug = self.debug))
+            self.geo.append(self.ctls[i].poly_plane)
 
     def __global_scale(self):
         if self.global_scale:

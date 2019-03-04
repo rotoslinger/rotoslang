@@ -7,8 +7,7 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
-if os not in sys.path:
-    sys.path.append(os)
+sys.path.append(os)
 
 from maya import cmds
 from utils import misc
@@ -28,7 +27,7 @@ reload(misc)
 
 class create_neck():
     def __init__(self,
-                 side = "C",
+                 side = "L",
                  name = "neck",
                  joint = "neck_bind",
                  driver = "",

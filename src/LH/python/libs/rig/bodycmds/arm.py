@@ -7,7 +7,8 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
-sys.path.append(os)
+if os not in sys.path:
+    sys.path.append(os)
 
 
 from maya import cmds
@@ -46,6 +47,7 @@ class create_arm():
                  fk_ctl_size = [1.0,1.0,1.0],
                  ik_ctl_size = [1.0,1.0],
                  switch_ctl_size = [.1],
+                 switch_offset = .1,
                  twist_axis = "x",
                  arm_splits = 2,
                  elbow_splits = 4,
@@ -128,6 +130,7 @@ class create_arm():
         self.fk_ctl_size            = fk_ctl_size
         self.ik_ctl_size            = ik_ctl_size
         self.switch_ctl_size        = switch_ctl_size
+        self.switch_offset          = switch_offset
         self.arm_splits             = arm_splits
         self.elbow_splits           = elbow_splits
         self.global_scale           = global_scale
@@ -454,22 +457,32 @@ class create_arm():
 
     def __create_switch_ctl(self):
         """ create ikfk switch"""
+        if self.side == "L":
+            scale = [-1,1,-1]
+            orient = [0,0,0]
+        if self.side == "R":
+            scale = [-1,1,1]
+            orient = [0,0,0]
+
         self.ik_fk_switch = misc.create_ctl(   side = self.side, 
                                     name = self.name + "IkFkSwitch", 
                                     parent = self.rig_parent, 
-                                    shape = "switch",
+                                    shape = "ik/fk",
                                     show_rot_order = False,
                                     num_buffer = 1,
-                                    lock_attrs = ["all"], 
+                                    lock_attrs = ["all"],
+                                    orient = orient,
+                                    offset = [0,0,0],
+                                    scale = scale,
                                     size = self.switch_ctl_size)
         cmds.parentConstraint(self.bind_jnts[3], 
                               self.ik_fk_switch.buffers[0])
         #---offset
         off = 0
         if self.side == "L":
-            off = .1
+            off = self.switch_offset
         if self.side == "R":
-            off = -.1
+            off = -self.switch_offset
         cmds.move(0,
                   off,
                   0,

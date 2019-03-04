@@ -7,8 +7,8 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
-if os not in sys.path:
-    sys.path.append(os)
+sys.path.append(os)
+
 
 from maya import cmds
 from utils import misc

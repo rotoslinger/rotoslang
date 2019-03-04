@@ -665,3 +665,33 @@ class lh_component_import(object):
         self.getFileData()
         self.createComponents()
         self.cleanup()
+
+
+class joint(object):
+    def __init__(self,
+                 path = "",
+                 jointRoot=""
+                 ):
+        #---args
+        self.path                    = path
+        self.jointRoot                = jointRoot
+
+        self.create()
+
+    def getFileData(self):
+        file = open(self.path, "rb")
+        self.jointDict = json.load(file)
+        file.close()
+
+    def getJoints(self):
+        return
+
+
+    def export(self):
+        file = open(self.path, "wb")
+        json.dump(self.jointDict, file, sort_keys=False, indent=2)
+        file.close()
+
+    def create(self):
+        self.getJoints()
+        self.export()

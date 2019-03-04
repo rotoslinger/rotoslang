@@ -7,8 +7,7 @@ if "linux" in os:
     os = linux
 if "mac" in os:
     os = mac
-if os not in sys.path:
-    sys.path.append(os)
+sys.path.append(os)
 
 from maya import cmds
 from utils import misc
@@ -30,7 +29,6 @@ class create_holster_rig():
     def __init__(self, 
                  sides = ["C"],
                  names = [],
-                 joints = [],
                  translates = [(0,0,0)],
                  rotates = [(0,0,0)],
                  scales = [(.1,.1,.1)],
@@ -38,8 +36,6 @@ class create_holster_rig():
                  rig_parent = "C_rig_GRP", 
                  skel_parent = "C_skeleton_GRP",
                  lock_attrs=["v"],
-                 lock_transform_attrs=["sx","sy","sz"],
-
                  sizes = [1],
                  global_scale = "",
                  debug = False
@@ -50,15 +46,6 @@ class create_holster_rig():
 
         @type  names:                string
         @param names:                the name of your rivet
-        
-        @type  joints:               list of strings
-        @param joints:               if you include joint names you will inherit
-                                     the name and transform of the joint this
-                                     means the names, translates, and rotates,
-                                     arguments do not need to be used
-                                     C_name_JNT naming convention must be used
-                                     for this to work
-
 
         @type  translates:           3 tuple
         @param translates:           translation of the poly plane (Tx, Ty, Tz 
@@ -104,7 +91,6 @@ class create_holster_rig():
 
         #---args
         self.sides                    = sides
-        self.joints                   = joints
         self.names                    = names
         self.translates               = translates
         self.rotates                  = rotates
@@ -116,34 +102,11 @@ class create_holster_rig():
         self.sizes                    = sizes
         self.global_scale             = global_scale
         self.debug                    = debug
-        self.lock_transform_attrs     = lock_transform_attrs
+
         #---vars
         self.ctls                    = []
 
         self.__create()
-
-    def __check(self):
-        """checks for joint names"""
-        if self.joints:
-            print "Something"
-            self.names = []
-            self.sides = []
-            self.translates = []
-            self.rotates = []
-            self.scales = []
-            for i in range(len(self.joints)):
-                info = self.joints[i].split("_")
-                self.names.append(info[1])
-                self.sides.append(info[0])
-                tmp = cmds.createNode("transform",
-                                      n = "tmp23048950")
-                tcon = cmds.parentConstraint(self.joints[i],tmp)
-                print cmds.getAttr(tmp + ".translate")
-                self.translates.append(cmds.getAttr(tmp + ".translate")[0])
-                self.rotates.append(cmds.getAttr(tmp + ".rotate")[0])
-                self.scales.append(cmds.getAttr(tmp + ".scale")[0])
-                cmds.delete(tmp, tcon)
-                
 
     def __create_parents(self):
         """ create groups for skeleton and rig """
@@ -167,7 +130,7 @@ class create_holster_rig():
                                                    rig_parent = self.rig_parent, 
                                                    skel_parent = self.skel_parent,
                                                    shape = "sphere",
-                                                   lock_attrs=self.lock_transform_attrs,
+                                                   lock_attrs=["sx","sy","sz"],
                                                    size = self.sizes[i],
                                                    orient = [0,0,0],
                                                    offset = [0,0,0],
@@ -187,7 +150,6 @@ class create_holster_rig():
             misc.lock_all(hierarchy = self.skel_parent, filter = ["*_CTL", "*_JNT","*_EX"])
 
     def __create(self):
-        self.__check()
         self.__create_parents()
         self.__create_rigs()
         self.__global_scale()
