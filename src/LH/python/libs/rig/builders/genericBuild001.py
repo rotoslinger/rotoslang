@@ -37,7 +37,7 @@ reload(weights)
 reload(rivet)
 
 # build insomniac test
-def build_it(scene_path = "", weights_path = "", debug = False):
+def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0):
 
     # if scene_path:
     #     cmds.file(
@@ -54,7 +54,7 @@ def build_it(scene_path = "", weights_path = "", debug = False):
     global_ctl = main.create_global_ctl(side = "C", 
                                         skel_parent = "C_skeleton_GRP", 
                                         rig_parent = "C_rig_GRP", 
-                                        ctl_sizes = [40,30], 
+                                        ctl_sizes = [4.0,3.0], 
                                         debug = debug )
 
     global_hook = global_ctl.ctl_gimbals[1]
@@ -71,19 +71,19 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                     global_scale = global_hook,
                                     skel_parent = "C_skeleton_GRP",
                                     rig_parent = "C_rig_GRP",
-                                    fwd_ctl_sizes   = [25, 
-                                                       16, 
-                                                       16,
-                                                       20, 
-                                                       23,
-                                                       15, 
+                                    fwd_ctl_sizes   = [2.5, 
+                                                       1.6, 
+                                                       1.6,
+                                                       2.0, 
+                                                       2.3,
+                                                       1.5, 
                                                        ],
-                                    rev_ctl_sizes   = [20, 
-                                                       20, 
-                                                       20,
-                                                       20, 
-                                                       30,
-                                                       20, 
+                                    rev_ctl_sizes   = [2.0, 
+                                                       2.0, 
+                                                       2.0,
+                                                       2.0, 
+                                                       3.0,
+                                                       2.0, 
                                                        ],
                                     ctl_orients = [[0,0,0],
                                                    [0,0,0],
@@ -96,7 +96,7 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                                    [0,-.03,0],
                                                    [0,-.03,0],
                                                    [0,-.03,0],
-                                                   [10,-.03,0],
+                                                   [1.0,-.03,0],
                                                    ],
                                     switch_size = 3,
                                     switch_offset = [0,-.12,.05],
@@ -106,17 +106,17 @@ def build_it(scene_path = "", weights_path = "", debug = False):
     neck_hook = neck.create_neck( joint = "neck_bind", 
                                   driver = torso_hook.chest_anchor, 
                                   global_scale = global_hook,
-                                  ctl_size = 10,
+                                  ctl_size = 1.0,
                                   orient = [0,0,-20],
-                                  offset = [3,0,0],
+                                  offset = [.3,0,0],
                                   debug = debug)
     
     head_hook = head.create_head( joint = "head_bind", 
                                   driver = neck_hook.skel_joint, 
                                   global_scale = global_hook,
-                                  ctl_size = 8,
+                                  ctl_size = .8,
                                   orient = [0,0,-20],
-                                  offset = [-3,0,0],
+                                  offset = [-.3,0,0],
                                   debug = debug)
 
     l_shoulder = shoulder.create_shoulder(side = "L", 
@@ -124,9 +124,9 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                           joint = "l_clavicle_bind", 
                                           driver = torso_hook.chest_anchor, 
                                           global_scale = global_hook, 
-                                          ctl_size = 25, 
+                                          ctl_size = 2.5, 
                                           orient = [0,0,0], 
-                                          offset = [10,7,-10], 
+                                          offset = [1.0,.7,-1.0], 
                                           debug = debug, 
                                           helper_chains = ["l_neckClav_bind",
                                                            "l_pec_bind",
@@ -142,9 +142,9 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                           joint = "r_clavicle_bind", 
                                           driver = torso_hook.chest_anchor, 
                                           global_scale = global_hook, 
-                                          ctl_size = 25, 
+                                          ctl_size = 2.5, 
                                           orient = [0,0,0], 
-                                          offset = [10,-7,10], 
+                                          offset = [1.0,-.7,1.0], 
                                           debug = debug, 
                                           helper_chains = ["r_neckClav_bind",
                                                            "r_pec_bind",
@@ -160,8 +160,8 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                            arm_splits = 4,
                            twist_axis="z",
                            elbow_splits = 6,
-                           fk_ctl_size = [12,8,8],
-                           ik_ctl_size = [10,3,5],
+                           fk_ctl_size = [1.2,.8,.8],
+                           ik_ctl_size = [1.0,.3,.5],
                            driver = l_shoulder.skel_joint,
                            debug = debug,
                            ik_space_names = ["world", "shoulder", "neck", "hip"],
@@ -169,16 +169,16 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                                 l_shoulder.skel_joint,
                                                 neck_hook.skel_joint,
                                                 torso_hook.fwd_ctls[len(torso_hook.fwd_ctls)-1] ],
-                           switch_ctl_size = 3,
-                           switch_offset = 15,
+                           switch_ctl_size = .3,
+                           switch_offset = 1.5,
                            global_scale= global_ctl.ctls[0])
 
     r_arm = arm.create_arm(joints = ['r_shoulder_bind', 'r_elbow_bind', 'r_wrist_bind'], 
                            side = "R",
                            arm_splits = 4,
                            elbow_splits = 6,
-                           fk_ctl_size = [12,8,8],
-                           ik_ctl_size = [10,3,5],
+                           fk_ctl_size = [1.2,.8,.8],
+                           ik_ctl_size = [1.0,.3,.5],
                            driver = r_shoulder.skel_joint,
                            debug = debug,
                            ik_space_names = ["world", "shoulder", "neck", "hip"],
@@ -186,8 +186,8 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                                 r_shoulder.skel_joint,
                                                 neck_hook.skel_joint,
                                                 torso_hook.fwd_ctls[len(torso_hook.fwd_ctls)-1] ],
-                           switch_ctl_size = 3,
-                           switch_offset = 15,
+                           switch_ctl_size = .3,
+                           switch_offset = 1.5,
                            global_scale= global_hook)
 
     finger.create_finger(side = "L", 
@@ -198,11 +198,11 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                         "l_pinkya_bind"], 
                          driver = l_arm.bind_jnts[3],
                          ctl_size = [
-                                     [4,3,2,],
-                                     [2,1.5,1.5,],
-                                     [2,1.5,1.5,],
-                                     [2,1.5,1.5,],
-                                     [3,2,1.5,1.5],
+                                     [.4,.3,.2],
+                                     [.2,.15,.15,],
+                                     [.2,.15,.15,],
+                                     [.2,.15,.15,],
+                                     [.3,2,.15,.15],
                                      ],
                          global_scale= global_hook)
             
@@ -214,32 +214,51 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                                         "r_pinkya_bind"], 
                          driver = r_arm.bind_jnts[3],
                          ctl_size = [
-                                     [4,3,2],
-                                     [2,1.5,1.5,],
-                                     [2,1.5,1.5,],
-                                     [2,1.5,1.5,],
-                                     [3,2,1.5,1.5],
+                                     [.4,.3,.2],
+                                     [.2,.15,.15,],
+                                     [.2,.15,.15,],
+                                     [.2,.15,.15,],
+                                     [.3,2,.15,.15],
                                      ],
                          global_scale= global_hook)
     
-    
+    finger.create_finger(side = "C",
+                         names = ["cape1"
+                              ],
+
+                         joint_roots = ["cape1",
+                                       ], 
+                         driver = torso_hook.chest_anchor,
+                         ctl_size = [
+                                     [.4,.3,.2],
+                                     [.4,.3,.2],
+                                     [.4,.3,.2],
+                                     [.4,.3,.2],
+                                     [.4,.3,.2],
+                                     [.4,.3,.2],
+                                     [.4,.3,.2],
+                                     ],
+                         global_scale= global_hook,
+                         infinite_digits=True,
+                        debug = debug)
+
 
     l_leg = leg.create_leg(joints = ['l_leg_bind', 'l_knee_bind', 'l_ankle_bind'], 
                            side = "L",
                            leg_splits = 4,
                            twist_axis="z",
                            knee_splits = 6,
-                           fk_ctl_size = [10,9,8],
-                           ik_ctl_size = [10,3,5],
-                           ik_ctl_scale = [3.3,1,1],
-                           ik_ctl_offset = [3,0,-6],
+                           fk_ctl_size = [1.0,.9,.8],
+                           ik_ctl_size = [1.0,.3,.5],
+                           ik_ctl_scale = [.33,.1,.1],
+                           ik_ctl_offset = [.03,0,-.06],
                            driver = torso_hook.hip_joint,
                            debug = debug,
                            ik_space_names = ["world", "hip"],
                            ik_space_parents =  [global_hook, 
                                                 torso_hook.fwd_ctls[0] ],
-                           switch_ctl_size = 3,
-                           switch_offset = 15,
+                           switch_ctl_size = .3,
+                           switch_offset = 1.5,
                            global_scale= global_ctl.ctls[0])
     
     r_leg = leg.create_leg(joints = ['r_leg_bind', 'r_knee_bind', 'r_ankle_bind'], 
@@ -247,17 +266,17 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                            leg_splits = 4,
                            twist_axis="z",
                            knee_splits = 6,
-                           fk_ctl_size = [10,9,8],
-                           ik_ctl_size = [10,3,5],
-                           ik_ctl_scale = [3.3,1,1],
-                           ik_ctl_offset = [-3,0,-6],
+                           fk_ctl_size = [1.0,.9,.8],
+                           ik_ctl_size = [1.0,.3,.5],
+                           ik_ctl_scale = [.33,.1,.1],
+                           ik_ctl_offset = [.03,0,-.06],
                            driver = torso_hook.hip_joint,
                            debug = debug,
                            ik_space_names = ["world", "hip"],
                            ik_space_parents =  [global_hook, 
                                                 torso_hook.fwd_ctls[0] ],
-                           switch_ctl_size = 3,
-                           switch_offset = 15,
+                           switch_ctl_size = .3,
+                           switch_offset = 1.5,
                            global_scale= global_ctl.ctls[0])
     l_foot = foot.create_foot(driver = l_leg.bind_jnts[3],
                               side = "L",
@@ -273,9 +292,9 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                               ik_switch = l_leg.ik_fk_switch,
                               ik_root = l_leg.ik_jnts[3],
                               foot_groups = l_leg.gimbal_buffers,
-                              fk_ctl_size = 10,
+                              fk_ctl_size = 1.0,
                               orient = [0,0,0],
-                              offset = [.09,0,0],
+                              offset = [.009,0,0],
                               debug = debug)
     
     r_foot = foot.create_foot(driver = r_leg.bind_jnts[3],
@@ -292,9 +311,9 @@ def build_it(scene_path = "", weights_path = "", debug = False):
                               ik_switch = r_leg.ik_fk_switch,
                               ik_root = r_leg.ik_jnts[3],
                               foot_groups = r_leg.gimbal_buffers,
-                              fk_ctl_size = 10,
+                              fk_ctl_size = 1.0,
                               orient = [0,0,0],
-                              offset = [.09,0,0],
+                              offset = [.009,0,0],
                               debug = debug)
 
 #     
@@ -435,12 +454,12 @@ def build_it(scene_path = "", weights_path = "", debug = False):
 #---lock After for Leg
         #OVERRIDES
         cmds.setAttr("C_bindSkeleton_GRP.visibility", 0)
-        cmds.delete("character_grp")
-        cmds.delete("C_headProxy_GEO")
-        cmds.delete("C_pantsProxy_GEO")
-        cmds.delete("C_torsoProxy_GEO")
-        cmds.delete("L_footProxy_GEO")
-        cmds.delete("R_bootProxy_GEO")
+        # cmds.delete("character_grp")
+        # cmds.delete("C_headProxy_GEO")
+        # cmds.delete("C_pantsProxy_GEO")
+        # cmds.delete("C_torsoProxy_GEO")
+        # cmds.delete("L_footProxy_GEO")
+        # cmds.delete("R_bootProxy_GEO")
 
 #         misc.lock_all(hierarchy = l_leg.skel_parent,
 #                       filter = ["*_CTL", "*_JNT"])
@@ -450,11 +469,24 @@ def build_it(scene_path = "", weights_path = "", debug = False):
 #                       filter = ["*_CTL", "*_JNT"])
         misc.lock_all(hierarchy = r_leg.rig_parent,
                       filter = ["*_CTL", "*_JNT"])
-        misc.cleanup_geo()
+        # misc.cleanup_geo()
         misc.cleanup_skel()
+    misc.set_global_jnt_radius(radius)
+    # Rename cape metacarples.....
+    for i in cmds.ls(typ="transform"):
+        print i
+        if "Metacarpal" in i and "cape" in i:
+            cmds.rename(i, i.replace("Metacarpal", ""))
+    for i in cmds.ls(typ="nurbsCurve"):
+        parent = cmds.listRelatives(i, p=True)[0]
+        cmds.rename(i, parent + "SHAPE")
+    # for i in cmds.ls(typ="joint"):
+    #     cmds.setAttr(i+".drawStyle", "bone")
+
 ######################################
 #---Example
-build_it(scene_path = scene_path, 
-         weights_path = False,
-         debug = False)
+# build_it(scene_path = scene_path, 
+#          weights_path = False,
+#          debug = False,
+#          radius=.1)
 #########################################

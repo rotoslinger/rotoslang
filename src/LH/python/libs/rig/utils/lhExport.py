@@ -1,7 +1,7 @@
 import sys
 
 from rig.utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
-from rigComponents import slidingCtrl, elements, meshRivetCtrl
+from rig.rigComponents import slidingCtrl, elements, meshRivetCtrl
 reload(slidingCtrl)
 reload(elements)
 reload(meshRivetCtrl)
@@ -676,22 +676,111 @@ class joint(object):
         self.path                    = path
         self.jointRoot                = jointRoot
 
-        self.create()
-
-    def getFileData(self):
-        file = open(self.path, "rb")
-        self.jointDict = json.load(file)
-        file.close()
 
     def getJoints(self):
-        return
-
-
+        # Find the hierarchy of joints
+        allJoints = []
+        allJoints = cmds.listRelatives(self.jointRoot, ad=True, typ="joint")
+        allJoints.append(self.jointRoot)
+        self.jointDict = {}
+        for joint in allJoints:
+            data = {}
+            parent = cmds.listRelatives(joint, p=True)
+            if parent:
+                data["parent"] = parent[0]
+                cmds.parent(joint, w=True)
+            # if cmds.listRelatives(joint, parent=True):
+            #     cmds.parent(joint, w=True)
+            data["position"] = cmds.joint(joint, q=True, p=True, a=True)
+            data["orientation"] = cmds.joint(joint, q=True, a=False, o=True)
+            if joint == "l_wrist_bind":
+                print cmds.joint(joint, q=True, a=False, o=True)
+            data["scaleOrientation"] = cmds.joint(joint, q=True, so=True)
+            data["radius"] = cmds.joint(joint, q=True, rad=True)
+            self.jointDict[joint] = data
+        for joint in self.jointDict.keys():
+            if cmds.objExists(self.jointDict[joint]["parent"]):
+                cmds.parent(joint, self.jointDict[joint]["parent"])
     def export(self):
         file = open(self.path, "wb")
         json.dump(self.jointDict, file, sort_keys=False, indent=2)
         file.close()
 
-    def create(self):
+    def exportData(self):
         self.getJoints()
         self.export()
+    
+    def setJoints(self):
+        for joint in self.jointDict.keys():
+            if not cmds.objExists(joint):
+                cmds.joint(n=joint)
+            if cmds.listRelatives(joint, parent=True):
+                cmds.parent(joint, w=True)
+            cmds.joint(joint, e=True, p=self.jointDict[joint]["position"], a=True)
+            cmds.joint(joint, e=True, so=self.jointDict[joint]["scaleOrientation"])
+            cmds.joint(joint, e=True, a=False, o=self.jointDict[joint]["orientation"])
+            cmds.joint(joint, e=True, rad=self.jointDict[joint]["radius"][0])
+        for joint in self.jointDict.keys():
+            if cmds.objExists(self.jointDict[joint]["parent"]):
+                cmds.parent(joint, self.jointDict[joint]["parent"])
+
+    def getFileData(self):
+        file = open(self.path, "rb")
+        self.jointDict = json.load(file)
+        # print self.jointDict
+        file.close()
+
+    def importData(self):
+        self.getFileData()
+        self.setJoints()
+
+class nurbsControl(object):
+    def __init__(self,
+                 path = "",
+                 ctrlRoot=""
+                 ):
+        #---args
+        self.path                    = path
+        self.ctrlRoot                = ctrlRoot
+        self.ctrlDict = {}
+
+    def getCtrls(self):
+        # Find the hierarchy of joints
+        allCtrls = []
+        allCtrls = cmds.listRelatives(self.ctrlRoot, ad=True, typ="nurbsCurve")
+        self.ctrlDict = {}
+        for ctrl in allCtrls:
+            data = xUtils.nurbsCurveData(name = ctrl, space=OpenMaya.MSpace.kObject).nurbsCurve
+            self.ctrlDict[ctrl] = data
+
+    def export(self):
+        file = open(self.path, "wb")
+        json.dump(self.ctrlDict, file, sort_keys=False, indent=2)
+        file.close()
+
+    def exportData(self):
+        self.getCtrls()
+        self.export()
+    
+
+    def getFileData(self):
+        file = open(self.path, "rb")
+        self.ctrlDict = json.load(file)
+        file.close()
+
+    def setCtrls(self):
+        for ctrl in self.ctrlDict.keys():
+            curve = xUtils.create_curve_2(self.ctrlDict[ctrl], "TEMP", "AHHHHH").name()
+            if not cmds.listConnections(ctrl + ".create"):
+                cmds.connectAttr(curve + ".worldSpace", ctrl + ".create")
+            cmds.refresh()
+            # misc.pushCurveShape(sourceCurve=curve, targetCurve=ctrl, mirror=False, inheritColor=True)
+            print curve
+            parent = cmds.listRelatives(curve, p=True)
+            cmds.delete(parent)
+
+
+    def importData(self):
+        self.getFileData()
+        self.setCtrls()
+# misc.pushCurveShape()

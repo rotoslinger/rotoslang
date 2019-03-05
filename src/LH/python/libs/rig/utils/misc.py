@@ -1420,7 +1420,7 @@ def lock_all(hierarchy = "", filter = ["*_CTL"]):
     tmp_all = []
     tmp_all.append(hierarchy)
     rel = cmds.listRelatives(hierarchy,
-                             ad = True)
+                             ad = True, s=False)
     if rel:
         rel.reverse()
         for i in rel:
@@ -2034,7 +2034,11 @@ def create_bind_skel(children = [],
         jnt_names.append(name)
         cmds.parentConstraint(name + "_JNT", new_name)
         cmds.scaleConstraint(name + "_JNT", new_name)
-        
+
+def set_global_jnt_radius(radius=1.0):
+    for jnt in cmds.ls(type="joint"):
+        cmds.setAttr(jnt + ".radius", radius)
+
 def create_sec_bind_skel(children = [],
                      parents = [],
                      character_grp = "C_character_GRP",

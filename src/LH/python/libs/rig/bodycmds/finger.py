@@ -51,6 +51,7 @@ class create_finger():
                              [1.0,1.0,1.0],
                              [1.0,1.0,1.0, 1.0]],
                  debug = False,
+                 infinite_digits = False
                  ):
 
         """
@@ -112,6 +113,7 @@ class create_finger():
         self.rig_parent              = rig_parent
         self.ctl_size                = ctl_size
         self.debug                   = debug
+        self.infinite_digits         = infinite_digits
 
         #---vars
         self.skel_parents            = []
@@ -191,6 +193,8 @@ class create_finger():
             tmp_knuckle_jnts            = []
             tmp_metacarpal_jnts         = []
             tmp_finger = []
+            if self.infinite_digits:
+                num_knucks = 10
 
             for j in range(len(self.source_finger_joints[i])):
                 rev_counter = len(self.source_finger_joints[i])-1 - j
@@ -203,7 +207,9 @@ class create_finger():
                     name = self.names[i] + "Metacarpal"
                     count = str(rev_counter-num_knucks-1)
                     knuckle_finger = tmp_metacarpal_jnts
-
+                    
+                if self.infinite_digits:
+                    count=str(j)
                 if j == 0:
                     parent = self.skel_parents[i]
                     tmp_finger.append(cmds.createNode("joint",
@@ -249,6 +255,8 @@ class create_finger():
             else:
                 num_knucks = 4
             for j in range(len(self.finger_joints[i])+skip):
+                if self.infinite_digits:
+                    num_knucks = 10
                 rev_counter = len(self.finger_joints[i])+skip - j
                 if rev_counter <= num_knucks:
                     name = self.names[i]
@@ -257,6 +265,18 @@ class create_finger():
                     name = self.names[i] + "Metacarpal"
                     count = str(rev_counter-num_knucks-1)
 
+                    
+                size = 1.0
+                orient = [0,0,0]
+                scale = [1,1,1]
+                if not self.infinite_digits:
+                    size = self.ctl_size[i][j]
+
+                if self.infinite_digits:
+                    orient = [0,0,90]
+                    scale = [1,1,5]
+                    count=str(j)
+
                 return_ctl = misc.create_ctl(side = self.side, 
                                              name = name + count, 
                                              parent = self.rig_parents[i], 
@@ -264,7 +284,11 @@ class create_finger():
                                              num_buffer = 1,
                                              lock_attrs = ["sx","sy","sz","v"], 
                                              gimbal = True,
-                                             size = self.ctl_size[i][j])
+                                             size = size,
+                                             orient = orient,
+                                             scale = scale
+                            
+                                             )
                 tmp_ctls.append(return_ctl.ctl)
                 tmp_buffers.append(return_ctl.buffers)
                 tmp_gimbals.append(return_ctl.gimbal_ctl)
