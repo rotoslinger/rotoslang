@@ -21,13 +21,14 @@ if os not in sys.path:
 import maya.cmds as cmds
 from rig.utils import misc, weights
 
-from rig.bodycmds import arm, leg, foot, finger, neck, head, main, shoulder, torso, holster, rivet
+from rig.bodycmds import arm, leg, foot, finger, neck, head, eye, main, shoulder, torso, holster, rivet
 reload(arm)
 reload(leg)
 reload(foot)
 reload(finger)
 reload(neck)
 reload(head)
+reload(eye)
 reload(main)
 reload(shoulder)
 reload(torso)
@@ -37,17 +38,17 @@ reload(weights)
 reload(rivet)
 
 # build insomniac test
-def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0):
+def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0, geo=None, cape=True):
 
-    # if scene_path:
-    #     cmds.file(
-    #               f=True ,
-    #               new = True)
-    #     cmds.file(scene_path, 
-    #               f=True ,
-    #               i = True,
-    #               options="v=0;",  
-    #               typ = "mayaAscii")
+    if scene_path:
+        cmds.file(
+                  f=True ,
+                  new = True)
+        cmds.file(scene_path, 
+                  f=True ,
+                  i = True,
+                  options="v=0;",  
+                  typ = "mayaAscii")
 
     misc.create_rig_hier()
 
@@ -117,6 +118,20 @@ def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0):
                                   ctl_size = .8,
                                   orient = [0,0,-20],
                                   offset = [-.3,0,0],
+                                  debug = debug)
+
+    l_eye_hook = eye.create_eye( joints = ["l_eye_bind", "r_eye_bind"], 
+                                 jointEnds = ["l_eyeEnd_bind", "r_eyeEnd_bind"], 
+                                 sides=["L","R"],
+                                  driver = head_hook.skel_joint, 
+                                #   upVecDriver = head_hook.skel_joint, 
+                                  global_scale = global_hook,
+                                  ctl_size = .3,
+                                  master_size = 1,
+                                  orient = [0,90,0],
+                                  offset = [0,0,0],
+                                  space_names = ["world", "head"],
+                                  space_parents= [global_ctl.ctl_gimbals[0], head_hook.skel_joint],
                                   debug = debug)
 
     l_shoulder = shoulder.create_shoulder(side = "L", 
@@ -221,26 +236,27 @@ def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0):
                                      [.3,2,.15,.15],
                                      ],
                          global_scale= global_hook)
-    
-    finger.create_finger(side = "C",
-                         names = ["cape1"
-                              ],
+    if cape:
+        finger.create_finger(side = "C",
+                            names = ["cape1"
+                                ],
 
-                         joint_roots = ["cape1",
-                                       ], 
-                         driver = torso_hook.chest_anchor,
-                         ctl_size = [
-                                     [.4,.3,.2],
-                                     [.4,.3,.2],
-                                     [.4,.3,.2],
-                                     [.4,.3,.2],
-                                     [.4,.3,.2],
-                                     [.4,.3,.2],
-                                     [.4,.3,.2],
-                                     ],
-                         global_scale= global_hook,
-                         infinite_digits=True,
-                        debug = debug)
+                            joint_roots = ["cape1",
+                                        ], 
+                            driver = torso_hook.chest_anchor,
+                            ctl_size = [
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        ],
+                            global_scale= global_hook,
+                            infinite_digits=True,
+                            debug = debug,
+                            worldAlign=True)
 
 
     l_leg = leg.create_leg(joints = ['l_leg_bind', 'l_knee_bind', 'l_ankle_bind'], 
@@ -473,13 +489,26 @@ def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0):
         misc.cleanup_skel()
     misc.set_global_jnt_radius(radius)
     # Rename cape metacarples.....
-    for i in cmds.ls(typ="transform"):
-        print i
-        if "Metacarpal" in i and "cape" in i:
-            cmds.rename(i, i.replace("Metacarpal", ""))
+    if cape:
+        for i in cmds.ls(typ="transform"):
+            if "Metacarpal" in i and "cape" in i:
+                cmds.rename(i, i.replace("Metacarpal", ""))
     for i in cmds.ls(typ="nurbsCurve"):
         parent = cmds.listRelatives(i, p=True)[0]
         cmds.rename(i, parent + "SHAPE")
+    
+    for ctrl in ["L_fingerRig_GRP", "R_fingerRig_GRP"]:
+        cmds.setAttr(ctrl + ".v", lock = False)
+        cmds.setAttr(ctrl + ".v", 0)
+        cmds.setAttr(ctrl + ".v", lock = True)
+
+    shape = cmds.listRelatives("C_rootFwd0_CTL", s=True)[0]
+    cmds.setAttr(shape + ".v", lock = False)
+    cmds.setAttr(shape + ".v", 0)
+    cmds.setAttr(shape + ".v", lock = True)
+    cmds.delete("group1")
+    if geo:
+        cmds.parent(geo, "C_geo_GRP")
     # for i in cmds.ls(typ="joint"):
     #     cmds.setAttr(i+".drawStyle", "bone")
 

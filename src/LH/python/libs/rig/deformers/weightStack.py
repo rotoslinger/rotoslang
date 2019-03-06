@@ -68,7 +68,17 @@ class AnimCurveWeight(Node):
                  baseGeo = "",
                  projectionGeo = "",
                  weightAttrNames = [],
-                 animCurveSuffix="ACV",
+                 animCurveSuffix = "ACV",
+                 autoCreateAnimCurves = False,
+                 autoCreateName = "lip",
+                 autoCreateNum = 11,
+                 autoCreateTimeRange = 20.0,
+                 offset=.15, centerWeight = .35, outerWeight = .3, angle = 30, nudge = 1.0,
+
+
+
+
+
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -89,7 +99,19 @@ class AnimCurveWeight(Node):
         self.baseMesh = ""
         self.weightNames = ["{0}_{1}".format(x, self.animCurveSuffix) for x in self.weightAttrNames]
         self.weightNamesFalloff = ["{0}Falloff_{1}".format(x, self.animCurveSuffix) for x in self.weightAttrNames]
-        print self.weightNames, self.weightNamesFalloff
+        self.autoCreateAnimCurves = autoCreateAnimCurves
+        self.autoCreateNum = autoCreateNum
+        self.autoCreateTimeRange = autoCreateTimeRange
+        self.autoCreateName = autoCreateName
+        self.kDoubleArrayOutputPlugs = []
+        self.kFloatArrayOutputPlugs = []
+
+
+        self.offset=offset
+        self.centerWeight =centerWeight
+        self.outerWeight = outerWeight
+        self.angle = angle
+        self.nudge = nudge
 
 
         self.nodeType = "LHCurveWeightNode"
@@ -112,6 +134,14 @@ class AnimCurveWeight(Node):
     def getDriverNodes(self):
         self.projectionMesh = misc.getShape(self.projectionGeo)
         self.baseMesh = misc.getShape(self.baseGeo)
+
+        if self.autoCreateAnimCurves:
+            self.weightCurves, self.weightCurvesFalloff = createNormalizedAnimWeights(name=self.autoCreateName, num=self.autoCreateNum,
+                                                                                      timeRange=self.autoCreateTimeRange, suffix=self.animCurveSuffix,
+                                                                                      offset=self.offset, centerWeight =self.centerWeight, outerWeight = self.outerWeight,
+                                                                                      angle = self.angle, nudge=self.nudge)
+            return
+        
         self.weightCurves = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
         self.weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
@@ -132,6 +162,13 @@ class AnimCurveWeight(Node):
             elemIdx = idx + self.startElem
             cmds.connectAttr(self.uCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveU".format(self.node, elemIdx),f=True)
             cmds.connectAttr(self.vCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveV".format(self.node, elemIdx),f=True)
+        
+            kDoubleOut = "{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.node, idx)
+            kFloatOut = "{0}.outDoubleWeights[{1}].outWeightsFloatArray[{1}]".format(self.node, idx)
+            if kDoubleOut not in self.kDoubleArrayOutputPlugs:
+                self.kDoubleArrayOutputPlugs.append(kDoubleOut)
+            if kFloatOut not in self.kFloatArrayOutputPlugs:
+                self.kFloatArrayOutputPlugs.append(kFloatOut)
 
     def outputConnections(self):
         if not self.outputAttrs:
@@ -150,7 +187,6 @@ class AnimCurveWeight(Node):
             # Call getAttr to create an elem if it doesn't already exist
             cmds.getAttr(weightAttr)
             cmds.connectAttr(weightAttr, attr, f=True)
-
 """
 # Test the module with a cluster deformer
 cmds.file(new=True, f=True)
@@ -171,6 +207,9 @@ class WeightStack(Node):
                  factorAttrNames = [],
                  geoToWeight = "",
                  operationVals=[],
+                 autoCreate = False,
+                 autoCreateName = "lip",
+                 autoCreateOperationVal = 0,
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -187,12 +226,17 @@ class WeightStack(Node):
         self.geoToWeight = geoToWeight
         self.operationVals = operationVals
         self.startElem = 0
+        self.autoCreate = autoCreate
+        self.autoCreateName = autoCreateName
+        self.autoCreateOperationVal = autoCreateOperationVal
 
         self.isKDoubleArrayOutputWeights = True
         self.nodeType = "LHWeightNode"
 
     def check(self):
         listsToCheck = [self.weightMapAttrNames, self.factorAttrNames, self.operationVals]
+        if self.autoCreate:
+            return
         if any(len(listArray) != len(self.weightMapAttrNames) for listArray in listsToCheck):
             raise Exception("weightMapAttrs, factorAttrs, and operationVals all need to be the same length, " +
                             "if you want multiple maps to be connected to multiple factor attrs, use the same " + 
@@ -200,6 +244,15 @@ class WeightStack(Node):
             quit()
 
     def getAttrs(self):
+        if self.autoCreate:
+            self.weightMapAttrs = self.weightMapAttrNames
+            self.factorAttrNames = nameBasedOnRange(count=len(self.weightMapAttrNames), name=self.autoCreateName, suffix="")
+            self.floatAttrs = attrCheck(node=self.ctrlNode,
+                                            attrs=self.factorAttrNames,
+                                            attrType="float",
+                                            k=True)
+            self.operationVals = [self.autoCreateOperationVal for x in range(len(self.weightMapAttrNames))]
+            return
         self.weightMapAttrs = attrCheck(node=self.geoToWeight,
                                             attrs=self.weightMapAttrNames,
                                             attrType=None,
@@ -231,7 +284,143 @@ class WeightStack(Node):
                 # If False, then this output attribute will get the outWeightsFloatArray
                 cmds.connectAttr("{0}.outWeightsFloatArray[0]".format(self.node), attr, f=True)
 
+def nameBasedOnRange(count, name, suffix):
+    retNames = []
+    midpoint = count/2
+    for idx in range(count):
+        current = idx
+        side = "L"
+        formatName = "{0}_{1}{2:02}_{3}"
+        if idx == midpoint:
+            side = "C"
+            current = ""
+            formatName = "{0}_{1}{2}_{3}"
+        if idx > midpoint:
+            side = "R"
+            current = count -1 - idx
+        retNames.append(formatName.format(side, name, current, suffix))
+    return retNames
 
+def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV", offset=.15, centerWeight = .35, outerWeight = .3, angle = 50, nudge = 0
+):
+    keyframes = []
+    falloffKeyframes = []
+    ratio = timeRange/num
+    midpoint = num/2
+    for idx in range(num):
+        count = idx
+        side = "L"
+        formatName = "{0}_{1}{2:02}_{3}"
+        formatNameFalloff = "{0}_{1}Falloff{2:02}_{3}"
+        if idx == midpoint:
+            side = "C"
+            count = ""
+            formatName = "{0}_{1}{2}_{3}"
+        formatNameFalloff = "{0}_{1}Falloff{2}_{3}"
+        if idx > midpoint:
+            side = "R"
+            count = num -1 - idx
+
+        weightCurve = getNodeAgnostic(nodeType="animCurveTU", name=formatName.format(side, name, count, suffix), parent=None)
+        try:
+            cmds.cutKey(weightCurve, cl=True, option="keys")
+        except:
+            pass
+        keyframes.append(weightCurve)
+        falloffKeyframes.append(getNodeAgnostic(nodeType="animCurveTU", name=formatNameFalloff.format(side, name, count, suffix), parent=None))
+        # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
+        for key in range(5):
+            idx = float(idx)
+            val=1.0
+            itt = "spline"
+            ott = "spline"
+            time=idx+key
+            if key == 0:
+                itt = "linear"
+                ott = "slow"
+                val=0.0
+                time=idx+key + offset
+                time=time+nudge
+            if key == 1:
+                itt = "spline"
+                ott = "spline"
+                val=0.2
+                time=idx+key + offset
+                time=time+nudge
+                
+            if key == 3:
+                itt = "spline"
+                ott = "spline"
+                val=0.2
+                time=idx+key - offset
+                time=time-nudge
+
+
+            if key == 4:
+                itt = "fast"
+                ott = "linear"
+                val=0.0 
+                time=idx+key - offset
+                time=time-nudge
+
+
+            # inTangentType(itt)	string	create
+            # The in tangent type for keyframes set by this command. Valid values are "spline," "linear," "fast," "slow," "flat," "step," and "clamped." Default is "keyTangent -q -g -inTangentType"
+            # outTangentType(ott)	string	create
+            # The out tangent type for keyframes set by this command. Valid values are "spline," "linear," "fast," "slow," "flat," "step," and "clamped." Default is "keyTangent -q -g -outTangentType"
+            cmds.setKeyframe(weightCurve, v=val, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=time, itt=itt, ott=ott)
+            # cmds.keyTangent( weightCurve, edit=True, time=(idx+key,idx+key), absolute=True, outAngle=100, outWeight=5,wl=False, weightedTangents=False)
+            # cmds.keyTangent( weightCurve, edit=True, time=(idx+key,idx+key), absolute=True, outAngle=100, outWeight=5, l=False, weightedTangents=False)
+            time=(time,time)
+            if key == 0:
+                cmds.keyTangent( weightCurve,time=time, edit=True,  weightedTangents=True)
+                cmds.keyTangent( weightCurve,time=time, edit=True,  lock=False)
+                cmds.keyTangent( weightCurve,time=time, edit=True,  outWeight=outerWeight, inWeight=outerWeight, outAngle=angle,inAngle=0)
+            if key == 2:
+                cmds.keyTangent( weightCurve,time=time, edit=True,  weightedTangents=True)
+                cmds.keyTangent( weightCurve,time=time, edit=True,  outWeight=centerWeight, inWeight=centerWeight, outAngle=0,inAngle=0)
+            if key == 4:
+                cmds.keyTangent( weightCurve,time=time, edit=True,  weightedTangents=True)
+                cmds.keyTangent( weightCurve,time=time, edit=True,  lock=False)
+                cmds.keyTangent( weightCurve,time=time, edit=True,  outWeight=outerWeight, inWeight=outerWeight, outAngle=0,inAngle=-angle)
+    # lastTime = cmds.findKeyframe(keyframes[-1], index=(4,4), time=True)
+    # lastTime = (cmds.keyframe(keyframes[-1], indexValue=True, q=True))[-1]
+    print time
+
+    print timeRange
+    flatTime = int(time[0])
+    # scaleAmt = float(timeRange)/(float(time[0])+1.0)
+    scaleAmt = float(timeRange)/float(flatTime)
+    print scaleAmt
+    cmds.scaleKey(keyframes, 
+                scaleSpecifiedKeys = False,
+                timeScale = scaleAmt,
+                timePivot = 0.0,
+                floatScale = 1, 
+                floatPivot = 0.0,
+                valueScale = 1,
+                valuePivot = 0)
+
+    # Center at 0
+    for key in keyframes:
+        cmds.keyframe(key, edit=True,relative=True,timeChange=-(timeRange/2),time=(-100,timeRange + 100))
+        cmds.setKeyframe(key, breakdown=0,
+                            hierarchy="none", controlPoints=2,
+                            shape=0, time=-timeRange/2)
+        cmds.setKeyframe(key, breakdown=0,
+                            hierarchy="none", controlPoints=2,
+                            shape=0, time=timeRange/2)
+
+    cmds.select(keyframes)
+
+    initVKeyframes(falloffKeyframes)
+    return keyframes, falloffKeyframes
+        # weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
+        # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
+        # initUKeyframes(weightCurves)
+        # initVKeyframes(weightCurvesFalloff)
 
 def getNodeAgnostic(name, nodeType, parent):
     if cmds.objExists(name):
@@ -322,7 +511,7 @@ def attrCheck(node, attrs, attrType=None, enumName=None, k=False, weightmap=Fals
         return
     retAttrs = []
     for idx, attr in enumerate(attrs):
-        dv = 1
+        dv = 0.0
         if defaultVals:
             dv = defaultVals[idx]
         fullName = node + "." + attr

@@ -1065,7 +1065,8 @@ class create_fk_align():
                  ctl = "", 
                  ctl_grp = "",
                  default_align_parent = "", 
-                 skel_group = ""
+                 skel_group = "",
+                 maintainOffset=False
                  ):
         """
         @type  ctl:                  string array
@@ -1090,6 +1091,7 @@ class create_fk_align():
         self.ctl_grp                 = ctl_grp
         self.default_align_parent    = default_align_parent
         self.skel_group              = skel_group
+        self.maintainOffset          = maintainOffset
 
         #---vars
         self.align_attr              = []
@@ -1136,7 +1138,12 @@ class create_fk_align():
     def __create_constraints(self):
         self.align_constraint = cmds.orientConstraint(self.default_align_parent,
                                                       self.world_transform,
-                                                      self.ctl_grp)[0]
+                                                      self.ctl_grp,
+                                                      mo=True)[0]
+        # rotation = cmds.xform(self.default_align_parent,q=True, ws=True, ro=True)
+        # if cmds.xform(self.world_transform,q=True, ws=True, ro=True) != cmds.xform(self.default_align_parent, q=True, ws=True, ro=True):
+        #     cmds.xform(self.world_transform, ws=True, ro=rotation)
+
 
     def __make_connections(self):
         #---connect default

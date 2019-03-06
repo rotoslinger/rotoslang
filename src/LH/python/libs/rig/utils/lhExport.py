@@ -770,12 +770,14 @@ class nurbsControl(object):
 
     def setCtrls(self):
         for ctrl in self.ctrlDict.keys():
+            if not cmds.objExists(ctrl):
+                continue
             curve = xUtils.create_curve_2(self.ctrlDict[ctrl], "TEMP", "AHHHHH").name()
             if not cmds.listConnections(ctrl + ".create"):
                 cmds.connectAttr(curve + ".worldSpace", ctrl + ".create")
             cmds.refresh()
             # misc.pushCurveShape(sourceCurve=curve, targetCurve=ctrl, mirror=False, inheritColor=True)
-            print curve
+            # print curve
             parent = cmds.listRelatives(curve, p=True)
             cmds.delete(parent)
 
@@ -784,3 +786,60 @@ class nurbsControl(object):
         self.getFileData()
         self.setCtrls()
 # misc.pushCurveShape()
+
+class constraintMap(object):
+    def __init__(self,
+                 path = "",
+                 geoRoot=""
+                 ):
+        #---args
+        self.path                    = path
+        self.geoRoot                = geoRoot
+        self.constraintDict = {}
+
+    def getgeos(self):
+        # Find the hierarchy of joints
+        allConstraints = []
+        allConstraints = cmds.listRelatives(self.geoRoot, ad=True, typ="parentConstraint")
+        self.constraintDict = {}
+        for con in allConstraints:
+            target = None
+            geo = None
+            geo = cmds.listConnections(con+".constraintRotateY", d=True)
+            if not geo:
+                continue
+            geo = geo[0]
+            target = cmds.parentConstraint(con, q=True, targetList=True)
+            if not target:
+                continue
+            target = target[0]
+            
+            self.constraintDict[geo] = target
+        
+
+    def export(self):
+        file = open(self.path, "wb")
+        json.dump(self.constraintDict, file, sort_keys=False, indent=2)
+        file.close()
+
+    def exportData(self):
+        self.getgeos()
+        self.export()
+    
+
+    def getFileData(self):
+        file = open(self.path, "rb")
+        self.constraintDict = json.load(file)
+        file.close()
+
+    def setConstraints(self):
+
+        for driven in self.constraintDict.keys():
+            if not cmds.objExists(driven) or not cmds.objExists(self.constraintDict[driven]):
+                continue
+            cmds.parentConstraint(self.constraintDict[driven], driven, mo=True)
+            cmds.scaleConstraint(self.constraintDict[driven], driven, mo=True)
+
+    def importData(self):
+        self.getFileData()
+        self.setConstraints()

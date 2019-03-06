@@ -51,7 +51,8 @@ class create_finger():
                              [1.0,1.0,1.0],
                              [1.0,1.0,1.0, 1.0]],
                  debug = False,
-                 infinite_digits = False
+                 infinite_digits = False,
+                 worldAlign = False
                  ):
 
         """
@@ -114,6 +115,7 @@ class create_finger():
         self.ctl_size                = ctl_size
         self.debug                   = debug
         self.infinite_digits         = infinite_digits
+        self.worldAlign              = worldAlign
 
         #---vars
         self.skel_parents            = []
@@ -276,19 +278,22 @@ class create_finger():
                     orient = [0,0,90]
                     scale = [1,1,5]
                     count=str(j)
-
+                num_buffer = 1
+                if self.worldAlign:
+                    num_buffer = 3
                 return_ctl = misc.create_ctl(side = self.side, 
                                              name = name + count, 
                                              parent = self.rig_parents[i], 
                                              shape = "circle",
-                                             num_buffer = 1,
+                                             num_buffer = num_buffer,
                                              lock_attrs = ["sx","sy","sz","v"], 
                                              gimbal = True,
                                              size = size,
                                              orient = orient,
                                              scale = scale
-                            
                                              )
+
+
                 tmp_ctls.append(return_ctl.ctl)
                 tmp_buffers.append(return_ctl.buffers)
                 tmp_gimbals.append(return_ctl.gimbal_ctl)
@@ -306,6 +311,14 @@ class create_finger():
                 #---rig it
                 cmds.parentConstraint(tmp_gimbals[j],
                                       self.finger_joints[i][j])
+
+                if self.worldAlign:
+                    align = misc.create_fk_align(ctl = return_ctl.ctl, 
+                                        ctl_grp = return_ctl.buffers[1],
+                                        default_align_parent = return_ctl.buffers[0],
+                                        skel_group = self.skel_parent,
+                                        maintainOffset=True)
+
             self.ctls.append(tmp_ctls)
             self.ctl_buffers.append(tmp_buffers)
             self.ctl_gimbals.append(tmp_gimbals)

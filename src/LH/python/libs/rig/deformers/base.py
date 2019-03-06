@@ -506,7 +506,7 @@ class CurveWeights(Node):
 
     def findWeightStackElements(self):
         if not cmds.objExists(self.outWeightStackNode):
-            # return
+            return
             # self.outWeightStackNode = cmds.createNode("LHWeightNode", n=self.outWeightStackNode)
         numOutGoingElements = cmds.getAttr(self.node + ".inputs", mi=True)
         if numOutGoingElements:
