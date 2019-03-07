@@ -470,22 +470,10 @@ def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0, geo=
 #---lock After for Leg
         #OVERRIDES
         cmds.setAttr("C_bindSkeleton_GRP.visibility", 0)
-        # cmds.delete("character_grp")
-        # cmds.delete("C_headProxy_GEO")
-        # cmds.delete("C_pantsProxy_GEO")
-        # cmds.delete("C_torsoProxy_GEO")
-        # cmds.delete("L_footProxy_GEO")
-        # cmds.delete("R_bootProxy_GEO")
-
-#         misc.lock_all(hierarchy = l_leg.skel_parent,
-#                       filter = ["*_CTL", "*_JNT"])
         misc.lock_all(hierarchy = l_leg.rig_parent,
                       filter = ["*_CTL", "*_JNT"])
-#         misc.lock_all(hierarchy = r_leg.skel_parent,
-#                       filter = ["*_CTL", "*_JNT"])
         misc.lock_all(hierarchy = r_leg.rig_parent,
                       filter = ["*_CTL", "*_JNT"])
-        # misc.cleanup_geo()
         misc.cleanup_skel()
     misc.set_global_jnt_radius(radius)
     # Rename cape metacarples.....

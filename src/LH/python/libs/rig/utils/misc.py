@@ -1878,7 +1878,7 @@ def cleanup_geo():
 
 def cleanup_skel():
     if cmds.objExists("C_skeleton_GRP"):
-        cmds.setAttr("C_skeleton_GRP.overrideEnabled", 1)
+        #cmds.setAttr("C_skeleton_GRP.overrideEnabled", 1)
         cmds.setAttr("C_skeleton_GRP.v", 0)
 
 
@@ -2124,7 +2124,10 @@ def getShape(mayaObject):
     # double check it isn't already a mesh, just in case a transform is passed in...
     if cmds.objectType(mayaObject) == "mesh":
         return mayaObject
-    return cmds.listRelatives(mayaObject, shapes=True)[0]
+    relatives = cmds.listRelatives(mayaObject, shapes=True)
+    if relatives:
+        return relatives[0]
+    return
 
 def getGeoData(mayaObject=None):
     """Returns a dictionary that can be used with exportUtils to create_mesh
@@ -2522,3 +2525,43 @@ def addNakedLocatorToControl(control=None, side= None, controlParent=None, geom=
         createNakedLocator( name, side, geom, controlParent, control, faces)
         # locator = cmds.createNode("LHNakedLocator", p=control, n=name)
 
+def getBoundingBox(mesh):
+    fnMesh = getOMMesh(mesh)
+    meshDag = getDag(mesh)
+    allPoints = OpenMaya.MPointArray()
+    fnMesh.getPoints(allPoints)
+    bBox = OpenMaya.MBoundingBox()
+    for point in allPoints:
+        bBox.expand(point)
+    return bBox
+
+def constrainMeshToClosestJoint(selections=None):
+    """
+    select only mesh transforms and joints
+    """
+    if not selections:
+        selections = cmds.ls(sl=True)
+    joints = cmds.ls(selections, type="joint")
+    meshTransforms = cmds.ls(selections, type="transform")
+    meshes = [getShape(x) for x in meshTransforms if getShape(x)]
+    geomConstDict={}
+    jointPosList = [getMPointFromTransform(x) for x in joints]
+    for idx, mesh in enumerate(meshes):
+        initDist = 1000
+        foundID = -1
+        mshCenter  =  cmds.getAttr(mesh + ".center" )[0]
+        mshCenter = OpenMaya.MPoint(mshCenter[0],mshCenter[1],mshCenter[2])
+        # mshCenter = getBoundingBox(mesh).center()
+        for idx in range(0, len(joints)):
+            dist = mshCenter.distanceTo(jointPosList[idx])
+            if dist < initDist:
+                initDist = dist
+                foundID = idx
+        # print foundID
+        transform = cmds.listRelatives(mesh, p=True)[0]
+        geomConstDict[transform] = joints[foundID]
+        print geomConstDict
+
+    for driven, driver in geomConstDict.items():
+        cmds.parentConstraint(driver, driven, mo=True)
+        cmds.scaleConstraint(driver, driven, mo=True)

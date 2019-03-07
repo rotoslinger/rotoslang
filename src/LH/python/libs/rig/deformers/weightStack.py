@@ -1,4 +1,7 @@
-from maya import cmds
+from maya import cmds, OpenMaya
+import maya.api.OpenMaya as OpenMaya2
+
+
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
 reload(misc)
@@ -66,6 +69,7 @@ class AnimCurveWeight(Node):
     def __init__(self,
                 #  weightMapAttrNames = [],
                  baseGeo = "",
+                 ctrlNode="",
                  projectionGeo = "",
                  weightAttrNames = [],
                  animCurveSuffix = "ACV",
@@ -73,12 +77,8 @@ class AnimCurveWeight(Node):
                  autoCreateName = "lip",
                  autoCreateNum = 11,
                  autoCreateTimeRange = 20.0,
+                 addPush = True,
                  offset=.15, centerWeight = .35, outerWeight = .3, angle = 30, nudge = 1.0,
-
-
-
-
-
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -90,6 +90,7 @@ class AnimCurveWeight(Node):
 
         super(AnimCurveWeight, self).__init__(**kw)
         self.baseGeo = baseGeo
+        self.ctrlNode = ctrlNode
         self.projectionGeo = projectionGeo
         self.weightAttrNames = weightAttrNames
         self.animCurveSuffix = animCurveSuffix
@@ -106,7 +107,7 @@ class AnimCurveWeight(Node):
         self.kDoubleArrayOutputPlugs = []
         self.kFloatArrayOutputPlugs = []
 
-
+        self.addPush=addPush
         self.offset=offset
         self.centerWeight =centerWeight
         self.outerWeight = outerWeight
@@ -130,6 +131,16 @@ class AnimCurveWeight(Node):
                                             attrs=["membershipWeights"],
                                             attrType=None,
                                             weightmap=True)[0]
+        if self.autoCreateAnimCurves:
+            self.factorAttrNames = nameBasedOnRange(count=self.autoCreateNum, name="push", suffixSeperator="")
+
+            defaultVals = [0.0 for x in range(self.autoCreateNum)]
+
+            self.floatAttrs = attrCheck(node=self.ctrlNode,
+                                            attrs=self.factorAttrNames,
+                                            attrType="float",
+                                            defaultVals = defaultVals,
+                                            k=True)
 
     def getDriverNodes(self):
         self.projectionMesh = misc.getShape(self.projectionGeo)
@@ -162,7 +173,8 @@ class AnimCurveWeight(Node):
             elemIdx = idx + self.startElem
             cmds.connectAttr(self.uCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveU".format(self.node, elemIdx),f=True)
             cmds.connectAttr(self.vCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveV".format(self.node, elemIdx),f=True)
-        
+            cmds.connectAttr(self.floatAttrs[idx], "{0}.inputs[{1}].pushU".format(self.node, elemIdx),f=True)
+
             kDoubleOut = "{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.node, idx)
             kFloatOut = "{0}.outDoubleWeights[{1}].outWeightsFloatArray[{1}]".format(self.node, idx)
             if kDoubleOut not in self.kDoubleArrayOutputPlugs:
@@ -187,6 +199,41 @@ class AnimCurveWeight(Node):
             # Call getAttr to create an elem if it doesn't already exist
             cmds.getAttr(weightAttr)
             cmds.connectAttr(weightAttr, attr, f=True)
+
+    def setPushDefaults(self):
+        self.getWorldLocationBasedOnWeights()
+        for idx in range(len(self.weightCurves)):
+            cmds.setAttr("{0}.inputs[{1}].pushUPivot".format(self.node, idx), self.closestU[idx])
+
+    def getBaseMeshFromConnection(self):
+        self.baseMesh = cmds.listConnections(self.node + ".inMesh", source=True, sh=True)[0]
+
+    def getProjectionMeshFromConnection(self):
+        self.projectionMesh = cmds.listConnections(self.node + ".projectionMesh", source=True, sh=True)[0]
+
+
+    def getWorldLocationBasedOnWeights(self):
+        self.getNode()
+        numElements = cmds.getAttr("{0}.outDoubleWeights".format(self.node), mi=True)
+        if not numElements:
+            return 0
+        numElements = len(numElements)
+        # weightVals = []
+        self.getBaseMeshFromConnection()
+        self.getProjectionMeshFromConnection()
+        self.closestU = []
+        self.closestV = []
+        for idx in range(numElements):
+            weightList = cmds.getAttr("{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.node, idx))
+            height, width, depth, center = getPointPositionByWeights(weightList, self.baseMesh)
+            u, v = misc.getClosestUVOnMesh(pointX=center.x, pointY=center.y, pointZ=center.z,  mesh=self.projectionMesh)
+            self.closestU.append(u)
+            self.closestV.append(v)
+
+
+        
+
+
 """
 # Test the module with a cluster deformer
 cmds.file(new=True, f=True)
@@ -210,6 +257,8 @@ class WeightStack(Node):
                  autoCreate = False,
                  autoCreateName = "lip",
                  autoCreateOperationVal = 0,
+                 createControl = True,
+                 UDLR = True,
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -229,6 +278,10 @@ class WeightStack(Node):
         self.autoCreate = autoCreate
         self.autoCreateName = autoCreateName
         self.autoCreateOperationVal = autoCreateOperationVal
+        self.createControl = createControl
+        self.UDLR = UDLR
+
+
 
         self.isKDoubleArrayOutputWeights = True
         self.nodeType = "LHWeightNode"
@@ -244,19 +297,20 @@ class WeightStack(Node):
             quit()
 
     def getAttrs(self):
+        self.weightMapAttrs = []
         if self.autoCreate:
             self.weightMapAttrs = self.weightMapAttrNames
-            self.factorAttrNames = nameBasedOnRange(count=len(self.weightMapAttrNames), name=self.autoCreateName, suffix="")
-            self.floatAttrs = attrCheck(node=self.ctrlNode,
-                                            attrs=self.factorAttrNames,
-                                            attrType="float",
-                                            k=True)
+            self.factorAttrNames = nameBasedOnRange(count=len(self.weightMapAttrNames), name=self.autoCreateName, suffixSeperator="")
             self.operationVals = [self.autoCreateOperationVal for x in range(len(self.weightMapAttrNames))]
-            return
-        self.weightMapAttrs = attrCheck(node=self.geoToWeight,
-                                            attrs=self.weightMapAttrNames,
-                                            attrType=None,
-                                            weightmap=True)
+        if not self.weightMapAttrs:
+            self.weightMapAttrs = attrCheck(node=self.geoToWeight,
+                                                attrs=self.weightMapAttrNames,
+                                                attrType=None,
+                                                weightmap=True)
+
+        # Add UD LR functionality
+
+
         self.floatAttrs = attrCheck(node=self.ctrlNode,
                                          attrs=self.factorAttrNames,
                                          attrType="float",
@@ -270,6 +324,7 @@ class WeightStack(Node):
             cmds.connectAttr(self.weightMapAttrs[idx], "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx), f=True)
             cmds.connectAttr(self.floatAttrs[idx], "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
             cmds.setAttr("{0}.inputs[{1}].operation".format(self.node, elemIdx), self.operationVals[idx])
+
     
     def outputConnections(self):
         # Checks if the output type is kDoubleArray or a multiFloat (maya native deformer weights type)
@@ -284,25 +339,40 @@ class WeightStack(Node):
                 # If False, then this output attribute will get the outWeightsFloatArray
                 cmds.connectAttr("{0}.outWeightsFloatArray[0]".format(self.node), attr, f=True)
 
-def nameBasedOnRange(count, name, suffix):
+
+def getPointPositionByWeights(weightList, mesh, threshold = .9):
+    fnMesh = misc.getOMMesh(mesh)
+    meshDag = misc.getDag(mesh)
+    allPoints = OpenMaya.MPointArray()
+    fnMesh.getPoints(allPoints)
+    bBox = OpenMaya.MBoundingBox()
+    for idx in range(len(weightList)):
+        if weightList[idx] >= threshold:
+            bBox.expand(allPoints[idx])
+    return bBox.height(), bBox.width(), bBox.depth(), bBox.center()
+
+
+def nameBasedOnRange(count, name, suffixSeperator="_", suffix="", ):
     retNames = []
     midpoint = count/2
     for idx in range(count):
         current = idx
         side = "L"
-        formatName = "{0}_{1}{2:02}_{3}"
+        formatName = "{0}_{1}{2:02}{3}{4}"
         if idx == midpoint:
             side = "C"
             current = ""
-            formatName = "{0}_{1}{2}_{3}"
+            formatName = "{0}_{1}{2}{3}{4}"
         if idx > midpoint:
             side = "R"
             current = count -1 - idx
-        retNames.append(formatName.format(side, name, current, suffix))
+        # finalName = formatName.format(side, name, current, suffixSeperator, suffix)
+        # if suffix is "None":
+        #     finalName = finalName.replace("_None", "")
+        retNames.append(formatName.format(side, name, current, suffixSeperator, suffix))
     return retNames
 
-def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV", offset=.15, centerWeight = .35, outerWeight = .3, angle = 50, nudge = 0
-):
+def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV", offset=.15, centerWeight = .35, outerWeight = .3, angle = 50, nudge = 0):
     keyframes = []
     falloffKeyframes = []
     ratio = timeRange/num

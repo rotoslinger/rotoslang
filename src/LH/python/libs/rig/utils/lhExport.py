@@ -769,17 +769,25 @@ class nurbsControl(object):
         file.close()
 
     def setCtrls(self):
+        curveDummy = cmds.circle()[0]
+        curveShape = misc.getShape(curveDummy)
         for ctrl in self.ctrlDict.keys():
+            # if "L_armIK_CTLSHAPE" in ctrl:
+            #     print ctrl
             if not cmds.objExists(ctrl):
                 continue
             curve = xUtils.create_curve_2(self.ctrlDict[ctrl], "TEMP", "AHHHHH").name()
             if not cmds.listConnections(ctrl + ".create"):
                 cmds.connectAttr(curve + ".worldSpace", ctrl + ".create")
+            # cmds.dgdirty(a=1)
+            cmds.connectAttr(ctrl + ".worldSpace", curveShape + ".create", f=True)
             cmds.refresh()
+
             # misc.pushCurveShape(sourceCurve=curve, targetCurve=ctrl, mirror=False, inheritColor=True)
             # print curve
             parent = cmds.listRelatives(curve, p=True)
             cmds.delete(parent)
+        cmds.delete(curveDummy)
 
 
     def importData(self):
@@ -843,3 +851,45 @@ class constraintMap(object):
     def importData(self):
         self.getFileData()
         self.setConstraints()
+
+class selectionSet(object):
+    def __init__(self,
+                 path = "",
+                 ):
+        #---args
+        self.path                    = path
+        self.setDict = {}
+
+    def getSel(self):
+        # Find the hierarchy of joints
+        self.setDict = {}
+        self.setDict["controls"] = []
+        for sel in cmds.ls(sl=True):
+            self.setDict["controls"].append(sel)
+
+    def export(self):
+        file = open(self.path, "wb")
+        json.dump(self.setDict, file, sort_keys=False, indent=2)
+        file.close()
+
+    def exportData(self):
+        self.getSel()
+        self.export()
+
+    def getFileData(self):
+        file = open(self.path, "rb")
+        self.setDict = json.load(file)
+        file.close()
+
+    def setSel(self):
+        selectionFiltered = []
+
+        for sel in self.setDict["controls"]:
+            if cmds.objExists(sel):
+                selectionFiltered.append(sel)
+        if not cmds.objExists("controlSelectionSet"):
+            self.selectionSet = cmds.sets(selectionFiltered , n="controlSelectionSet")
+
+    def importData(self):
+        self.getFileData()
+        self.setSel()

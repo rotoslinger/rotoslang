@@ -48,6 +48,8 @@ MObject LHCurveWeightNode::aOutputWeightsFloatArray;
 MObject LHCurveWeightNode::aOutWeights;
 MObject LHCurveWeightNode::aAnimCurveU;
 MObject LHCurveWeightNode::aAnimCurveV;
+MObject LHCurveWeightNode::aPushU;
+MObject LHCurveWeightNode::aPushUPivot;
     
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
@@ -78,11 +80,22 @@ MStatus LHCurveWeightNode::initialize()
     aAnimCurveV = nAttr.create("AnimCurveV", "acv", MFnNumericData::kFloat);
     nAttr.setKeyable(true);
 
+    aPushU = nAttr.create("pushU", "pushu", MFnNumericData::kFloat);
+    nAttr.setDefault(1);
+    nAttr.setKeyable(true);
+
+    aPushUPivot = nAttr.create("pushUPivot", "pushupivot", MFnNumericData::kFloat);
+    nAttr.setDefault(0.0);
+    nAttr.setKeyable(true);
+
+
     aInputs = cAttr.create("Inputs", "inputs");
     cAttr.setKeyable(true);
     cAttr.setArray(true);
     cAttr.addChild( aAnimCurveU );
     cAttr.addChild( aAnimCurveV );
+    cAttr.addChild( aPushU );
+    cAttr.addChild( aPushUPivot );
     cAttr.setReadable(true);
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
@@ -156,7 +169,6 @@ MStatus LHCurveWeightNode::initialize()
     cAttr.setConnectable(true);
     cAttr.setChannelBox(true);
     cAttr.setIndexMatters(false);
-
     addAttribute(aOutputWeightsDoubleArrayParent);
 
     attributeAffects(aCacheWeightMesh, aOutputWeightsDoubleArray);
@@ -245,6 +257,8 @@ MStatus LHCurveWeightNode::computeDoubleArray(MDataBlock& data)
     {
         status = inputsArrayHandle.jumpToElement(i);
         CheckStatusReturn( status, "Unable to jump to doubleArray element" );
+
+
         MFnDoubleArrayData outputDoubleArrayFn;
         MObject oOutputArray = outputDoubleArrayFn.create(finalWeightsArray[i]);
         if (oOutputArray.isNull())
@@ -254,7 +268,10 @@ MStatus LHCurveWeightNode::computeDoubleArray(MDataBlock& data)
         }
         MDataHandle handle = inputsArrayHandle.outputValue().child(LHCurveWeightNode::aOutputWeightsDoubleArray);
         handle.setMObject(oOutputArray);
+        
     }
+    data.setClean(LHCurveWeightNode::aOutputWeightsDoubleArray);
+    data.setClean(LHCurveWeightNode::aOutputWeightsDoubleArrayParent);
     return MS::kSuccess;
 }
 
@@ -291,6 +308,15 @@ double remapcurveWeight(MFnAnimCurve *fnAnimCurve, double coord, float timeOffse
     return fnAnimCurve->evaluate(remapTime);
 }
 
+double remapcurveWeightPlus(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength, double pushUAmount, double center) 
+{
+    coord = coord + (coord-center) * pushUAmount;
+    double remap = coord * timeLength;
+    remap = remap - timeOffset;
+    MTime remapTime(remap);
+    return fnAnimCurve->evaluate(remapTime);
+}
+
 
 MStatus LHCurveWeightNode::getAnimCurvePlug(int currentElem, MPlug& rPCurve, MObject curveObject)
 {
@@ -303,7 +329,8 @@ MStatus LHCurveWeightNode::getAnimCurvePlug(int currentElem, MPlug& rPCurve, MOb
     return MS::kSuccess;
 }
 
-MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray& rWeights, int numVerts, int currentElem)
+MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray& rWeights, int numVerts, int currentElem,
+                                               double pushUAmount, double pushUPivot)
 {
     MPlug pAnimCurveU;
     status = LHCurveWeightNode::getAnimCurvePlug(currentElem, pAnimCurveU, aAnimCurveU);
@@ -322,18 +349,36 @@ MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandl
 
     if (rWeights.length())
         rWeights.clear();
-
-    for (int i=0;i < numVerts;i++)
+    if (pushUAmount != 0)
     {
-        if (membershipWeights[i] == 0.0)
+        pushUAmount = pushUAmount * -.1;
+        for (int i=0;i < numVerts;i++)
         {
-            rWeights.append(0.0);
-            continue;
+            if (membershipWeights[i] == 0.0)
+            {
+                rWeights.append(0.0);
+                continue;
+            }
+            uWeight = remapcurveWeightPlus(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU, pushUAmount, pushUPivot);
+            vWeight = remapcurveWeightPlus(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV, 1.0, 0.0);
+            rWeights.append(uWeight*vWeight);
         }
-        uWeight = remapcurveWeight(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU);
-        vWeight = remapcurveWeight(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV);
-        rWeights.append(uWeight*vWeight);
     }
+    else
+    {
+        for (int i=0;i < numVerts;i++)
+        {
+            if (membershipWeights[i] == 0.0)
+            {
+                rWeights.append(0.0);
+                continue;
+            }
+            uWeight = remapcurveWeight(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU);
+            vWeight = remapcurveWeight(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV);
+            rWeights.append(uWeight*vWeight);
+        }
+    }
+
     return MS::kSuccess;
 }
 
@@ -394,8 +439,9 @@ MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& 
     {
         status = inputsArrayHandle.jumpToElement(i);
         CheckStatusReturn( status, "Unable to jump to input element" );
-
-        status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, finalWeights, numVerts, i);
+        double pushUAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aPushU ).asFloat();
+        double pushUPivot = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aPushUPivot ).asFloat();
+        status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, finalWeights, numVerts, i, pushUAmount, pushUPivot);
         CheckStatusReturn( status, "Unable to get Anim Curves" );
         finalWeightsArray.push_back(finalWeights);
 
@@ -470,6 +516,7 @@ MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
         if ( (inPlug.attribute() != aInputs)
         & (inPlug.attribute() != aAnimCurveU)
         & (inPlug.attribute() != aAnimCurveV)
+        & (inPlug.attribute() != aPushU)
         & (inPlug.attribute() != aMembershipWeights)
         & (inPlug.attribute() != aCacheMembershipWeights)
         & (inPlug.attribute() != aProjectionMesh)
