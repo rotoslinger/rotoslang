@@ -16,12 +16,16 @@ import copy
 class Node(object):
     def __init__(self,
                  name,
+                 side=None,
+                 suffix=None,
                  nodeType = None,
                  parent = None,
                  outputAttrs=[],
                  startAtElemIdx=-1,
                  addNewElem=False):
         self.name = name
+        self.side = side # WIP
+        self.suffix = suffix # WIP
         self.nodeType = nodeType
         self.parent = parent
         self.startAtElemIdx = startAtElemIdx
@@ -82,6 +86,8 @@ class AnimCurveWeight(Node):
                  autoCreateName = "lip",
                  autoCreateNum = 11,
                  autoCreateTimeRange = 20.0,
+                 createSingleFalloff = True,
+                 singleFalloffName = "", # if you are not auto creating you need to give the single falloff name
                  addFalloff = True,
                  startElem = 0,
                  offset=.15, centerWeight = .35, outerWeight = .3, angle = 30, nudge = 1.0, intermediateVal = .2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=30, lastIntermediateAngle=0,
@@ -124,6 +130,9 @@ class AnimCurveWeight(Node):
         self.lastIntermediateVal = lastIntermediateVal
         self.intermediateAngle = intermediateAngle
         self.lastIntermediateAngle = lastIntermediateAngle
+        self.createSingleFalloff = createSingleFalloff
+        self.singleFalloffName = singleFalloffName
+
 
         # These attributes will be filled with the latest created plugs, if you want a list of all the plugs check the kDoubleArrayOutputPlugs
         self.newKDoubleArrayOutputPlugs = []
@@ -168,14 +177,20 @@ class AnimCurveWeight(Node):
                                                                                       lastAngle=self.lastAngle,
                                                                                       lastIntermediateVal=self.lastIntermediateVal,
                                                                                       intermediateAngle=self.intermediateAngle,
-                                                                                      lastIntermediateAngle=self.lastIntermediateAngle)
+                                                                                      lastIntermediateAngle=self.lastIntermediateAngle,
+                                                                                      createSingleFalloff=self.createSingleFalloff,
+                                                                                      singleFalloffName = self.singleFalloffName)
             return
         
         self.weightCurves = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
+
+        if self.createSingleFalloff and self.singleFalloffName:
+            self.weightNamesFalloff = [self.singleFalloffName + "_ACV" for x in range(self.weightNamesFalloff)]
+
         self.weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
         initUKeyframes(self.weightCurves)
-        initVKeyframes(self.weightCurvesFalloff)
+        initVKeyframesLinear(self.weightCurvesFalloff)
 
     def inputConnections(self):
         cmds.connectAttr(self.membershipWeights, "{0}.membershipWeights".format(self.node), f=True)
@@ -486,14 +501,14 @@ def nameBasedOnRange(count, name, suffixSeperator="_", suffix="", ):
     return retNames
 
 def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV", offset=.15, centerWeight = .35, outerWeight = .3, angle = 50, nudge = 0,
-                                intermediateVal=.2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=0, lastIntermediateAngle=0):
+                                intermediateVal=.2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=0, lastIntermediateAngle=0, createSingleFalloff=True, singleFalloffName="Single"):
     keyframes = []
     falloffKeyframes = []
     ratio = timeRange/num
     midpoint = num/2
     for idx in range(num):
-        print idx, "IDX !!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        print num, "NUUUUUUUUM"
+        # print idx, "IDX !!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        # print num, "NUUUUUUUUM"
         count = idx
         side = "L"
         formatName = "{0}_{1}{2:02}_{3}"
@@ -502,18 +517,23 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
             side = "C"
             count = ""
             formatName = "{0}_{1}{2}_{3}"
-        formatNameFalloff = "{0}_{1}Falloff{2}_{3}"
+            formatNameFalloff = "{0}_{1}Falloff{2}_{3}"
         if idx > midpoint:
             side = "R"
             count = num -1 - idx
-
         weightCurve = getNodeAgnostic(nodeType="animCurveTU", name=formatName.format(side, name, count, suffix), parent=None)
         try:
             cmds.cutKey(weightCurve, cl=True, option="keys")
         except:
             pass
         keyframes.append(weightCurve)
-        falloffKeyframes.append(getNodeAgnostic(nodeType="animCurveTU", name=formatNameFalloff.format(side, name, count, suffix), parent=None))
+        # Falloff V curve
+        falloffName = formatNameFalloff.format(side, name, count, suffix)
+        if not singleFalloffName:
+            singleFalloffName = name
+        if createSingleFalloff:
+            falloffName = "{0}Falloff_{1}".format(singleFalloffName, suffix)
+        falloffKeyframes.append(getNodeAgnostic(nodeType="animCurveTU", name=falloffName, parent=None))
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
         for key in range(3):
             fIdx = float(idx)
@@ -664,7 +684,7 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
 
     cmds.select(keyframes)
 
-    initVKeyframes(falloffKeyframes)
+    initVKeyframesLinear(falloffKeyframes)
     return keyframes, falloffKeyframes
         # weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
@@ -707,6 +727,21 @@ def initVKeyframes(animCurves):
             cmds.setKeyframe(animCurve, v=1, breakdown=0,
                                 hierarchy="none", controlPoints=2,
                                 shape=0, time=10)
+
+def initVKeyframesLinear(animCurves):
+    for animCurve in animCurves:
+        oCurve = misc.getOMAnimCurve(animCurve)
+        if not oCurve.numKeys():
+            cmds.setKeyframe(animCurve, v=0, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=-10, itt="linear")
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=9.7, itt="linear")
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=10, itt="linear")
+
 
 def checkOutputWeightType(outputAttrToCheck):
     testAttr = outputAttrToCheck

@@ -349,23 +349,23 @@ MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandl
 
     if (rWeights.length())
         rWeights.clear();
-    if (falloffUAmount != 0)
-    {
-        falloffUAmount = (falloffUAmount * -1)+1;
-        for (int i=0;i < numVerts;i++)
-        {
-            if (membershipWeights[i] == 0.0)
-            {
-                rWeights.append(0.0);
-                continue;
-            }
-            uWeight = remapcurveWeightPlus(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU, falloffUAmount, falloffUPivot);
-            vWeight = remapcurveWeightPlus(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV, 1.0, 0.0);
-            rWeights.append(uWeight*vWeight);
-        }
-    }
-    else
-    {
+    // if (falloffUAmount != 1)
+    // {
+    //     falloffUAmount = (falloffUAmount * -1)+1;
+    //     for (int i=0;i < numVerts;i++)
+    //     {
+    //         if (membershipWeights[i] == 0.0)
+    //         {
+    //             rWeights.append(0.0);
+    //             continue;
+    //         }
+    //         uWeight = remapcurveWeightPlus(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU, falloffUAmount, falloffUPivot);
+    //         vWeight = remapcurveWeightPlus(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV, 1.0-1.0, 0.0);
+    //         rWeights.append(uWeight*vWeight);
+    //     }
+    // }
+    // else
+    // {
         for (int i=0;i < numVerts;i++)
         {
             if (membershipWeights[i] == 0.0)
@@ -377,7 +377,7 @@ MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandl
             vWeight = remapcurveWeight(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV);
             rWeights.append(uWeight*vWeight);
         }
-    }
+    // }
 
     return MS::kSuccess;
 }
