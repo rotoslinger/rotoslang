@@ -2412,8 +2412,8 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
         name = "C_test_GCS"
     
     offsetTransform = getSetMaintainOffset(offsetBuffer, None, maintainOffsetT, maintainOffsetR, maintainOffsetS)
-
     constraint = cmds.createNode("LHGeometryConstraint", n=name)
+    print "CONSTRAINT", constraint
     int_array, closest_point, pointA, pointB, pointC = getClosestPolygonToTransform(driverMesh, driven)
     pointIdAttrs = ["a", "b", "c", "d"]
     # just in case we get back an ngon, set a hard range....
@@ -2429,6 +2429,8 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     
     cmds.connectAttr(driverMesh + ".worldMesh", constraint + ".inMesh" )
     decompose = cmds.createNode("decomposeMatrix", n = name + "_DCP")
+    print "decomposeMatrix ", decompose
+    
     cmds.connectAttr(constraint + ".outputMatrix", decompose + ".inputMatrix")
 
     if translate:
@@ -2565,3 +2567,14 @@ def constrainMeshToClosestJoint(selections=None):
     for driven, driver in geomConstDict.items():
         cmds.parentConstraint(driver, driven, mo=True)
         cmds.scaleConstraint(driver, driven, mo=True)
+
+def getSide(name):
+    return name.split("_")[0]
+
+def getName(name):
+    return name.split("_")[1]
+
+def getNameSide(stringCharacters):
+    retSide = stringCharacters.split("_")[0]
+    retName = stringCharacters.split("_")[1]
+    return retSide, retName

@@ -10,6 +10,12 @@ import elements
 
 class component(base.component):
     def __init__(self,
+                # inherited args
+                #  side="C",
+                #  name="component",
+                #  suffix="CPT",
+                #  parent=None,
+
                  speedTxDefault=.1,
                  speedTyDefault=.1,
                  speedTzDefault=.1,
@@ -35,6 +41,8 @@ class component(base.component):
                  normalConstraintPatch=None,
                  selection=False,
                  mirror=False,
+                 size = .5,
+                 offset = [0,0,1],
 
                  **kw):
 
@@ -62,6 +70,8 @@ class component(base.component):
         self.szConnectionAttr = szConnectionAttr
         self.normalConstraintPatch = normalConstraintPatch
         self.mirror = mirror
+        self.size = size
+        self.offset = offset
 
         if not self.translate and not self.rotate and not self.scale and selection:
             sel = cmds.ls(sl=True)[0]
@@ -71,6 +81,7 @@ class component(base.component):
 
 
         super(component, self).__init__(**kw)
+        self.suffix="MRC"
 
     def createHelperGeo(self):
         return
@@ -84,13 +95,13 @@ class component(base.component):
                                     parent=self.locator,
                                     shape="sphere",
                                     orient=[180, 90, 0],
-                                    offset=[0, 0, 1],
+                                    offset=self.offset,
                                     scale=[1, 1, 1],
                                     num_buffer=2,
-                                    lock_attrs=["sx", "sy", "sz"],
+                                    # lock_attrs=["sx", "sy", "sz"],
                                     # lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
                                     gimbal=True,
-                                    size=.5,
+                                    size=self.size,
                                     nullTransform = True)
         self.buffer1 = self.ctrl.buffers[1]
         self.buffer2 = self.ctrl.buffers[0]

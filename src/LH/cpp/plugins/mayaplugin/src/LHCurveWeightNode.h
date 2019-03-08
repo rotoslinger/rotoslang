@@ -45,7 +45,7 @@ class LHCurveWeightNode : public MPxNode
     MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
 
     virtual MStatus getWeightsFromInputs(MDataBlock &data, MDoubleArray &finalWeights, std::vector<MDoubleArray>& finalWeightsArray);
-    virtual MStatus getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray &rWeights, int numVerts, int currentElem, double pushUAmount, double pushUPivot);
+    virtual MStatus getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray &rWeights, int numVerts, int currentElem, double falloffUAmount, double falloffUPivot);
 
     virtual MStatus computeDoubleArray(MDataBlock &data);
     virtual MStatus computeFloatArray(MDataBlock &data);
@@ -75,8 +75,8 @@ class LHCurveWeightNode : public MPxNode
     static MObject aOutWeights;
     static MObject aAnimCurveU;
     static MObject aAnimCurveV;
-    static MObject aPushU;
-    static MObject aPushUPivot;
+    static MObject aFalloffU;
+    static MObject aFalloffUPivot;
 
 
 

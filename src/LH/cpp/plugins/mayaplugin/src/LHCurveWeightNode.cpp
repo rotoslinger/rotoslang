@@ -48,8 +48,8 @@ MObject LHCurveWeightNode::aOutputWeightsFloatArray;
 MObject LHCurveWeightNode::aOutWeights;
 MObject LHCurveWeightNode::aAnimCurveU;
 MObject LHCurveWeightNode::aAnimCurveV;
-MObject LHCurveWeightNode::aPushU;
-MObject LHCurveWeightNode::aPushUPivot;
+MObject LHCurveWeightNode::aFalloffU;
+MObject LHCurveWeightNode::aFalloffUPivot;
     
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
@@ -80,11 +80,11 @@ MStatus LHCurveWeightNode::initialize()
     aAnimCurveV = nAttr.create("AnimCurveV", "acv", MFnNumericData::kFloat);
     nAttr.setKeyable(true);
 
-    aPushU = nAttr.create("pushU", "pushu", MFnNumericData::kFloat);
+    aFalloffU = nAttr.create("falloffU", "falloffu", MFnNumericData::kFloat);
     nAttr.setDefault(1);
     nAttr.setKeyable(true);
 
-    aPushUPivot = nAttr.create("pushUPivot", "pushupivot", MFnNumericData::kFloat);
+    aFalloffUPivot = nAttr.create("falloffUPivot", "falloffupivot", MFnNumericData::kFloat);
     nAttr.setDefault(0.0);
     nAttr.setKeyable(true);
 
@@ -94,8 +94,8 @@ MStatus LHCurveWeightNode::initialize()
     cAttr.setArray(true);
     cAttr.addChild( aAnimCurveU );
     cAttr.addChild( aAnimCurveV );
-    cAttr.addChild( aPushU );
-    cAttr.addChild( aPushUPivot );
+    cAttr.addChild( aFalloffU );
+    cAttr.addChild( aFalloffUPivot );
     cAttr.setReadable(true);
     cAttr.setWritable(true);
     cAttr.setConnectable(true);
@@ -308,9 +308,9 @@ double remapcurveWeight(MFnAnimCurve *fnAnimCurve, double coord, float timeOffse
     return fnAnimCurve->evaluate(remapTime);
 }
 
-double remapcurveWeightPlus(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength, double pushUAmount, double center) 
+double remapcurveWeightPlus(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength, double falloffUAmount, double center) 
 {
-    coord = coord + (coord-center) * pushUAmount;
+    coord = coord + (coord-center) * falloffUAmount;
     double remap = coord * timeLength;
     remap = remap - timeOffset;
     MTime remapTime(remap);
@@ -330,7 +330,7 @@ MStatus LHCurveWeightNode::getAnimCurvePlug(int currentElem, MPlug& rPCurve, MOb
 }
 
 MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray& rWeights, int numVerts, int currentElem,
-                                               double pushUAmount, double pushUPivot)
+                                               double falloffUAmount, double falloffUPivot)
 {
     MPlug pAnimCurveU;
     status = LHCurveWeightNode::getAnimCurvePlug(currentElem, pAnimCurveU, aAnimCurveU);
@@ -349,9 +349,9 @@ MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandl
 
     if (rWeights.length())
         rWeights.clear();
-    if (pushUAmount != 0)
+    if (falloffUAmount != 0)
     {
-        pushUAmount = pushUAmount * -.1;
+        falloffUAmount = (falloffUAmount * -1)+1;
         for (int i=0;i < numVerts;i++)
         {
             if (membershipWeights[i] == 0.0)
@@ -359,7 +359,7 @@ MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandl
                 rWeights.append(0.0);
                 continue;
             }
-            uWeight = remapcurveWeightPlus(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU, pushUAmount, pushUPivot);
+            uWeight = remapcurveWeightPlus(fnAnimCurveU, uCoords[i], timeOffsetU, timeLengthU, falloffUAmount, falloffUPivot);
             vWeight = remapcurveWeightPlus(fnAnimCurveV, vCoords[i], timeOffsetV, timeLengthV, 1.0, 0.0);
             rWeights.append(uWeight*vWeight);
         }
@@ -439,9 +439,9 @@ MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& 
     {
         status = inputsArrayHandle.jumpToElement(i);
         CheckStatusReturn( status, "Unable to jump to input element" );
-        double pushUAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aPushU ).asFloat();
-        double pushUPivot = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aPushUPivot ).asFloat();
-        status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, finalWeights, numVerts, i, pushUAmount, pushUPivot);
+        double falloffUAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFalloffU ).asFloat();
+        double falloffUPivot = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFalloffUPivot ).asFloat();
+        status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, finalWeights, numVerts, i, falloffUAmount, falloffUPivot);
         CheckStatusReturn( status, "Unable to get Anim Curves" );
         finalWeightsArray.push_back(finalWeights);
 
@@ -516,7 +516,7 @@ MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
         if ( (inPlug.attribute() != aInputs)
         & (inPlug.attribute() != aAnimCurveU)
         & (inPlug.attribute() != aAnimCurveV)
-        & (inPlug.attribute() != aPushU)
+        & (inPlug.attribute() != aFalloffU)
         & (inPlug.attribute() != aMembershipWeights)
         & (inPlug.attribute() != aCacheMembershipWeights)
         & (inPlug.attribute() != aProjectionMesh)
