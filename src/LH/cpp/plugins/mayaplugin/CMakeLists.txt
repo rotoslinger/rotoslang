@@ -74,6 +74,8 @@ set(source_files
 	"src/LHSlideSimple.h"
 	"src/LHNakedLocator.cpp"
 	"src/LHNakedLocator.h"
+	"src/LHMatrixDeformer.cpp"
+	"src/LHMatrixDeformer.h"
 
 )
 #message("SOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" ${COLLISION_PLUGINS})

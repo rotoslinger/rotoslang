@@ -56,6 +56,8 @@ set(SOURCE_FILES
 	"LHSlideSimple.cpp"
 	"LHNakedLocator.cpp"
 	"LHNakedLocator.h"
+	"LHMatrixDeformer.cpp"
+	"LHMatrixDeformer.h"
 
 
 )

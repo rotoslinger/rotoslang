@@ -1,5 +1,6 @@
 #ifndef LHMULTICLUSTERTHREADED_H
 #define LHMULTICLUSTERTHREADED_H
+#include "threadingStructs.h"
 
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
@@ -56,23 +57,23 @@ struct ThreadData
 
 };
 
-struct TaskData
-{
-	float env;
-	MMatrixArray matrixArray;
-	MPointArray allPoints;
-	MPointArray finalPoints;
-	MPoint pt;
-	MIntArray finalIndexArray;
-	MPointArray finalPointArray;
-	unsigned int nPlugs;
-	// I could pass the thread data struct in here, but I am trying to make this as simple as possible
-	// For learning purposes...
-	int start;
-	int end;
-	int numTasks = 10;
-	int currThreadNum;
-};
+// struct TaskData
+// {
+// 	float env;
+// 	MMatrixArray matrixArray;
+// 	MPointArray allPoints;
+// 	MPointArray finalPoints;
+// 	MPoint pt;
+// 	MIntArray finalIndexArray;
+// 	MPointArray finalPointArray;
+// 	unsigned int nPlugs;
+// 	// I could pass the thread data struct in here, but I am trying to make this as simple as possible
+// 	// For learning purposes...
+// 	int start;
+// 	int end;
+// 	int numTasks = 10;
+// 	int currThreadNum;
+// };
 
 
 

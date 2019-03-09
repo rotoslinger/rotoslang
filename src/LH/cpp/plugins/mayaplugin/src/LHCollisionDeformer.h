@@ -43,11 +43,11 @@
 // #include "tbb/blocked_range.h"
 
 
-struct ThreadData
-{
-	int numTasks;
-	int currThreadNum;
-};
+// struct ThreadData
+// {
+// 	int numTasks;
+// 	int currThreadNum;
+// };
 
 
 
@@ -78,38 +78,38 @@ struct CapsuleData
 };
 
 
-struct matrixSpaceTaskData
-{
-	MMatrix wSpaceMatrix;
-	MIntArray finalIndexArray;
-	MPointArray finalPoints;
-	MPointArray finalPointArray;
-    MPointArray allPoints;
-    ThreadData threadData;
-};
+// struct matrixSpaceTaskData
+// {
+// 	MMatrix wSpaceMatrix;
+// 	MIntArray finalIndexArray;
+// 	MPointArray finalPoints;
+// 	MPointArray finalPointArray;
+//     MPointArray allPoints;
+//     ThreadData threadData;
+// };
 
-struct bulgeTaskData
-{
-    MObjectArray oColMeshArray;
-    unsigned int colMeshIndex;
-    unsigned int numPoints;
-    MIntArray hitArray;
-    MIntArray flipRayArray;
-    MPointArray allPoints;
-    MVectorArray vertexNormalArray;
-    double maxDisp;
-    double bulgeDistance;
-    MRampAttribute rInnerFalloffRamp;
-    double bulgeAmount;
-    MPointArray flipPointArray;
-    MRampAttribute rFalloffRamp;
-    MRampAttribute rBlendBulgeCollisionRamp;
-    unsigned int mIndex;
-	int numTasks;
-	int currThreadNum;
-	MPointArray finalPointArray;
-	MIntArray finalIndexArray;
-};
+// struct bulgeTaskData
+// {
+//     MObjectArray oColMeshArray;
+//     unsigned int colMeshIndex;
+//     unsigned int numPoints;
+//     MIntArray hitArray;
+//     MIntArray flipRayArray;
+//     MPointArray allPoints;
+//     MVectorArray vertexNormalArray;
+//     double maxDisp;
+//     double bulgeDistance;
+//     MRampAttribute rInnerFalloffRamp;
+//     double bulgeAmount;
+//     MPointArray flipPointArray;
+//     MRampAttribute rFalloffRamp;
+//     MRampAttribute rBlendBulgeCollisionRamp;
+//     unsigned int mIndex;
+// 	int numTasks;
+// 	int currThreadNum;
+// 	MPointArray finalPointArray;
+// 	MIntArray finalIndexArray;
+// };
 
 class LHCollisionDeformer : public MPxDeformerNode {
     public:

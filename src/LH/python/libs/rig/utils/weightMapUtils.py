@@ -1,4 +1,5 @@
 from maya import cmds
+from rig.utils import misc
 
 # for testing purposes AA will put the test map at the top of the connections if they are listed alphabetically
 PREFIX = "AA"
@@ -16,6 +17,21 @@ def getCleanShape(mayaObject=None):
         mayaObject = [mayaObject]
     return mayaObject
 
+def createWeightMapOnSingleObject(mayaObject=None,
+                            weightName=PREFIX+"WeightMap",
+                            dataType="doubleArray",
+                            defaultValue=1.0, addAttr=True,
+                            makePaintable=True):
+    mayaObject = misc.getShape(mayaObject)
+    print "MAYA OBJECT", mayaObject
+    if addAttr:
+        cmds.addAttr(mayaObject, ln=weightName, dataType=dataType)
+        print "setting Default weights !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        setDefaultWeights(mayaObject, weightName, dataType=dataType, defaultValue=defaultValue)
+    if makePaintable:
+        cmds.makePaintable("mesh", weightName)
+    returnAttrs = mayaObject + "." + weightName
+    return returnAttrs
 
 def createWeightMapOnObject(mayaObject=None,
                             weightName=PREFIX+"WeightMap",

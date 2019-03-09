@@ -29,6 +29,7 @@
 #include "LHMultiWrap.h"
 #include "LHSlideSimple.h"
 #include "LHNakedLocator.h"
+#include "LHMatrixDeformer.h"
 
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
@@ -73,6 +74,10 @@ MStatus initializePlugin(MObject obj) {
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
 
+ status = plugin.registerNode( "LHMatrixDeformer", LHMatrixDeformer::id, LHMatrixDeformer::creator,
+		  LHMatrixDeformer::initialize, MPxNode::kDeformerNode );
+
+ CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode(
             "identity" ,
@@ -227,6 +232,9 @@ MStatus uninitializePlugin(MObject obj) {
 //
 //  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+ status = plugin.deregisterNode(LHMatrixDeformer::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHWeightNodeFloat::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);
