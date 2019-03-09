@@ -1,16 +1,17 @@
-from maya import cmds, OpenMaya
-import maya.api.OpenMaya as OpenMaya2
-
-
+from maya import cmds
 from rig.utils import weightMapUtils, misc
+
+# from deformers.utils import deformerUtils.getPointPositionByWeights, deformerUtils.nameBasedOnRange, deformerUtils.createNormalizedAnimWeights, \
+#     deformerUtils.getNodeAgnosticMultiple, deformerUtils.initUKeyframes, deformerUtils.initVKeyframesLinear, deformerUtils.checkOutputWeightType, deformerUtils.availableElemCheck, deformerUtils.attrCheck
+
+from deformers import utils as deformerUtils
+
+reload(deformerUtils)
 reload(weightMapUtils)
 reload(misc)
 
 from rig.rigComponents import meshRivetCtrl
 reload(meshRivetCtrl)
-
-
-import copy
 
 
 class Node(object):
@@ -41,7 +42,7 @@ class Node(object):
 
     def elemCheck(self, multiAttrToCheck):
         if self.startAtElemIdx == -1 and self.addNewElem:
-            self.startElem = availableElemCheck(multiAttrToCheck)
+            self.startElem = deformerUtils.availableElemCheck(multiAttrToCheck)
         elif self.startAtElemIdx == -1 and not self.addNewElem:
             self.startElem = 0
         elif self.startAtElemIdx > -1:
@@ -150,27 +151,27 @@ class AnimCurveWeight(Node):
             quit()
 
     def getAttrs(self):
-        self.membershipWeights = attrCheck(node=self.baseGeo,
-                                            attrs=["membershipWeights"],
-                                            attrType=None,
-                                            weightmap=True)[0]
+        self.membershipWeights = deformerUtils.attrCheck(node=self.baseGeo,
+                                           attrs=["membershipWeights"],
+                                           attrType=None,
+                                           weightmap=True)[0]
         if self.autoCreateAnimCurves:
-            self.factorAttrNames = nameBasedOnRange(count=self.autoCreateNum, name="falloff", suffixSeperator="")
+            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=self.autoCreateNum, name="falloff", suffixSeperator="")
 
             defaultVals = [0.0 for x in range(self.autoCreateNum)]
 
-            self.floatAttrs = attrCheck(node=self.ctrlNode,
-                                            attrs=self.factorAttrNames,
-                                            attrType="float",
-                                            defaultVals = defaultVals,
-                                            k=True)
+            self.floatAttrs = deformerUtils.attrCheck(node=self.ctrlNode,
+                                        attrs=self.factorAttrNames,
+                                        attrType="float",
+                                        defaultVals = defaultVals,
+                                        k=True)
 
     def getDriverNodes(self):
         self.projectionMesh = misc.getShape(self.projectionGeo)
         self.baseMesh = misc.getShape(self.baseGeo)
 
         if self.autoCreateAnimCurves:
-            self.weightCurves, self.weightCurvesFalloff = createNormalizedAnimWeights(name=self.autoCreateName, num=self.autoCreateNum,
+            self.weightCurves, self.weightCurvesFalloff = deformerUtils.createNormalizedAnimWeights(name=self.autoCreateName, num=self.autoCreateNum,
                                                                                       timeRange=self.autoCreateTimeRange, suffix=self.animCurveSuffix,
                                                                                       offset=self.offset, centerWeight =self.centerWeight, outerWeight = self.outerWeight,
                                                                                       angle = self.angle, nudge=self.nudge, intermediateVal=self.intermediateVal,
@@ -182,15 +183,15 @@ class AnimCurveWeight(Node):
                                                                                       singleFalloffName = self.singleFalloffName)
             return
         
-        self.weightCurves = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
+        self.weightCurves = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
 
         if self.createSingleFalloff and self.singleFalloffName:
             self.weightNamesFalloff = [self.singleFalloffName + "_ACV" for x in range(self.weightNamesFalloff)]
 
-        self.weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
+        self.weightCurvesFalloff = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
-        initUKeyframes(self.weightCurves)
-        initVKeyframesLinear(self.weightCurvesFalloff)
+        deformerUtils.initUKeyframes(self.weightCurves)
+        deformerUtils.initVKeyframesLinear(self.weightCurvesFalloff)
 
     def inputConnections(self):
         cmds.connectAttr(self.membershipWeights, "{0}.membershipWeights".format(self.node), f=True)
@@ -229,7 +230,7 @@ class AnimCurveWeight(Node):
         self.elemCheck("{0}.inputs".format(self.node))
         for idx, attr in enumerate(self.outputAttrs):
             elemIdx = idx + self.startElem
-            attrType = checkOutputWeightType(attr)
+            attrType = deformerUtils.checkOutputWeightType(attr)
             weightAttr = ""
             if attrType:
                 # If True, then this output attribute will get the kDoubleArray Output
@@ -266,7 +267,7 @@ class AnimCurveWeight(Node):
         self.closestV = []
         for idx in range(numElements):
             weightList = cmds.getAttr("{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.node, idx))
-            height, width, depth, center = getPointPositionByWeights(weightList, self.baseMesh)
+            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.baseMesh)
             u, v = misc.getClosestUVOnMesh(pointX=center.x, pointY=center.y, pointZ=center.z,  mesh=self.projectionMesh)
             self.closestU.append(u)
             self.closestV.append(v)
@@ -345,6 +346,7 @@ class WeightStack(Node):
         self.falloffCurveWeightNode = falloffCurveWeightNode            
         self.falloffElemStart = falloffElemStart            
         self.controls = []
+        self.positionsFromWeights = []
     def check(self):
         if self.autoCreate:
             return
@@ -366,13 +368,13 @@ class WeightStack(Node):
         self.weightMapAttrs = []
         if self.autoCreate:
             self.weightMapAttrs = self.weightMapAttrNames
-            self.factorAttrNames = nameBasedOnRange(count=len(self.weightMapAttrNames), name=self.autoCreateName, suffixSeperator="")
+            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=len(self.weightMapAttrNames), name=self.autoCreateName, suffixSeperator="")
             self.operationVals = [self.autoCreateOperationVal for x in range(len(self.weightMapAttrNames))]
         if not self.weightMapAttrs:
-            self.weightMapAttrs = attrCheck(node=self.geoToWeight,
-                                                attrs=self.weightMapAttrNames,
-                                                attrType=None,
-                                                weightmap=True)
+            self.weightMapAttrs = deformerUtils.attrCheck(node=self.geoToWeight,
+                                            attrs=self.weightMapAttrNames,
+                                            attrType=None,
+                                            weightmap=True)
 
         # Add UD LR functionality
         if self.UDLR:
@@ -380,19 +382,20 @@ class WeightStack(Node):
             self.factorAttrNamesLR = ["{0}_LR".format(x) for x in self.factorAttrNames]
             self.factorAttrNames = UDNames
             # Create the extra LR attrs here
-            self.floatAttrs_LR = attrCheck(node=self.ctrlNode,
-                                            attrs=self.factorAttrNamesLR,
-                                            attrType="float",
-                                            k=True)
+            self.floatAttrs_LR = deformerUtils.attrCheck(node=self.ctrlNode,
+                                           attrs=self.factorAttrNamesLR,
+                                           attrType="float",
+                                           k=True)
 
         # These are the primary attributes created by the user specified names
-        self.floatAttrs = attrCheck(node=self.ctrlNode,
-                                         attrs=self.factorAttrNames,
-                                         attrType="float",
-                                         k=True)
+        self.floatAttrs = deformerUtils.attrCheck(node=self.ctrlNode,
+                                    attrs=self.factorAttrNames,
+                                    attrType="float",
+                                    k=True)
     
     def inputConnections(self):
         self.elemCheck("{0}.inputs".format(self.node))
+        self.positionsFromWeights = []
         for idx in range(len(self.weightMapAttrs)):
             elemIdx = idx + self.startElem
             cmds.connectAttr(self.weightMapAttrs[idx], "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx), f=True)
@@ -410,7 +413,8 @@ class WeightStack(Node):
                     txConnect = "{0}.inputs[{1}].factor".format(self.node_LR, elemIdx)
                 weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
                 weightList = cmds.getAttr(weightList)
-                height, width, depth, center = getPointPositionByWeights(weightList, "deformMesh")
+                height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, "deformMesh")
+                self.positionsFromWeights.append([center.x, center.y, center.z])
                 side, name = misc.getNameSide(self.factorAttrNames[idx])
                 if cmds.objExists("{0}_{1}_MRC".format(side, name)):
                     continue
@@ -451,12 +455,23 @@ class WeightStack(Node):
                 if tmpCtrl.ctrl not in self.controls:
                     self.controls.append(tmpCtrl.ctrl)
 
+    def getPositionsFromWeights(self):
+        self.elemCheck("{0}.inputs".format(self.node))
+        positionsFromWeights = []
+        for idx in range(len(self.weightMapAttrs)):
+            elemIdx = idx + self.startElem
+            weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
+            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, "deformMesh")
+            positionsFromWeights.append([center.x, center.y, center.z])
+        return positionsFromWeights
+
+
     def outputConnections(self):
         # Checks if the output type is kDoubleArray or a multiFloat (maya native deformer weights type)
         if not self.outputAttrs:
             return
         for idx, attr in enumerate(self.outputAttrs):
-            attrType = checkOutputWeightType(attr)
+            attrType = deformerUtils.checkOutputWeightType(attr)
             if attrType:
                 # If True, then this output attribute will get the kDoubleArray Output
                 cmds.connectAttr("{0}.outWeightsDoubleArray".format(self.node), attr, f=True)
@@ -467,365 +482,6 @@ class WeightStack(Node):
                 cmds.connectAttr("{0}.outWeightsFloatArray[0]".format(self.node), attr, f=True)
                 if self.UDLR:
                     cmds.connectAttr("{0}.outWeightsFloatArray[0]".format(self.node_LR), self.outputAttrs_LR[idx], f=True)
-
-def getPointPositionByWeights(weightList, mesh, threshold = .9):
-    fnMesh = misc.getOMMesh(mesh)
-    meshDag = misc.getDag(mesh)
-    allPoints = OpenMaya.MPointArray()
-    fnMesh.getPoints(allPoints)
-    bBox = OpenMaya.MBoundingBox()
-    for idx in range(len(weightList)):
-        if weightList[idx] >= threshold:
-            bBox.expand(allPoints[idx])
-    return bBox.height(), bBox.width(), bBox.depth(), bBox.center()
-
-
-def nameBasedOnRange(count, name, suffixSeperator="_", suffix="", ):
-    retNames = []
-    midpoint = count/2
-    for idx in range(count):
-        current = idx
-        side = "L"
-        formatName = "{0}_{1}{2:02}{3}{4}"
-        if idx == midpoint:
-            side = "C"
-            current = ""
-            formatName = "{0}_{1}{2}{3}{4}"
-        if idx > midpoint:
-            side = "R"
-            current = count -1 - idx
-        # finalName = formatName.format(side, name, current, suffixSeperator, suffix)
-        # if suffix is "None":
-        #     finalName = finalName.replace("_None", "")
-        retNames.append(formatName.format(side, name, current, suffixSeperator, suffix))
-    return retNames
-
-def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV", offset=.15, centerWeight = .35, outerWeight = .3, angle = 50, nudge = 0,
-                                intermediateVal=.2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=0, lastIntermediateAngle=0, createSingleFalloff=True, singleFalloffName="Single"):
-    keyframes = []
-    falloffKeyframes = []
-    ratio = timeRange/num
-    midpoint = num/2
-    for idx in range(num):
-        # print idx, "IDX !!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        # print num, "NUUUUUUUUM"
-        count = idx
-        side = "L"
-        formatName = "{0}_{1}{2:02}_{3}"
-        formatNameFalloff = "{0}_{1}Falloff{2:02}_{3}"
-        if idx == midpoint:
-            side = "C"
-            count = ""
-            formatName = "{0}_{1}{2}_{3}"
-            formatNameFalloff = "{0}_{1}Falloff{2}_{3}"
-        if idx > midpoint:
-            side = "R"
-            count = num -1 - idx
-        weightCurve = getNodeAgnostic(nodeType="animCurveTU", name=formatName.format(side, name, count, suffix), parent=None)
-        try:
-            cmds.cutKey(weightCurve, cl=True, option="keys")
-        except:
-            pass
-        keyframes.append(weightCurve)
-        # Falloff V curve
-        falloffName = formatNameFalloff.format(side, name, count, suffix)
-        if not singleFalloffName:
-            singleFalloffName = name
-        if createSingleFalloff:
-            falloffName = "{0}Falloff_{1}".format(singleFalloffName, suffix)
-        falloffKeyframes.append(getNodeAgnostic(nodeType="animCurveTU", name=falloffName, parent=None))
-        # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
-        for key in range(3):
-            fIdx = float(idx)
-            val=1.0
-            itt = "spline"
-            ott = "spline"
-
-            currLeftIntermediateVal = intermediateVal
-            currRightIntermediateVal = intermediateVal
-
-            currentLeftAngle = angle
-            currentLeftIntermediateAngle = intermediateAngle
-            currentRightAngle = -angle
-            currentRightIntermediateAngle = -intermediateAngle
-
-            if idx == 0:
-                currentLeftAngle = lastAngle
-                currentRightAngle = -angle
-                currentLeftIntermediateAngle = lastIntermediateAngle
-                currentRightIntermediateAngle = -intermediateAngle
-                currLeftIntermediateVal = lastIntermediateVal
-                currRightIntermediateVal = intermediateVal
-
-
-
-            if idx == num-1:
-                currentLeftAngle = angle
-                currentRightAngle = -lastAngle
-                currentLeftIntermediateAngle = intermediateAngle
-                currentRightIntermediateAngle = -lastIntermediateAngle
-                currLeftIntermediateVal = intermediateVal
-                currRightIntermediateVal = lastIntermediateVal
-
-
-
-
-            time=fIdx+key
-            if key == 0:
-                itt = "linear"
-                ott = "slow"
-                val=0.0
-                time=fIdx+key + offset
-                time=time+nudge
-            # if key == 1:
-            #     itt = "spline"
-            #     ott = "spline"
-            #     val=currLeftIntermediateVal
-            #     time=fIdx+key + offset
-            #     time=time+nudge
-                
-            # if key == 3:
-            #     itt = "spline"
-            #     ott = "spline"
-            #     val=currRightIntermediateVal
-            #     time=fIdx+key - offset
-            #     time=time-nudge
-
-
-            if key == 2:
-                itt = "fast"
-                ott = "linear"
-                val=0.0 
-                time=fIdx+key - offset
-                time=time-nudge
-
-
-            # inTangentType(itt)	string	create
-            # The in tangent type for keyframes set by this command. Valid values are "spline," "linear," "fast," "slow," "flat," "step," and "clamped." Default is "keyTangent -q -g -inTangentType"
-            # outTangentType(ott)	string	create
-            # The out tangent type for keyframes set by this command. Valid values are "spline," "linear," "fast," "slow," "flat," "step," and "clamped." Default is "keyTangent -q -g -outTangentType"
-            cmds.setKeyframe(weightCurve, v=val, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=time, itt=itt, ott=ott)
-            # cmds.keyTangent( weightCurve, edit=True, time=(idx+key,idx+key), absolute=True, outAngle=100, outWeight=5,wl=False, weightedTangents=False)
-            # cmds.keyTangent( weightCurve, edit=True, time=(idx+key,idx+key), absolute=True, outAngle=100, outWeight=5, l=False, weightedTangents=False)
-            # angle = angle
-            time = (time,time)
-
-
-
-            # currentLeftAngle = angle
-            # currentLeftIntermediateAngle = intermediateAngle
-
-            # currentRightAngle = -angle
-            # currentRightIntermediateAngle = -intermediateAngle
-
-            # if idx == 0:
-            #     currentLeftAngle = lastAngle
-            #     currentRightAngle = -angle
-            #     currentLeftIntermediateAngle = lastIntermediateAngle
-            #     currentRightIntermediateAngle = -intermediateAngle
-
-            # if idx == num-1:
-            #     currentLeftAngle = angle
-            #     currentRightAngle = -lastAngle
-            #     currentLeftIntermediateAngle = intermediateAngle
-            #     currentRightIntermediateAngle = -lastIntermediateAngle
-
-
-
-            if key == 0:
-                cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
-                cmds.keyTangent( weightCurve, time=time, edit=True,  lock=False)
-                cmds.keyTangent( weightCurve, time=time, edit=True,  outWeight=outerWeight, inWeight=outerWeight, outAngle=currentLeftAngle,inAngle=0)
-
-            # if key == 1:
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  lock=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True, outAngle=currentLeftIntermediateAngle)
-
-            if key == 1:
-                cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
-                cmds.keyTangent( weightCurve, time=time, edit=True,  outWeight=centerWeight, inWeight=centerWeight, outAngle=0,inAngle=0)
-
-            # if key == 3:
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  lock=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True, outAngle=currentRightIntermediateAngle)
-
-            if key == 2:
-                cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
-                cmds.keyTangent( weightCurve, time=time, edit=True,  lock=False)
-                cmds.keyTangent( weightCurve, time=time, edit=True,  outWeight=outerWeight, inWeight=outerWeight, outAngle=0,inAngle=currentRightAngle)
-    # lastTime = cmds.findKeyframe(keyframes[-1], index=(4,4), time=True)
-    # lastTime = (cmds.keyframe(keyframes[-1], indexValue=True, q=True))[-1]
-
-    flatTime = int(time[0])
-    # scaleAmt = float(timeRange)/(float(time[0])+1.0)
-    scaleAmt = float(timeRange)/float(flatTime)
-    cmds.scaleKey(keyframes, 
-                scaleSpecifiedKeys = False,
-                timeScale = scaleAmt,
-                timePivot = 0.0,
-                floatScale = 1, 
-                floatPivot = 0.0,
-                valueScale = 1,
-                valuePivot = 0)
-
-    # Center at 0
-    for key in keyframes:
-        cmds.keyframe(key, edit=True,relative=True,timeChange=-(timeRange/2),time=(-100,timeRange + 100))
-        cmds.setKeyframe(key, breakdown=0,
-                            hierarchy="none", controlPoints=2,
-                            shape=0, time=-timeRange/2)
-        cmds.setKeyframe(key, breakdown=0,
-                            hierarchy="none", controlPoints=2,
-                            shape=0, time=timeRange/2)
-
-    cmds.select(keyframes)
-
-    initVKeyframesLinear(falloffKeyframes)
-    return keyframes, falloffKeyframes
-        # weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
-        # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
-        # initUKeyframes(weightCurves)
-        # initVKeyframes(weightCurvesFalloff)
-
-def getNodeAgnostic(name, nodeType, parent):
-    if cmds.objExists(name):
-        return name
-    return cmds.createNode(nodeType, n=name, p=parent)
-
-def getNodeAgnosticMultiple(names=[], nodeType=None,  parent=None):
-    retNodes = []
-    for name in names:
-        retNodes.append(getNodeAgnostic(name=name, nodeType=nodeType, parent=parent))
-    return retNodes
-
-
-def initUKeyframes(animCurves):
-    for animCurve in animCurves:
-        oCurve = misc.getOMAnimCurve(animCurve)
-        if not oCurve.numKeys():
-            cmds.setKeyframe(animCurve, v=0, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=-10)
-            cmds.setKeyframe(animCurve, v=1, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=0)
-            cmds.setKeyframe(animCurve, v=0, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=10)
-
-def initVKeyframes(animCurves):
-    for animCurve in animCurves:
-        oCurve = misc.getOMAnimCurve(animCurve)
-        if not oCurve.numKeys():
-            cmds.setKeyframe(animCurve, v=0, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=-10)
-            cmds.setKeyframe(animCurve, v=1, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=10)
-
-def initVKeyframesLinear(animCurves):
-    for animCurve in animCurves:
-        oCurve = misc.getOMAnimCurve(animCurve)
-        if not oCurve.numKeys():
-            cmds.setKeyframe(animCurve, v=0, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=-10, itt="linear")
-            cmds.setKeyframe(animCurve, v=1, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=9.7, itt="linear")
-            cmds.setKeyframe(animCurve, v=1, breakdown=0,
-                                hierarchy="none", controlPoints=2,
-                                shape=0, time=10, itt="linear")
-
-
-def checkOutputWeightType(outputAttrToCheck):
-    testAttr = outputAttrToCheck
-    if "[" in outputAttrToCheck:
-        testAttr = outputAttrToCheck.split("[")[0]
-    node, attr = extractNodeAttr(testAttr)
-    isMulti = cmds.attributeQuery(attr, node=node, multi=True)
-    if isMulti:
-        return False
-    return True
-
-
-def availableElemCheck(multiAttrToCheck):
-    availableInputElem = 0
-    if multiAttrToCheck:
-        allElemsConnected = 0
-        availableInputElem = -1
-        if not cmds.objExists(multiAttrToCheck):
-            return 0
-        numElements = cmds.getAttr(multiAttrToCheck, mi=True)
-        if not numElements:
-            return 0
-        numElements = len(numElements)
-        
-        node, attr = extractNodeAttr(multiAttrToCheck)
-        if not node:
-            return 0
-        for elemIdx in range(numElements):
-            isConnections = False
-            for child in cmds.attributeQuery(attr, node=node, lc=True):
-                connections = cmds.listConnections("{0}[{1}].{2}".format(multiAttrToCheck, elemIdx, child))
-                if connections:
-                    isConnections = True
-            # If none of the children are connected, you know the element is free to be connected to
-            if not isConnections:
-                availableInputElem = elemIdx
-                break
-        if availableInputElem == -1:
-            availableInputElem = numElements
-
-    return availableInputElem
-
-
-def extractNodeAttr(fullAttrName):
-    names = fullAttrName.split(".")
-    node, attr = names[0], names[-1]
-    return node, attr
-
-def attrCheck(node, attrs, attrType=None, enumName=None, k=False, weightmap=False, defaultVals=[]):
-    if not node:
-        return
-    retAttrs = []
-    for idx, attr in enumerate(attrs):
-        dv = 0.0
-        if defaultVals:
-            dv = defaultVals[idx]
-        fullName = node + "." + attr
-        if cmds.objExists(fullName):
-            retAttrs.append(fullName)
-            # update dv
-            if defaultVals:
-                cmds.addAttr(fullName, e=True, dv=dv)
-                cmds.setAttr(fullName, dv)
-            continue
-        if weightmap:
-            weightMapUtils.createWeightMapOnObject(node, attr)
-        else:
-            if attrType == "enum":
-                cmds.addAttr(node, at=attrType, ln=attr, enumName=enumName, k=k, dv=dv)
-            else:
-                cmds.addAttr(node, at=attrType, ln=attr, k=k, dv=dv)
-
-        retAttrs.append(fullName)
-    return retAttrs
-
-
-
-
-
-
-
-
-
-
 
 
 '''
@@ -850,7 +506,7 @@ from rig.deformers import base
 from rig.deformers import weightStack
 reload(weightStack)
 reload(base)
-#weightStack.createNormalizedAnimWeights(name="Lip", num=5, timeRange=20.0, offset=.3)
+#weightStack.deformerUtils.createNormalizedAnimWeights(name="Lip", num=5, timeRange=20.0, offset=.3)
 
 cmds.file( new=True, f=True )
 

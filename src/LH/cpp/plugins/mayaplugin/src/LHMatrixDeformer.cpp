@@ -280,7 +280,10 @@ MStatus LHMatrixDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
 		  pt = itGeo.position();
 		  for (unsigned int i=0;i < nPlugs;i++)
 		  {
-			  pt = pt + (pt - (pt * matrixArray[i] * matrixArrayBase[i].inverse())) * matrixWeights[i][itGeo.index()];
+			// pt = pt + (pt - (pt * matrixArray[i] * matrixArrayBase[i].inverse())) * matrixWeights[i][itGeo.index()];
+			//pt = pt * matrixArray[i] * matrixArrayBase[i].inverse();
+            MPoint deformedPt = pt * (matrixArray[i] * matrixArrayBase[i].inverse());
+			pt = pt + (deformedPt - pt)* matrixWeights[i][itGeo.index()];
 		  }
 		  finalPoints.append(pt);
 	  }
