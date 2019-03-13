@@ -32,7 +32,7 @@ class LHSlideSimple : public MPxDeformerNode {
   virtual MStatus deform(MDataBlock& data, MItGeometry& itGeo,
                          const MMatrix &localToWorldMatrix, unsigned int mIndex);
   virtual MStatus CacheDeformPointMembership(MDataBlock& data);
-  virtual MStatus getWeights(MDataBlock &data, int mIndex, MDoubleArray &rDoubleArray);
+  virtual MStatus getWeights(MDataBlock &data, int mIndex, MDoubleArray &rDoubleArray, MObject weightObject);
   virtual MStatus CacheClosestPoints();
   virtual MStatus CacheBaseRotations();
   virtual MStatus GetAllBaseGeoIter(MDataBlock &data);

@@ -66,6 +66,9 @@ class Node(object):
 
     def outputConnections(self):
         return
+    
+    def createControls(self):
+        return
 
     def create(self):
         self.check()
@@ -74,6 +77,7 @@ class Node(object):
         self.getAttrs()
         self.inputConnections()
         self.outputConnections()
+        self.createControls()
 
 class AnimCurveWeight(Node):
     def __init__(self,
@@ -88,6 +92,7 @@ class AnimCurveWeight(Node):
                  autoCreateNum = 11,
                  autoCreateTimeRange = 20.0,
                  createSingleFalloff = True,
+                 falloffDefaults=(-10, -9, 9, 10),
                  singleFalloffName = "", # if you are not auto creating you need to give the single falloff name
                  addFalloff = True,
                  startElem = 0,
@@ -132,6 +137,7 @@ class AnimCurveWeight(Node):
         self.intermediateAngle = intermediateAngle
         self.lastIntermediateAngle = lastIntermediateAngle
         self.createSingleFalloff = createSingleFalloff
+        self.falloffDefaults = falloffDefaults
         self.singleFalloffName = singleFalloffName
 
 
@@ -180,9 +186,13 @@ class AnimCurveWeight(Node):
                                                                                       intermediateAngle=self.intermediateAngle,
                                                                                       lastIntermediateAngle=self.lastIntermediateAngle,
                                                                                       createSingleFalloff=self.createSingleFalloff,
-                                                                                      singleFalloffName = self.singleFalloffName)
+                                                                                      singleFalloffName = self.singleFalloffName,
+                                                                                      falloffStart=self.falloffDefaults[0],
+                                                                                      falloffStartInner=self.falloffDefaults[1],
+                                                                                      falloffEndInner=self.falloffDefaults[2],
+                                                                                      falloffEnd=self.falloffDefaults[3])
             return
-        
+
         self.weightCurves = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
 
         if self.createSingleFalloff and self.singleFalloffName:
@@ -191,7 +201,7 @@ class AnimCurveWeight(Node):
         self.weightCurvesFalloff = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
         deformerUtils.initUKeyframes(self.weightCurves)
-        deformerUtils.initVKeyframesLinear(self.weightCurvesFalloff)
+        deformerUtils.initVKeyframesLinearWithValues(self.weightCurvesFalloff, inTime=self.falloffDefaults[0], outTime=self.falloffDefaults[1])
 
     def inputConnections(self):
         cmds.connectAttr(self.membershipWeights, "{0}.membershipWeights".format(self.node), f=True)
@@ -302,12 +312,18 @@ class WeightStack(Node):
                  createControl = True,
                  controlSize = .05,
                  controlOffset = [0,0,.1],
+                 controlPositionByWeightsThreshold=.9,
+                 controlPositionOffset=[0,0,0],
+                 controlAutoOrientMesh="",
                  controlRivetMesh = "",
+                 controlRivetAimMesh="",
                  UDLR = True,
+                 isOutputKDoubleArray=False,
                  outputAttrs_LR = [],
                  connectFalloff = True,
                  falloffCurveWeightNode = "",
                  falloffElemStart = 0,
+                 controlSpeedDefaults = [.1,.1,.1],
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -330,6 +346,9 @@ class WeightStack(Node):
         self.createControl = createControl
         self.controlSize = controlSize
         self.controlOffset = controlOffset
+        self.controlPositionByWeightsThreshold = controlPositionByWeightsThreshold
+        self.controlPositionOffset = controlPositionOffset
+        self.controlAutoOrientMesh = controlAutoOrientMesh
         self.UDLR = UDLR
         self.factorAttrNamesLR = []
         self.floatAttrs_LR = []
@@ -341,12 +360,18 @@ class WeightStack(Node):
         self.isKDoubleArrayOutputWeights = True
         self.nodeType = "LHWeightNode"
         self.outputAttrs_LR = outputAttrs_LR
+        self.isOutputKDoubleArray = isOutputKDoubleArray
         self.controlRivetMesh = controlRivetMesh            
+        self.controlRivetAimMesh = controlRivetAimMesh            
         self.connectFalloff = connectFalloff            
         self.falloffCurveWeightNode = falloffCurveWeightNode            
         self.falloffElemStart = falloffElemStart            
+        self.controlSpeedDefaults = controlSpeedDefaults            
         self.controls = []
         self.positionsFromWeights = []
+        self.rotationsFromWeights = []
+
+
     def check(self):
         if self.autoCreate:
             return
@@ -406,54 +431,7 @@ class WeightStack(Node):
                 cmds.connectAttr(self.weightMapAttrs[idx], "{0}.inputs[{1}].inputWeights".format(self.node_LR, elemIdx), f=True)
                 cmds.connectAttr(self.floatAttrs_LR[idx], "{0}.inputs[{1}].factor".format(self.node_LR, elemIdx), f=True)
                 cmds.setAttr("{0}.inputs[{1}].operation".format(self.node_LR, elemIdx), self.operationVals[idx])
-            if self.createControl:
-                txConnect = None
-                if self.UDLR:
-                    # txConnect = self.floatAttrs_LR[idx]
-                    txConnect = "{0}.inputs[{1}].factor".format(self.node_LR, elemIdx)
-                weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
-                weightList = cmds.getAttr(weightList)
-                height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, "deformMesh")
-                self.positionsFromWeights.append([center.x, center.y, center.z])
-                side, name = misc.getNameSide(self.factorAttrNames[idx])
-                if cmds.objExists("{0}_{1}_MRC".format(side, name)):
-                    continue
-                sxConnect = None
-                if self.connectFalloff and self.falloffCurveWeightNode:
-                    sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
 
-                tmpCtrl = meshRivetCtrl.component(name = name,
-                                                    side=side,
-                                                    speedTxDefault=1,
-                                                    speedTyDefault=1,
-                                                    speedTzDefault=1,
-                                                    # curveData=None,
-                                                    mesh = self.controlRivetMesh,
-                                                    translate = [center.x, center.y, center.z],
-                                                    # rotate = None,
-                                                    # scale = None,
-                                                    # guide = False,
-                                                    txConnectionAttr=txConnect,
-                                                    # tyConnectionAttr=self.floatAttrs[idx],
-                                                    tyConnectionAttr="{0}.inputs[{1}].factor".format(self.node, elemIdx),
-                                                    # tzConnectionAttr=None,
-
-                                                    # rxConnectionAttr=None,
-                                                    # ryConnectionAttr=None,
-                                                    # rzConnectionAttr=None,
-
-                                                    sxConnectionAttr=sxConnect,
-                                                    # syConnectionAttr=None,
-                                                    # szConnectionAttr=None,
-
-                                                    normalConstraintPatch=None,
-                                                    selection=False,
-                                                    mirror=False,
-                                                    size=self.controlSize,
-                                                    offset = self.controlOffset)
-
-                if tmpCtrl.ctrl not in self.controls:
-                    self.controls.append(tmpCtrl.ctrl)
 
     def getPositionsFromWeights(self):
         self.elemCheck("{0}.inputs".format(self.node))
@@ -461,8 +439,14 @@ class WeightStack(Node):
         for idx in range(len(self.weightMapAttrs)):
             elemIdx = idx + self.startElem
             weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
-            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, "deformMesh")
+            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight, self.controlPositionByWeightsThreshold)
             positionsFromWeights.append([center.x, center.y, center.z])
+        return positionsFromWeights
+
+    def getPositionsFromWeightsByIndex(self, index=0):
+        weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, index)
+        height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight)
+        positionsFromWeights.append([center.x, center.y, center.z])
         return positionsFromWeights
 
 
@@ -471,8 +455,9 @@ class WeightStack(Node):
         if not self.outputAttrs:
             return
         for idx, attr in enumerate(self.outputAttrs):
-            attrType = deformerUtils.checkOutputWeightType(attr)
-            if attrType:
+            # attrType = deformerUtils.checkOutputWeightType(attr)
+            
+            if self.isOutputKDoubleArray:
                 # If True, then this output attribute will get the kDoubleArray Output
                 cmds.connectAttr("{0}.outWeightsDoubleArray".format(self.node), attr, f=True)
                 if self.UDLR:
@@ -483,7 +468,68 @@ class WeightStack(Node):
                 if self.UDLR:
                     cmds.connectAttr("{0}.outWeightsFloatArray[0]".format(self.node_LR), self.outputAttrs_LR[idx], f=True)
 
+    def createControls(self):
+        if not self.createControl:
+            return
+        for idx in range(len(self.weightMapAttrs)):
+            elemIdx = idx + self.startElem
+            txConnect = None
+            if self.UDLR:
+                # txConnect = self.floatAttrs_LR[idx]
+                txConnect = "{0}.inputs[{1}].factor".format(self.node_LR, elemIdx)
+            weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
+            weightList = cmds.getAttr(weightList)
+            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight)
+            # height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, "deformMesh")
+            self.positionsFromWeights.append([center.x + self.controlPositionOffset[0], center.y + self.controlPositionOffset[1], center.z + self.controlPositionOffset[2]])
+            rotate = [0,0,0]
+            if self.controlAutoOrientMesh:
+                tempLocation = self.positionsFromWeights[idx]
+                temp = cmds.createNode("transform")
+                cmds.xform(temp, ws=True, t=tempLocation)
+                normalCons = cmds.normalConstraint(self.controlAutoOrientMesh, temp, aimVector=[0, 0, 1])
+                rotate = cmds.xform(temp, q=True, ws=True, ro=True)
+                cmds.delete(temp)
+                self.rotationsFromWeights.append(rotate)
+            
+            side, name = misc.getNameSide(self.factorAttrNames[idx])
+            if cmds.objExists("{0}_{1}_MRC".format(side, name)):
+                continue
+            sxConnect = None
+            if self.connectFalloff and self.falloffCurveWeightNode:
+                sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
+            # print "POSITIONS!!!!", self.positionsFromWeights
+            tmpCtrl = meshRivetCtrl.component(name = name,
+                                                side=side,
+                                                speedTxDefault=self.controlSpeedDefaults[0],
+                                                speedTyDefault=self.controlSpeedDefaults[1],
+                                                speedTzDefault=self.controlSpeedDefaults[2],
+                                                # curveData=None,
+                                                mesh = self.controlRivetMesh,
+                                                translate = self.positionsFromWeights[idx],
+                                                rotate = rotate,
+                                                # scale = None,
+                                                # guide = False,
+                                                txConnectionAttr=txConnect,
+                                                # tyConnectionAttr=self.floatAttrs[idx],
+                                                tyConnectionAttr="{0}.inputs[{1}].factor".format(self.node, elemIdx),
+                                                # tzConnectionAttr=None,
 
+                                                # rxConnectionAttr=None,
+                                                # ryConnectionAttr=None,
+                                                # rzConnectionAttr=None,
+
+                                                sxConnectionAttr=sxConnect,
+                                                # syConnectionAttr=None,
+                                                # szConnectionAttr=None,
+
+                                                normalConstraintPatch=self.controlRivetAimMesh,
+                                                selection=False,
+                                                mirror=False,
+                                                size=self.controlSize,
+                                                offset = self.controlOffset)
+            if tmpCtrl.ctrl not in self.controls:
+                self.controls.append(tmpCtrl.ctrl)
 '''
 EXAMPLE
 

@@ -38,7 +38,7 @@ reload(weights)
 reload(rivet)
 
 # build insomniac test
-def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0, geo=None, cape=True):
+def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0, geo=None, cape=True, hair=False):
 
     if scene_path:
         cmds.file(
@@ -256,6 +256,25 @@ def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0, geo=
                             global_scale= global_hook,
                             infinite_digits=True,
                             debug = debug,
+                            worldAlign=True)
+    if hair:
+        finger.create_finger(side = "C",
+                            names = ["hair1"],
+                            joint_roots = ["hair1",
+                                        ], 
+                            driver = head_hook.skel_joint,
+                            ctl_size = [
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2],
+                                        [.4,.3,.2]
+                                        ],
+                            global_scale= global_hook,
+                            infinite_digits=True,
+                            debug = debug,
+                            ignore_end_joints = False,
+
                             worldAlign=True)
 
 

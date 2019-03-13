@@ -38,7 +38,7 @@ MStatus LHMatrixDeformer::initialize() {
   nAttr.setStorable(true);
   nAttr.setMin(0);
   nAttr.setMax(2);
-  nAttr.setDefault(1);
+  nAttr.setDefault(0);
   nAttr.setChannelBox(true);
   addAttribute( aMultiThread );
 
@@ -125,33 +125,102 @@ MStatus LHMatrixDeformer::initialize() {
 }
 
 
+// //Step3
+// // This is what performs the actual deformation calculations
+// MThreadRetVal ParallelDeformationCalc(void *data)
+// {
+//     TaskData *task_data = (TaskData *)data;
+// 	MPoint pt;
+//     for( unsigned int i = task_data->start + task_data->currThreadNum; i <= task_data->end; i += task_data->numTasks )
+//     {
+//     	if (i >= task_data->end)
+//     	{
+//     		break;
+//     	}
+//     	pt = task_data->allPoints[i];
+//         for (unsigned int x=0;x < task_data->nPlugs;x++)
+//         {
+//             if (task_data->matrixArray[x] != task_data->matrixArrayBase[x])
+//                 pt = (pt * task_data->matrixArrayBase[x].inverse() * task_data->matrixArray[x]);
+
+//         }
+//     	task_data->finalPointArray.append(pt);
+//     	task_data->finalIndexArray.append(i);
+
+//     }
+
+//     return (MThreadRetVal)0;
+
+// }
+
+
 //Step3
 // This is what performs the actual deformation calculations
+// MThreadRetVal ParallelDeformationCalc(void *data)
+// {
+//     TaskData *task_data = (TaskData *)data;
+// 	MPoint pt;
+//     for( unsigned int i = task_data->start + task_data->currThreadNum; i <= task_data->end; i += task_data->numTasks )
+//     {
+//     	if (i >= task_data->end)
+//     	{
+//     		break;
+//     	}
+//     	pt = task_data->allPoints[i];
+//         for (unsigned int x=0;x < task_data->nPlugs;x++)
+//         {
+//             if (task_data->matrixArray[x] != task_data->matrixArrayBase[x])
+//                 pt = (pt * task_data->matrixArrayBase[x].inverse() * task_data->matrixArray[x]);
+
+//         }
+//     	task_data->finalPointArray.append(pt);
+//     	task_data->finalIndexArray.append(i);
+
+//     }
+
+//     return (MThreadRetVal)0;
+
+// }
+
 MThreadRetVal ParallelDeformationCalc(void *data)
 {
     TaskData *task_data = (TaskData *)data;
+	MPoint deformedPt;
 	MPoint pt;
-    for( unsigned int i = task_data->start + task_data->currThreadNum; i <= task_data->end; i += task_data->numTasks )
+
+    for (unsigned int plugIdx=0; plugIdx < task_data->nPlugs; plugIdx++)
     {
-    	if (i >= task_data->end)
-    	{
-    		break;
-    	}
-    	pt = task_data->allPoints[i];
-        for (unsigned int x=0;x < task_data->nPlugs;x++)
+        // If no deformation, just skip it
+        if (task_data->matrixArrayBase[plugIdx].inverse() * task_data->matrixArray[plugIdx] == MMatrix::identity)
         {
-            if (task_data->matrixArray[x] != task_data->matrixArrayBase[x])
-                pt = (pt * task_data->matrixArrayBase[x].inverse() * task_data->matrixArray[x]);
-
+            continue;
         }
-    	task_data->finalPointArray.append(pt);
-    	task_data->finalIndexArray.append(i);
 
+        for( unsigned int ptIdx = task_data->start + task_data->currThreadNum; ptIdx <= task_data->end; ptIdx += task_data->numTasks )
+        {
+            if (ptIdx >= task_data->end)
+            {
+                break;
+            }
+            if (task_data->matrixWeights[plugIdx][ptIdx] == 0.0)
+            {
+                continue;
+            }
+            deformedPt = task_data->allPoints[ptIdx] * task_data->matrixArrayBase[plugIdx].inverse() * task_data->matrixArray[plugIdx];
+            task_data->allPoints[ptIdx] = task_data->allPoints[ptIdx] + (deformedPt - task_data->allPoints[ptIdx])* task_data->matrixWeights[plugIdx][ptIdx];
+        }
+    }
+    // gather data
+    for( unsigned int ptIdx = task_data->start + task_data->currThreadNum; ptIdx <= task_data->end; ptIdx += task_data->numTasks )
+    {
+        task_data->finalPointArray.append(task_data->allPoints[ptIdx]);
+    	task_data->finalIndexArray.append(ptIdx);
     }
 
-    return (MThreadRetVal)0;
-
 }
+
+
+
 //Step2
 // Decomposition refers to breaking up an algorithm into multiple tasks
 void DecomposeDeformationCalc(void *data, MThreadRootTask *root)
@@ -169,6 +238,7 @@ void DecomposeDeformationCalc(void *data, MThreadRootTask *root)
 		task_data[i].env = tdata->env;
 		task_data[i].matrixArray = tdata->matrixArray;
 		task_data[i].matrixArrayBase = tdata->matrixArrayBase;
+		task_data[i].matrixWeights = tdata->matrixWeights;
 		task_data[i].allPoints = tdata->allPoints;
 		task_data[i].pt = tdata->pt;
 		task_data[i].nPlugs = tdata->nPlugs;
@@ -193,7 +263,8 @@ void DecomposeDeformationCalc(void *data, MThreadRootTask *root)
 // then release the threadpool after everything is done
 MPointArray MainParallelDeformationCalc(float env, MMatrixArray matrixArray, MMatrixArray matrixArrayBase, MPointArray allPoints,
 						        MPoint pt, unsigned int nPlugs,
-								int start, int end, int numTasks){
+								int start, int end, int numTasks,
+                                std::vector <MDoubleArray> matrixWeights){
     MStatus stat = MThreadPool::init();
     if( MStatus::kSuccess != stat )
     {
@@ -206,6 +277,8 @@ MPointArray MainParallelDeformationCalc(float env, MMatrixArray matrixArray, MMa
     task_data.env = env;
     task_data.matrixArray = matrixArray;
     task_data.matrixArrayBase = matrixArrayBase;
+    task_data.matrixWeights = matrixWeights;
+    
     task_data.allPoints = allPoints;
     task_data.pt = pt;
     task_data.nPlugs = nPlugs;
@@ -221,136 +294,154 @@ MPointArray MainParallelDeformationCalc(float env, MMatrixArray matrixArray, MMa
 
 }
 
+void serialDeform(MPointArray &allPoints, int nPlugs, std::vector <MDoubleArray> matrixWeights, MMatrixArray matrixArray, MMatrixArray matrixArrayBase)
+{
+    MPoint deformedPt;
+    for (unsigned int plugIdx=0; plugIdx < nPlugs; plugIdx++)
+    {
+        // If no deformation, just skip it
+        if (matrixArrayBase[plugIdx].inverse() * matrixArray[plugIdx] == MMatrix::identity)
+        {
+            continue;
+        }
+        for (unsigned int ptIdx=0; ptIdx < allPoints.length(); ptIdx++)
+        {
+            if (matrixWeights[plugIdx][ptIdx] == 0.0)
+            {
+                continue;
+            }
+            deformedPt = allPoints[ptIdx] * matrixArrayBase[plugIdx].inverse() * matrixArray[plugIdx];
+            allPoints[ptIdx] = allPoints[ptIdx] + (deformedPt - allPoints[ptIdx])* matrixWeights[plugIdx][ptIdx];
+        }
+    }
+}
 
 void* LHMatrixDeformer::creator() { return new LHMatrixDeformer; }
 
 MStatus LHMatrixDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
-                          const MMatrix &localToWorldMatrix, unsigned int mIndex) {
-  MStatus status;
+                          const MMatrix &localToWorldMatrix, unsigned int mIndex)
+{
+    MStatus status;
 
-  float env = data.inputValue(envelope).asFloat();
-  int start = data.inputValue(aStart).asInt();
-  int end = data.inputValue(aEnd).asInt();
-  int numTasks = data.inputValue(aNumTasks).asInt();
-  int multiThread = data.inputValue(aMultiThread).asInt();
-  if (multiThread and numTasks==0)
-  {
-	  return MS::kFailure;
+    float env = data.inputValue(envelope).asFloat();
+    int start = data.inputValue(aStart).asInt();
+    int end = data.inputValue(aEnd).asInt();
+    int numTasks = data.inputValue(aNumTasks).asInt();
+    int multiThread = data.inputValue(aMultiThread).asInt();
+    if (multiThread and numTasks==0)
+    {
+        return MS::kFailure;
 
-  }
+    }
 
-  if (env<=0.0)
-  {
-	  return MS::kSuccess;
+    if (env<=0.0)
+    {
+        return MS::kSuccess;
 
-  }
-  MMatrixArray matrixArray;
-  MMatrixArray matrixArrayBase;
-  std::vector <MDoubleArray> matrixWeights;
-  MDoubleArray checkWeights;
-  MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHMatrixDeformer::aInputs, &status));
-  CheckStatusReturn( status, "Unable to get inputs" );
-  unsigned int inputCount = inputsArrayHandle.elementCount(&status);
-  CheckStatusReturn( status, "Unable to get number of inputs" );
-  MMatrix tempMatrix;
-  for (unsigned int i=0;i < inputCount;i++){
-      status = inputsArrayHandle.jumpToElement(i);
-      MDataHandle handle(inputsArrayHandle.inputValue(&status) );
-      CheckStatusReturn( status, "Couldn't get array handle" );
-      
-      matrixArray.append(handle.child( LHMatrixDeformer::aMatrix ).asMatrix());
-      matrixArrayBase.append(handle.child( LHMatrixDeformer::aMatrixBase ).asMatrix());
+    }
+    MMatrixArray matrixArray;
+    MMatrixArray matrixArrayBase;
+    std::vector <MDoubleArray> matrixWeights;
+    MDoubleArray checkWeights;
+    MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHMatrixDeformer::aInputs, &status));
+    CheckStatusReturn( status, "Unable to get inputs" );
+    unsigned int inputCount = inputsArrayHandle.elementCount(&status);
+    CheckStatusReturn( status, "Unable to get number of inputs" );
+    MMatrix tempMatrix;
+    for (unsigned int i=0;i < inputCount;i++){
+        status = inputsArrayHandle.jumpToElement(i);
+        MDataHandle handle(inputsArrayHandle.inputValue(&status) );
+        CheckStatusReturn( status, "Couldn't get array handle" );
+        
+        matrixArray.append(handle.child( LHMatrixDeformer::aMatrix ).asMatrix());
+        matrixArrayBase.append(handle.child( LHMatrixDeformer::aMatrixBase ).asMatrix());
 
-      MDataHandle weightChild(handle.child( aMatrixWeight) );
-      checkWeights = MFnDoubleArrayData(weightChild.data()).array(&status);
-      CheckStatusReturn( status, "Couldn't get Weights" );
-      if (checkWeights.length() != itGeo.count())
-            {
-                MGlobal::displayError(MString("Weights do not coorespond with Geometry"));
-                return MS::kFailure;
-            }
-      matrixWeights.push_back(checkWeights);
-  }
-  int nPlugs = matrixArray.length();
-  MPoint pt;
-  MPointArray finalPoints;
+        MDataHandle weightChild(handle.child( aMatrixWeight) );
+        checkWeights = MFnDoubleArrayData(weightChild.data()).array(&status);
+        CheckStatusReturn( status, "Couldn't get Weights" );
+        if (checkWeights.length() != itGeo.count())
+                {
+                    MGlobal::displayError(MString("Weights do not coorespond with Geometry"));
+                    return MS::kFailure;
+                }
+        matrixWeights.push_back(checkWeights);
+    }
+    int nPlugs = matrixArray.length();
+    MPoint pt;
+    MPointArray finalPoints;
+    MPointArray allPoints;
+    itGeo.allPositions(allPoints);
 
-  if (multiThread == 0){
-	  for (; !itGeo.isDone(); itGeo.next()){
-		  pt = itGeo.position();
-		  for (unsigned int i=0;i < nPlugs;i++)
-		  {
-			// pt = pt + (pt - (pt * matrixArray[i] * matrixArrayBase[i].inverse())) * matrixWeights[i][itGeo.index()];
-			//pt = pt * matrixArray[i] * matrixArrayBase[i].inverse();
-            MPoint deformedPt = pt * (matrixArray[i] * matrixArrayBase[i].inverse());
-			pt = pt + (deformedPt - pt)* matrixWeights[i][itGeo.index()];
-		  }
-		  finalPoints.append(pt);
-	  }
-	  itGeo.setAllPositions(finalPoints);
-	  return MS::kSuccess;
-	}
+    if (multiThread == 0)
+    {
+        serialDeform(allPoints, nPlugs, matrixWeights, matrixArray, matrixArrayBase);
+        itGeo.setAllPositions(allPoints);
+        return MS::kSuccess;
+    }
 
-  if (multiThread == 1){
-	  MPointArray allPoints;
-	  itGeo.allPositions(allPoints);
-	  unsigned int tStart = 0;
-	  unsigned int tEnd = allPoints.length();
-	  finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks);
-	  // Make sure the points to set are exactly the same as the poly count or you will crash maya!
-	  if (finalPoints.length() != allPoints.length())
-		  return MS::kFailure;
-	  itGeo.setAllPositions(finalPoints);
-	  return MS::kSuccess;
-  }
+    if (multiThread == 1)
+    {
+        unsigned int tStart = 0;
+        unsigned int tEnd = allPoints.length();
+        finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks, matrixWeights);
+        // Make sure the points to set are exactly the same as the poly count or you will crash maya!
+        if (finalPoints.length() != allPoints.length())
+            return MS::kFailure;
+        itGeo.setAllPositions(finalPoints);
+        return MS::kSuccess;
+    }
 
+    if (multiThread == 2){
+        MTimer timer;
 
-  if (multiThread == 2){
-	  MTimer timer;
-	  timer.beginTimer();
+        timer.beginTimer();
+        serialDeform(allPoints, nPlugs, matrixWeights, matrixArray, matrixArrayBase);
+        itGeo.setAllPositions(allPoints);
+        timer.endTimer();
 
-	  for (; !itGeo.isDone(); itGeo.next()){
-		  pt = itGeo.position();
-	      for (unsigned int i=0;i < nPlugs;i++)
-	      {
-			  pt = pt * matrixArray[i] * matrixArrayBase[i].inverse();
-	      }
-	      finalPoints.append(pt);
-	  }
-	  itGeo.setAllPositions(finalPoints);
-	  timer.endTimer();
-	  double serialTime = timer.elapsedTime();
-	  timer.beginTimer();
+        double serialTime = timer.elapsedTime();
 
-	  MPointArray allPoints;
-	  itGeo.allPositions(allPoints);
-	  unsigned int tStart = 0;
-	  unsigned int tEnd = allPoints.length();
-	  finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks);
-	  // Make sure the points to set are exactly the same as the poly count or you will crash maya!
-	  if (finalPoints.length() != allPoints.length())
-		  return MS::kFailure;
-	  itGeo.setAllPositions(finalPoints);
+        timer.beginTimer();
+        // MPointArray allPoints;
+        itGeo.allPositions(allPoints);
+        unsigned int tStart = 0;
+        unsigned int tEnd = allPoints.length();
+        finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks, matrixWeights);
+        // Make sure the points to set are exactly the same as the poly count or you will crash maya!
+        if (finalPoints.length() != allPoints.length())
+            return MS::kFailure;
+        itGeo.setAllPositions(finalPoints);
 
-	  timer.endTimer();
-	  double parallelTime = timer.elapsedTime();
+        timer.endTimer();
+        double parallelTime = timer.elapsedTime();
+
+        double ratio = serialTime/parallelTime;
+        MString str = MString("\nElapsed time for serial computation: ") + serialTime + MString("s\n");
+        str += MString("Elapsed time for parallel computation: ") + parallelTime + MString("s\n");
+        str += MString("Speedup: ") + ratio + MString("x\n");
+        MGlobal::displayInfo(str);
+        return MStatus::kSuccess;
 
 
-	  double ratio = serialTime/parallelTime;
-	  MString str = MString("\nElapsed time for serial computation: ") + serialTime + MString("s\n");
-	  str += MString("Elapsed time for parallel computation: ") + parallelTime + MString("s\n");
-	  str += MString("Speedup: ") + ratio + MString("x\n");
-	  MGlobal::displayInfo(str);
-	  return MStatus::kSuccess;
-
-
-  }
-
-
-
-  return MS::kSuccess;
-
+    }
+    return MS::kSuccess;
 }
+
+
+
+	//   for (; !itGeo.isDone(); itGeo.next()){
+	// 	  pt = itGeo.position();
+	// 	  for (unsigned int i=0;i < nPlugs;i++)
+	// 	  {
+    //         MPoint deformedPt = (pt * matrixArrayBase[plugIdx].inverse() * matrixArray[plugIdx]);
+    //         // Lerp between current point and matrix point using weights
+	// 		pt = pt + (deformedPt - pt)* matrixWeights[i][itGeo.index()];
+	// 	  }
+	// 	  allPoints[idx](pt);
+	//   itGeo.setAllPositions(finalPoints);
+	//   return MS::kSuccess;
+
+
 MStatus LHMatrixDeformer::getWeights(MObject oInputsCompound, MObject oWeightsChild, MDataBlock &data, int mIndex, MDoubleArray &rDoubleArray)
 {
     MStatus status;

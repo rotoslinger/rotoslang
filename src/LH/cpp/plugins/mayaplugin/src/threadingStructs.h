@@ -36,6 +36,7 @@ struct ThreadData
 struct TaskData
 {
 	float env;
+	std::vector <MDoubleArray> matrixWeights;
 	MMatrixArray matrixArray;
 	MMatrixArray matrixArrayBase;
 	MPointArray allPoints;

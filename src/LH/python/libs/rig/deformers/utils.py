@@ -118,7 +118,13 @@ def nameBasedOnRange(count, name, suffixSeperator="_", suffix="", ):
 
 
 def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV", offset=.15, centerWeight = .35, outerWeight = .3, angle = 50, nudge = 0,
-                                intermediateVal=.2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=0, lastIntermediateAngle=0, createSingleFalloff=True, singleFalloffName="Single"):
+                                intermediateVal=.2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=0, lastIntermediateAngle=0,
+                                createSingleFalloff=True, singleFalloffName="Single",
+                                falloffStart=-10,
+                                falloffStartInner=-9,
+                                falloffEndInner=9,
+                                falloffEnd=10):
+
     keyframes = []
     falloffKeyframes = []
     ratio = timeRange/num
@@ -301,7 +307,12 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
 
     cmds.select(keyframes)
 
-    initVKeyframesLinear(falloffKeyframes)
+    initVFalloff(falloffKeyframes,
+                 falloffStart=falloffStart,
+                 falloffStartInner=falloffStartInner,
+                 falloffEndInner=falloffEndInner,
+                 falloffEnd=falloffEnd)
+    
     return keyframes, falloffKeyframes
         # weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
@@ -362,6 +373,44 @@ def initVKeyframesLinear(animCurves):
             cmds.setKeyframe(animCurve, v=1, breakdown=0,
                                 hierarchy="none", controlPoints=2,
                                 shape=0, time=10, itt="linear")
+
+def initVKeyframesLinearWithValues(animCurves, inTime=-5, outTime=8):
+    for animCurve in animCurves:
+        oCurve = misc.getOMAnimCurve(animCurve)
+        if not oCurve.numKeys():
+            cmds.setKeyframe(animCurve, v=0, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=-10, itt="linear")
+
+            cmds.setKeyframe(animCurve, v=0, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=inTime, itt="linear")
+
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=outTime, itt="linear")
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=10, itt="linear")
+
+def initVFalloff(animCurves, falloffStart=-10, falloffStartInner=-5, falloffEndInner=8, falloffEnd=10):
+    for animCurve in animCurves:
+        oCurve = misc.getOMAnimCurve(animCurve)
+        if not oCurve.numKeys():
+            cmds.setKeyframe(animCurve, v=0, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=falloffStart, itt="linear", ott="linear")
+
+            cmds.setKeyframe(animCurve, v=0, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=falloffStartInner, itt="linear", ott="linear")
+
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=falloffEndInner, itt="linear", ott="linear")
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=falloffEnd, itt="linear", ott="linear")
 
 
 def checkOutputWeightType(outputAttrToCheck):
@@ -429,7 +478,8 @@ def attrCheck(node, attrs, attrType=None, enumName=None, k=False, weightmap=Fals
                 cmds.setAttr(fullName, dv)
             continue
         if weightmap:
-            weightMapUtils.createWeightMapOnObject(node, attr)
+            # weightMapUtils.createWeightMapOnObject(node, attr)
+            weightMapUtils.createWeightMapOnSingleObject(node, attr)
         else:
             if attrType == "enum":
                 cmds.addAttr(node, at=attrType, ln=attr, enumName=enumName, k=k, dv=dv)

@@ -161,7 +161,7 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
   if (!deformedVertIds.size() || deformedVertIds.size() < mIndex ||  !deformedVertIds[mIndex].length())
   {
     MGlobal::displayInfo(MString("NOT CACHING"));
-      MGlobal::displayError(MString("Weight missmatch, make sure you have the same number of weights as inputGeometry")+ deformedVertIds.size() + mIndex + deformedVertIds[mIndex].length());
+      MGlobal::displayError(MString("Weight missmatch, make sure you have the same number of weights as inputGeometry"));
       return MS::kFailure;
   }
 
@@ -176,10 +176,10 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
     MGlobal::displayInfo(MString("NOT CACHING"));
     LHSlideSimple::CacheBaseRotations();
   }
-
-  status =  LHSlideSimple::getWeights(data, mIndex, uWeights);
+// getWeights(MDataBlock &data, int mIndex, MDoubleArray &rDoubleArray, MObject weightObject)
+  status =  LHSlideSimple::getWeights(data, mIndex, uWeights, aUWeights);
   CheckStatusReturn( status, "Couldn't get uWeights" );
-  status =  LHSlideSimple::getWeights(data, mIndex, vWeights);
+  status =  LHSlideSimple::getWeights(data, mIndex, vWeights, aVWeights);
   CheckStatusReturn( status, "Couldn't get vWeights" );
 
 
@@ -201,11 +201,13 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
         double slideVBasePointParam = slideVParam[mIndex][idx];
 
         // get min&&max parameter
-
-        double unclampedUValue = slideUBasePointParam + uWeights[currentVertID]* vAmount;
+        // MGlobal::displayInfo(MString("WEIGHTS!!!") + uWeights[currentVertID]);
+        double unclampedUValue = slideUBasePointParam + uWeights[currentVertID];
+        // double unclampedUValue = slideUBasePointParam + uWeights[currentVertID]* vAmount;
         double clampedUValue = std::max(uMinParam, std::min(unclampedUValue, uMaxParam));
 
-        double unclampedVValue = slideVBasePointParam + vWeights[currentVertID] * uAmount;
+        // double unclampedVValue = slideVBasePointParam + vWeights[currentVertID] * uAmount;
+        double unclampedVValue = slideVBasePointParam + vWeights[currentVertID];
         double clampedVValue = std::max(vMinParam, std::min(unclampedVValue, vMaxParam));
         fnSurface->getDerivativesAtParm( clampedUValue,
                                         clampedVValue,
@@ -568,7 +570,7 @@ MStatus LHSlideSimple::CacheDeformPointMembership(MDataBlock &data)
     return MS::kSuccess;
 }
 
-MStatus LHSlideSimple::getWeights(MDataBlock &data, int mIndex, MDoubleArray &rDoubleArray)
+MStatus LHSlideSimple::getWeights(MDataBlock &data, int mIndex, MDoubleArray &rDoubleArray, MObject weightObject)
 {
     MStatus status;
     MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHSlideSimple::aWeightArray, &status));
@@ -581,7 +583,7 @@ MStatus LHSlideSimple::getWeights(MDataBlock &data, int mIndex, MDoubleArray &rD
       CheckStatusReturn( status, "Couldn't jump to element" );
       MDataHandle handle(inputsArrayHandle.inputValue(&status) );
       CheckStatusReturn( status, "Couldn't get array handle" );
-      MDataHandle weightChild(handle.child( aMembershipWeight) );
+      MDataHandle weightChild(handle.child( weightObject) );
       rDoubleArray = MFnDoubleArrayData(weightChild.data()).array(&status);
       CheckStatusReturn( status, "Couldn't get Weights" );
       return MS::kSuccess;
