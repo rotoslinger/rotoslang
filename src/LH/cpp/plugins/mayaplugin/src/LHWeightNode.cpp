@@ -77,6 +77,9 @@ MDoubleArray LHWeightNode::doubleArrayMathOperation(MDoubleArray doubleArray1,
                 // interp between clamped and non clamped
                 rDoubleArray.append(doubleArray1[i] + (clampWeight - doubleArray1[i]) * doubleArray2[i]);
                 break;
+            case 6 : // reverse stack
+                rDoubleArray.append(1.0 - doubleArray1[i]);
+                break;
         }
     }
     return rDoubleArray;
@@ -261,6 +264,7 @@ MStatus LHWeightNode::initialize()
     eAttr.addField( "divide", 3 );
     eAttr.addField( "clampStack", 4 );
     eAttr.addField( "clampPainted", 5 );
+    eAttr.addField( "reverseStack", 6 );
     eAttr.setHidden( false );
     eAttr.setKeyable( true );
     eAttr.setWritable(true);
