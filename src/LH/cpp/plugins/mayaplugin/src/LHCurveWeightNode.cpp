@@ -41,6 +41,8 @@ MObject LHCurveWeightNode::aInputs;
 MObject LHCurveWeightNode::aMembershipWeights;
 MObject LHCurveWeightNode::aCacheMembershipWeights;
 MObject LHCurveWeightNode::aInputMesh;
+MObject LHCurveWeightNode::aInputCurve;
+MObject LHCurveWeightNode::aInputNurbs;
 MObject LHCurveWeightNode::aProjectionMesh;
 MObject LHCurveWeightNode::aCacheWeightMesh;
 MObject LHCurveWeightNode::aOutputWeightsFloatArrayParent;
@@ -64,6 +66,12 @@ MStatus LHCurveWeightNode::initialize()
 
     aInputMesh = tAttr.create("inMesh", "inmesh", MFnData::kMesh);
     addAttribute(aInputMesh);
+
+    aInputCurve = tAttr.create("inCurve", "incurve", MFnData::kNurbsCurve);
+    addAttribute(aInputCurve);
+
+    aInputNurbs = tAttr.create("inNurbs", "innurbs", MFnData::kNurbsSurface);
+    addAttribute(aInputNurbs);
 
     aProjectionMesh = tAttr.create("projectionMesh", "pmesh", MFnData::kMesh);
     addAttribute(aProjectionMesh);
@@ -188,16 +196,26 @@ MStatus LHCurveWeightNode::initialize()
 }
 
 
-MStatus LHCurveWeightNode::getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh)
+MStatus LHCurveWeightNode::getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh, MObject &oInputCurve, MObject &oInputNurbs)
 {
     
     oInputMesh = data.inputValue(LHCurveWeightNode::aInputMesh).asMeshTransformed();
-    if (oInputMesh.isNull())
-    {
-        MGlobal::displayInfo(MString("Unable to get inMesh"));
-        return MS::kFailure;
+    oInputCurve = data.inputValue(LHCurveWeightNode::aInputCurve).asNurbsCurveTransformed();
+    oInputNurbs = data.inputValue(LHCurveWeightNode::aInputNurbs).asNurbsSurfaceTransformed();
 
+    if (oInputMesh.isNull() and oInputCurve.isNull() and oInputNurbs.isNull())
+    {
+        MGlobal::displayInfo(MString("Unable to get inMesh, or inCurve"));
+        return MS::kFailure;
     }
+
+    if (!oInputMesh.isNull() and !oInputCurve.isNull() and !oInputNurbs.isNull())
+    {
+        MGlobal::displayInfo(MString("Multiple geometry types are connected, please only connect 1 geometry per node"));
+        return MS::kFailure;
+    }
+
+
     oProjectionMesh = data.inputValue(LHCurveWeightNode::aProjectionMesh).asMeshTransformed();
     if (oProjectionMesh.isNull())
     {
@@ -232,6 +250,7 @@ MStatus LHCurveWeightNode::compute( const MPlug& plug, MDataBlock& data)
     {
         LHCurveWeightNode::computeDoubleArray(data);
     }
+    
     if( plug == LHCurveWeightNode::aOutputWeightsFloatArray)
     {
         LHCurveWeightNode::computeFloatArray(data);
@@ -329,8 +348,7 @@ MStatus LHCurveWeightNode::getAnimCurvePlug(int currentElem, MPlug& rPCurve, MOb
     return MS::kSuccess;
 }
 
-MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray& rWeights, int numVerts, int currentElem,
-                                               double falloffUAmount, double falloffUPivot)
+MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray& rWeights, int numVerts, int currentElem)
 {
     MPlug pAnimCurveU;
     status = LHCurveWeightNode::getAnimCurvePlug(currentElem, pAnimCurveU, aAnimCurveU);
@@ -346,6 +364,12 @@ MStatus LHCurveWeightNode::getAnimCurveWeights(MArrayDataHandle inputsArrayHandl
     MFnAnimCurve *fnAnimCurveV = new MFnAnimCurve(pAnimCurveV);
     status =getAnimCurveInfo(fnAnimCurveV, timeOffsetV, timeLengthV);
     CheckStatusReturn( status, "AnimCurveV does not have keys" );
+
+    if (!membershipWeights.length())
+    {
+        CheckStatusReturn( MS::kFailure, "Membership has not been weighted" );
+    }
+
 
     if (rWeights.length())
         rWeights.clear();
@@ -405,6 +429,29 @@ MStatus LHCurveWeightNode::getWeightMeshData(MObject oProjectionMesh, MFnMesh *m
     return MS::kSuccess;
 }
 
+MStatus LHCurveWeightNode::getWeightMeshDataFromPoints(MObject oProjectionMesh, MPointArray allPoints, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh)
+{
+    if (!uCoords.length() || uCoords.length() != numVerts || !vCoords.length() || vCoords.length() != numVerts || !iCacheWeightMesh)
+    {
+        fnWeightIntersector.create(oProjectionMesh);
+        MFnMesh projectionMesh(oProjectionMesh);
+        if (uCoords.length())
+            uCoords.clear();
+        if (vCoords.length())
+            vCoords.clear();
+        for (int i=0;i < numVerts;i++)
+        {
+            pt = allPoints[i];
+            fnWeightIntersector.getClosestPoint(pt, ptOnMesh);
+            pointOnPoint = ptOnMesh.getPoint();
+            mProjectionMesh->getUVAtPoint( pointOnPoint, uvCoord, MSpace::kObject );
+            uCoords.append(uvCoord[0]);
+            vCoords.append(uvCoord[1]);
+        }
+    }
+    return MS::kSuccess;
+}
+
 MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& finalWeights, std::vector <MDoubleArray>& finalWeightsArray)
 {
     // MStatus status;
@@ -418,11 +465,45 @@ MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& 
     // Get mesh objects
     MObject oInputMesh;
     MObject oProjectionMesh;
-    status = getMeshData(data, oInputMesh, oProjectionMesh);
+    MObject oInputCurve;
+    MObject oInputNurbs;
+    MPointArray allPoints;
+
+    status = getMeshData(data, oInputMesh, oProjectionMesh, oInputCurve, oInputNurbs);
     CheckStatusReturn( status, "Unable to get meshes" );
-    MFnMesh *mInputMesh = new MFnMesh(oInputMesh);
+
+    if (!oInputMesh.isNull())
+    {
+        MFnMesh mInputMesh(oInputMesh);
+        mInputMesh.getPoints(allPoints, MSpace::kObject);
+    }
+
+    if (!oInputCurve.isNull())
+    {
+        MFnNurbsCurve mInputCurve(oInputCurve);
+        mInputCurve.getCVs(allPoints, MSpace::kObject);
+    }
+
+    if (!oInputNurbs.isNull())
+    {
+        MFnNurbsSurface mInputSurface(oInputNurbs);
+        mInputSurface.getCVs(allPoints, MSpace::kObject);
+    }
+
+
+    // MFnMesh *mInputMesh = new MFnMesh(oInputMesh);
+    // int numVerts = mInputMesh->numVertices();
+
+
+
+    int numVerts = allPoints.length();
+    if (!numVerts)
+    {
+        CheckStatusReturn( MS::kFailure, "No Points!!!" );
+
+    }
+
     MFnMesh *mProjectionMesh = new MFnMesh(oProjectionMesh);
-    int numVerts = mInputMesh->numVertices();
 
     // Get membership weights
     int iCacheMemberWeights = data.inputValue(aCacheMembershipWeights).asInt();
@@ -430,7 +511,8 @@ MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& 
 
     // Get projection mesh data
     int iCacheWeightMesh = data.inputValue(aCacheWeightMesh).asInt();
-    status = getWeightMeshData(oProjectionMesh, mInputMesh, mProjectionMesh, uCoords, vCoords, numVerts, iCacheWeightMesh);
+    // status = getWeightMeshData(oProjectionMesh, mInputMesh, mProjectionMesh, uCoords, vCoords, numVerts, iCacheWeightMesh);
+    status = getWeightMeshDataFromPoints(oProjectionMesh, allPoints, mProjectionMesh, uCoords, vCoords, numVerts, iCacheWeightMesh);
     CheckStatusReturn( status, "Unable to get weight mesh" );
 
     if (finalWeightsArray.size())
@@ -439,9 +521,7 @@ MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& 
     {
         status = inputsArrayHandle.jumpToElement(i);
         CheckStatusReturn( status, "Unable to jump to input element" );
-        double falloffUAmount = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFalloffU ).asFloat();
-        double falloffUPivot = inputsArrayHandle.inputValue().child( LHCurveWeightNode::aFalloffUPivot ).asFloat();
-        status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, finalWeights, numVerts, i, falloffUAmount, falloffUPivot);
+        status = LHCurveWeightNode::getAnimCurveWeights( inputsArrayHandle, finalWeights, numVerts, i);
         CheckStatusReturn( status, "Unable to get Anim Curves" );
         finalWeightsArray.push_back(finalWeights);
 

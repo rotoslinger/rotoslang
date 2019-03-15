@@ -2308,6 +2308,26 @@ def getOMAnimCurve(mayaObject):
     curveNode = curvePlug.node()
     return OpenMayaAnim.MFnAnimCurve(curveNode)
 
+def getOMNurbsCurve(mayaObject):
+    meshNode = OpenMaya.MSelectionList()
+    meshNode.add(mayaObject)
+    pPath = OpenMaya.MDagPath()
+    meshNode.getDagPath(0,pPath)
+    return OpenMaya.MFnNurbsCurve(pPath)
+
+def getOMNurbsSurface(mayaObject):
+    meshNode = OpenMaya.MSelectionList()
+    meshNode.add(mayaObject)
+    pPath = OpenMaya.MDagPath()
+    meshNode.getDagPath(0,pPath)
+    return OpenMaya.MFnNurbsSurface(pPath)
+
+def getOMItergeo(mayaObject):
+    meshNode = OpenMaya.MSelectionList()
+    meshNode.add(mayaObject)
+    pPath = OpenMaya.MDagPath()
+    meshNode.getDagPath(0,pPath)
+    return OpenMaya.MItGeometry(pPath)
 
 def getDag(mayaObject):
     meshNode = OpenMaya.MSelectionList()

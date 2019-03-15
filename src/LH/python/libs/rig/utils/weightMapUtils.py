@@ -21,15 +21,15 @@ def createWeightMapOnSingleObject(mayaObject=None,
                             weightName=PREFIX+"WeightMap",
                             dataType="doubleArray",
                             defaultValue=1.0, addAttr=True,
-                            makePaintable=True):
+                            makePaintable=True,
+                            geoType = "mesh"):
     mayaObject = misc.getShape(mayaObject)
     print "MAYA OBJECT", mayaObject
     if addAttr:
         cmds.addAttr(mayaObject, ln=weightName, dataType=dataType)
-        print "setting Default weights !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         setDefaultWeights(mayaObject, weightName, dataType=dataType, defaultValue=defaultValue)
     if makePaintable:
-        cmds.makePaintable("mesh", weightName)
+        cmds.makePaintable(geoType, weightName)
     returnAttrs = mayaObject + "." + weightName
     return returnAttrs
 
@@ -104,8 +104,17 @@ def createMultiWeightMapOnDeformer(deformer=None,
     return returnAttrs
 
 def setDefaultWeights(name, attrName, dataType, defaultValue=1.0):
-    polyCount = cmds.polyEvaluate(name, v=True)
-    defaultVals = [defaultValue for x in range(polyCount)]
+    # if cmds.objectType(name) == "mesh":
+    #     count = cmds.polyEvaluate(name, v=True)
+    # if cmds.objectType(name) == "nurbsCurve":
+    #     curve = misc.getOMNurbsCurve(name)
+    #     count = curve.numCVs()
+    # if cmds.objectType(name) == "nurbsSurface":
+    #     curve = misc.getOMNurbsSurface(name)
+    #     count = curve.numCVs()
+    iterGeo = misc.getOMItergeo(name)
+    count = iterGeo.count()
+    defaultVals = [defaultValue for x in range(count)]
     cmds.setAttr(name + "." + attrName, defaultVals, type=dataType)
 
 def setDefaultWeightsWithDeformer(meshName, deformerName, attrName, dataType, defaultValue=1.0):

@@ -25,6 +25,9 @@
 #include <maya/MPlugArray.h>
 #include <maya/MString.h>
 #include <maya/MFnMesh.h>
+#include <maya/MFnNurbsCurve.h>
+#include <maya/MFnNurbsSurface.h>
+
 #include <maya/MFloatArray.h>
 #include <maya/MMeshIntersector.h>
 #include <maya/MFnAnimCurve.h>
@@ -41,11 +44,12 @@ class LHCurveWeightNode : public MPxNode
     virtual MStatus setDependentsDirty(MPlug const &inPlug,
                                        MPlugArray &affectedPlugs);
 
-    virtual MStatus getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh);
+    virtual MStatus getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh, MObject &oInputCurve, MObject &oInputNurbs);
     MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
+    MStatus getWeightMeshDataFromPoints(MObject oProjectionMesh, MPointArray allPoints, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
 
     virtual MStatus getWeightsFromInputs(MDataBlock &data, MDoubleArray &finalWeights, std::vector<MDoubleArray>& finalWeightsArray);
-    virtual MStatus getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray &rWeights, int numVerts, int currentElem, double falloffUAmount, double falloffUPivot);
+    virtual MStatus getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray &rWeights, int numVerts, int currentElem);
 
     virtual MStatus computeDoubleArray(MDataBlock &data);
     virtual MStatus computeFloatArray(MDataBlock &data);
@@ -66,6 +70,10 @@ class LHCurveWeightNode : public MPxNode
     static MObject aMembershipWeights;
     static MObject aCacheMembershipWeights;
     static MObject aInputMesh;
+    static MObject aInputCurve;
+    static MObject aInputNurbs;
+
+    
     static MObject aProjectionMesh;
     static MObject aCacheWeightMesh;
     static MObject aOutputWeightsDoubleArrayParent;

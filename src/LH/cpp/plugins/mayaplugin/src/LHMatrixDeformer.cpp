@@ -379,51 +379,51 @@ MStatus LHMatrixDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
         return MS::kSuccess;
     }
 
-    if (multiThread == 1)
-    {
-        unsigned int tStart = 0;
-        unsigned int tEnd = allPoints.length();
-        finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks, matrixWeights);
-        // Make sure the points to set are exactly the same as the poly count or you will crash maya!
-        if (finalPoints.length() != allPoints.length())
-            return MS::kFailure;
-        itGeo.setAllPositions(finalPoints);
-        return MS::kSuccess;
-    }
+    // if (multiThread == 1)
+    // {
+    //     unsigned int tStart = 0;
+    //     unsigned int tEnd = allPoints.length();
+    //     finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks, matrixWeights);
+    //     // Make sure the points to set are exactly the same as the poly count or you will crash maya!
+    //     if (finalPoints.length() != allPoints.length())
+    //         return MS::kFailure;
+    //     itGeo.setAllPositions(finalPoints);
+    //     return MS::kSuccess;
+    // }
 
-    if (multiThread == 2){
-        MTimer timer;
+    // if (multiThread == 2){
+    //     MTimer timer;
 
-        timer.beginTimer();
-        serialDeform(allPoints, nPlugs, matrixWeights, matrixArray, matrixArrayBase);
-        itGeo.setAllPositions(allPoints);
-        timer.endTimer();
+    //     timer.beginTimer();
+    //     serialDeform(allPoints, nPlugs, matrixWeights, matrixArray, matrixArrayBase);
+    //     itGeo.setAllPositions(allPoints);
+    //     timer.endTimer();
 
-        double serialTime = timer.elapsedTime();
+    //     double serialTime = timer.elapsedTime();
 
-        timer.beginTimer();
-        // MPointArray allPoints;
-        itGeo.allPositions(allPoints);
-        unsigned int tStart = 0;
-        unsigned int tEnd = allPoints.length();
-        finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks, matrixWeights);
-        // Make sure the points to set are exactly the same as the poly count or you will crash maya!
-        if (finalPoints.length() != allPoints.length())
-            return MS::kFailure;
-        itGeo.setAllPositions(finalPoints);
+    //     timer.beginTimer();
+    //     // MPointArray allPoints;
+    //     itGeo.allPositions(allPoints);
+    //     unsigned int tStart = 0;
+    //     unsigned int tEnd = allPoints.length();
+    //     finalPoints = MainParallelDeformationCalc(env, matrixArray, matrixArrayBase, allPoints, pt, nPlugs, tStart, tEnd, numTasks, matrixWeights);
+    //     // Make sure the points to set are exactly the same as the poly count or you will crash maya!
+    //     if (finalPoints.length() != allPoints.length())
+    //         return MS::kFailure;
+    //     itGeo.setAllPositions(finalPoints);
 
-        timer.endTimer();
-        double parallelTime = timer.elapsedTime();
+    //     timer.endTimer();
+    //     double parallelTime = timer.elapsedTime();
 
-        double ratio = serialTime/parallelTime;
-        MString str = MString("\nElapsed time for serial computation: ") + serialTime + MString("s\n");
-        str += MString("Elapsed time for parallel computation: ") + parallelTime + MString("s\n");
-        str += MString("Speedup: ") + ratio + MString("x\n");
-        MGlobal::displayInfo(str);
-        return MStatus::kSuccess;
+    //     double ratio = serialTime/parallelTime;
+    //     MString str = MString("\nElapsed time for serial computation: ") + serialTime + MString("s\n");
+    //     str += MString("Elapsed time for parallel computation: ") + parallelTime + MString("s\n");
+    //     str += MString("Speedup: ") + ratio + MString("x\n");
+    //     MGlobal::displayInfo(str);
+    //     return MStatus::kSuccess;
 
 
-    }
+    // }
     return MS::kSuccess;
 }
 

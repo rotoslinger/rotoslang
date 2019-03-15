@@ -71,6 +71,7 @@ MStatus LHSlideSimple::initialize()
     gAttr.addAccept(MFnData::kMesh);
     gAttr.addAccept(MFnData::kNurbsSurface);
     gAttr.addAccept(MFnData::kNurbsCurve);
+    gAttr.addAccept(MFnData::kLattice);
 
     aUWeights = tAttr.create("uWeights", "uw", MFnNumericData::kDoubleArray);
     tAttr.setKeyable(true);
