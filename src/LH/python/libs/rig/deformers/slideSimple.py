@@ -59,18 +59,27 @@ class SlideSimple(object):
 
     def setDefaultLocations(self):
         # weightMapUtils.setDefaultMultiWeightsWithDeformer(meshName, deformerName, attrName, multiAttrName, dataType, defaultValue=1.0):
-        polyCount = cmds.polyEvaluate(self.geoToDeform, v=True)
+        # polyCount = cmds.polyEvaluate(self.geoToDeform, v=True)
+        iterGeo = misc.getOMItergeo(self.geoToDeform)
+        polyCount = iterGeo.count()
         defaultVals = [1.0 for x in range(polyCount)]
         finalAttrName = "{0}.{1}[0].{2}".format(self.deformer, "weightArrays", "membershipWeight")
         cmds.getAttr(finalAttrName)
         cmds.setAttr(finalAttrName, defaultVals, type="doubleArray")
-
-
         
     def connectDeformer(self):
         cmds.connectAttr(self.slidePatch + ".worldSpace", self.deformer + ".surface")
         cmds.connectAttr(self.slidePatchBase + ".worldSpace", self.deformer + ".surfaceBase")
-        cmds.connectAttr(self.baseGeoToDeform + ".worldMesh", self.deformer + ".weightArrays[0].baseGeo")
+
+        geoAttrType = ".worldMesh"
+        objectType = cmds.objectType(self.baseGeoToDeform)
+        if objectType == "nurbsCurve" or objectType == "nurbsSurface":
+            geoAttrType = ".worldSpace"
+        if objectType == "lattice":
+            geoAttrType = ".worldLattice"
+
+
+        cmds.connectAttr(self.baseGeoToDeform + geoAttrType, self.deformer + ".weightArrays[0].baseGeo")
 
     def cleanup(self):
         return

@@ -52,7 +52,8 @@ MObject LHCurveWeightNode::aAnimCurveU;
 MObject LHCurveWeightNode::aAnimCurveV;
 MObject LHCurveWeightNode::aFalloffU;
 MObject LHCurveWeightNode::aFalloffUPivot;
-    
+MObject LHCurveWeightNode::aInputGeo;
+
 
 void* LHCurveWeightNode::creator() { return new LHCurveWeightNode; }
 
@@ -62,6 +63,14 @@ MStatus LHCurveWeightNode::initialize()
     MFnNumericAttribute nAttr;
     MFnCompoundAttribute cAttr;
     MFnEnumAttribute eAttr;
+    MFnGenericAttribute gAttr;
+
+    aInputGeo = gAttr.create("inputGeo", "inputgeo");
+    gAttr.addAccept(MFnData::kMesh);
+    gAttr.addAccept(MFnData::kNurbsSurface);
+    gAttr.addAccept(MFnData::kNurbsCurve);
+    gAttr.addAccept(MFnData::kLattice);
+    addAttribute(aInputGeo);
 
 
     aInputMesh = tAttr.create("inMesh", "inmesh", MFnData::kMesh);
@@ -192,28 +201,44 @@ MStatus LHCurveWeightNode::initialize()
     attributeAffects(aCacheMembershipWeights, aOutputWeightsFloatArray);
     attributeAffects(aMembershipWeights, aOutputWeightsFloatArray);
     attributeAffects(aInputs, aOutputWeightsFloatArray);
+
+
+    attributeAffects(aInputGeo, aOutputWeightsDoubleArray);
+    attributeAffects(aInputGeo, aOutputWeightsFloatArray);
+
     return MStatus::kSuccess;
 }
 
 
-MStatus LHCurveWeightNode::getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh, MObject &oInputCurve, MObject &oInputNurbs)
+MStatus LHCurveWeightNode::getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh, MObject &oInputCurve, MObject &oInputNurbs,
+                                       MDataHandle &hInputGeo)
 {
     
     oInputMesh = data.inputValue(LHCurveWeightNode::aInputMesh).asMeshTransformed();
     oInputCurve = data.inputValue(LHCurveWeightNode::aInputCurve).asNurbsCurveTransformed();
     oInputNurbs = data.inputValue(LHCurveWeightNode::aInputNurbs).asNurbsSurfaceTransformed();
+    hInputGeo = data.inputValue(LHCurveWeightNode::aInputGeo);
 
-    if (oInputMesh.isNull() and oInputCurve.isNull() and oInputNurbs.isNull())
+	bool isNumeric;
+    bool isNull;
+    hInputGeo.isGeneric(isNumeric, isNull);
+    if (isNull)
     {
-        MGlobal::displayInfo(MString("Unable to get inMesh, or inCurve"));
+        MGlobal::displayInfo(MString("Unable to get inputGeo"));
         return MS::kFailure;
     }
 
-    if (!oInputMesh.isNull() and !oInputCurve.isNull() and !oInputNurbs.isNull())
-    {
-        MGlobal::displayInfo(MString("Multiple geometry types are connected, please only connect 1 geometry per node"));
-        return MS::kFailure;
-    }
+    // if (oInputMesh.isNull() and oInputCurve.isNull() and oInputNurbs.isNull())
+    // {
+    //     MGlobal::displayInfo(MString("Unable to get inMesh, or inCurve"));
+    //     return MS::kFailure;
+    // }
+
+    // if (!oInputMesh.isNull() and !oInputCurve.isNull() and !oInputNurbs.isNull())
+    // {
+    //     MGlobal::displayInfo(MString("Multiple geometry types are connected, please only connect 1 geometry per node"));
+    //     return MS::kFailure;
+    // }
 
 
     oProjectionMesh = data.inputValue(LHCurveWeightNode::aProjectionMesh).asMeshTransformed();
@@ -467,28 +492,33 @@ MStatus LHCurveWeightNode::getWeightsFromInputs(MDataBlock& data, MDoubleArray& 
     MObject oProjectionMesh;
     MObject oInputCurve;
     MObject oInputNurbs;
+    MDataHandle hInputGeo;
     MPointArray allPoints;
 
-    status = getMeshData(data, oInputMesh, oProjectionMesh, oInputCurve, oInputNurbs);
+    status = getMeshData(data, oInputMesh, oProjectionMesh, oInputCurve, oInputNurbs, hInputGeo);
     CheckStatusReturn( status, "Unable to get meshes" );
 
-    if (!oInputMesh.isNull())
-    {
-        MFnMesh mInputMesh(oInputMesh);
-        mInputMesh.getPoints(allPoints, MSpace::kObject);
-    }
+    MItGeometry iterGeo(hInputGeo);
+    iterGeo.allPositions(allPoints, MSpace::kWorld);
 
-    if (!oInputCurve.isNull())
-    {
-        MFnNurbsCurve mInputCurve(oInputCurve);
-        mInputCurve.getCVs(allPoints, MSpace::kObject);
-    }
 
-    if (!oInputNurbs.isNull())
-    {
-        MFnNurbsSurface mInputSurface(oInputNurbs);
-        mInputSurface.getCVs(allPoints, MSpace::kObject);
-    }
+    // if (!oInputMesh.isNull())
+    // {
+    //     MFnMesh mInputMesh(oInputMesh);
+    //     mInputMesh.getPoints(allPoints, MSpace::kObject);
+    // }
+
+    // if (!oInputCurve.isNull())
+    // {
+    //     MFnNurbsCurve mInputCurve(oInputCurve);
+    //     mInputCurve.getCVs(allPoints, MSpace::kObject);
+    // }
+
+    // if (!oInputNurbs.isNull())
+    // {
+    //     MFnNurbsSurface mInputSurface(oInputNurbs);
+    //     mInputSurface.getCVs(allPoints, MSpace::kObject);
+    // }
 
 
     // MFnMesh *mInputMesh = new MFnMesh(oInputMesh);
@@ -600,7 +630,8 @@ MStatus LHCurveWeightNode::setDependentsDirty( MPlug const & inPlug,
         & (inPlug.attribute() != aMembershipWeights)
         & (inPlug.attribute() != aCacheMembershipWeights)
         & (inPlug.attribute() != aProjectionMesh)
-        & (inPlug.attribute() != aCacheWeightMesh))
+        & (inPlug.attribute() != aCacheWeightMesh)
+        & (inPlug.attribute() != aInputGeo))
         {
             return MS::kSuccess;
         }

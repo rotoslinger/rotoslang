@@ -84,11 +84,10 @@ def facesFromWeightmap(weightAttribute="cluster1.weightList[0].weights", newGeoN
     return newMesh, newMeshTransform
 
 
-def getPointPositionByWeights(weightList, mesh, threshold = .9):
-    fnMesh = misc.getOMMesh(mesh)
-    meshDag = misc.getDag(mesh)
+def getPointPositionByWeights(weightList, geo, threshold = .9):
+    iterGeo = misc.getOMItergeo(geo)
     allPoints = OpenMaya.MPointArray()
-    fnMesh.getPoints(allPoints)
+    iterGeo.allPositions(allPoints, OpenMaya.MSpace.kWorld)
     bBox = OpenMaya.MBoundingBox()
     for idx in range(len(weightList)):
         if weightList[idx] >= threshold:
@@ -129,9 +128,8 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
     falloffKeyframes = []
     ratio = timeRange/num
     midpoint = num/2
+    alreadyExists = False
     for idx in range(num):
-        # print idx, "IDX !!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        # print num, "NUUUUUUUUM"
         count = idx
         side = "L"
         formatName = "{0}_{1}{2:02}_{3}"
@@ -144,7 +142,23 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
         if idx > midpoint:
             side = "R"
             count = num -1 - idx
-        weightCurve = getNodeAgnostic(nodeType="animCurveTU", name=formatName.format(side, name, count, suffix), parent=None)
+        generatedName = formatName.format(side, name, count, suffix)
+
+        if cmds.objExists(generatedName):
+            keyframes.append(generatedName)
+            # Assumes the falloff also exists
+            falloffName = formatNameFalloff.format(side, name, count, suffix)
+            if not singleFalloffName:
+                singleFalloffName = name
+            if createSingleFalloff:
+                falloffName = "{0}Falloff_{1}".format(singleFalloffName, suffix)
+            falloffKeyframes.append(falloffName)
+            # Potentially dangerous.  Assumes that if one of the curves exists, all of them exist and will skip some later steps
+            # Be extremely careful when naming or this could come back to bite you!!!
+            alreadyExists = True
+            continue
+
+        weightCurve = getNodeAgnostic(nodeType="animCurveTU", name=generatedName, parent=None)
         try:
             cmds.cutKey(weightCurve, cl=True, option="keys")
         except:
@@ -190,9 +204,6 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                 currLeftIntermediateVal = intermediateVal
                 currRightIntermediateVal = lastIntermediateVal
 
-
-
-
             time=fIdx+key
             if key == 0:
                 itt = "linear"
@@ -200,20 +211,6 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                 val=0.0
                 time=fIdx+key + offset
                 time=time+nudge
-            # if key == 1:
-            #     itt = "spline"
-            #     ott = "spline"
-            #     val=currLeftIntermediateVal
-            #     time=fIdx+key + offset
-            #     time=time+nudge
-
-            # if key == 3:
-            #     itt = "spline"
-            #     ott = "spline"
-            #     val=currRightIntermediateVal
-            #     time=fIdx+key - offset
-            #     time=time-nudge
-
 
             if key == 2:
                 itt = "fast"
@@ -223,37 +220,10 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                 time=time-nudge
 
 
-            # inTangentType(itt)	string	create
-            # The in tangent type for keyframes set by this command. Valid values are "spline," "linear," "fast," "slow," "flat," "step," and "clamped." Default is "keyTangent -q -g -inTangentType"
-            # outTangentType(ott)	string	create
-            # The out tangent type for keyframes set by this command. Valid values are "spline," "linear," "fast," "slow," "flat," "step," and "clamped." Default is "keyTangent -q -g -outTangentType"
             cmds.setKeyframe(weightCurve, v=val, breakdown=0,
                                 hierarchy="none", controlPoints=2,
                                 shape=0, time=time, itt=itt, ott=ott)
-            # cmds.keyTangent( weightCurve, edit=True, time=(idx+key,idx+key), absolute=True, outAngle=100, outWeight=5,wl=False, weightedTangents=False)
-            # cmds.keyTangent( weightCurve, edit=True, time=(idx+key,idx+key), absolute=True, outAngle=100, outWeight=5, l=False, weightedTangents=False)
-            # angle = angle
             time = (time,time)
-
-
-
-            # currentLeftAngle = angle
-            # currentLeftIntermediateAngle = intermediateAngle
-
-            # currentRightAngle = -angle
-            # currentRightIntermediateAngle = -intermediateAngle
-
-            # if idx == 0:
-            #     currentLeftAngle = lastAngle
-            #     currentRightAngle = -angle
-            #     currentLeftIntermediateAngle = lastIntermediateAngle
-            #     currentRightIntermediateAngle = -intermediateAngle
-
-            # if idx == num-1:
-            #     currentLeftAngle = angle
-            #     currentRightAngle = -lastAngle
-            #     currentLeftIntermediateAngle = intermediateAngle
-            #     currentRightIntermediateAngle = -lastIntermediateAngle
 
 
 
@@ -262,29 +232,18 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                 cmds.keyTangent( weightCurve, time=time, edit=True,  lock=False)
                 cmds.keyTangent( weightCurve, time=time, edit=True,  outWeight=outerWeight, inWeight=outerWeight, outAngle=currentLeftAngle,inAngle=0)
 
-            # if key == 1:
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  lock=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True, outAngle=currentLeftIntermediateAngle)
-
             if key == 1:
                 cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
                 cmds.keyTangent( weightCurve, time=time, edit=True,  outWeight=centerWeight, inWeight=centerWeight, outAngle=0,inAngle=0)
-
-            # if key == 3:
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True,  lock=True)
-            #     cmds.keyTangent( weightCurve, time=time, edit=True, outAngle=currentRightIntermediateAngle)
 
             if key == 2:
                 cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
                 cmds.keyTangent( weightCurve, time=time, edit=True,  lock=False)
                 cmds.keyTangent( weightCurve, time=time, edit=True,  outWeight=outerWeight, inWeight=outerWeight, outAngle=0,inAngle=currentRightAngle)
-    # lastTime = cmds.findKeyframe(keyframes[-1], index=(4,4), time=True)
-    # lastTime = (cmds.keyframe(keyframes[-1], indexValue=True, q=True))[-1]
+    if alreadyExists:
+        return keyframes, falloffKeyframes
 
     flatTime = int(time[0])
-    # scaleAmt = float(timeRange)/(float(time[0])+1.0)
     scaleAmt = float(timeRange)/float(flatTime)
     cmds.scaleKey(keyframes,
                 scaleSpecifiedKeys = False,
@@ -314,10 +273,6 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                  falloffEnd=falloffEnd)
     
     return keyframes, falloffKeyframes
-        # weightCurvesFalloff = getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
-        # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
-        # initUKeyframes(weightCurves)
-        # initVKeyframes(weightCurvesFalloff)
 
 
 def getNodeAgnostic(name, nodeType, parent):

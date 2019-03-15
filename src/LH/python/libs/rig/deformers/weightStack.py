@@ -1,9 +1,5 @@
 from maya import cmds
 from rig.utils import weightMapUtils, misc
-
-# from deformers.utils import deformerUtils.getPointPositionByWeights, deformerUtils.nameBasedOnRange, deformerUtils.createNormalizedAnimWeights, \
-#     deformerUtils.getNodeAgnosticMultiple, deformerUtils.initUKeyframes, deformerUtils.initVKeyframesLinear, deformerUtils.checkOutputWeightType, deformerUtils.availableElemCheck, deformerUtils.attrCheck
-
 from deformers import utils as deformerUtils
 
 reload(deformerUtils)
@@ -206,7 +202,13 @@ class AnimCurveWeight(Node):
     def inputConnections(self):
         cmds.connectAttr(self.membershipWeights, "{0}.membershipWeights".format(self.node), f=True)
         cmds.connectAttr("{0}.worldMesh".format(self.projectionMesh), "{0}.projectionMesh".format(self.node), f=True)
-        cmds.connectAttr("{0}.worldMesh".format(self.baseMesh), "{0}.inMesh".format(self.node), f=True)
+        geoAttrType = ".worldMesh"
+        objectType = cmds.objectType(self.baseMesh)
+        if objectType == "nurbsCurve" or objectType == "nurbsSurface":
+            geoAttrType = ".worldSpace"
+        if objectType == "lattice":
+            geoAttrType = ".worldLattice"
+        cmds.connectAttr("{0}{1}".format(self.baseMesh, geoAttrType), "{0}.inputGeo".format(self.node), f=True)
 
         # format the output attribute for the anim curves so you don't have to do it in the loop
         self.uCurveOutAttrs = ["{0}.output".format(x) for x in self.weightCurves]
@@ -480,7 +482,6 @@ class WeightStack(Node):
             weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
             weightList = cmds.getAttr(weightList)
             height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight)
-            # height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, "deformMesh")
             self.positionsFromWeights.append([center.x + self.controlPositionOffset[0], center.y + self.controlPositionOffset[1], center.z + self.controlPositionOffset[2]])
             rotate = [0,0,0]
             if self.controlAutoOrientMesh:
@@ -493,7 +494,7 @@ class WeightStack(Node):
                 self.rotationsFromWeights.append(rotate)
             
             side, name = misc.getNameSide(self.factorAttrNames[idx])
-            if cmds.objExists("{0}_{1}_MRC".format(side, name)):
+            if cmds.objExists("{0}_{1}_CPT".format(side, name)):
                 continue
             sxConnect = None
             if self.connectFalloff and self.falloffCurveWeightNode:

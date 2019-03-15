@@ -104,26 +104,20 @@ def createMultiWeightMapOnDeformer(deformer=None,
     return returnAttrs
 
 def setDefaultWeights(name, attrName, dataType, defaultValue=1.0):
-    # if cmds.objectType(name) == "mesh":
-    #     count = cmds.polyEvaluate(name, v=True)
-    # if cmds.objectType(name) == "nurbsCurve":
-    #     curve = misc.getOMNurbsCurve(name)
-    #     count = curve.numCVs()
-    # if cmds.objectType(name) == "nurbsSurface":
-    #     curve = misc.getOMNurbsSurface(name)
-    #     count = curve.numCVs()
     iterGeo = misc.getOMItergeo(name)
     count = iterGeo.count()
     defaultVals = [defaultValue for x in range(count)]
     cmds.setAttr(name + "." + attrName, defaultVals, type=dataType)
 
 def setDefaultWeightsWithDeformer(meshName, deformerName, attrName, dataType, defaultValue=1.0):
-    polyCount = cmds.polyEvaluate(meshName, v=True)
+    iterGeo = misc.getOMItergeo(name)
+    polyCount = iterGeo.count()
     defaultVals = [defaultValue for x in range(polyCount)]
     cmds.setAttr(deformerName + "." + attrName, defaultVals, type=dataType)
 
 def setDefaultMultiWeightsWithDeformer(meshName, deformerName, attrName, multiAttrName, dataType, defaultValue=1.0):
-    polyCount = cmds.polyEvaluate(meshName, v=True)
+    iterGeo = misc.getOMItergeo(name)
+    polyCount = iterGeo.count()
     defaultVals = [defaultValue for x in range(polyCount)]
     finalAttrName = "{0}.{1}[0].{2}".format(deformerName, multiAttrName, attrName)
     cmds.setAttr(finalAttrName, defaultVals, type=dataType)

@@ -25,37 +25,40 @@ reload(slideSimple)
 # reload(base)
 
 def Lip(name="lowerLip",
-             tierCount1=1,
-             tierCount2=3,
-             tierCount3=9,
+        ctrlName = None,
+        tierCount1=1,
+        tierCount2=3,
+        tierCount3=9,
 
-             ctrlSize1=1,
-             ctrlSize2=.65,
-             ctrlSize3=.35,
+        ctrlSize1=1,
+        ctrlSize2=.65,
+        ctrlSize3=.35,
 
-             ctrlShapeOffset1=[0,0.0,2],
-             ctrlShapeOffset2=[0,0.0,2],
-             ctrlShapeOffset3=[0,0.0,2],
+        ctrlShapeOffset1=[0,0.0,2],
+        ctrlShapeOffset2=[0,0.0,2],
+        ctrlShapeOffset3=[0,0.0,2],
 
-             ctrlAutoPositionThreshold = .9,
+        ctrlAutoPositionThreshold = .9,
 
-             ctrlPosOffset1=[0, 0.0, 0],
-             ctrlPosOffset2=[0, 0.0, 0],
-             ctrlPosOffset3=[0, 0.0, 0],
+        ctrlPosOffset1=[0, 0.0, 0],
+        ctrlPosOffset2=[0, 0.0, 0],
+        ctrlPosOffset3=[0, 0.0, 0],
 
-             controlSpeedDefaults = [.1,.1,.1],
+        controlSpeedDefaults = [.1,.1,.1],
 
-             controlAutoOrientMesh="slide",
+        controlAutoOrientMesh="slide",
 
-             falloffDefaults=(-10, -9.9, -4, 10.0),
-             fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/humanLipTest.ma",
-             deformMesh="humanLipsLower",
-             base="humanLipsLowerBase",
-             projectionMesh="lowLipProjection",
-             slidePatch="slide",
-             slidePatchBase="slideBase"):
+        falloffDefaults=(-10, -9.9, -4, 10.0),
+        fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/humanLipTest.ma",
+        deformMesh="humanLipsLower",
+        base="humanLipsLowerBase",
+        projectionMesh="lowLipProjection",
+        slidePatch="slide",
+        slidePatchBase="slideBase"):
+    if not ctrlName:
+        ctrlName = name
     if fileName:
-        cmds.file( fileName, o=True, f=True )
+        cmds.file( fileName, i=True, f=True )
 
 
     control = cmds.circle(n= name + "Control", nr=[0,1,0])[0]
@@ -86,8 +89,8 @@ def Lip(name="lowerLip",
                                         weightAttrNames=[],
                                         addNewElem=False,
                                         autoCreateAnimCurves = True,
-                                        autoCreateName = name + "Primary",
-                                        singleFalloffName = name,
+                                        autoCreateName = ctrlName + "Primary",
+                                        singleFalloffName = ctrlName,
                                         autoCreateNum = tierCount1,
                                         falloffDefaults=falloffDefaults,
                                         autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
@@ -116,13 +119,13 @@ def Lip(name="lowerLip",
                                     connectFalloff = False,
                                     isOutputKDoubleArray=True,
                                     # falloffCurveWeightNode="TestCurveWeights",
-                                    autoCreateName=name + "Primary",
+                                    autoCreateName=ctrlName + "Primary",
                                     controlSize = ctrlSize1,
                                     controlOffset = ctrlShapeOffset1,
                                     )
     stack.create()
     position = cmds.xform(stack.controls[0], q=True, t=True)
-    curveWeights.setFalloffDefaults()
+    # curveWeights.setFalloffDefaults()
     matDef = matrixDeformer.MatrixDeformer(name=name + "MatrixDeformer1",
                                     geoToDeform=deformMesh,
                                     # parent=stack.controls,
@@ -160,8 +163,8 @@ def Lip(name="lowerLip",
                                         weightAttrNames=[],
                                         addNewElem=True,
                                         autoCreateAnimCurves = True,
-                                        autoCreateName = name + "Secondary",
-                                        singleFalloffName = name,
+                                        autoCreateName = ctrlName + "Secondary",
+                                        singleFalloffName = ctrlName,
                                         autoCreateNum = tierCount2,
                                         autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
                                         #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
@@ -186,14 +189,14 @@ def Lip(name="lowerLip",
                                     controlRivetAimMesh=slidePatch,
                                     controlSpeedDefaults = controlSpeedDefaults,
                                     falloffCurveWeightNode=name + "CurveWeights",
-                                    autoCreateName = name + "Secondary",
+                                    autoCreateName = ctrlName + "Secondary",
                                     isOutputKDoubleArray=True,
                                     controlSize = ctrlSize2,
                                     controlOffset = ctrlShapeOffset2,
                                     falloffElemStart = tierCount1
                                     )
     stack.create()
-    curveWeights.setFalloffDefaults()
+    # curveWeights.setFalloffDefaults()
 
     matDef = matrixDeformer.MatrixDeformer(name=name + "MatrixDeformer2",
                                     geoToDeform=deformMesh,
@@ -219,8 +222,8 @@ def Lip(name="lowerLip",
                                         weightAttrNames=[],
                                         addNewElem=True,
                                         autoCreateAnimCurves = True,
-                                        autoCreateName = name + "Tertiary",
-                                        singleFalloffName = name,
+                                        autoCreateName = ctrlName + "Tertiary",
+                                        singleFalloffName = ctrlName,
                                         autoCreateNum = tierCount3,
                                         autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
                                         #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
@@ -245,14 +248,14 @@ def Lip(name="lowerLip",
                                     controlRivetAimMesh=slidePatch,
                                     controlSpeedDefaults = controlSpeedDefaults,
                                     falloffCurveWeightNode=name + "CurveWeights",
-                                    autoCreateName=name + "Tertiary",
+                                    autoCreateName=ctrlName + "Tertiary",
                                     isOutputKDoubleArray=True,
                                     controlSize = ctrlSize3,
                                     controlOffset = ctrlShapeOffset3,
                                     falloffElemStart = tierCount2 + tierCount1
                                     )
     stack.create()
-    curveWeights.setFalloffDefaults()
+    # curveWeights.setFalloffDefaults()
 
     matDef = matrixDeformer.MatrixDeformer(name=name + "MatrixDeformer3",
                                     geoToDeform=deformMesh,

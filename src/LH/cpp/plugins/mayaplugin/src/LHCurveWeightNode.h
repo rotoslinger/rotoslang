@@ -27,7 +27,8 @@
 #include <maya/MFnMesh.h>
 #include <maya/MFnNurbsCurve.h>
 #include <maya/MFnNurbsSurface.h>
-
+#include <maya/MFnGenericAttribute.h>
+#include <maya/MItGeometry.h>
 #include <maya/MFloatArray.h>
 #include <maya/MMeshIntersector.h>
 #include <maya/MFnAnimCurve.h>
@@ -44,7 +45,7 @@ class LHCurveWeightNode : public MPxNode
     virtual MStatus setDependentsDirty(MPlug const &inPlug,
                                        MPlugArray &affectedPlugs);
 
-    virtual MStatus getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh, MObject &oInputCurve, MObject &oInputNurbs);
+    virtual MStatus getMeshData(MDataBlock& data, MObject &oInputMesh, MObject &oProjectionMesh, MObject &oInputCurve, MObject &oInputNurbs, MDataHandle &hInputGeo);
     MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
     MStatus getWeightMeshDataFromPoints(MObject oProjectionMesh, MPointArray allPoints, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
 
@@ -85,6 +86,7 @@ class LHCurveWeightNode : public MPxNode
     static MObject aAnimCurveV;
     static MObject aFalloffU;
     static MObject aFalloffUPivot;
+    static MObject aInputGeo;
 
 
 
