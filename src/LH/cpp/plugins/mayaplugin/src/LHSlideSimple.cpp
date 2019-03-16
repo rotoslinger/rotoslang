@@ -151,31 +151,34 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
   fnSurface = new MFnNurbsSurface(oSurface);
   fnSurfaceBase = new MFnNurbsSurface(oSurfaceBase);
 
-  if (!cacheBind || !deformedVertIds.size() || deformedVertIds.size() < mIndex ||  !deformedVertIds[mIndex].length())
+  if (!cacheBind || !deformedVertIds.size() || deformedVertIds.size()-1 < mIndex ||  !deformedVertIds[mIndex].length())
   {
     MGlobal::displayInfo(MString("NOT CACHING"));
     status =  GetAllBaseGeoIter(data);
     CheckStatusReturn( status, "Couldn't get base Geometry" );
-    LHSlideSimple::CacheDeformPointMembership(data);
+    status = LHSlideSimple::CacheDeformPointMembership(data);
+    CheckStatusReturn( status, "Couldn't get membership weights" );
   }
 
-  if (!deformedVertIds.size() || deformedVertIds.size() < mIndex ||  !deformedVertIds[mIndex].length())
+  if (!deformedVertIds.size() || deformedVertIds.size()-1 < mIndex ||  !deformedVertIds[mIndex].length())
   {
-    MGlobal::displayInfo(MString("NOT CACHING"));
+      MGlobal::displayInfo(MString("NOT CACHING"));
       MGlobal::displayError(MString("Weight missmatch, make sure you have the same number of weights as inputGeometry"));
       return MS::kFailure;
   }
 
-  if (!cacheBind || !slideUParam.size() || slideUParam.size() < mIndex ||  !slideUParam[mIndex].length())
+  if (!cacheBind || !slideUParam.size() || slideUParam.size()-1 < mIndex ||  !slideUParam[mIndex].length())
   {
     MGlobal::displayInfo(MString("NOT CACHING"));
-    LHSlideSimple::CacheClosestPoints();
+    status = LHSlideSimple::CacheClosestPoints();
+    CheckStatusReturn( status, "Couldn't cache closest points" );
   }
 
-  if (!cacheBind || !baseEuler.size() || baseEuler.size() < mIndex ||  !baseEuler[mIndex].size() || baseEuler[mIndex].size() != deformedVertIds[mIndex].length())
+  if (!cacheBind || !baseEuler.size() || baseEuler.size()-1 < mIndex ||  !baseEuler[mIndex].size() || baseEuler[mIndex].size() != deformedVertIds[mIndex].length())
   {
     MGlobal::displayInfo(MString("NOT CACHING"));
-    LHSlideSimple::CacheBaseRotations();
+    status = LHSlideSimple::CacheBaseRotations();
+    CheckStatusReturn( status, "Couldn't cache base rotations" );
   }
 // getWeights(MDataBlock &data, int mIndex, MDoubleArray &rDoubleArray, MObject weightObject)
   status =  LHSlideSimple::getWeights(data, mIndex, uWeights, aUWeights);
@@ -435,8 +438,16 @@ MStatus LHSlideSimple::CacheBaseRotations()
     {
       baseEuler.clear();
     }
+    if (!allGeoIter.size())
+    {
+      return MS::kFailure;
+    }
     for (int x=0;x < allGeoIter.size(); x++)
     {
+      if (!deformedVertIds.size() || deformedVertIds.size()-1 < x || !deformedVertIds[x].length())
+      {
+        return MS::kFailure;
+      }
       allGeoIter[x]->allPositions(currentGeoPoints);
       std::vector <  MEulerRotation > tempBaseEuler;
       for (int i=0;i < deformedVertIds[x].length(); i++)
@@ -484,6 +495,13 @@ MStatus LHSlideSimple::GetAllBaseGeoIter(MDataBlock &data)
       MDataHandle hInput =inputsArrayHandle.inputValue(&status);
       CheckStatusReturn( status, "Couldn't get inputHandle" );
       MDataHandle hBaseMesh =hInput.child( aBaseGeo );
+      bool isNumeric;
+      bool isNull;
+      hBaseMesh.isGeneric( isNumeric, isNull );
+      if (isNull)
+      {
+        CheckStatusReturn( MS::kFailure, "couldn't get base mesh at this MIndex" );
+      }
       MItGeometry* baseIter = new MItGeometry(hBaseMesh, true, &status);
       CheckStatusReturn( status, "Couldn't get baseMesh" );
       allGeoIter.push_back(baseIter);
@@ -513,8 +531,16 @@ MStatus LHSlideSimple::CacheClosestPoints()
   fnSurfaceBase->getKnotDomain(uMinParam,uMaxParam,vMinParam,vMaxParam);
   MNurbsIntersector fnBaseIntersector;
   fnBaseIntersector.create(oSurfaceBase);
+  if (!allGeoIter.size())
+  {
+    return MS::kFailure;
+  }
   for (int x=0;x < allGeoIter.size(); x++)
   {
+    if (!deformedVertIds.size() || deformedVertIds.size()-1 < x || !deformedVertIds[x].length())
+    {
+      return MS::kFailure;
+    }
     allGeoIter[x]->allPositions(currentGeoPoints);
     MDoubleArray tempSlideUParam, tempSlideVParam;
     MPointArray tempClosestPointArray;

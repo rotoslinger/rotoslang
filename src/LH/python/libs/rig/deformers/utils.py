@@ -94,6 +94,20 @@ def getPointPositionByWeights(weightList, geo, threshold = .9):
             bBox.expand(allPoints[idx])
     return bBox.height(), bBox.width(), bBox.depth(), bBox.center()
 
+def getPointPositionBySelectedVerts():
+    #!!!! use `moveManipulatorContext` to simplify this to 1 line!!!!!
+    verts = cmds.ls(sl=True, fl=True)
+    geo = verts[0].split(".")[0]
+    verts = [int(x.split("[")[1].split("]")[0]) for x in verts]
+    iterGeo = misc.getOMItergeo(geo)
+    allPoints = OpenMaya.MPointArray()
+    iterGeo.allPositions(allPoints, OpenMaya.MSpace.kWorld)
+    bBox = OpenMaya.MBoundingBox()
+    for idx in range(len(verts)):
+        bBox.expand(allPoints[verts[idx]])
+    return bBox.center().x, bBox.center().y, bBox.center().z
+    # return bBox.height(), bBox.width(), bBox.depth(), bBox.center()
+
 
 def nameBasedOnRange(count, name, suffixSeperator="_", suffix="", ):
     retNames = []

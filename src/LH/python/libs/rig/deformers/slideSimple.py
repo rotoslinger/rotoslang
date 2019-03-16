@@ -9,6 +9,7 @@ class SlideSimple(object):
     def __init__(self,
                     name="testSlideSimple",
                     deformerType="LHSlideSimple",
+                    membershipWeightsAttr = "",
                     geoToDeform="",
                     baseGeoToDeform="",
                     slidePatch="",
@@ -28,6 +29,7 @@ class SlideSimple(object):
         self.name = name
         self.addAtIndex = addAtIndex
         self.deformerType = deformerType
+        self.membershipWeightsAttr = membershipWeightsAttr
         self.geoToDeform = geoToDeform
         self.baseGeoToDeform = baseGeoToDeform
         self.slidePatch = slidePatch
@@ -55,48 +57,54 @@ class SlideSimple(object):
     def getNodes(self):
         self.slidePatch = misc.getShape(self.slidePatch)
         self.slidePatchBase = misc.getShape(self.slidePatchBase)
-        self.baseGeoToDeform = misc.getShape(self.baseGeoToDeform)
+        if not type(self.baseGeoToDeform) == list:
+            self.baseGeoToDeform = [self.baseGeoToDeform]
+        for idx, geo in enumerate(self.baseGeoToDeform):
+            self.baseGeoToDeform[idx] = misc.getShape(geo)
 
-    def setDefaultLocations(self):
+    def setDefaults(self):
         # weightMapUtils.setDefaultMultiWeightsWithDeformer(meshName, deformerName, attrName, multiAttrName, dataType, defaultValue=1.0):
         # polyCount = cmds.polyEvaluate(self.geoToDeform, v=True)
-        iterGeo = misc.getOMItergeo(self.geoToDeform)
-        polyCount = iterGeo.count()
-        defaultVals = [1.0 for x in range(polyCount)]
-        finalAttrName = "{0}.{1}[0].{2}".format(self.deformer, "weightArrays", "membershipWeight")
-        cmds.getAttr(finalAttrName)
-        cmds.setAttr(finalAttrName, defaultVals, type="doubleArray")
-        
+        if not type(self.geoToDeform) == list:
+            self.geoToDeform = [self.geoToDeform]
+        for idx, deformGeo in enumerate(self.geoToDeform):
+            # deformGeo = self.geoToDeform
+            # if type(self.geoToDeform) == list:
+            #     deformGeo = self.geoToDeform[0]
+            iterGeo = misc.getOMItergeo(deformGeo)
+            polyCount = iterGeo.count()
+            defaultVals = [1.0 for x in range(polyCount)]
+            finalAttrName = "{0}.{1}[{2}].{3}".format(self.deformer, "weightArrays", idx, "membershipWeight")
+            cmds.getAttr(finalAttrName)
+            cmds.setAttr(finalAttrName, defaultVals, type="doubleArray")
+
     def connectDeformer(self):
         cmds.connectAttr(self.slidePatch + ".worldSpace", self.deformer + ".surface")
         cmds.connectAttr(self.slidePatchBase + ".worldSpace", self.deformer + ".surfaceBase")
 
-        geoAttrType = ".worldMesh"
-        objectType = cmds.objectType(self.baseGeoToDeform)
-        if objectType == "nurbsCurve" or objectType == "nurbsSurface":
-            geoAttrType = ".worldSpace"
-        if objectType == "lattice":
-            geoAttrType = ".worldLattice"
+        if not type(self.baseGeoToDeform) == list:
+            self.baseGeoToDeform = [self.baseGeoToDeform]
 
+        for idx, geo in enumerate(self.baseGeoToDeform):
+            geoAttrType = ".worldMesh"
+            objectType = cmds.objectType(geo)
+            if objectType == "nurbsCurve" or objectType == "nurbsSurface":
+                geoAttrType = ".worldSpace"
+            if objectType == "lattice":
+                geoAttrType = ".worldLattice"
 
-        cmds.connectAttr(self.baseGeoToDeform + geoAttrType, self.deformer + ".weightArrays[0].baseGeo")
+            cmds.connectAttr(geo + geoAttrType, self.deformer + ".weightArrays[{0}].baseGeo".format(idx))
+            if not cmds.objExists(self.membershipWeightsAttr):
+                continue
+            cmds.connectAttr(self.membershipWeightsAttr, self.deformer + ".weightArrays[{0}].membershipWeight".format(idx))
 
     def cleanup(self):
         return
-        # for node in self.matrixNodes + self.matrixBaseNodes:
-        #     if self.hide:
-        #         cmds.setAttr(node + ".visibility", 0)
-        #     if not self.centerToParent:
-        #         continue
-        #     if cmds.listRelatives(node, p=True):
-        #         cmds.xform(node, os=True, t=[0,0,0], ro=[0,0,0])
-
-
 
     def create(self):
         self.getDeformer()
         self.getNodes()
-        self.setDefaultLocations()
+        self.setDefaults()
         self.connectDeformer()
         self.cleanup()
 

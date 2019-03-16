@@ -143,6 +143,12 @@ class AnimCurveWeight(Node):
 
         self.nodeType = "LHCurveWeightNode"
 
+        # only support single base mesh for now
+        if type(self.baseGeo) == list:
+            self.baseGeo = self.baseGeo[0]
+
+
+
 
     def check(self):
         if not self.outputAttrs:
@@ -314,7 +320,7 @@ class WeightStack(Node):
                  createControl = True,
                  controlSize = .05,
                  controlOffset = [0,0,.1],
-                 controlPositionByWeightsThreshold=.9,
+                 controlPositionWeightsThreshold=.9,
                  controlPositionOffset=[0,0,0],
                  controlAutoOrientMesh="",
                  controlRivetMesh = "",
@@ -326,6 +332,7 @@ class WeightStack(Node):
                  falloffCurveWeightNode = "",
                  falloffElemStart = 0,
                  controlSpeedDefaults = [.1,.1,.1],
+                 outputToBlendshape=False,
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -348,7 +355,7 @@ class WeightStack(Node):
         self.createControl = createControl
         self.controlSize = controlSize
         self.controlOffset = controlOffset
-        self.controlPositionByWeightsThreshold = controlPositionByWeightsThreshold
+        self.controlPositionWeightsThreshold = controlPositionWeightsThreshold
         self.controlPositionOffset = controlPositionOffset
         self.controlAutoOrientMesh = controlAutoOrientMesh
         self.UDLR = UDLR
@@ -372,7 +379,10 @@ class WeightStack(Node):
         self.controls = []
         self.positionsFromWeights = []
         self.rotationsFromWeights = []
-
+        self.outputToBlendshape = outputToBlendshape
+        # Don't support multiple geos right now
+        if type(self.geoToWeight) == list:
+            self.geoToWeight = self.geoToWeight[0]
 
     def check(self):
         if self.autoCreate:
@@ -386,6 +396,8 @@ class WeightStack(Node):
 
     def getNode(self):
         super(WeightStack, self).getNode()
+        if not self.UDLR:
+            return
         if cmds.objExists(self.name_LR):
             self.node_LR = self.name_LR
             return
@@ -441,7 +453,7 @@ class WeightStack(Node):
         for idx in range(len(self.weightMapAttrs)):
             elemIdx = idx + self.startElem
             weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
-            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight, self.controlPositionByWeightsThreshold)
+            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight, self.controlPositionWeightsThreshold)
             positionsFromWeights.append([center.x, center.y, center.z])
         return positionsFromWeights
 
@@ -458,7 +470,11 @@ class WeightStack(Node):
             return
         for idx, attr in enumerate(self.outputAttrs):
             # attrType = deformerUtils.checkOutputWeightType(attr)
-            
+            if self.outputToBlendshape:
+                cmds.connectAttr("{0}.outWeightsFloatArray[0].outFloatWeights[0]".format(self.node), attr, f=True)
+                return
+
+
             if self.isOutputKDoubleArray:
                 # If True, then this output attribute will get the kDoubleArray Output
                 cmds.connectAttr("{0}.outWeightsDoubleArray".format(self.node), attr, f=True)
@@ -481,7 +497,7 @@ class WeightStack(Node):
                 txConnect = "{0}.inputs[{1}].factor".format(self.node_LR, elemIdx)
             weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx)
             weightList = cmds.getAttr(weightList)
-            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight)
+            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight, self.controlPositionWeightsThreshold)
             self.positionsFromWeights.append([center.x + self.controlPositionOffset[0], center.y + self.controlPositionOffset[1], center.z + self.controlPositionOffset[2]])
             rotate = [0,0,0]
             if self.controlAutoOrientMesh:
@@ -495,6 +511,15 @@ class WeightStack(Node):
             
             side, name = misc.getNameSide(self.factorAttrNames[idx])
             if cmds.objExists("{0}_{1}_CPT".format(side, name)):
+                ctrlName = "{0}_{1}_CTL".format(side, name)
+                if ctrlName not in self.controls:
+                    self.controls.append(ctrlName)
+                    # "txOut", "tyOut", "tzOut"
+                    txConnectionAttr=txConnect
+                    cmds.connectAttr(ctrlName + ".txOut", txConnect, f=True)
+                    tyConnectionAttr="{0}.inputs[{1}].factor".format(self.node, elemIdx)
+                    cmds.connectAttr(ctrlName + ".tyOut", tyConnectionAttr, f=True)
+
                 continue
             sxConnect = None
             if self.connectFalloff and self.falloffCurveWeightNode:

@@ -2122,7 +2122,8 @@ def create_sec_bind_skel(children = [],
 
 def getShape(mayaObject):
     # double check it isn't already a mesh, just in case a transform is passed in...
-    if cmds.objectType(mayaObject) == "mesh":
+    objectType = cmds.objectType(mayaObject)
+    if objectType == "mesh" or objectType == "nurbsCurve" or objectType == "nurbsSurface" or objectType == "lattice":
         return mayaObject
     relatives = cmds.listRelatives(mayaObject, shapes=True)
     if relatives:
