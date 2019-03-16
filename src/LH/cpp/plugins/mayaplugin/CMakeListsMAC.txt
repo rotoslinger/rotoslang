@@ -1,4 +1,3 @@
-
 if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
@@ -73,8 +72,7 @@ if(LINUX)
         "src/LHTemplateGPUDeformer.cpp"
         "src/LHTemplateGPUDeformer.h"
         "src/LHTemplateGPUDeformer.cl"
-        "src/LHMultiWrap.h"
-        "src/LHMultiWrap.cpp"
+
     )
 
     add_library(collision SHARED ${source_files})
@@ -117,4 +115,3 @@ else()
 
     add_subdirectory(src)
 endif()
-
