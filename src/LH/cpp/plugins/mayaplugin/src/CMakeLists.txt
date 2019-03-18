@@ -58,6 +58,7 @@ set(SOURCE_FILES
 	"LHNakedLocator.h"
 	"LHMatrixDeformer.cpp"
 	"LHMatrixDeformer.h"
+	"LHBlendshapeSimple.cpp"
 
 
 )
