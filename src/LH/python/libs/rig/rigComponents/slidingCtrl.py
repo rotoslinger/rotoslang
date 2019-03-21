@@ -6,7 +6,7 @@ from rig.utils import exportUtils
 from rig.utils import faceWeights
 
 
-class component(base.component):
+class Component(base.Component):
     def __init__(self,
                  uSpeedDefault=.05,
                  vSpeedDefault=.05,
@@ -20,6 +20,7 @@ class component(base.component):
                  vOutConnectionAttr="",
                  curveData=None,
                  **kw):
+        super(Component, self).__init__(**kw)
         self.uSpeedDefault = uSpeedDefault
         self.vSpeedDefault = vSpeedDefault
         self.initUDefault = initUDefault
@@ -31,7 +32,7 @@ class component(base.component):
         self.uOutConnectionAttr = uOutConnectionAttr
         self.vOutConnectionAttr = vOutConnectionAttr
         self.curveData = curveData
-        super(component, self).__init__(**kw)
+        self.componentName = "slidingCtrl"
 
 
     def createCtrl(self):
@@ -50,29 +51,32 @@ class component(base.component):
                                     gimbal=True,
                                     size=.5)
 
+        # self.buffer1 = self.ctrl.buffers[1]
+        # self.buffer2 = self.ctrl.buffers[0]
+        #
         self.ctrlOffset = self.ctrl.buffers[0]
         self.ctrlInverseMatrix = self.ctrl.buffers[1]
         self.ctrl = self.ctrl.ctl
-        if self.curveData:
-            # get Curve data for transfer
-            sourceCurve = cmds.listRelatives(self.ctrl, type = "nurbsCurve")[0]
-            color = cmds.getAttr(sourceCurve + ".overrideColor")
-            override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
-            colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
-            colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
-            colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
-            cmds.delete(sourceCurve)
-            
-            # create curve
-            curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
-            
-            # transfer Curve data
-            cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
-            cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
-            cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
+        # if self.curveData:
+        #     # get Curve data for transfer
+        #     sourceCurve = cmds.listRelatives(self.ctrl, type = "nurbsCurve")[0]
+        #     color = cmds.getAttr(sourceCurve + ".overrideColor")
+        #     override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
+        #     colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
+        #     colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
+        #     colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
+        #     cmds.delete(sourceCurve)
+        #
+        #     # create curve
+        #     curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
+        #
+        #     # transfer Curve data
+        #     cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
 
 
 
@@ -284,7 +288,7 @@ def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False):
         nurbs = cmds.listConnections(surf + ".inputSurface", s=True, t="nurbsSurface", et=True)[0]
 
         # Create component with Opposite side and opposite attributes
-        slideComponent = component(name=name, side=side, helperGeo = nurbs, uOutConnectionAttr = inU, vOutConnectionAttr = inV)
+        slideComponent = Component(name=name, side=side, helperGeo = nurbs, uOutConnectionAttr = inU, vOutConnectionAttr = inV)
 
         # Set the location and the attributes
         for attr in attrs:

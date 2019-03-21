@@ -31,6 +31,7 @@
 #include "LHNakedLocator.h"
 #include "LHMatrixDeformer.h"
 #include "LHBlendshapeSimple.h"
+#include "LHCurveDeformer.h"
 
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
@@ -74,6 +75,10 @@ MStatus initializePlugin(MObject obj) {
 //		  LHMultiClusterThreaded::initialize, MPxNode::kDeformerNode );
 //
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+ status = plugin.registerNode( "LHCurveDeformer", LHCurveDeformer::id, LHCurveDeformer::creator,
+		  LHCurveDeformer::initialize, MPxNode::kDeformerNode );
+
+ CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.registerNode( "LHMatrixDeformer", LHMatrixDeformer::id, LHMatrixDeformer::creator,
 		  LHMatrixDeformer::initialize, MPxNode::kDeformerNode );
@@ -238,6 +243,8 @@ MStatus uninitializePlugin(MObject obj) {
 //
 //  status = plugin.deregisterNode(LHMultiClusterThreaded::id);
 //  CHECK_MSTATUS_AND_RETURN_IT(status);
+ status = plugin.deregisterNode(LHCurveDeformer::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHBlendshapeSimple::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);

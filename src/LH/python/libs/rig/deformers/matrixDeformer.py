@@ -32,7 +32,6 @@ class MatrixDeformer(base.Deformer):
                     locatorName="test",
                     curveWeightsNode="",
                     curveWeightsConnectionIdx=0,
-                    # locations=[],
                     hide=True,
                  **kw):
         super(MatrixDeformer, self).__init__(**kw)
@@ -50,13 +49,11 @@ class MatrixDeformer(base.Deformer):
         self.locatorName = locatorName
         self.curveWeightsNode = curveWeightsNode
         self.curveWeightsConnectionIdx = curveWeightsConnectionIdx
-        # self.locations = locations
         self.hide = hide
         self.deformer = ""
         self.matrixNodes = []
         self.matrixBaseNodes = []
         self.matrixBuffers = []
-        self.deformerType = "LHMatrixDeformer"
 
     def getDeformer(self):
         if cmds.objExists(self.name):
@@ -98,32 +95,14 @@ class MatrixDeformer(base.Deformer):
             else:
                 self.matrixBaseNodes.append(matrixBaseNodeName)
 
-
-
-    def setDefaultLocations(self):
+    def setDefaults(self):
         for idx in range(len(self.matrixBuffers)):
             if len(self.translations)-1 >= idx:
                 misc.move(self.matrixBuffers[idx], translate=self.translations[idx])
-                # misc.move(self.matrixBaseNodes[idx], translate=self.translations[idx])
             if len(self.rotations)-1 >= idx:
                 misc.move(self.matrixBuffers[idx], rotate=self.rotations[idx])
-                # misc.move(self.matrixBaseNodes[idx], rotate=self.rotations[idx])
             if len(self.scales)-1 >= idx:
                 misc.move(self.matrixBuffers[idx], scale=self.scales[idx])
-                # misc.move(self.matrixBaseNodes[idx], scale=self.scales[idx])
-
-        # if not self.locations:
-        #     return
-        # for idx, location in enumerate(self.locations):
-        #     idx = idx + self.addAtIndex
-        #     locator = "{0}{1:02}_LOC".format(self.locatorName, idx)
-        #     # cmds.xform(locator,  ws=True,  t=location)
-        #     misc.move(locator, location)
-        #     locatorBase = "{0}Base{1:02}_LOC".format(self.locatorName, idx)
-        #     misc.move(locatorBase, location)
-
-            # cmds.xform(locatorBase,  ws=True,  t=location)
-
         
     def connectDeformer(self):
         for idx in range(self.numToAdd):
@@ -136,7 +115,6 @@ class MatrixDeformer(base.Deformer):
                 cmds.connectAttr(weightMap, "{0}.inputs[{1}].matrixWeight".format(self.deformer, elemIndex))
             if self.rotationTranforms:
                 cmds.connectAttr("{0}.rotate".format(self.rotationTranforms[idx]), "{0}.rotate".format(self.matrixNodes[idx]))
-                # cmds.connectAttr( "{0}.rotate".format(self.rotationTranforms[idx]), "{0}.rotate".format(self.matrixBaseNodes[idx]))
 
     def cleanup(self):
         for node in self.matrixNodes + self.matrixBaseNodes:
@@ -146,28 +124,6 @@ class MatrixDeformer(base.Deformer):
                 continue
             if cmds.listRelatives(node, p=True):
                 cmds.xform(node, os=True, t=[0,0,0], ro=[0,0,0])
-        # for idx in range(len(self.matrixNodes)):
-        #     if len(self.translations)-1 >= idx:
-        #         misc.move(self.matrixNodes[idx], translate=self.translations[idx])
-        #         misc.move(self.matrixBaseNodes[idx], translate=self.translations[idx])
-        #     if len(self.rotations)-1 >= idx:
-        #         misc.move(self.matrixNodes[idx], rotate=self.rotations[idx])
-        #         misc.move(self.matrixBaseNodes[idx], rotate=self.rotations[idx])
-        #     if len(self.scales)-1 >= idx:
-        #         misc.move(self.matrixNodes[idx], scale=self.scales[idx])
-        #         misc.move(self.matrixBaseNodes[idx], scale=self.scales[idx])
-
-# def move(transform=None, translate=None, rotate=None, scale=None):
-
-
-
-    def create(self):
-        self.getDeformer()
-        self.getNodes()
-        self.setDefaultLocations()
-        self.connectDeformer()
-        self.cleanup()
-
 
 
 

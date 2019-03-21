@@ -59,7 +59,7 @@ set(SOURCE_FILES
 	"LHMatrixDeformer.cpp"
 	"LHMatrixDeformer.h"
 	"LHBlendshapeSimple.cpp"
-
+	"LHCurveDeformer.cpp"
 
 )
 

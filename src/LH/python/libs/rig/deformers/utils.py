@@ -136,7 +136,10 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                                 falloffStart=-10,
                                 falloffStartInner=-9,
                                 falloffEndInner=9,
-                                falloffEnd=10):
+                                falloffEnd=10,
+                                itts=["linear","linear","linear","linear"],
+                                otts=["linear","linear","linear","linear"]
+):
 
     keyframes = []
     falloffKeyframes = []
@@ -284,7 +287,10 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                  falloffStart=falloffStart,
                  falloffStartInner=falloffStartInner,
                  falloffEndInner=falloffEndInner,
-                 falloffEnd=falloffEnd)
+                 falloffEnd=falloffEnd,
+                itts=itts,
+                otts=otts
+                 )
     
     return keyframes, falloffKeyframes
 
@@ -316,6 +322,19 @@ def initUKeyframes(animCurves):
                                 hierarchy="none", controlPoints=2,
                                 shape=0, time=10)
 
+def initUKeyframeAllOnes(animCurves):
+    for animCurve in animCurves:
+        oCurve = misc.getOMAnimCurve(animCurve)
+        if not oCurve.numKeys():
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=-10)
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=0)
+            cmds.setKeyframe(animCurve, v=1, breakdown=0,
+                                hierarchy="none", controlPoints=2,
+                                shape=0, time=10)
 
 def initVKeyframes(animCurves):
     for animCurve in animCurves:
@@ -362,24 +381,34 @@ def initVKeyframesLinearWithValues(animCurves, inTime=-5, outTime=8):
                                 hierarchy="none", controlPoints=2,
                                 shape=0, time=10, itt="linear")
 
-def initVFalloff(animCurves, falloffStart=-10, falloffStartInner=-5, falloffEndInner=8, falloffEnd=10):
+def initVFalloff(animCurves, falloffStart=-10, falloffStartInner=-5, falloffEndInner=8, falloffEnd=10,
+                 itts=["linear","linear","linear","linear"],
+                 otts=["linear","linear","linear","linear"],
+                 ):
     for animCurve in animCurves:
         oCurve = misc.getOMAnimCurve(animCurve)
         if not oCurve.numKeys():
             cmds.setKeyframe(animCurve, v=0, breakdown=0,
                                 hierarchy="none", controlPoints=2,
-                                shape=0, time=falloffStart, itt="linear", ott="linear")
+                                shape=0, time=falloffStart, itt=itts[0], ott=otts[0],
+                                )
 
             cmds.setKeyframe(animCurve, v=0, breakdown=0,
                                 hierarchy="none", controlPoints=2,
-                                shape=0, time=falloffStartInner, itt="linear", ott="linear")
+                                shape=0, time=falloffStartInner, itt=itts[1], ott=otts[1],)
 
             cmds.setKeyframe(animCurve, v=1, breakdown=0,
                                 hierarchy="none", controlPoints=2,
-                                shape=0, time=falloffEndInner, itt="linear", ott="linear")
+                                shape=0, time=falloffEndInner, itt=itts[2], ott=otts[2],)
             cmds.setKeyframe(animCurve, v=1, breakdown=0,
                                 hierarchy="none", controlPoints=2,
-                                shape=0, time=falloffEnd, itt="linear", ott="linear")
+                                shape=0, time=falloffEnd, itt=itts[3], ott=otts[3],)
+            cmds.keyTangent( animCurve, edit=True, time=(falloffStart,falloffStart), lock=False)
+            cmds.keyTangent( animCurve, edit=True, time=(falloffStartInner,falloffStartInner), lock=False)
+            cmds.keyTangent( animCurve, edit=True, time=(falloffEndInner,falloffEndInner), lock=False)
+            cmds.keyTangent( animCurve, edit=True, time=(falloffEnd,falloffEnd), lock=False)
+
+            cmds.keyTangent( animCurve, edit=True,  weightedTangents=True)
 
 
 def checkOutputWeightType(outputAttrToCheck):

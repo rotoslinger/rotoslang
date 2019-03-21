@@ -15,6 +15,7 @@ MTypeId LHBlendshapeSimple::id(0x67430594);
 MObject LHBlendshapeSimple::aAmount;
 MObject LHBlendshapeSimple::aTargetGeo;
 MObject LHBlendshapeSimple::aTargetWeights;
+// MObject LHBlendshapeSimple::aMembershipWeights;
 
 MStatus LHBlendshapeSimple::initialize() {
     MFnNumericAttribute nAttr;
@@ -23,6 +24,8 @@ MStatus LHBlendshapeSimple::initialize() {
 
     aAmount = nAttr.create("amount", "amnt", MFnNumericData::kFloat);
     nAttr.setKeyable(true);
+    nAttr.setMin(0);
+    nAttr.setMax(1);
     addAttribute(aAmount);
     attributeAffects(aAmount, outputGeom);
 
@@ -39,8 +42,18 @@ MStatus LHBlendshapeSimple::initialize() {
     tAttr.setArray(false);
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aTargetWeights);
+    attributeAffects(aTargetWeights, outputGeom);
 
-  return MS::kSuccess;
+    // aMembershipWeights = tAttr.create("membershipWeights", "membershipweights", MFnNumericData::kDoubleArray);
+    // tAttr.setKeyable(true);
+    // tAttr.setArray(false);
+    // tAttr.setUsesArrayDataBuilder(false);
+    // addAttribute(aMembershipWeights);
+    // attributeAffects(aMembershipWeights, outputGeom);
+
+    // MGlobal::executeCommand("makePaintable -attrType doubleArray -sm deformer LHBlendshapeSimple membershipWeights;");
+
+    return MS::kSuccess;
 }
 
 void* LHBlendshapeSimple::creator() { return new LHBlendshapeSimple; }
@@ -57,6 +70,7 @@ MStatus LHBlendshapeSimple::deform(MDataBlock& data, MItGeometry& itGeo,
     }
 
     float amount = data.inputValue(aAmount).asFloat();
+    env = env * amount;
 
     // Geo target geometry
     MDataHandle hTargetGeo = data.inputValue(aTargetGeo, &status);
@@ -81,11 +95,18 @@ MStatus LHBlendshapeSimple::deform(MDataBlock& data, MItGeometry& itGeo,
     CheckStatusReturn( status, "Couldn't get weights" );
     MDoubleArray weights = MFnDoubleArrayData(hWeights.data()).array(&status);
     CheckStatusReturn( status, "Couldn't get weights" );
-
     if (itGeo.count() <= weights.length())
     {
       CheckStatusReturn( MS::kFailure, "Weights count does not match the source geometry point count.  Make sure to set a weight value for each index. " );
     }
+    // hWeights = data.inputValue(aMembershipWeights, &status);
+    // CheckStatusReturn( status, "Couldn't get weights" );
+    // MDoubleArray membershipWeights = MFnDoubleArrayData(hWeights.data()).array(&status);
+    // CheckStatusReturn( status, "Couldn't get weights" );
+    // if (itGeo.count() <= weights.length())
+    // {
+    //   CheckStatusReturn( MS::kFailure, "Weights count does not match the source geometry point count.  Make sure to set a weight value for each index. " );
+    // }
 
     MPointArray allTargetPoints;
     targetIter.allPositions(allTargetPoints, MSpace::kObject);

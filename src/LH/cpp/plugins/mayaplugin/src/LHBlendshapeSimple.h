@@ -1,5 +1,4 @@
-#ifndef LHTEMPLATEDEFORMER_H
-#define LHTEMPLATEDEFORMER_H
+#pragma once
 
 #include "formatErrorMacros.h"
 #include <maya/MDataBlock.h>
@@ -32,6 +31,7 @@ class LHBlendshapeSimple : public MPxDeformerNode {
   static MObject aAmount;
   static MObject aTargetGeo;
   static MObject aTargetWeights;
+  static MObject aMembershipWeights;
 
   inline MString FormatError( const MString &msg, const MString
                                 &sourceFile, const int &sourceLine )
@@ -45,4 +45,3 @@ class LHBlendshapeSimple : public MPxDeformerNode {
       return txt;
   }
 };
-#endif

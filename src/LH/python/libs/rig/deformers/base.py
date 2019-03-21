@@ -23,8 +23,8 @@ def createNurbsPlane():
 
 class Deformer(object):
     def __init__(self,
-                    name="testSlideSimple",
-                    deformerType="LHSlideSimple",
+                    name="testDeformer",
+                    deformerType="",
                     geoToDeform="",
                     parent="",
                     centerToParent=True,
@@ -37,7 +37,6 @@ class Deformer(object):
                     locations=[],
                     hide=True,
                  **kw):
-        # super(Deformer, self).__init__(**kw)
         self.name = name
         self.addAtIndex = addAtIndex
         self.deformerType = deformerType
@@ -54,7 +53,9 @@ class Deformer(object):
         self.deformer = ""
         self.matrixNodes = []
         self.matrixBaseNodes = []
-        self.deformerType = "LHMatrixDeformer"
+
+    def check(self):
+        return
 
     def getDeformer(self):
         if cmds.objExists(self.name):
@@ -65,40 +66,24 @@ class Deformer(object):
     def getNodes(self):
         return
 
+    def getAttrs(self):
+        return
 
-    def setDefaultLocations(self):
+    def setDefaults(self):
         return
         
     def connectDeformer(self):
         return
-        # for idx in range(self.numToAdd):
-        #     elemIndex = idx + self.addAtIndex
-        #     cmds.connectAttr("{0}.worldMatrix".format(self.matrixNodes[idx]), "{0}.inputs[{1}].matrix".format(self.deformer, elemIndex))
-        #     cmds.connectAttr("{0}.worldMatrix".format(self.matrixBaseNodes[idx]), "{0}.inputs[{1}].matrixBase".format(self.deformer, elemIndex))
-        #     if cmds.objExists(self.curveWeightsNode):
-        #         curveWeightsIndex = idx + self.curveWeightsConnectionIdx
-        #         weightMap = "{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.curveWeightsNode, curveWeightsIndex)
-        #         cmds.connectAttr(weightMap, "{0}.inputs[{1}].matrixWeight".format(self.deformer, elemIndex))
-        #     if self.rotationTranforms:
-        #         cmds.connectAttr("{0}.rotate".format(self.rotationTranforms[idx]), "{0}.rotate".format(self.matrixNodes[idx]))
-        #         # cmds.connectAttr( "{0}.rotate".format(self.rotationTranforms[idx]), "{0}.rotate".format(self.matrixBaseNodes[idx]))
 
     def cleanup(self):
         return
-        # for node in self.matrixNodes + self.matrixBaseNodes:
-        #     if self.hide:
-        #         cmds.setAttr(node + ".visibility", 0)
-        #     if not self.centerToParent:
-        #         continue
-        #     if cmds.listRelatives(node, p=True):
-        #         cmds.xform(node, os=True, t=[0,0,0], ro=[0,0,0])
-
-
 
     def create(self):
+        self.check()
         self.getDeformer()
         self.getNodes()
-        self.setDefaultLocations()
+        self.getAttrs()
+        self.setDefaults()
         self.connectDeformer()
         self.cleanup()
 

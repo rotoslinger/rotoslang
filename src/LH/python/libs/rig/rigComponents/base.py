@@ -1,13 +1,15 @@
 from maya import cmds
 from rig.utils import elements, misc
+from rig.utils import exportUtils
 
-class component(object):
+class Component(object):
     def __init__(self,
                  side="C",
                  name="component",
                  suffix="CPT",
+                 curveData=None,
                  parent=None,
-                 helperGeo=elements.componentNurbs
+                 helperGeo=elements.componentNurbs,
                  ):
         """
         @param side:
@@ -29,6 +31,7 @@ class component(object):
         self.createHier()
         self.createHelperGeo()
         self.createCtrl()
+        self.setControlShape()
         self.createGuide()
         self.createAttrs()
         self.preConnect()
@@ -64,7 +67,47 @@ class component(object):
         cmds.setAttr(node + ".componentType", self.componentName, typ = "string", l=True)
 
     def createCtrl(self):
+        # self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
+        #                                   parent=self.cmptMasterParent,
+        #                                   shapeVis=False)
+        # self.ctrl = misc.create_ctl(side=self.side,
+        #                             name=self.name,
+        #                             parent=self.locator,
+        #                             shape="circle",
+        #                             orient=[180, 90, 0],
+        #                             offset=[0, 0, 1],
+        #                             scale=[1, 1, 1],
+        #                             num_buffer=2,
+        #                             lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
+        #                             gimbal=True,
+        #                             size=.5)
+        #
+        # self.buffer1 = self.ctrl.buffers[1]
+        # self.buffer2 = self.ctrl.buffers[0]
+        # self.ctrl = self.ctrl.ctl
         return
+
+    def setControlShape(self):
+        if self.curveData:
+            # get Curve data for transfer
+            sourceCurve = cmds.listRelatives(self.ctrl, type="nurbsCurve")[0]
+            color = cmds.getAttr(sourceCurve + ".overrideColor")
+            override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
+            colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
+            colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
+            colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
+            cmds.delete(sourceCurve)
+
+            # create curve, set curve shape
+            curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
+
+            # transfer Curve data
+            cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
+            cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
+            cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
+            cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
+            cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
+            cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
 
     def createGuide(self):
         pass

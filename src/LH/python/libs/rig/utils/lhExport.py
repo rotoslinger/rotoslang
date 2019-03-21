@@ -626,7 +626,7 @@ class lh_component_import(object):
                 if not self.geo_name:
                     self.geo_name = ctrlDict["geoConstraintGeoName"]
                 # print "PAAARENT", ctrlDict["parent"]
-                rivetComponent = meshRivetCtrl.component(name=ctrlDict["name"],
+                rivetComponent = meshRivetCtrl.Component(name=ctrlDict["name"],
                                                         parent=ctrlDict["parent"],
                                                         guide=True,
                                                         side=ctrlDict["side"],

@@ -8,7 +8,7 @@ from rig.utils import faceWeights
 import elements
 
 
-class component(base.component):
+class Component(base.Component):
     def __init__(self,
                 # inherited args
                 #  side="C",
@@ -79,8 +79,10 @@ class component(base.component):
             self.rotate = cmds.xform(sel, q=True, ro=True, ws=True)
             self.scale = cmds.xform(sel, q=True, s=True,ws=True)
 
+        super(Component, self).__init__(**kw)
 
-        super(component, self).__init__(**kw)
+
+
         self.suffix="MRC"
 
     def createHelperGeo(self):
@@ -107,26 +109,26 @@ class component(base.component):
         self.buffer2 = self.ctrl.buffers[0]
         self.ctrl = self.ctrl.ctl
 
-        if self.curveData:
-            # get Curve data for transfer
-            sourceCurve = cmds.listRelatives(self.ctrl, type = "nurbsCurve")[0]
-            color = cmds.getAttr(sourceCurve + ".overrideColor")
-            override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
-            colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
-            colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
-            colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
-            cmds.delete(sourceCurve)
-            
-            # create curve, set curve shape
-            curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
-            
-            # transfer Curve data
-            cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
-            cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
-            cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
+        # if self.curveData:
+        #     # get Curve data for transfer
+        #     sourceCurve = cmds.listRelatives(self.ctrl, type = "nurbsCurve")[0]
+        #     color = cmds.getAttr(sourceCurve + ".overrideColor")
+        #     override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
+        #     colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
+        #     colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
+        #     colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
+        #     cmds.delete(sourceCurve)
+        #
+        #     # create curve, set curve shape
+        #     curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
+        #
+        #     # transfer Curve data
+        #     cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
 
     def createGuide(self):
         if self.guide:
@@ -254,8 +256,8 @@ def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False, guide=False, norma
         # cmds.xform(self.cmptMasterParent, ws=True, s=[-1,1,1])
 
 
-        rivetComponent = component(name=name, guide=guide, side=side, normalConstraintPatch = normalConstraintPatch,
-        txConnectionAttr = inU, tyConnectionAttr = inV, mesh = geo, selection=False, mirror=True, translate=translate, rotate=rotate, scale=scale)
+        rivetComponent = Component(name=name, guide=guide, side=side, normalConstraintPatch = normalConstraintPatch,
+                                   txConnectionAttr = inU, tyConnectionAttr = inV, mesh = geo, selection=False, mirror=True, translate=translate, rotate=rotate, scale=scale)
 
         # Set the location and the attributes
 

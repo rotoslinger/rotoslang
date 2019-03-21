@@ -21,8 +21,16 @@ from rig.deformers import matrixDeformer
 reload(matrixDeformer)
 from rig.deformers import slideSimple
 reload(slideSimple)
+from rig.deformers import blendshapeSimple
+reload(blendshapeSimple)
 # reload(deformerUtils)
 # reload(base)
+from rig.utils import weightMapUtils, misc
+reload(misc)
+from rig.utils import LHCurveDeformerCmds
+reload(LHCurveDeformerCmds)
+from rig.rigComponents import meshRivetCtrl 
+reload(meshRivetCtrl)
 
 def Lip(name="lowerLip",
         ctrlName = None,
@@ -283,30 +291,128 @@ def Lip(name="lowerLip",
                                     hide = True)
     matDef.create()
     cmds.setAttr(slideUD.deformer + ".cacheBind",1)
+    return slideUD.deformer
 
 
+def lipCurveDeformSplit(name="C_UpperLipWire",
+                        curve="lipCurve",
+                        curveAim="lipCurveAim",
+                        deformedGeometry="humanLipsUpper",
+                        projectionPatch="upLipProjection",
+                        deformedGeometryBase="humanLipsUpperBase",
+                        addWeightStack=["upperLipWeightStack_LR", "upperLipWeightStack_UD"],
+                        addAtIndex=9,
+                        handPaint=False,
+                        upperLip=True,
+                        falloffDefaults = "",
+                        falloffItts = "",
+                        falloffOtts = "",
+                        removePointIndicies=[],
+                        reorderInFrontOfDeformer="",
+):
 
-def lipCurveDeformSplit(name="C_UpperLipWire", curve="lipCurve", curveAim="lipCurveAim", deformedGeometry="humanLipsUpper",
-                        projectionPatch="upLipProjection", deformedGeometryBase="humanLipsUpperBase"):
+    if not falloffDefaults and upperLip:
+        falloffDefaults = (-10, -9, -5, 20.0)
+        falloffItts=["linear","linear","spline","linear"]
+        falloffOtts=["linear","linear","linear","linear"]
+    if not falloffDefaults and not upperLip:
+        falloffDefaults = (20, 3.4, -1, -10)
+        falloffItts=["linear","linear","linear","linear"]
+        falloffOtts=["linear","linear","spline","linear"]
     blendshapeGeo = cmds.duplicate(deformedGeometry, n=name+"BlendshapeGeo")[0]
-    blendshape = cmds.blendShape(blendshapeGeo, deformedGeometry, n=name + "ReverseBlendshape")[0]
-    stack = weightStack.WeightStack(name=name + "NormalizeCurveDeformerWeights",
-                                    geoToWeight=deformedGeometryBase,
+    cmds.setAttr(blendshapeGeo + ".visibility", 0)
+    blendshape = blendshapeSimple.BlendshapeSimple(name = name + "ReverseBlendshape", geoToDeform=deformedGeometry, targetGeom=blendshapeGeo)
+    blendshape.create()
+    # Turn on Blending
+    cmds.setAttr(blendshape.amountAttr, 1)
+    blendshape = blendshape.deformer
+
+    geoToWeight = deformedGeometryBase
+    curveWeights = None
+    weightMapAttrNames=[]
+    if not handPaint:
+        curveWeights = weightStack.AnimCurveWeight(name=name + "ReverseCurveDeformerAnimCurveWeights",
+                                    baseGeo=deformedGeometryBase,
                                     ctrlNode=blendshapeGeo,
-                                    weightMapAttrNames=["reverseWeights", "dummyWeights"],
-                                    factorAttrNames = ["reverse", "dummy"],
+                                    projectionGeo=projectionPatch,
+                                    weightAttrNames=[name + "CurveDeformerNormalize"],
+                                    addNewElem=False,
+                                    autoCreateAnimCurves = False,
+                                    autoCreateName = '',
+                                    singleFalloffName = '',
+                                    autoCreateNum = None,
+                                    falloffDefaults = falloffDefaults,
+                                    uKeyframesAllOnes=True,
+                                    falloffItts=falloffItts,
+                                    falloffOtts=falloffOtts
+        )
+        curveWeights.create()
+        cmds.getAttr(curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray")
+
+        weightMapAttrNames=[curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray", curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray"]
+    factorAttrNames = ["reverse", "dummy"]
+    weightMapAttrNames=["reverseWeights", "dummyWeights"]
+
+
+    stack = weightStack.WeightStack(name=name + "NormalizeCurveDeformerWeights",
+                                    geoToWeight=geoToWeight,
+                                    ctrlNode=blendshapeGeo,
+                                    weightMapAttrNames=weightMapAttrNames,
+                                    factorAttrNames = factorAttrNames,
                                     operationVals=[0,6],
                                     addNewElem=False,
-                                    outputAttrs = [blendshape + "." + blendshapeGeo],
+                                    outputAttrs = [blendshape + ".targetWeights"],
                                     autoCreate=False,
                                     UDLR = False,
                                     createControl=False,
-                                    falloffCurveWeightNode=name + "CurveWeights",
-                                    isOutputKDoubleArray=False,
-                                    outputToBlendshape=True,
+                                    isOutputKDoubleArray=True,
                                     )
     stack.create()
 
+    cmds.setAttr(stack.ctrlNode + ".reverse", 1)
+    cmds.setAttr(stack.ctrlNode + ".dummy", 1)
+
+    geoToWeightShape = misc.getShape(stack.geoToWeight)
+
+    cmds.connectAttr(curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray", stack.node+".inputs[0].inputWeights", f=True)
+    cmds.connectAttr(curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray", stack.node+".inputs[1].inputWeights", f=True)
+
+    for idx, attr in enumerate(addWeightStack):
+        weightAttr = geoToWeightShape + ".reverseWeights"
+        if not handPaint:
+            weightAttr = curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray"
+        cmds.connectAttr(weightAttr, attr + ".inputs[{0}].inputWeights".format(addAtIndex))
+        cmds.setAttr(attr + ".inputs[{0}].factor".format(addAtIndex), 1)
+        cmds.setAttr(attr + ".inputs[{0}].operation".format(addAtIndex), 2)
+    # Create curve deformer (TEMP)
+    wire = cmds.wire(blendshapeGeo, wire=curve, dds=[(0),(100000)] , name=name + "WireDeformer")[0]
+    if removePointIndicies:
+        # first make sure to set the weights on the wire
+        iterGeo = misc.getOMItergeo(blendshapeGeo)
+        polyCount = iterGeo.count()
+        defaultVals = [1.0 for x in range(polyCount)]
+        #cmds.setAttr(wire + ".", defaultVals, type=dataType)
+        for idx in range(polyCount):
+            cmds.setAttr('{0}.weightList[0].weights[{1}]'.format(wire, polyCount), 1.0)
+        for idx in removePointIndicies:
+            cmds.setAttr('{0}.weightList[0].weights[{1}]'.format(wire, idx), 0.0)
+
+
+    if reorderInFrontOfDeformer:
+        cmds.reorderDeformers(reorderInFrontOfDeformer, blendshape, misc.getShape(deformedGeometry))
+    # LHCurveDeformerCmds.curveDeformerCmd(
+    #                                     driverCurve = curve,
+    #                                     aimCurve = curveAim,
+    #                                     geom = [blendshapeGeo],
+    #                                     ihi = 1,
+    #                                     lockAttrs = 0,
+    #                                     side='C',
+    #                                     name=name + "CurveDeformer")
+
+
+
+
+    #if removePointIndicies:
 
 '''
 
@@ -321,10 +427,10 @@ os = sys.platform
 if "linux" in os:
     os = linux
 if "darwin" in os:
-    os = mac
-if os not in sys.path:
-    sys.path.append(os)
-
+LHCurveDeformerCmds
+LHCurveDeformerCmds
+LHCurveDeformerCmds
+LHCurveDeformerCmds
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 import sys

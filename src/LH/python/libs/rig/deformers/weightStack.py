@@ -88,7 +88,10 @@ class AnimCurveWeight(Node):
                  autoCreateNum = 11,
                  autoCreateTimeRange = 20.0,
                  createSingleFalloff = True,
+                 uKeyframesAllOnes = False,
                  falloffDefaults=(-10, -9, 9, 10),
+                 falloffItts=["linear","linear","linear","linear"],
+                 falloffOtts=["linear","linear","linear","linear"],
                  singleFalloffName = "", # if you are not auto creating you need to give the single falloff name
                  addFalloff = True,
                  startElem = 0,
@@ -133,7 +136,12 @@ class AnimCurveWeight(Node):
         self.intermediateAngle = intermediateAngle
         self.lastIntermediateAngle = lastIntermediateAngle
         self.createSingleFalloff = createSingleFalloff
+        self.uKeyframesAllOnes = uKeyframesAllOnes
         self.falloffDefaults = falloffDefaults
+        self.falloffDefaults = falloffDefaults
+        self.falloffItts = falloffItts
+        self.falloffOtts = falloffOtts
+
         self.singleFalloffName = singleFalloffName
 
 
@@ -179,6 +187,7 @@ class AnimCurveWeight(Node):
         self.baseMesh = misc.getShape(self.baseGeo)
 
         if self.autoCreateAnimCurves:
+
             self.weightCurves, self.weightCurvesFalloff = deformerUtils.createNormalizedAnimWeights(name=self.autoCreateName, num=self.autoCreateNum,
                                                                                       timeRange=self.autoCreateTimeRange, suffix=self.animCurveSuffix,
                                                                                       offset=self.offset, centerWeight =self.centerWeight, outerWeight = self.outerWeight,
@@ -192,7 +201,10 @@ class AnimCurveWeight(Node):
                                                                                       falloffStart=self.falloffDefaults[0],
                                                                                       falloffStartInner=self.falloffDefaults[1],
                                                                                       falloffEndInner=self.falloffDefaults[2],
-                                                                                      falloffEnd=self.falloffDefaults[3])
+                                                                                      falloffEnd=self.falloffDefaults[3],
+                                                                                      itts=self.falloffItts,
+                                                                                      otts=self.falloffOtts
+                                                                                      )
             return
 
         self.weightCurves = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
@@ -202,8 +214,18 @@ class AnimCurveWeight(Node):
 
         self.weightCurvesFalloff = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
-        deformerUtils.initUKeyframes(self.weightCurves)
-        deformerUtils.initVKeyframesLinearWithValues(self.weightCurvesFalloff, inTime=self.falloffDefaults[0], outTime=self.falloffDefaults[1])
+        if self.uKeyframesAllOnes:
+            deformerUtils.initUKeyframeAllOnes(self.weightCurves)
+        else:
+            deformerUtils.initUKeyframes(self.weightCurves)
+        deformerUtils.initVFalloff(self.weightCurvesFalloff,
+                                    falloffStart=self.falloffDefaults[0],
+                                    falloffStartInner=self.falloffDefaults[1],
+                                    falloffEndInner=self.falloffDefaults[2],
+                                    falloffEnd=self.falloffDefaults[3],
+                                    itts=self.falloffItts,
+                                    otts=self.falloffOtts
+                                    )
 
     def inputConnections(self):
         cmds.connectAttr(self.membershipWeights, "{0}.membershipWeights".format(self.node), f=True)
@@ -229,7 +251,8 @@ class AnimCurveWeight(Node):
             elemIdx = idx + self.startElem
             cmds.connectAttr(self.uCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveU".format(self.node, elemIdx),f=True)
             cmds.connectAttr(self.vCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveV".format(self.node, elemIdx),f=True)
-            cmds.connectAttr(self.floatAttrs[idx], "{0}.inputs[{1}].falloffU".format(self.node, elemIdx),f=True)
+            if hasattr(self, "floatAttrs") and len(self.floatAttrs)-1 <= idx:
+                cmds.connectAttr(self.floatAttrs[idx], "{0}.inputs[{1}].falloffU".format(self.node, elemIdx),f=True)
 
             kDoubleOut = "{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.node, elemIdx)
             kFloatOut = "{0}.outDoubleWeights[{1}].outWeightsFloatArray[{1}]".format(self.node, elemIdx)
@@ -332,7 +355,7 @@ class WeightStack(Node):
                  falloffCurveWeightNode = "",
                  falloffElemStart = 0,
                  controlSpeedDefaults = [.1,.1,.1],
-                 outputToBlendshape=False,
+                #  outputToBlendshape=False,
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -379,7 +402,7 @@ class WeightStack(Node):
         self.controls = []
         self.positionsFromWeights = []
         self.rotationsFromWeights = []
-        self.outputToBlendshape = outputToBlendshape
+        # self.outputToBlendshape = outputToBlendshape
         # Don't support multiple geos right now
         if type(self.geoToWeight) == list:
             self.geoToWeight = self.geoToWeight[0]
@@ -470,9 +493,9 @@ class WeightStack(Node):
             return
         for idx, attr in enumerate(self.outputAttrs):
             # attrType = deformerUtils.checkOutputWeightType(attr)
-            if self.outputToBlendshape:
-                cmds.connectAttr("{0}.outWeightsFloatArray[0].outFloatWeights[0]".format(self.node), attr, f=True)
-                return
+            # if self.outputToBlendshape:
+            #     cmds.connectAttr("{0}.outWeightsFloatArray[0].outFloatWeights[0]".format(self.node), attr, f=True)
+            #     return
 
 
             if self.isOutputKDoubleArray:
@@ -525,7 +548,7 @@ class WeightStack(Node):
             if self.connectFalloff and self.falloffCurveWeightNode:
                 sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
             # print "POSITIONS!!!!", self.positionsFromWeights
-            tmpCtrl = meshRivetCtrl.component(name = name,
+            tmpCtrl = meshRivetCtrl.Component(name = name,
                                                 side=side,
                                                 speedTxDefault=self.controlSpeedDefaults[0],
                                                 speedTyDefault=self.controlSpeedDefaults[1],

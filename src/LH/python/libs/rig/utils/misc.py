@@ -173,6 +173,7 @@ class draw_ctl():
                  orient = [0,0,0],
                  offset = [0,0,0],
                  scale = [1,1,1],
+                 customShape=None,
                  hide = False
                  ):
 
@@ -237,9 +238,12 @@ class draw_ctl():
         self.offset                 = offset
         self.scale                  = scale
         self.hide                   = hide
+        self.customShape            = customShape
 
         #---vars
         self.ctl                    = ""
+        if self.customShape:
+            self.shape = ""
 
         self.__create()
 
@@ -251,6 +255,7 @@ class draw_ctl():
                self.shape != "cube" or 
                self.shape != "square" or 
                self.shape != "ik/fk" or 
+               self.shape != "" or 
                self.shape != "shoulder"):
             raise Exception(self.shape + " is not supported yet")
             quit()
@@ -478,6 +483,17 @@ class draw_ctl():
                        self.ctl + ".cv[0:]", 
                        r = True,p = (0, 0, 0))
 
+    def createCustomShape(self):
+        if (self.customShape):
+            self.ctl = createGeoFromData(self.customShape, name = self.side + "_" + self.name + "_CTL").fullPathName()
+            print self.ctl
+            self.ctl = cmds.listRelatives(self.ctl, p=True)[0]
+            print self.ctl
+            cmds.parent(self.ctl, self.parent)
+            cmds.scale(self.size, self.size, self.size, 
+                       self.ctl + ".cv[0:]", 
+                       r = True,p = (0, 0, 0))
+
     def __lock_it(self):
         if self.hide == True:
             cmds.setAttr(self.ctl + ".v", 0)
@@ -537,6 +553,7 @@ class draw_ctl():
         self.__square()
         self.__shoulder()
         self.__ik_fk()
+        self.createCustomShape()
         self.__lock_it()
         self.__color_it()
         self.__cleanup()
@@ -569,6 +586,7 @@ class create_ctl():
                  name="",
                  parent="",
                  shape = "",
+                 customShape = "",
                  lock_attrs=[],
                  num_buffer = 0,
                  gimbal = False,
@@ -647,6 +665,7 @@ class create_ctl():
         self.name                   = name
         self.parent                 = parent
         self.shape                  = shape
+        self.customShape            = customShape
         self.lock_attrs             = lock_attrs
         self.num_buffer             = num_buffer
         self.gimbal                 = gimbal
@@ -658,6 +677,9 @@ class create_ctl():
         self.scale                  = scale
         self.hide                   = hide
         self.nullTransform          = nullTransform
+
+        if self.customShape:
+            self.shape = ""
 
 
 
@@ -678,6 +700,7 @@ class create_ctl():
                self.shape != "switch" or 
                self.shape != "cube" or 
                self.shape != "ik/fk" or 
+               self.shape != "" or 
                self.shape != "shoulder"):
             raise Exception(self.shape + " is not supported yet")
             quit()
@@ -702,7 +725,8 @@ class create_ctl():
         self.ctl = draw_ctl(side = self.side,
                             name = self.name,
                             parent = self.parent, 
-                            shape = self.shape, 
+                            shape = self.shape,
+                            customShape = self.customShape,
                             lock_attrs = self.lock_attrs, 
                             size = self.size,
                             show_rot_order = self.show_rot_order,
@@ -2599,3 +2623,17 @@ def getNameSide(stringCharacters):
     retSide = stringCharacters.split("_")[0]
     retName = stringCharacters.split("_")[1]
     return retSide, retName
+
+def getGeomTypeAttr(mayaObject):
+    retGeoType = ".worldMesh"
+    objectType = cmds.objectType(mayaObject)
+    if objectType == "nurbsCurve" or objectType == "nurbsSurface":
+        retGeoType = ".worldSpace"
+    if objectType == "lattice":
+        retGeoType = ".worldLattice"
+    return retGeoType
+
+def printPointIndicies():
+    indicies = cmds.ls(sl=True, fl=True)
+    indicies = [int(x.split("[")[1].split("]")[0]) for x in indicies]
+    return indicies
