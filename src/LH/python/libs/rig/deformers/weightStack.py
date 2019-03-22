@@ -66,6 +66,9 @@ class Node(object):
     def createControls(self):
         return
 
+    def positionControls(self):
+        return
+
     def create(self):
         self.check()
         self.getNode()
@@ -74,6 +77,7 @@ class Node(object):
         self.inputConnections()
         self.outputConnections()
         self.createControls()
+        self.positionControls()
 
 class AnimCurveWeight(Node):
     def __init__(self,
@@ -341,13 +345,14 @@ class WeightStack(Node):
                  autoCreateName = "lip",
                  autoCreateOperationVal = 0,
                  createControl = True,
-                 controlSize = .05,
+                 controlSize = 1,
                  controlOffset = [0,0,.1],
                  controlPositionWeightsThreshold=.9,
                  controlPositionOffset=[0,0,0],
                  controlAutoOrientMesh="",
                  controlRivetMesh = "",
                  controlRivetAimMesh="",
+                 controlParent="",
                  UDLR = True,
                  isOutputKDoubleArray=False,
                  outputAttrs_LR = [],
@@ -355,6 +360,7 @@ class WeightStack(Node):
                  falloffCurveWeightNode = "",
                  falloffElemStart = 0,
                  controlSpeedDefaults = [.1,.1,.1],
+                 repositionRivetCtrls=False,
                 #  outputToBlendshape=False,
                  # Inherited args
                  # outputAttrs=[],
@@ -381,6 +387,7 @@ class WeightStack(Node):
         self.controlPositionWeightsThreshold = controlPositionWeightsThreshold
         self.controlPositionOffset = controlPositionOffset
         self.controlAutoOrientMesh = controlAutoOrientMesh
+        self.controlParent = controlParent
         self.UDLR = UDLR
         self.factorAttrNamesLR = []
         self.floatAttrs_LR = []
@@ -399,6 +406,11 @@ class WeightStack(Node):
         self.falloffCurveWeightNode = falloffCurveWeightNode            
         self.falloffElemStart = falloffElemStart            
         self.controlSpeedDefaults = controlSpeedDefaults            
+        self.repositionRivetCtrls = repositionRivetCtrls    
+
+
+
+
         self.controls = []
         self.positionsFromWeights = []
         self.rotationsFromWeights = []
@@ -469,7 +481,6 @@ class WeightStack(Node):
                 cmds.connectAttr(self.floatAttrs_LR[idx], "{0}.inputs[{1}].factor".format(self.node_LR, elemIdx), f=True)
                 cmds.setAttr("{0}.inputs[{1}].operation".format(self.node_LR, elemIdx), self.operationVals[idx])
 
-
     def getPositionsFromWeights(self):
         self.elemCheck("{0}.inputs".format(self.node))
         positionsFromWeights = []
@@ -512,6 +523,7 @@ class WeightStack(Node):
     def createControls(self):
         if not self.createControl:
             return
+        self.rotationsFromWeights = []
         for idx in range(len(self.weightMapAttrs)):
             elemIdx = idx + self.startElem
             txConnect = None
@@ -553,6 +565,7 @@ class WeightStack(Node):
                                                 speedTxDefault=self.controlSpeedDefaults[0],
                                                 speedTyDefault=self.controlSpeedDefaults[1],
                                                 speedTzDefault=self.controlSpeedDefaults[2],
+                                                parent=self.controlParent,
                                                 # curveData=None,
                                                 mesh = self.controlRivetMesh,
                                                 translate = self.positionsFromWeights[idx],
@@ -577,8 +590,22 @@ class WeightStack(Node):
                                                 mirror=False,
                                                 size=self.controlSize,
                                                 offset = self.controlOffset)
+            tmpCtrl.create()
             if tmpCtrl.ctrl not in self.controls:
                 self.controls.append(tmpCtrl.ctrl)
+
+    def positionControls(self):
+        if not self.repositionRivetCtrls:
+            return
+        for idx, ctrl in enumerate(self.controls):
+            buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = meshRivetCtrl.getRivetParts(ctrl)
+            misc.move(buffer2, self.positionsFromWeights[idx], self.rotationsFromWeights[idx])
+            misc.updateGeoConstraint(offsetBuffer = buffer2, geoConstraint=geoConstraint)
+
+        
+
+
+
 '''
 EXAMPLE
 

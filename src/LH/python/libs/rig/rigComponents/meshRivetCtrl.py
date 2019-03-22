@@ -45,6 +45,7 @@ class Component(base.Component):
                  offset = [0,0,1],
 
                  **kw):
+        super(Component, self).__init__(**kw)
 
         self.speedTxDefault = speedTxDefault
         self.speedTyDefault = speedTyDefault
@@ -79,11 +80,7 @@ class Component(base.Component):
             self.rotate = cmds.xform(sel, q=True, ro=True, ws=True)
             self.scale = cmds.xform(sel, q=True, s=True,ws=True)
 
-        super(Component, self).__init__(**kw)
-
-
-
-        self.suffix="MRC"
+        #self.suffix="MRC"
 
     def createHelperGeo(self):
         return
@@ -95,10 +92,14 @@ class Component(base.Component):
         self.ctrl = misc.create_ctl(side=self.side,
                                     name=self.name,
                                     parent=self.locator,
-                                    shape="sphere",
-                                    orient=[180, 90, 0],
+                                    # shape="sphere",
+                                    shape="",
+                                    customShape=elements.slideIcon,
+                                    # orient=[180, 90, 0],
+                                    orient=[90, 0, 0],
                                     offset=self.offset,
-                                    scale=[1, 1, 1],
+                                    #scale=[1, 1, 1],
+                                    scale=[1, .5, 1],
                                     num_buffer=2,
                                     # lock_attrs=["sx", "sy", "sz"],
                                     # lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
@@ -148,8 +149,8 @@ class Component(base.Component):
         cmds.addAttr(self.cmptMasterParent, ln = "transform", at = "message")
         cmds.connectAttr(self.buffer2 + ".message", self.cmptMasterParent + ".transform")
 
-    def preConnect(self):
-        misc.move(self.locator, self.translate, self.rotate, self.scale)
+    # def preConnect(self):
+    #     misc.move(self.locator, self.translate, self.rotate, self.scale)
         # misc.move(self.buffer2, self.translate, self.rotate, self.scale)
         # if self.mirror:
         #     cmds.xform(self.cmptMasterParent, ws=True, s=[-1,1,1])

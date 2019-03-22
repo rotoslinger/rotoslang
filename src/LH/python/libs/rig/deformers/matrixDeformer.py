@@ -4,6 +4,8 @@ reload(weightMapUtils)
 from rig.deformers import utils as deformerUtils
 from rig.deformers import base
 reload(base)
+from rig.rigComponents import simpleton
+reload(simpleton)
 
 def createTestMatrixDeformer():
     deformMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=100, sy=100,  n="deformMesh")[0]
@@ -20,40 +22,51 @@ class MatrixDeformer(base.Deformer):
     def __init__(self,
                     name="testMatrixDeformer",
                     deformerType="LHMatrixDeformer",
+                    ctrlName = "",
                     geoToDeform="",
-                    parent="",
+                    controlParent=[],
+                    rigParent="",
                     centerToParent=False,
+                    doCreateCtrls=True,
                     rotationTranforms=[],
                     translations = [],
                     rotations = [],
                     scales = [],
+                    offset = [0,0,1],
                     addAtIndex=0,
                     numToAdd=1,
                     locatorName="test",
                     curveWeightsNode="",
                     curveWeightsConnectionIdx=0,
+                    autoNameWithSide=True,
                     hide=True,
                  **kw):
         super(MatrixDeformer, self).__init__(**kw)
         self.name = name
         self.addAtIndex = addAtIndex
+        self.ctrlName = ctrlName
         self.deformerType = deformerType
         self.geoToDeform = geoToDeform
-        self.parent = parent
+        self.controlParent = controlParent
+        self.rigParent = rigParent
+        self.doCreateCtrls = doCreateCtrls
         self.centerToParent = centerToParent
         self.rotationTranforms = rotationTranforms
         self.translations = translations
         self.rotations = rotations
         self.scales = scales
+        self.offset = offset
         self.numToAdd = numToAdd
         self.locatorName = locatorName
         self.curveWeightsNode = curveWeightsNode
         self.curveWeightsConnectionIdx = curveWeightsConnectionIdx
+        self.autoNameWithSide = autoNameWithSide
         self.hide = hide
         self.deformer = ""
         self.matrixNodes = []
         self.matrixBaseNodes = []
         self.matrixBuffers = []
+        self.controls = []
 
     def getDeformer(self):
         if cmds.objExists(self.name):
@@ -64,13 +77,18 @@ class MatrixDeformer(base.Deformer):
     def getNodes(self):
         self.matrixNodes = []
         self.matrixBaseNodes = []
+        self.deformerParent = cmds.createNode("transform", name = self.name + "_DEFORM", parent = self.rigParent)
+        self.locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.locatorName, suffixSeperator="")
         for idx in range(self.numToAdd):
-            currParent = self.parent
-            if type(self.parent) == list:
-                currParent = self.parent[idx]
+            locatorName = self.locatorNames[idx]
+            if not self.autoNameWithSide:
+                locatorName = self.locatorName
+            currParent = self.deformerParent
+            # if type(self.controlParent) == list:
+            #     currParent = self.deformerParent[idx]
             idx = idx + self.addAtIndex
 
-            bufferName = "{0}{1:02}_BUF".format(self.locatorName, idx)
+            bufferName = "{0}{1:02}_BUF".format(locatorName, idx)
 
             if not bufferName in self.matrixBuffers:
                 self.matrixBuffers.append(bufferName)
@@ -78,17 +96,17 @@ class MatrixDeformer(base.Deformer):
             if not cmds.objExists(bufferName):
                 cmds.createNode("transform", n=bufferName, p=currParent)
 
-            matrixNodeName = "{0}{1:02}_LOC".format(self.locatorName, idx)
-            matrixBaseNodeName = "{0}Base{1:02}_LOC".format(self.locatorName, idx)
+            matrixNodeName = "{0}{1:02}_LOC".format(locatorName, idx)
+            matrixBaseNodeName = "{0}Base{1:02}_LOC".format(locatorName, idx)
             if not cmds.objExists(matrixNodeName):
-                loc = cmds.spaceLocator(name="{0}{1:02}_LOC".format(self.locatorName, idx))[0]
+                loc = cmds.spaceLocator(name="{0}{1:02}_LOC".format(locatorName, idx))[0]
                 self.matrixNodes.append(loc)
                 if cmds.objExists(bufferName):
                     cmds.parent(loc, bufferName)
             else:
                 self.matrixNodes.append(matrixNodeName)
             if not cmds.objExists(matrixBaseNodeName):
-                loc = cmds.spaceLocator(name="{0}Base{1:02}_LOC".format(self.locatorName, idx))[0]
+                loc = cmds.spaceLocator(name="{0}Base{1:02}_LOC".format(locatorName, idx))[0]
                 self.matrixBaseNodes.append(loc)
                 if cmds.objExists(bufferName):
                     cmds.parent(loc, bufferName)
@@ -115,6 +133,54 @@ class MatrixDeformer(base.Deformer):
                 cmds.connectAttr(weightMap, "{0}.inputs[{1}].matrixWeight".format(self.deformer, elemIndex))
             if self.rotationTranforms:
                 cmds.connectAttr("{0}.rotate".format(self.rotationTranforms[idx]), "{0}.rotate".format(self.matrixNodes[idx]))
+
+    def createCtrls(self):
+        if not self.doCreateCtrls:
+            return
+
+        translations = [[0,0,0] for x in range(len(self.matrixNodes))]
+        rotations = [[0,0,0] for x in range(len(self.matrixNodes))]
+        scales = [[1,1,1] for x in range(len(self.matrixNodes))]
+        
+        if len(self.translations) == len(self.matrixNodes):
+            translations = self.translations
+        if len(self.rotations) == len(self.matrixNodes):
+            rotations = self.rotations
+        if len(self.scales) == len(self.matrixNodes):
+            scales = self.scales
+
+        locatorNames = self.locatorNames
+        if self.ctrlName:
+            locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.ctrlName, suffixSeperator="")
+
+        for idx, node in enumerate(self.matrixNodes):
+            locatorName = locatorNames[idx]
+            if not self.autoNameWithSide:
+                locatorName = self.locatorName
+            side, name = misc.getNameSide(locatorName)
+            controlName = "{0}_{1}MatrixDef_CTL".format(side, name)
+            if not cmds.objExists(controlName):
+                ctrl = simpleton.Component(side=side,
+                                        name=name+"MatrixDef",
+                                        parent=self.controlParent[idx],
+                                        translate = translations[idx],
+                                        rotate = rotations[idx],
+                                        scale = scales[idx],
+                                        offset = self.offset,
+                                        size=.5
+                                        )  
+                ctrl.create()
+                controlName = ctrl.ctrl           
+            if not controlName in self.controls:
+                self.controls.append(controlName)
+
+    def connectCtrls(self):
+        if not self.doCreateCtrls:
+            return
+        for idx, ctrl in enumerate(self.controls):
+            cmds.connectAttr(ctrl + ".translate", self.matrixNodes[idx] + ".translate", f=True)
+            cmds.connectAttr(ctrl + ".rotate", self.matrixNodes[idx] + ".rotate", f=True)
+            cmds.connectAttr(ctrl + ".scale", self.matrixNodes[idx] + ".scale", f=True)
 
     def cleanup(self):
         for node in self.matrixNodes + self.matrixBaseNodes:

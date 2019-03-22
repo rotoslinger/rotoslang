@@ -129,6 +129,10 @@ class create_rig_hier():
                                            name = "C_rig_GRP",
                                            parent = self.groups[0]))
 
+        self.groups.append(cmds.createNode("transform", 
+                                           name = "C_control_GRP",
+                                           parent = self.groups[0]))
+
     def __lock_attrs(self):
         "Lock out attributes"
         for i in range(len(self.groups)):
@@ -485,11 +489,13 @@ class draw_ctl():
 
     def createCustomShape(self):
         if (self.customShape):
-            self.ctl = createGeoFromData(self.customShape, name = self.side + "_" + self.name + "_CTL").fullPathName()
-            print self.ctl
-            self.ctl = cmds.listRelatives(self.ctl, p=True)[0]
-            print self.ctl
-            cmds.parent(self.ctl, self.parent)
+            self.ctl = cmds.createNode("transform", n=self.side + "_" + self.name + "_CTL", p=self.parent)
+            curve = exportUtils.create_curve_2(self.customShape, self.side + "_" + self.name + "_CTL" + "Shape", self.ctl)
+
+            # self.ctl = createGeoFromData(self.customShape, name = self.side + "_" + self.name + "_CTL").fullPathName()
+            # print  "CURVE SHAPE,", self.ctl
+            # self.ctl = cmds.listRelatives(self.ctl, p=True)[0]
+            # cmds.parent(self.ctl, self.parent)
             cmds.scale(self.size, self.size, self.size, 
                        self.ctl + ".cv[0:]", 
                        r = True,p = (0, 0, 0))

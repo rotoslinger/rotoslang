@@ -582,10 +582,12 @@ class slideDeformerGui(object):
         componentType = cmds.radioButtonGrp(self.add_component_type, q = 1, sl = 1)
         if componentType == 1:
             slidingCtrl.Component(name=name, side=side, helperGeo = slideSurf, uOutConnectionAttr =deformer + "." + attrs[0], vOutConnectionAttr =deformer + "." + attrs[1])
+            slidingCtrl.create()
         elif componentType == 2:
             # print deformer + "." + attrs[0], deformer + "." + attrs[1]
             meshRivetCtrl.Component(name=name, guide=True, side=side, normalConstraintPatch = slideSurf,
                                     txConnectionAttr = deformer + "." + attrs[0], tyConnectionAttr = deformer + "." + attrs[1], mesh = geoName, selection=True)
+            meshRivetCtrl.create()
 
 
 

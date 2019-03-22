@@ -437,6 +437,8 @@ class lh_deformer_import(object):
                                    uOutConnectionAttr=self.uOutConnectionAttr,
                                    vOutConnectionAttr=self.vOutConnectionAttr,
                                    curveData=self.nurbsShape
+            slidingCtrl.create()
+
             )
 
     def create(self):
@@ -637,6 +639,7 @@ class lh_component_import(object):
                                                         rotate=ctrlDict["rotate"],
                                                         scale=ctrlDict["scale"],
                                                         curveData=ctrlDict["nurbsShape"])
+                rivetComponent.create()
             cmds.xform(ctrlDict["buffer2"], ws=True, t=ctrlDict["translateOffset"])
             cmds.xform(ctrlDict["buffer2"], ws=True, ro=ctrlDict["rotateOffset"])
             cmds.xform(ctrlDict["buffer2"], ws=True, s=ctrlDict["scaleOffset"])

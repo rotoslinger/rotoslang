@@ -15,10 +15,27 @@ class Component(base.Component):
                 #  side="C",
                 #  name="component",
                 #  suffix="CPT",
+                #  curveData=None,
                 #  parent=None,
+                #  helperGeo=elements.componentNurbs,
+                #  numBuffer=2,
+                #  orient=[180, 90, 0],
+                #  offset=[0, 0, 1],
+                #  scale=[1, 1, 1],
+                #  lock_attrs=["sx", "sy", "sz"],
+                #  gimbal=True,
+                #  size=.5)
+                                #  size=.5)
+
                  **kw):
         super(Component, self).__init__(**kw)
         self.componentName = "simpletonCtrl"
+        if not self.curveData:
+            self.curveData = elements.blockIcon
+        self.nullTransform=True
 
     def dummy(self):
+        return
+
+    def createHelperGeo(self):
         return

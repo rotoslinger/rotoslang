@@ -7,9 +7,25 @@ class Component(object):
                  side="C",
                  name="component",
                  suffix="CPT",
+                 worldInverseNodes=[],
                  curveData=None,
                  parent=None,
                  helperGeo=elements.componentNurbs,
+                 numBuffer=2,
+                 orient=[0, 0, 0],
+                 offset=[0, 0, 0],
+                 shapeScale=[1, 1, 1],
+                 lock_attrs=[],
+                #  lock_attrs=["sx", "sy", "sz"],
+                 gimbal=True,
+                 size=1,
+                 translate = None,
+                 rotate = None,
+                 scale = None,
+                 selection=False,
+                 createJoint=False,
+                 nullTransform = False
+
                  ):
         """
         @param side:
@@ -19,25 +35,50 @@ class Component(object):
         @param helperGeo: If it already exists in scene, just give the object as an arg
                           To create, give a dictionary created from export utils
                           By default a dictionary will be selected from elements
-
         """
 
         self.side = side
         self.name = name
         self.suffix = suffix
+        self.curveData = curveData
         self.parent = parent
         self.helperGeo = helperGeo
+        self.numBuffer = numBuffer
+        self.orient = orient
+        self.offset = offset
+        self.shapeScale = shapeScale
+        self.lock_attrs = lock_attrs
+        self.gimbal = gimbal
+        self.size = size
 
-        self.createHier()
-        self.createHelperGeo()
-        self.createCtrl()
-        self.setControlShape()
-        self.createGuide()
-        self.createAttrs()
-        self.preConnect()
-        self.createNodes()
-        self.postConnect()
-        self.componentName = "component"
+        self.translate = translate
+        self.rotate = rotate
+        self.scale = scale
+        self.createJoint = createJoint
+        self.nullTransform = nullTransform
+
+        if not self.translate and not self.rotate and not self.scale and selection:
+            sel = cmds.ls(sl=True)[0]
+            self.translate = cmds.xform(sel, q=True, t=True, ws=True)
+            self.rotate = cmds.xform(sel, q=True, ro=True, ws=True)
+            self.scale = cmds.xform(sel, q=True, s=True,ws=True)
+
+        if not self.translate:
+            self.translate = [0,0,0]
+        if not self.rotate:
+            self.rotate = [0,0,0]
+        if not self.scale:
+            self.scale = [1,1,1]
+
+        # self.createHier()
+        # self.createHelperGeo()
+        # self.createCtrl()
+        # self.setControlShape()
+        # self.createGuide()
+        # self.createAttrs()
+        # self.preConnect()
+        # self.createNodes()
+        # self.postConnect()
 
     def createHier(self):
         self.cmptMasterParent = cmds.createNode("transform",
@@ -67,47 +108,71 @@ class Component(object):
         cmds.setAttr(node + ".componentType", self.componentName, typ = "string", l=True)
 
     def createCtrl(self):
-        # self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
-        #                                   parent=self.cmptMasterParent,
-        #                                   shapeVis=False)
-        # self.ctrl = misc.create_ctl(side=self.side,
-        #                             name=self.name,
-        #                             parent=self.locator,
-        #                             shape="circle",
-        #                             orient=[180, 90, 0],
-        #                             offset=[0, 0, 1],
-        #                             scale=[1, 1, 1],
-        #                             num_buffer=2,
-        #                             lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
-        #                             gimbal=True,
-        #                             size=.5)
-        #
-        # self.buffer1 = self.ctrl.buffers[1]
-        # self.buffer2 = self.ctrl.buffers[0]
-        # self.ctrl = self.ctrl.ctl
-        return
+        shape="circle"
+        if self.curveData:
+            shape=""
+
+        self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
+                                          parent=self.cmptMasterParent,
+                                          shapeVis=False)
+        self.ctrl = misc.create_ctl(side=self.side,
+                                    name=self.name,
+                                    parent=self.locator,
+                                    shape=shape,
+                                    customShape=self.curveData,
+                                    orient=self.orient,
+                                    offset=self.offset,
+                                    scale=self.shapeScale,
+                                    num_buffer=self.numBuffer,
+                                    lock_attrs=self.lock_attrs,
+                                    gimbal=self.gimbal,
+                                    size=self.size,
+                                    nullTransform=self.nullTransform)
+        reversedBuffers = self.ctrl.buffers[::-1]
+        # create self.buffer in decending order going further away from the control, ascending goes opposite...
+        # -buffer02
+        #   -buffer01
+        #     -buffer00
+        #       -ctrl
+        for idx, buff in enumerate(reversedBuffers):
+            setattr(self, "buffer{0:02}".format(idx), buff)
+        self.buffersAscending = reversedBuffers
+        self.buffersDecending = self.ctrl.buffers
+        self.ctrl = self.ctrl.ctl
+
+    def createJoints(self):
+        if not self.createJoint:
+            return
+        self.joint=cmds.joint(self.ctrl, p=self.translate, orientation=self.rotate, scale=self.scale, name = "{0}_{1}_JNT".format(self.side, self.name))
+        cmds.setAttr(self.joint + ".visibility", 0)
+        cmds.addAttr(self.joint, ln = "BIND",
+                            at = "bool",)
+        cmds.setAttr(self.joint+".BIND", True,
+                        l = True,
+                        k=False, )
 
     def setControlShape(self):
-        if self.curveData:
-            # get Curve data for transfer
-            sourceCurve = cmds.listRelatives(self.ctrl, type="nurbsCurve")[0]
-            color = cmds.getAttr(sourceCurve + ".overrideColor")
-            override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
-            colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
-            colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
-            colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
-            cmds.delete(sourceCurve)
+        return
+        # if self.curveData:
+        #     # get Curve data for transfer
+        #     sourceCurve = cmds.listRelatives(self.ctrl, type="nurbsCurve")[0]
+        #     color = cmds.getAttr(sourceCurve + ".overrideColor")
+        #     override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
+        #     colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
+        #     colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
+        #     colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
+        #     cmds.delete(sourceCurve)
 
-            # create curve, set curve shape
-            curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
+        #     # create curve, set curve shape
+        #     curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
 
-            # transfer Curve data
-            cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
-            cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
-            cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
-            cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
+        #     # transfer Curve data
+        #     cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
+        #     cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
 
     def createGuide(self):
         pass
@@ -115,8 +180,12 @@ class Component(object):
     def createAttrs(self):
         return
 
+    def setDefaultLocation(self):
+        misc.move(self.locator, self.translate, self.rotate, self.scale)
+
     def preConnect(self):
         return
+
 
     def createNodes(self):
         return
@@ -124,6 +193,20 @@ class Component(object):
     def postConnect(self):
         return
 
+    def create(self):
+
+        self.createHier()
+        self.createHelperGeo()
+        self.createCtrl()
+        self.createJoints()
+        self.setControlShape()
+        self.createGuide()
+        self.createAttrs()
+        self.setDefaultLocation()
+        self.preConnect()
+        self.createNodes()
+        self.postConnect()
+        self.componentName = "component"
 
 def getComponents(componentType="componentType"):
     componentTemp = cmds.ls(et="nullTransform")

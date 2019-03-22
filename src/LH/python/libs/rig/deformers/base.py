@@ -75,6 +75,12 @@ class Deformer(object):
     def connectDeformer(self):
         return
 
+    def createCtrls(self):
+        return
+
+    def connectCtrls(self):
+        return
+
     def cleanup(self):
         return
 
@@ -85,6 +91,8 @@ class Deformer(object):
         self.getAttrs()
         self.setDefaults()
         self.connectDeformer()
+        self.createCtrls()
+        self.connectCtrls()
         self.cleanup()
 
 
