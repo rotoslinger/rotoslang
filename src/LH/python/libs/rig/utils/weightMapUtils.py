@@ -24,7 +24,6 @@ def createWeightMapOnSingleObject(mayaObject=None,
                             makePaintable=True,
                             geoType = "mesh"):
     mayaObject = misc.getShape(mayaObject)
-    print "MAYA OBJECT", mayaObject
     if addAttr:
         cmds.addAttr(mayaObject, ln=weightName, dataType=dataType)
         setDefaultWeights(mayaObject, weightName, dataType=dataType, defaultValue=defaultValue)

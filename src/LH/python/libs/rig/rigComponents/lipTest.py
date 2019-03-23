@@ -69,26 +69,40 @@ def test():
     tierCount2 = 3
     tierCount3 = 5
 
-    ctrlSize1=2
-    ctrlSize2=1
-    ctrlSize3=.5
-    controlSpeedDefaults = [.1,.1,.1]
+    slideCtrlSize1=2
+    slideCtrlSize2=1
+    slideCtrlSize3=.5
+    slideControlSpeedDefaults = [.1,.1,.1]
 
     ctrlAutoPositionThreshold = 0.9
 
+    thickToPoint = (0, 0.978, -0.208)
 
-    ctrlShapeOffset1=[0,0.0,2]
-    ctrlShapeOffset2=[0,0.0,1]
-    ctrlShapeOffset3=[0,0.0,1]
 
-    ctrlPosOffset1=[0, 0.0, 0]
-    ctrlPosOffset2=[0, 0.0, 0]
-    ctrlPosOffset3=[0, 0.0, 0]
+    slideCtrlShapeOffset1=[0,0.0,2]
+    slideCtrlShapeOffset2=[0,0.0,1]
+    slideCtrlShapeOffset3=[0,0.0,1]
 
+    slideCtrlPosOffset1=[0, 0.0, 0]
+    slideCtrlPosOffset2=[0, 0.0, 0]
+    slideCtrlPosOffset3=[0, 0.0, 0]
+    # falloffMatrixDeformerName = ctrlName + "MATDEFTEST"
 
     falloffDefaults=(-10, -9.9, -3, 10.0)
+    falloffMatrixDefaults=(-11, -7, -2, 10.0)
     lowerRemovePointIndicies=[10, 11, 23, 35, 47, 48, 71, 73, 85, 97, 98, 121, 133, 145, 146, 158, 170, 193, 205, 206, 229, 239, 240, 251, 262, 273, 274, 295, 297, 308, 319, 320, 341, 352, 363, 364, 375, 386, 407, 418, 419, 440]
     upperRemovePointIndicies=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 34, 46, 58, 59, 160, 172, 217, 218, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 262, 273, 284, 285, 377, 388, 429, 430]
+
+    matDefCtrlSize1=1
+    matDefCtrlSize2=.65
+    matDefCtrlSize3=.35
+
+    matDefCtrlShapeOffset1=[0,-1.0,2]
+    matDefCtrlShapeOffset2=[0,-1.0,1]
+    matDefCtrlShapeOffset3=[0,-1.0,1]
+
+
+
 
     if dog:
         fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/dogLipTest.ma"
@@ -96,22 +110,22 @@ def test():
         tierCount2 = 5
         tierCount3 = 9
 
-        ctrlSize1=2.3
-        ctrlSize2=1.2
-        ctrlSize3=.6
+        slideCtrlSize1=2.3
+        slideCtrlSize2=1.2
+        slideCtrlSize3=.6
         ctrlAutoPositionThreshold = 0.9
 
-        ctrlShapeOffset1=[0,0.0,2]
-        ctrlShapeOffset2=[0,0.0,2]
-        ctrlShapeOffset3=[0,0.0,2]
+        slideCtrlShapeOffset1=[0,0.0,2]
+        slideCtrlShapeOffset2=[0,0.0,2]
+        slideCtrlShapeOffset3=[0,0.0,2]
         
         falloffDefaults=(-10, -9.9, -4, 10.0)
         
-        ctrlPosOffset1=[0, 0.0, 3]
-        ctrlPosOffset2=[0, 0.0, 0]
-        ctrlPosOffset3=[0, 0.0, 0]
+        slideCtrlPosOffset1=[0, 0.0, 3]
+        slideCtrlPosOffset2=[0, 0.0, 0]
+        slideCtrlPosOffset3=[0, 0.0, 0]
         
-        controlSpeedDefaults = [.025,.05,.05]
+        slideControlSpeedDefaults = [.025,.05,.05]
         lowerRemovePointIndicies=[]
         upperRemovePointIndicies=[]
 
@@ -119,24 +133,29 @@ def test():
                 tierCount1=tierCount1,
                 tierCount2=tierCount2,
                 tierCount3=tierCount3,
+                thickToPoint=thickToPoint,
+                slideCtrlSize1=slideCtrlSize1,
+                slideCtrlSize2=slideCtrlSize2,
+                slideCtrlSize3=slideCtrlSize3,
 
-                ctrlSize1=ctrlSize1,
-                ctrlSize2=ctrlSize2,
-                ctrlSize3=ctrlSize3,
+                slideCtrlShapeOffset1=slideCtrlShapeOffset1,
+                slideCtrlShapeOffset2=slideCtrlShapeOffset2,
+                slideCtrlShapeOffset3=slideCtrlShapeOffset3,
+                
+                slideCtrlPosOffset1=slideCtrlPosOffset1,
+                slideCtrlPosOffset2=slideCtrlPosOffset2,
+                slideCtrlPosOffset3=slideCtrlPosOffset3,
+                
+                slideControlSpeedDefaults=slideControlSpeedDefaults,
 
-                ctrlShapeOffset1=ctrlShapeOffset1,
-                ctrlShapeOffset2=ctrlShapeOffset2,
-                ctrlShapeOffset3=ctrlShapeOffset3,
-                
-                ctrlPosOffset1=ctrlPosOffset1,
-                ctrlPosOffset2=ctrlPosOffset2,
-                ctrlPosOffset3=ctrlPosOffset3,
-                
-                controlSpeedDefaults=controlSpeedDefaults,
-                
+                matDefCtrlShapeOffset1=matDefCtrlShapeOffset1,
+                matDefCtrlShapeOffset2=matDefCtrlShapeOffset2,
+                matDefCtrlShapeOffset3=matDefCtrlShapeOffset3,
+
                 ctrlAutoPositionThreshold = ctrlAutoPositionThreshold,
 
                 falloffDefaults=falloffDefaults,
+                falloffMatrixDefaults=falloffMatrixDefaults,
                 fileName=fileName,
                 deformMesh="humanLipsLower",
                 base="humanLipsLowerBase",
@@ -146,39 +165,47 @@ def test():
 
     lip.Lip(name="lowerLipCurve",
             ctrlName = "lowerLip",
-            #fileName=fileName,
             controlRivetMesh = "humanLipsLower",
-            multiSlideForBaseCurve=False,
+            # multiSlideForBaseCurve=False,
+            multiSlideForBaseCurve=True,
             repositionRivetCtrls=True,
             tierCount1=tierCount1,
             tierCount2=tierCount2,
             tierCount3=tierCount3,
 
-            ctrlSize1=ctrlSize1,
-            ctrlSize2=ctrlSize2,
-            ctrlSize3=ctrlSize3,
+            slideCtrlSize1=slideCtrlSize1,
+            slideCtrlSize2=slideCtrlSize2,
+            slideCtrlSize3=slideCtrlSize3,
 
-            ctrlShapeOffset1=ctrlShapeOffset1,
-            ctrlShapeOffset2=ctrlShapeOffset2,
-            ctrlShapeOffset3=ctrlShapeOffset3,
+            slideCtrlShapeOffset1=slideCtrlShapeOffset1,
+            slideCtrlShapeOffset2=slideCtrlShapeOffset2,
+            slideCtrlShapeOffset3=slideCtrlShapeOffset3,
             
-            ctrlPosOffset1=ctrlPosOffset1,
-            ctrlPosOffset2=ctrlPosOffset2,
-            ctrlPosOffset3=ctrlPosOffset3,
+            slideCtrlPosOffset1=slideCtrlPosOffset1,
+            slideCtrlPosOffset2=slideCtrlPosOffset2,
+            slideCtrlPosOffset3=slideCtrlPosOffset3,
             
-            controlSpeedDefaults=controlSpeedDefaults,
-            
+            slideControlSpeedDefaults=slideControlSpeedDefaults,
+
+            matDefCtrlShapeOffset1=matDefCtrlShapeOffset1,
+            matDefCtrlShapeOffset2=matDefCtrlShapeOffset2,
+            matDefCtrlShapeOffset3=matDefCtrlShapeOffset3,
+
             ctrlAutoPositionThreshold = .01,
 
             falloffDefaults=falloffDefaults,
+            falloffMatrixDefaults=falloffMatrixDefaults,
             fileName=None,
-            deformMesh="lowerLipCurve",
-            base="lowerLipCurveBase",
+            deformMesh=["lowerLipCurve", "lowerLipCurveAim"],
+            base=["lowerLipCurveBase", "lowerLipCurveAimBase"],
+            # deformMesh="lowerLipCurve",
+            # base="lowerLipCurveBase",
             projectionMesh="lowLipProjection",
             slidePatch="slide",
             slidePatchBase="slideBase")
 
     lip.lipCurveDeformSplit(name="C_LowerLipWire",
+                            curveDeformerAlgorithm=1,
                             curve="lowerLipCurve",
                             curveAim="lowerLipCurveAim",
                             deformedGeometry="humanLipsLower",
@@ -195,30 +222,43 @@ def test():
 
 
     falloffDefaults=(10, -1, -7, -10.0)
+    falloffMatrixDefaults=(10, -1, -9, -10.0)
 
+    matDefCtrlShapeOffset1=[0,1.0,2]
+    matDefCtrlShapeOffset2=[0,1.0,1]
+    matDefCtrlShapeOffset3=[0,1.0,1]
 
+    thickToPoint = (0, -0.978, 0.208)
     upperLipSlide = lip.Lip(name="upperLip",
                 tierCount1=tierCount1,
                 tierCount2=tierCount2,
                 tierCount3=tierCount3,
+                thickToPoint=thickToPoint,
+                slideCtrlSize1=slideCtrlSize1,
+                slideCtrlSize2=slideCtrlSize2,
+                slideCtrlSize3=slideCtrlSize3,
 
-                ctrlSize1=ctrlSize1,
-                ctrlSize2=ctrlSize2,
-                ctrlSize3=ctrlSize3,
+                slideCtrlShapeOffset1=slideCtrlShapeOffset1,
+                slideCtrlShapeOffset2=slideCtrlShapeOffset2,
+                slideCtrlShapeOffset3=slideCtrlShapeOffset3,
+                
+                slideCtrlPosOffset1=slideCtrlPosOffset1,
+                slideCtrlPosOffset2=slideCtrlPosOffset2,
+                slideCtrlPosOffset3=slideCtrlPosOffset3,
+                
+                slideControlSpeedDefaults=slideControlSpeedDefaults,
+                
+                matDefCtrlShapeOffset1=matDefCtrlShapeOffset1,
+                matDefCtrlShapeOffset2=matDefCtrlShapeOffset2,
+                matDefCtrlShapeOffset3=matDefCtrlShapeOffset3,
 
-                ctrlShapeOffset1=ctrlShapeOffset1,
-                ctrlShapeOffset2=ctrlShapeOffset2,
-                ctrlShapeOffset3=ctrlShapeOffset3,
-                
-                ctrlPosOffset1=ctrlPosOffset1,
-                ctrlPosOffset2=ctrlPosOffset2,
-                ctrlPosOffset3=ctrlPosOffset3,
-                
-                controlSpeedDefaults=controlSpeedDefaults,
-                
+
+
+
                 ctrlAutoPositionThreshold = ctrlAutoPositionThreshold,
 
                 falloffDefaults=falloffDefaults,
+                falloffMatrixDefaults=falloffMatrixDefaults,
                 fileName=None,
                 deformMesh="humanLipsUpper",
                 base="humanLipsUpperBase",
@@ -228,6 +268,7 @@ def test():
 
     lip.Lip(name="upperLipCurve",
             ctrlName = "upperLip",
+            
             #fileName=fileName,
             controlRivetMesh = "humanLipsUpper",
             multiSlideForBaseCurve=False,
@@ -236,23 +277,28 @@ def test():
             tierCount2=tierCount2,
             tierCount3=tierCount3,
 
-            ctrlSize1=ctrlSize1,
-            ctrlSize2=ctrlSize2,
-            ctrlSize3=ctrlSize3,
+            slideCtrlSize1=slideCtrlSize1,
+            slideCtrlSize2=slideCtrlSize2,
+            slideCtrlSize3=slideCtrlSize3,
 
-            ctrlShapeOffset1=ctrlShapeOffset1,
-            ctrlShapeOffset2=ctrlShapeOffset2,
-            ctrlShapeOffset3=ctrlShapeOffset3,
+            slideCtrlShapeOffset1=slideCtrlShapeOffset1,
+            slideCtrlShapeOffset2=slideCtrlShapeOffset2,
+            slideCtrlShapeOffset3=slideCtrlShapeOffset3,
             
-            ctrlPosOffset1=ctrlPosOffset1,
-            ctrlPosOffset2=ctrlPosOffset2,
-            ctrlPosOffset3=ctrlPosOffset3,
+            slideCtrlPosOffset1=slideCtrlPosOffset1,
+            slideCtrlPosOffset2=slideCtrlPosOffset2,
+            slideCtrlPosOffset3=slideCtrlPosOffset3,
             
-            controlSpeedDefaults=controlSpeedDefaults,
-            
+            slideControlSpeedDefaults=slideControlSpeedDefaults,
+
+            matDefCtrlShapeOffset1=matDefCtrlShapeOffset1,
+            matDefCtrlShapeOffset2=matDefCtrlShapeOffset2,
+            matDefCtrlShapeOffset3=matDefCtrlShapeOffset3,
+
             ctrlAutoPositionThreshold = .01,
 
             falloffDefaults=falloffDefaults,
+            falloffMatrixDefaults=falloffMatrixDefaults,
             fileName=None,
             deformMesh="upperLipCurve",
             base="upperLipCurveBase",

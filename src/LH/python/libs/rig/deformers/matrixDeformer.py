@@ -32,7 +32,9 @@ class MatrixDeformer(base.Deformer):
                     translations = [],
                     rotations = [],
                     scales = [],
-                    offset = [0,0,1],
+                    offset = [0,0,0],
+                    posOffset = [0,0,0],
+                    size = 1,
                     addAtIndex=0,
                     numToAdd=1,
                     locatorName="test",
@@ -56,6 +58,8 @@ class MatrixDeformer(base.Deformer):
         self.rotations = rotations
         self.scales = scales
         self.offset = offset
+        self.posOffset = posOffset
+        self.size = size
         self.numToAdd = numToAdd
         self.locatorName = locatorName
         self.curveWeightsNode = curveWeightsNode
@@ -167,7 +171,7 @@ class MatrixDeformer(base.Deformer):
                                         rotate = rotations[idx],
                                         scale = scales[idx],
                                         offset = self.offset,
-                                        size=.5
+                                        size=self.size,
                                         )  
                 ctrl.create()
                 controlName = ctrl.ctrl           

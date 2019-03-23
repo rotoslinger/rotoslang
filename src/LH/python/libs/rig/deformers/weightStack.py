@@ -346,6 +346,14 @@ class WeightStack(Node):
                  autoCreateOperationVal = 0,
                  createControl = True,
                  controlSize = 1,
+                 controlTxConnectionAttrs=[],
+                 controlTyConnectionAttrs=[],
+                 controlTzConnectionAttrs=[],
+                 controlRxConnectionAttrs=[],
+                 controlRyConnectionAttrs=[],
+                 controlRzConnectionAttrs=[],
+
+
                  controlOffset = [0,0,.1],
                  controlPositionWeightsThreshold=.9,
                  controlPositionOffset=[0,0,0],
@@ -383,6 +391,12 @@ class WeightStack(Node):
         self.autoCreateOperationVal = autoCreateOperationVal
         self.createControl = createControl
         self.controlSize = controlSize
+        self.controlTxConnectionAttrs = controlTxConnectionAttrs
+        self.controlTyConnectionAttrs = controlTyConnectionAttrs
+        self.controlTzConnectionAttrs = controlTzConnectionAttrs
+        self.controlRxConnectionAttrs = controlRxConnectionAttrs
+        self.controlRyConnectionAttrs = controlRyConnectionAttrs
+        self.controlRzConnectionAttrs = controlRzConnectionAttrs
         self.controlOffset = controlOffset
         self.controlPositionWeightsThreshold = controlPositionWeightsThreshold
         self.controlPositionOffset = controlPositionOffset
@@ -407,7 +421,17 @@ class WeightStack(Node):
         self.falloffElemStart = falloffElemStart            
         self.controlSpeedDefaults = controlSpeedDefaults            
         self.repositionRivetCtrls = repositionRivetCtrls    
-
+        # print "CON",controlTzConnectionAttrs
+        # print "CON",controlTzConnectionAttrs
+        # print "CON",controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
+        # print "CON",self.controlTzConnectionAttrs
 
 
 
@@ -545,20 +569,62 @@ class WeightStack(Node):
                 self.rotationsFromWeights.append(rotate)
             
             side, name = misc.getNameSide(self.factorAttrNames[idx])
+
+
+
+            tyConnect = None
+            tzConnect = None
+            rxConnect = None
+            ryConnect = None
+            rzConnect = None
+
+            if self.controlTxConnectionAttrs:
+                txConnect = self.controlTxConnectionAttrs[idx]
+            if self.controlTyConnectionAttrs:
+                tyConnect = self.controlTyConnectionAttrs[idx]
+            if self.controlTzConnectionAttrs:
+                tzConnect = self.controlTzConnectionAttrs[idx]
+            if self.controlRxConnectionAttrs:
+                rxConnect = self.controlRxConnectionAttrs[idx]
+            if self.controlRyConnectionAttrs:
+                ryConnect = self.controlRyConnectionAttrs[idx]
+            if self.controlRzConnectionAttrs:
+                rzConnect = self.controlRzConnectionAttrs[idx]
+
+
             if cmds.objExists("{0}_{1}_CPT".format(side, name)):
                 ctrlName = "{0}_{1}_CTL".format(side, name)
                 if ctrlName not in self.controls:
                     self.controls.append(ctrlName)
                     # "txOut", "tyOut", "tzOut"
-                    txConnectionAttr=txConnect
-                    cmds.connectAttr(ctrlName + ".txOut", txConnect, f=True)
-                    tyConnectionAttr="{0}.inputs[{1}].factor".format(self.node, elemIdx)
-                    cmds.connectAttr(ctrlName + ".tyOut", tyConnectionAttr, f=True)
+                    if self.UDLR:
+                        txConnectionAttr=txConnect
+                        cmds.connectAttr(ctrlName + ".txOut", txConnect, f=True)
+                        tyConnectionAttr="{0}.inputs[{1}].factor".format(self.node, elemIdx)
+                        cmds.connectAttr(ctrlName + ".tyOut", tyConnectionAttr, f=True)
+                    # Should only connect one at a time
+                    # if txConnect:
+                    #     cmds.connectAttr( txConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
+                    # if tyConnect:
+                    #     cmds.connectAttr( tyConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
+                    # if tzConnect:
+                    #     cmds.connectAttr( tzConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
+
+                    # if rxConnect:
+                    #     cmds.connectAttr( rxConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
+                    # if ryConnect:
+                    #     cmds.connectAttr( ryConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
+                    # if rzConnect:
+                    #     cmds.connectAttr( rzConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
+
 
                 continue
             sxConnect = None
             if self.connectFalloff and self.falloffCurveWeightNode:
                 sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
+            tyConnect = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
+
+
             # print "POSITIONS!!!!", self.positionsFromWeights
             tmpCtrl = meshRivetCtrl.Component(name = name,
                                                 side=side,
@@ -574,12 +640,12 @@ class WeightStack(Node):
                                                 # guide = False,
                                                 txConnectionAttr=txConnect,
                                                 # tyConnectionAttr=self.floatAttrs[idx],
-                                                tyConnectionAttr="{0}.inputs[{1}].factor".format(self.node, elemIdx),
-                                                # tzConnectionAttr=None,
+                                                tyConnectionAttr=tyConnect,
+                                                tzConnectionAttr=tzConnect,
 
-                                                # rxConnectionAttr=None,
-                                                # ryConnectionAttr=None,
-                                                # rzConnectionAttr=None,
+                                                rxConnectionAttr=rxConnect,
+                                                ryConnectionAttr=ryConnect,
+                                                rzConnectionAttr=rzConnect,
 
                                                 sxConnectionAttr=sxConnect,
                                                 # syConnectionAttr=None,

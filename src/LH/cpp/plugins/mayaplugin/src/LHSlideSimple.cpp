@@ -153,7 +153,7 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
 
   if (!cacheBind || !deformedVertIds.size() || deformedVertIds.size()-1 < mIndex ||  !deformedVertIds[mIndex].length())
   {
-    MGlobal::displayInfo(MString("NOT CACHING"));
+    // MGlobal::displayInfo(MString("NOT CACHING"));
     status =  GetAllBaseGeoIter(data);
     CheckStatusReturn( status, "Couldn't get base Geometry" );
     status = LHSlideSimple::CacheDeformPointMembership(data);
@@ -162,21 +162,21 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
 
   if (!deformedVertIds.size() || deformedVertIds.size()-1 < mIndex ||  !deformedVertIds[mIndex].length())
   {
-      MGlobal::displayInfo(MString("NOT CACHING"));
+      // MGlobal::displayInfo(MString("NOT CACHING"));
       MGlobal::displayError(MString("Weight missmatch, make sure you have the same number of weights as inputGeometry"));
       return MS::kFailure;
   }
 
   if (!cacheBind || !slideUParam.size() || slideUParam.size()-1 < mIndex ||  !slideUParam[mIndex].length())
   {
-    MGlobal::displayInfo(MString("NOT CACHING"));
+    // MGlobal::displayInfo(MString("NOT CACHING"));
     status = LHSlideSimple::CacheClosestPoints();
     CheckStatusReturn( status, "Couldn't cache closest points" );
   }
 
   if (!cacheBind || !baseEuler.size() || baseEuler.size()-1 < mIndex ||  !baseEuler[mIndex].size() || baseEuler[mIndex].size() != deformedVertIds[mIndex].length())
   {
-    MGlobal::displayInfo(MString("NOT CACHING"));
+    // MGlobal::displayInfo(MString("NOT CACHING"));
     status = LHSlideSimple::CacheBaseRotations();
     CheckStatusReturn( status, "Couldn't cache base rotations" );
   }

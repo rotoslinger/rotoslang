@@ -146,6 +146,7 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
     ratio = timeRange/num
     midpoint = num/2
     alreadyExists = False
+    keyframeAlreadyExists = False
     for idx in range(num):
         count = idx
         side = "L"
@@ -161,6 +162,9 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
             count = num -1 - idx
         generatedName = formatName.format(side, name, count, suffix)
 
+
+        #################################################################################################################
+        # This is to get nodes that already exist...very bad, needs to be reworked
         if cmds.objExists(generatedName):
             keyframes.append(generatedName)
             # Assumes the falloff also exists
@@ -169,11 +173,16 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                 singleFalloffName = name
             if createSingleFalloff:
                 falloffName = "{0}Falloff_{1}".format(singleFalloffName, suffix)
+            if cmds.objExists(falloffName):
+                keyframeAlreadyExists = True
+                # You need to create a new falloff
+
             falloffKeyframes.append(falloffName)
             # Potentially dangerous.  Assumes that if one of the curves exists, all of them exist and will skip some later steps
             # Be extremely careful when naming or this could come back to bite you!!!
             alreadyExists = True
             continue
+        #################################################################################################################
 
         weightCurve = getNodeAgnostic(nodeType="animCurveTU", name=generatedName, parent=None)
         try:
@@ -257,8 +266,28 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                 cmds.keyTangent( weightCurve, time=time, edit=True,  weightedTangents=True)
                 cmds.keyTangent( weightCurve, time=time, edit=True,  lock=False)
                 cmds.keyTangent( weightCurve, time=time, edit=True,  outWeight=outerWeight, inWeight=outerWeight, outAngle=0,inAngle=currentRightAngle)
-    if alreadyExists:
+    if alreadyExists and keyframeAlreadyExists:
         return keyframes, falloffKeyframes
+
+
+    #################################################################################################################
+    # Super bad, but need to create single falloff if doesn't already exist.  All this needs severe reworking,,,
+    if alreadyExists and not keyframeAlreadyExists:
+        falloffKeyframes = []
+        if createSingleFalloff:
+            falloffName = "{0}Falloff_{1}".format(singleFalloffName, suffix)
+        falloffKeyframes.append(getNodeAgnostic(nodeType="animCurveTU", name=falloffName, parent=None))
+        initVFalloff(falloffKeyframes,
+                    falloffStart=falloffStart,
+                    falloffStartInner=falloffStartInner,
+                    falloffEndInner=falloffEndInner,
+                    falloffEnd=falloffEnd,
+                    itts=itts,
+                    otts=otts
+                    )
+        return keyframes, falloffKeyframes
+    #################################################################################################################
+
 
     flatTime = int(time[0])
     scaleAmt = float(timeRange)/float(flatTime)
@@ -291,6 +320,7 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                 itts=itts,
                 otts=otts
                  )
+
     
     return keyframes, falloffKeyframes
 

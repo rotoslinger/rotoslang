@@ -2464,7 +2464,6 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     
     offsetTransform = getSetMaintainOffset(offsetBuffer, None, maintainOffsetT, maintainOffsetR, maintainOffsetS)
     constraint = cmds.createNode("LHGeometryConstraint", n=name)
-    print "CONSTRAINT", constraint
     int_array, closest_point, pointA, pointB, pointC = getClosestPolygonToTransform(driverMesh, driven)
     pointIdAttrs = ["a", "b", "c", "d"]
     # just in case we get back an ngon, set a hard range....
@@ -2480,7 +2479,6 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     
     cmds.connectAttr(driverMesh + ".worldMesh", constraint + ".inMesh" )
     decompose = cmds.createNode("decomposeMatrix", n = name + "_DCP")
-    print "decomposeMatrix ", decompose
     
     cmds.connectAttr(constraint + ".outputMatrix", decompose + ".inputMatrix")
 

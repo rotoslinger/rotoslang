@@ -1,4 +1,6 @@
 from maya import cmds
+from rig.utils import misc
+reload(misc)
 
 #===============================================================================
 #CLASS:         returnDeformerCmd
@@ -124,10 +126,19 @@ class curveDeformerCmd():
 
         self.driverBaseName = self.__nameBase(self.driverCurve)
         self.aimBaseName = self.__nameBase(self.aimCurve)
-        tmpDriveBase = self.__duplicateCurveClean(curve = self.driverCurve, 
-                                   name = self.driverBaseName)
-        tmpAimBase = self.__duplicateCurveClean(curve = self.aimCurve, 
-                                   name = self.aimBaseName)
+        if not cmds.objExists(self.driverBaseName):
+            tmpDriveBase = self.__duplicateCurveClean(curve = self.driverCurve, 
+                                    name = self.driverBaseName)
+        else:
+            tmpDriveBase = (self.driverBaseName, misc.getShape(self.driverBaseName))
+
+
+        if not cmds.objExists(self.aimBaseName):
+            tmpAimBase = self.__duplicateCurveClean(curve = self.aimCurve, 
+                                    name = self.aimBaseName)
+        else:
+            tmpAimBase = (self.aimBaseName, misc.getShape(self.aimBaseName))
+
         self.driverCurveBase = tmpDriveBase[0]
         self.driverCurveBaseShape = tmpDriveBase[1]
         

@@ -60,6 +60,8 @@ set(SOURCE_FILES
 	"LHMatrixDeformer.h"
 	"LHBlendshapeSimple.cpp"
 	"LHCurveDeformer.cpp"
+	"LHVectorDeformerSimple.cpp"
+	"LHCurveRollSimple.cpp"
 
 )
 

@@ -79,6 +79,8 @@ set(source_files
 	"src/LHBlendshapeSimple.cpp"
 	"src/LHBlendshapeSimple.h"
 	"src/LHCurveDeformer.cpp"
+	"src/LHVectorDeformerSimple.cpp"
+	"src/LHCurveRollSimple.cpp"
 )
 #message("SOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" ${COLLISION_PLUGINS})
 #message(${COLLISION_PLUGINS})
