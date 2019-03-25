@@ -8,7 +8,8 @@ reload(misc)
 
 from rig.rigComponents import meshRivetCtrl
 reload(meshRivetCtrl)
-
+from rig.rigComponents import elements
+reload(elements)
 
 class Node(object):
     def __init__(self,
@@ -93,6 +94,7 @@ class AnimCurveWeight(Node):
                  autoCreateTimeRange = 20.0,
                  createSingleFalloff = True,
                  uKeyframesAllOnes = False,
+                 falloffCurveDict = None,
                  falloffDefaults=(-10, -9, 9, 10),
                  falloffItts=["linear","linear","linear","linear"],
                  falloffOtts=["linear","linear","linear","linear"],
@@ -142,7 +144,7 @@ class AnimCurveWeight(Node):
         self.createSingleFalloff = createSingleFalloff
         self.uKeyframesAllOnes = uKeyframesAllOnes
         self.falloffDefaults = falloffDefaults
-        self.falloffDefaults = falloffDefaults
+        self.falloffCurveDict = falloffCurveDict
         self.falloffItts = falloffItts
         self.falloffOtts = falloffOtts
 
@@ -207,7 +209,8 @@ class AnimCurveWeight(Node):
                                                                                       falloffEndInner=self.falloffDefaults[2],
                                                                                       falloffEnd=self.falloffDefaults[3],
                                                                                       itts=self.falloffItts,
-                                                                                      otts=self.falloffOtts
+                                                                                      otts=self.falloffOtts,
+                                                                                      falloffCurveDict=self.falloffCurveDict,
                                                                                       )
             return
 
@@ -223,6 +226,7 @@ class AnimCurveWeight(Node):
         else:
             deformerUtils.initUKeyframes(self.weightCurves)
         deformerUtils.initVFalloff(self.weightCurvesFalloff,
+                                    falloffCurveDict=self.falloffCurveDict,
                                     falloffStart=self.falloffDefaults[0],
                                     falloffStartInner=self.falloffDefaults[1],
                                     falloffEndInner=self.falloffDefaults[2],
@@ -352,9 +356,11 @@ class WeightStack(Node):
                  controlRxConnectionAttrs=[],
                  controlRyConnectionAttrs=[],
                  controlRzConnectionAttrs=[],
-
-
-                 controlOffset = [0,0,.1],
+                 controlShape = elements.slideIcon,
+                 controlShapeOffset = [0,0,.1],
+                 controlShapeOrient = [90, 0, 0],
+                 controlShapeScale = [1, 1, 1],
+                 controlLockAttrs = [],
                  controlPositionWeightsThreshold=.9,
                  controlPositionOffset=[0,0,0],
                  controlAutoOrientMesh="",
@@ -397,7 +403,11 @@ class WeightStack(Node):
         self.controlRxConnectionAttrs = controlRxConnectionAttrs
         self.controlRyConnectionAttrs = controlRyConnectionAttrs
         self.controlRzConnectionAttrs = controlRzConnectionAttrs
-        self.controlOffset = controlOffset
+        self.controlShape = controlShape
+        self.controlShapeOffset = controlShapeOffset
+        self.controlShapeOrient = controlShapeOrient
+        self.controlShapeScale = controlShapeScale
+        self.controlLockAttrs = controlLockAttrs
         self.controlPositionWeightsThreshold = controlPositionWeightsThreshold
         self.controlPositionOffset = controlPositionOffset
         self.controlAutoOrientMesh = controlAutoOrientMesh
@@ -624,7 +634,6 @@ class WeightStack(Node):
                 sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
             tyConnect = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
 
-
             # print "POSITIONS!!!!", self.positionsFromWeights
             tmpCtrl = meshRivetCtrl.Component(name = name,
                                                 side=side,
@@ -632,7 +641,7 @@ class WeightStack(Node):
                                                 speedTyDefault=self.controlSpeedDefaults[1],
                                                 speedTzDefault=self.controlSpeedDefaults[2],
                                                 parent=self.controlParent,
-                                                # curveData=None,
+                                                curveData=self.controlShape,
                                                 mesh = self.controlRivetMesh,
                                                 translate = self.positionsFromWeights[idx],
                                                 rotate = rotate,
@@ -655,7 +664,13 @@ class WeightStack(Node):
                                                 selection=False,
                                                 mirror=False,
                                                 size=self.controlSize,
-                                                offset = self.controlOffset)
+                                                offset = self.controlShapeOffset,
+                                                orient = self.controlShapeOrient,
+                                                shapeScale = self.controlShapeScale,
+                                                lockAttrs = self.controlLockAttrs,
+                                                                                                
+                                                
+                                                )
             tmpCtrl.create()
             if tmpCtrl.ctrl not in self.controls:
                 self.controls.append(tmpCtrl.ctrl)
@@ -768,7 +783,7 @@ stack = weightStack.WeightStack(name="TestWeights",
                                 falloffCurveWeightNode="TestCurveWeights",
                                 autoCreateName="lipSingle",
                                 controlSize = .07,
-                                controlOffset = [0,0.0,.1],
+                                controlShapeOffset = [0,0.0,.1],
                                 )
 stack.create()
 curveWeights.setFalloffDefaults()
@@ -816,7 +831,7 @@ stack = weightStack.WeightStack(name="TestWeights",
                                 falloffCurveWeightNode="TestCurveWeights",
                                 autoCreateName="lipPrime",
                                 controlSize = .05,
-                                controlOffset = [0,0.1,.1],
+                                controlShapeOffset = [0,0.1,.1],
                                 falloffElemStart = 1
                                 )
 stack.create()
@@ -854,7 +869,7 @@ stack = weightStack.WeightStack(name="TestWeights",
                                 falloffCurveWeightNode="TestCurveWeights",
                                 autoCreateName="lipSecondary",
                                 controlSize = .03,
-                                controlOffset = [0,0.05,.1],
+                                controlShapeOffset = [0,0.05,.1],
                                 falloffElemStart = 4
                                 )
 stack.create()

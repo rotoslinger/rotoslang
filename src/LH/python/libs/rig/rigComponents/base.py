@@ -15,7 +15,7 @@ class Component(object):
                  orient=[0, 0, 0],
                  offset=[0, 0, 0],
                  shapeScale=[1, 1, 1],
-                 lock_attrs=[],
+                 lockAttrs=[],
                 #  lock_attrs=["sx", "sy", "sz"],
                  gimbal=True,
                  size=1,
@@ -47,7 +47,7 @@ class Component(object):
         self.orient = orient
         self.offset = offset
         self.shapeScale = shapeScale
-        self.lock_attrs = lock_attrs
+        self.lockAttrs = lockAttrs
         self.gimbal = gimbal
         self.size = size
 
@@ -124,10 +124,11 @@ class Component(object):
                                     offset=self.offset,
                                     scale=self.shapeScale,
                                     num_buffer=self.numBuffer,
-                                    lock_attrs=self.lock_attrs,
+                                    lock_attrs=self.lockAttrs,
                                     gimbal=self.gimbal,
                                     size=self.size,
                                     nullTransform=self.nullTransform)
+        self.buffers = self.ctrl.buffers
         reversedBuffers = self.ctrl.buffers[::-1]
         # create self.buffer in decending order going further away from the control, ascending goes opposite...
         # -buffer02

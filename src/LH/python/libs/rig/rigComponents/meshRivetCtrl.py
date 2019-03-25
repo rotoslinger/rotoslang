@@ -10,20 +10,35 @@ import elements
 
 class Component(base.Component):
     def __init__(self,
-                # inherited args
+                # Inherited Attrs
                 #  side="C",
                 #  name="component",
                 #  suffix="CPT",
+                #  worldInverseNodes=[],
+                #  curveData=None,
                 #  parent=None,
+                #  helperGeo=elements.componentNurbs,
+                #  numBuffer=2,
+                #  orient=[0, 0, 0],
+                #  offset=[0, 0, 0],
+                #  shapeScale=[1, 1, 1],
+                #  lock_attrs=[],
+                # #  lock_attrs=["sx", "sy", "sz"],
+                #  gimbal=True,
+                #  size=1,
+                #  translate = None,
+                #  rotate = None,
+                #  scale = None,
+                #  selection=False,
+                #  createJoint=False,
+                #  nullTransform = False
 
                  speedTxDefault=.1,
                  speedTyDefault=.1,
                  speedTzDefault=.1,
                  curveData=None,
                  mesh = None,
-                 translate = None,
-                 rotate = None,
-                 scale = None,
+
                  guide = False,
                  
                  txConnectionAttr=None,
@@ -39,11 +54,8 @@ class Component(base.Component):
                  szConnectionAttr=None,
 
                  normalConstraintPatch=None,
-                 selection=False,
-                 mirror=False,
-                 size = .5,
-                 offset = [0,0,1],
 
+                 mirror=False,
                  **kw):
         super(Component, self).__init__(**kw)
 
@@ -52,9 +64,9 @@ class Component(base.Component):
         self.speedTzDefault = speedTzDefault
         self.curveData = curveData
         self.mesh = mesh
-        self.translate = translate
-        self.rotate = rotate
-        self.scale = scale
+        # self.translate = translate
+        # self.rotate = rotate
+        # self.scale = scale
         self.componentName = "meshRivetCtrl"
         self.guide = guide
 
@@ -71,74 +83,31 @@ class Component(base.Component):
         self.szConnectionAttr = szConnectionAttr
         self.normalConstraintPatch = normalConstraintPatch
         self.mirror = mirror
-        self.size = size
-        self.offset = offset
+        # if not self.translate and not self.rotate and not self.scale and selection:
+        #     sel = cmds.ls(sl=True)[0]
+        #     self.translate = cmds.xform(sel, q=True, t=True, ws=True)
+        #     self.rotate = cmds.xform(sel, q=True, ro=True, ws=True)
+        #     self.scale = cmds.xform(sel, q=True, s=True,ws=True)
 
-        if not self.translate and not self.rotate and not self.scale and selection:
-            sel = cmds.ls(sl=True)[0]
-            self.translate = cmds.xform(sel, q=True, t=True, ws=True)
-            self.rotate = cmds.xform(sel, q=True, ro=True, ws=True)
-            self.scale = cmds.xform(sel, q=True, s=True,ws=True)
-
+        self.nullTransform=True
         #self.suffix="MRC"
 
     def createHelperGeo(self):
         return
 
     def createCtrl(self):
-        self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
-                                          parent=self.cmptMasterParent,
-                                          shapeVis=False)
-        self.ctrl = misc.create_ctl(side=self.side,
-                                    name=self.name,
-                                    parent=self.locator,
-                                    # shape="sphere",
-                                    shape="",
-                                    customShape=elements.slideIcon,
-                                    # orient=[180, 90, 0],
-                                    orient=[90, 0, 0],
-                                    offset=self.offset,
-                                    #scale=[1, 1, 1],
-                                    scale=[1, .5, 1],
-                                    num_buffer=2,
-                                    # lock_attrs=["sx", "sy", "sz"],
-                                    # lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
-                                    gimbal=True,
-                                    size=self.size,
-                                    nullTransform = True)
-        self.buffer1 = self.ctrl.buffers[1]
-        self.buffer2 = self.ctrl.buffers[0]
-        self.ctrl = self.ctrl.ctl
-
-        # if self.curveData:
-        #     # get Curve data for transfer
-        #     sourceCurve = cmds.listRelatives(self.ctrl, type = "nurbsCurve")[0]
-        #     color = cmds.getAttr(sourceCurve + ".overrideColor")
-        #     override = cmds.getAttr(sourceCurve + ".overrideRGBColors")
-        #     colorR = cmds.getAttr(sourceCurve + ".overrideColorR")
-        #     colorG = cmds.getAttr(sourceCurve + ".overrideColorG")
-        #     colorB = cmds.getAttr(sourceCurve + ".overrideColorB")
-        #     cmds.delete(sourceCurve)
-        #
-        #     # create curve, set curve shape
-        #     curve = exportUtils.create_curve_2(self.curveData, self.curveData["name"], self.curveData["parent"])
-        #
-        #     # transfer Curve data
-        #     cmds.setAttr(curve.fullPathName() + ".overrideRGBColors", override)
-        #     cmds.setAttr(curve.fullPathName() + ".overrideEnabled", True)
-        #     cmds.setAttr(curve.fullPathName() + ".overrideColor", color)
-        #     cmds.setAttr(curve.fullPathName() + ".overrideColorR", colorR)
-        #     cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
-        #     cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
+        super(Component, self).createCtrl()
+        self.buffer1 = self.buffers[1]
+        self.buffer2 = self.buffers[0]
 
     def createGuide(self):
         if self.guide:
             self.guideShape = exportUtils.create_curve_2(elements.sphereSmall, "{0}_{1}_SHP".format(self.side, self.name), self.buffer2)
 
-
     def createAttrs(self):
         inputAttrs = ["speedTx", "speedTy", "speedTz"]
         for attr in inputAttrs:
+            print self.ctrl
             cmds.setAttr(self.ctrl + "." + attr, getattr(self, "{0}Default".format(attr)))
         for node in self.cmptMasterParent, self.ctrl, self.locator, self.buffer1, self.buffer2:
             self.addComponentTypeAttr(node)

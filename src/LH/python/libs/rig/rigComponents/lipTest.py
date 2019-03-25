@@ -40,6 +40,8 @@ from rig.deformers import matrixDeformer
 from rig.deformers import utils 
 from rig.rigComponents import lip 
 from rig.rigComponents import meshRivetCtrl 
+from rig.rigComponents import elements 
+reload(elements)
 reload(meshRivetCtrl)
 reload(misc)
 reload(weightMapUtils)
@@ -61,8 +63,6 @@ def test():
     cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
 
     dog=False
-
-
 
     fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/humanLipTest.ma"
     tierCount1 = 1
@@ -86,6 +86,11 @@ def test():
     slideCtrlPosOffset1=[0, 0.0, 0]
     slideCtrlPosOffset2=[0, 0.0, 0]
     slideCtrlPosOffset3=[0, 0.0, 0]
+
+    # thickCtrlShapeOffset1=[0,-4.0,2]
+    # thickCtrlShapeOffset2=[0,-4.0,1]
+    # thickCtrlShapeOffset3=[0,-4.0,1]
+
     # falloffMatrixDeformerName = ctrlName + "MATDEFTEST"
 
     falloffDefaults=(-10, -9.9, -3, 10.0)
@@ -129,7 +134,8 @@ def test():
         lowerRemovePointIndicies=[]
         upperRemovePointIndicies=[]
 
-    lowerLipSlide = lip.Lip(name="lowerLip",
+    lowerLipSlide, lowerLipThick = lip.Lip(name="lowerLip",
+                upperLip=False,
                 tierCount1=tierCount1,
                 tierCount2=tierCount2,
                 tierCount3=tierCount3,
@@ -154,6 +160,10 @@ def test():
 
                 ctrlAutoPositionThreshold = ctrlAutoPositionThreshold,
 
+                # thickCtrlShapeOffset1=thickCtrlShapeOffset1,
+                # thickCtrlShapeOffset2=thickCtrlShapeOffset2,
+                # thickCtrlShapeOffset3=thickCtrlShapeOffset3,
+                
                 falloffDefaults=falloffDefaults,
                 falloffMatrixDefaults=falloffMatrixDefaults,
                 fileName=fileName,
@@ -166,6 +176,7 @@ def test():
     lip.Lip(name="lowerLipCurve",
             ctrlName = "lowerLip",
             controlRivetMesh = "humanLipsLower",
+            upperLip=False,
             # multiSlideForBaseCurve=False,
             multiSlideForBaseCurve=True,
             repositionRivetCtrls=True,
@@ -215,7 +226,7 @@ def test():
                             addAtIndex=tierCount1+tierCount2+tierCount3,
                             handPaint=False,
                             upperLip=False,
-                            reorderInFrontOfDeformer=lowerLipSlide,
+                            reorderInFrontOfDeformer=lowerLipThick,
                             removePointIndicies=lowerRemovePointIndicies,
                             falloffDefaults = "")
 
@@ -228,8 +239,19 @@ def test():
     matDefCtrlShapeOffset2=[0,1.0,1]
     matDefCtrlShapeOffset3=[0,1.0,1]
 
-    thickToPoint = (0, -0.978, 0.208)
-    upperLipSlide = lip.Lip(name="upperLip",
+    # thickToPoint = (0, -0.978, 0.208)
+
+    thickToPoint = (0, 0.978, -0.208)
+
+    thickCtrlShapeOffset1=[0, 2.0, 2]
+    thickCtrlShapeOffset2=[0, 2.0, 1]
+    thickCtrlShapeOffset3=[0, 2.0, 1]
+
+
+    thickFalloffCurve = elements.UPPER_LIP_THICK_FALLOFF
+
+    upperLipSlide, upperLipThick = lip.Lip(name="upperLip",
+                upperLip=True,
                 tierCount1=tierCount1,
                 tierCount2=tierCount2,
                 tierCount3=tierCount3,
@@ -247,6 +269,11 @@ def test():
                 slideCtrlPosOffset3=slideCtrlPosOffset3,
                 
                 slideControlSpeedDefaults=slideControlSpeedDefaults,
+
+                thickCtrlShapeOffset1=thickCtrlShapeOffset1,
+                thickCtrlShapeOffset2=thickCtrlShapeOffset2,
+                thickCtrlShapeOffset3=thickCtrlShapeOffset3,
+                thickFalloffCurve=thickFalloffCurve,
                 
                 matDefCtrlShapeOffset1=matDefCtrlShapeOffset1,
                 matDefCtrlShapeOffset2=matDefCtrlShapeOffset2,
@@ -268,7 +295,8 @@ def test():
 
     lip.Lip(name="upperLipCurve",
             ctrlName = "upperLip",
-            
+            upperLip=True,
+
             #fileName=fileName,
             controlRivetMesh = "humanLipsUpper",
             multiSlideForBaseCurve=False,
@@ -317,6 +345,6 @@ def test():
                             handPaint=False,
                             upperLip=True,
                             removePointIndicies=upperRemovePointIndicies,
-                            reorderInFrontOfDeformer=upperLipSlide,
+                            reorderInFrontOfDeformer=upperLipThick,
                             falloffDefaults = "")
 

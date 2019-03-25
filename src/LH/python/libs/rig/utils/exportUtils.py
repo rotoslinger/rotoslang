@@ -704,13 +704,6 @@ def set_anim_curve_data(anim_curves,
                                           frame_values[i],
                                           in_tangents_type[i],
                                           out_tangents_type[i])
-
-
-
-
-    #                 print index
-            # set in tangent
-    #                 print i
             api_anim_curve.setTangent(index,
                                       in_x_tangents[i],
                                       in_y_tangents[i],

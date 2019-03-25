@@ -33,17 +33,20 @@ from rig.utils import LHCurveDeformerCmds
 reload(LHCurveDeformerCmds)
 from rig.rigComponents import meshRivetCtrl 
 reload(meshRivetCtrl)
+from rig.rigComponents import elements
+reload(elements)
+
+
+
+
 
 def Lip(name="lowerLip",
         characterName = "character",
         controlParent="C_control_GRP",
         rigParent="C_rig_GRP",
-        ctrlName = None, # this will be used as a way to reuse controls between different components and deformers
-        falloffSlideName = None,
-        falloffMatrixDeformerName = None,
-        falloffLipThickName = None,
-        falloffLipPuckerName = None,
-        falloffLipCurlName = None,
+        upperLip = False,
+        ctrlName = None,  # this will be used as a way to reuse controls between different components and deformers
+
         multiSlideForBaseCurve=False,
 
         tierCount1=1,
@@ -53,6 +56,8 @@ def Lip(name="lowerLip",
         falloffDefaults=(-10, -9.9, -4, 10.0),
 
         ################# Slides ########################
+
+        falloffSlideName = None,
         slideCtrlSize1=1,
         slideCtrlSize2=.65,
         slideCtrlSize3=.35,
@@ -65,11 +70,14 @@ def Lip(name="lowerLip",
         slideCtrlPosOffset2=[0, 0.0, 0],
         slideCtrlPosOffset3=[0, 0.0, 0],
 
-        falloffSlideDefaults=(-10, -9.9, -4, 10.0),
+        slideFalloffDefaults=(-10, -9.9, -4, 10.0),
+        slideFalloffDefaultCurve = None,
 
         slideControlSpeedDefaults = [.1,.1,.1],
 
         ################# MatrixDeformers ###############
+        falloffMatrixDeformerName = None,
+
         matDefCtrlSize1=1,
         matDefCtrlSize2=.65,
         matDefCtrlSize3=.35,
@@ -78,28 +86,39 @@ def Lip(name="lowerLip",
         matDefCtrlShapeOffset2=[0,0.0,2],
         matDefCtrlShapeOffset3=[0,0.0,2],
 
+        matDefFalloffCurve=None,
+
         falloffMatrixDefaults=(-11, -7, -2, 10.0),
         falloffIttsMatDef=["linear","linear","linear","linear"],
         falloffOttsMatDef=["linear","spline","linear","linear"],
 
         ################# ThickDeformers ###############
-        thickCtrlSize1=1,
+        falloffLipThickName = None,
+        thickCtrlSize1=.7,
         thickCtrlSize2=.65,
         thickCtrlSize3=.35,
 
-        thickCtrlShapeOffset1=[0,-4.0,2],
-        thickCtrlShapeOffset2=[0,-4.0,1],
-        thickCtrlShapeOffset3=[0,-4.0,1],
+        thickCtrlShapeOffset1 = [ 0, -2, 2],
+        thickCtrlShapeOffset2 = [0,-2.0,1],
+        thickCtrlShapeOffset3 = [0,-2.0,1],
+
         thickToPoint = (0, 0.978, -0.208),
-        falloffThickDefaults=(-10, -9.9, -4, 10.0),
+        falloffThickDefaults=(10, -1, -4, 10.0),
+
+        thickFalloffCurve = elements.LOWER_LIP_THICK_FALLOFF,
+
+        ################ Pucker Deformer ####################
+        falloffPuckerDefaults=(-10, -9.9, -4, 10.0),
+        falloffLipPuckerName = None,
 
 
+        ################ Curl Deformer ####################
+
+        falloffLipCurlName = None,
+        falloffCurlDefaults=(-10, -9.9, -4, 10.0),
 
         controlRivetMesh = None,
         ctrlAutoPositionThreshold = .9,
-
-        falloffPuckerDefaults=(-10, -9.9, -4, 10.0),
-        falloffCurlDefaults=(-10, -9.9, -4, 10.0),
 
 
         controlAutoOrientMesh="slide",
@@ -125,7 +144,7 @@ def Lip(name="lowerLip",
         falloffMatrixDeformerName = ctrlName + "MATDEFTEST"
 
     if not falloffLipThickName: # Falloff for lip thick should be minimal
-        falloffMatrixDeformerName = ctrlName + "LIPTHICK"
+        falloffLipThickName = ctrlName + "LIPTHICK"
 
     if not falloffLipPuckerName: # Falloff for lip thick should be minimal
         falloffLipPuckerName = ctrlName
@@ -217,13 +236,93 @@ def Lip(name="lowerLip",
                                     # falloffCurveWeightNode="TestCurveWeights",
                                     autoCreateName=ctrlName + "Primary",
                                     controlSize = slideCtrlSize1,
-                                    controlOffset = slideCtrlShapeOffset1,
+                                    controlShapeOffset = slideCtrlShapeOffset1,
                                     repositionRivetCtrls = repositionRivetCtrls,
                                     )
     stack.create()
     #position = cmds.xform(stack.controls[0], q=True, t=True)
     # curveWeights.setFalloffDefaults()
 
+
+
+
+
+
+    ################################## LIP THICK DEFORMER #####################################################################
+
+
+    #thickOutputattrs = [slideUD.deformer + ".weightArrays[0].vWeights"]
+
+    # get thick drivers
+    
+    curveWeights = weightStack.AnimCurveWeight(name=name + "ThickDef",
+                                    baseGeo=base,
+                                    ctrlNode=control,
+                                    projectionGeo=projectionMesh,
+                                    weightAttrNames=[],
+                                    addNewElem=False,
+                                    autoCreateAnimCurves = True,
+                                    autoCreateName = ctrlName + "Primary",
+                                    singleFalloffName = falloffLipThickName,
+                                    autoCreateNum = tierCount1,
+                                    falloffCurve = thickFalloffCurve,
+                                    falloffDefaults=falloffThickDefaults,
+                                    falloffItts=["linear","linear","linear","linear"],
+                                    falloffOtts=["linear","linear","linear","linear"],
+                                    autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
+
+    )
+    curveWeights.create()
+
+    tyAttrs = []
+    for ctrl in stack.controls:
+        tyAttrs.append(ctrl + ".tyOut")
+    thickShape = elements.upArrow
+    if not upperLip:
+        thickShape = elements.downArrow
+
+
+    stack = weightStack.WeightStack(name=name + "WeightStackThick",
+                                    geoToWeight=deformMesh,
+                                    ctrlNode=control,
+                                    weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                    addNewElem=False,
+                                    UDLR = False,
+                                    #outputAttrs = thickOutputattrs,
+                                    autoCreate=True,
+                                    controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
+                                    # controlPositionOffset=slideCtrlPosOffset1,
+                                    controlRivetMesh = controlRivetMesh,
+                                    controlAutoOrientMesh=controlAutoOrientMesh,
+                                    controlRivetAimMesh=slidePatch,
+                                    #controlSpeedDefaults = slideControlSpeedDefaults,
+                                    controlParent = controlParent,
+                                    controlShape=thickShape,
+                                    connectFalloff = False,
+                                    isOutputKDoubleArray=True,
+                                    # falloffCurveWeightNode="TestCurveWeights",
+                                    autoCreateName=ctrlName + "PrimaryTHICK",
+                                    controlSize = thickCtrlSize1,
+                                    controlShapeOffset = thickCtrlShapeOffset1,
+                                    repositionRivetCtrls = repositionRivetCtrls,
+                                    controlTyConnectionAttrs = tyAttrs,
+                                    controlSpeedDefaults = [1,1,1],
+                                    controlShapeOrient=[0,0,0],
+                                    controlLockAttrs=["tx", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]
+                                    )
+    stack.create()
+    vectorDeformer = vectorDeformerSimple.VectorDeformerSimple(name = name + "THICKTEST", geoToDeform=deformMesh, weightStackNode=stack.node, toPoint = thickToPoint)
+    vectorDeformer.create() 
+
+
+
+
+
+
+
+
+
+    ################################## MATRIX DEFORMER #####################################################################
     curveWeights = weightStack.AnimCurveWeight(name=name + "MatDef",
                                         baseGeo=base,
                                         ctrlNode=control,
@@ -263,67 +362,8 @@ def Lip(name="lowerLip",
                                     hide = True)
     matDef.create()
 
-    ### LIP THICK
 
-
-    #thickOutputattrs = [slideUD.deformer + ".weightArrays[0].vWeights"]
-
-    # get thick drivers
-
-    # curveWeights = weightStack.AnimCurveWeight(name=name + "ThickDef",
-    #                                 baseGeo=base,
-    #                                 ctrlNode=control,
-    #                                 projectionGeo=projectionMesh,
-    #                                 weightAttrNames=[],
-    #                                 addNewElem=False,
-    #                                 autoCreateAnimCurves = True,
-    #                                 autoCreateName = ctrlName + "Primary",
-    #                                 singleFalloffName = falloffLipThickName,
-    #                                 autoCreateNum = tierCount1,
-    #                                 falloffDefaults=falloffThickDefaults,
-    #                                 falloffItts=falloffIttsMatDef,
-    #                                 falloffOtts=falloffOttsMatDef,
-    #                                 autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-
-    # )
-    # curveWeights.create()
-
-    # tyAttrs = []
-    # for ctrl in stack.controls:
-    #     tyAttrs.append(ctrl + ".tyOut")
-
-    # stack = weightStack.WeightStack(name=name + "WeightStackThick",
-    #                                 geoToWeight=deformMesh,
-    #                                 ctrlNode=control,
-    #                                 weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
-    #                                 addNewElem=False,
-    #                                 UDLR = False,
-    #                                 #outputAttrs = thickOutputattrs,
-    #                                 autoCreate=True,
-    #                                 controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
-    #                                 controlPositionOffset=slideCtrlPosOffset1,
-    #                                 controlRivetMesh = controlRivetMesh,
-    #                                 controlAutoOrientMesh=controlAutoOrientMesh,
-    #                                 controlRivetAimMesh=slidePatch,
-    #                                 #controlSpeedDefaults = slideControlSpeedDefaults,
-    #                                 controlParent = controlParent,
-    #                                 connectFalloff = False,
-    #                                 isOutputKDoubleArray=True,
-    #                                 # falloffCurveWeightNode="TestCurveWeights",
-    #                                 autoCreateName=ctrlName + "PrimaryTHICK",
-    #                                 controlSize = slideCtrlSize1,
-    #                                 controlOffset = [0,-4,2],
-    #                                 repositionRivetCtrls = repositionRivetCtrls,
-    #                                 controlTyConnectionAttrs = tyAttrs,
-    #                                 controlSpeedDefaults = [1,1,1],
-
-    #                                 )
-    # stack.create()
-    # deformer = vectorDeformerSimple.VectorDeformerSimple(name = name + "THICKTEST", geoToDeform=deformMesh, weightStackNode=stack.node, toPoint = (0, 0.978, -0.208))
-    # deformer.create() 
-
-
-
+    
 
 
 
@@ -381,7 +421,7 @@ def Lip(name="lowerLip",
                                     autoCreateName = ctrlName + "Secondary",
                                     isOutputKDoubleArray=True,
                                     controlSize = slideCtrlSize2,
-                                    controlOffset = slideCtrlShapeOffset2,
+                                    controlShapeOffset = slideCtrlShapeOffset2,
                                     falloffElemStart = tierCount1,
                                     repositionRivetCtrls = repositionRivetCtrls,
                                     )
@@ -466,7 +506,7 @@ def Lip(name="lowerLip",
                                     autoCreateName=ctrlName + "Tertiary",
                                     isOutputKDoubleArray=True,
                                     controlSize = slideCtrlSize3,
-                                    controlOffset = slideCtrlShapeOffset3,
+                                    controlShapeOffset = slideCtrlShapeOffset3,
                                     falloffElemStart = tierCount2 + tierCount1,
                                     repositionRivetCtrls = repositionRivetCtrls,
                                     )
@@ -508,7 +548,7 @@ def Lip(name="lowerLip",
                                     hide = True)
     matDef.create()
     cmds.setAttr(slideUD.deformer + ".cacheBind",1)
-    return slideUD.deformer
+    return slideUD.deformer, vectorDeformer.deformer
 
 
 def lipCurveDeformSplit(name="C_UpperLipWire",
