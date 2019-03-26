@@ -39,7 +39,7 @@ from rig.deformers import test4
 from rig.deformers import matrixDeformer 
 from rig.deformers import utils 
 from rig.rigComponents import lip 
-from rig.rigComponents import meshRivetCtrl 
+from rig.rigComponents import meshRivetCtrl
 from rig.rigComponents import elements 
 reload(elements)
 reload(meshRivetCtrl)
@@ -215,6 +215,9 @@ def test():
             slidePatch="slide",
             slidePatchBase="slideBase")
 
+    cmds.reorderDeformers(lowerLipSlide, lowerLipThick, misc.getShape("humanLipsLower"))
+
+
     lip.lipCurveDeformSplit(name="C_LowerLipWire",
                             curveDeformerAlgorithm=1,
                             curve="lowerLipCurve",
@@ -274,7 +277,7 @@ def test():
                 thickCtrlShapeOffset2=thickCtrlShapeOffset2,
                 thickCtrlShapeOffset3=thickCtrlShapeOffset3,
                 thickFalloffCurve=thickFalloffCurve,
-                
+
                 matDefCtrlShapeOffset1=matDefCtrlShapeOffset1,
                 matDefCtrlShapeOffset2=matDefCtrlShapeOffset2,
                 matDefCtrlShapeOffset3=matDefCtrlShapeOffset3,
@@ -334,17 +337,21 @@ def test():
             slidePatch="slide",
             slidePatchBase="slideBase")
 
-    lip.lipCurveDeformSplit(name="C_UpperLipWire",
-                            curve="upperLipCurve",
-                            curveAim="upperLipCurveAim",
-                            deformedGeometry="humanLipsUpper",
-                            projectionPatch="upLipProjection",
-                            deformedGeometryBase="humanLipsUpperBase",
-                            addWeightStack=["upperLipWeightStack_LR", "upperLipWeightStack_UD"],
-                            addAtIndex=tierCount1+tierCount2+tierCount3,
-                            handPaint=False,
-                            upperLip=True,
-                            removePointIndicies=upperRemovePointIndicies,
-                            reorderInFrontOfDeformer=upperLipThick,
-                            falloffDefaults = "")
+    cmds.reorderDeformers(upperLipSlide, upperLipThick, misc.getShape("humanLipsUpper"))
+
+    blendshape = lip.lipCurveDeformSplit(name="C_UpperLipWire",
+                                         curve="upperLipCurve",
+                                        curveAim="upperLipCurveAim",
+                                        deformedGeometry="humanLipsUpper",
+                                        projectionPatch="upLipProjection",
+                                        deformedGeometryBase="humanLipsUpperBase",
+                                        addWeightStack=["upperLipWeightStack_LR", "upperLipWeightStack_UD"],
+                                        addAtIndex=tierCount1+tierCount2+tierCount3,
+                                        handPaint=False,
+                                        upperLip=True,
+                                        removePointIndicies=upperRemovePointIndicies,
+                                        reorderInFrontOfDeformer=upperLipThick,
+                                        falloffDefaults = "")
+
+
 

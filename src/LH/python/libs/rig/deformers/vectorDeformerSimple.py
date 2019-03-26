@@ -47,9 +47,12 @@ class VectorDeformerSimple(base.Deformer):
 
     def getNodes(self):
         if not self.vectorCurve:
-            self.vectorCurve = cmds.curve(name= self.name + "Curve",
-                                d=1, p=[(0,0,0),self.toPoint],
-                                k=[0,1])
+            if cmds.objExists(self.name + "Curve"):
+                self.vectorCurve = self.name + "Curve"
+            else:
+                self.vectorCurve = cmds.curve(name= self.name + "Curve",
+                                    d=1, p=[(0,0,0),self.toPoint],
+                                    k=[0,1])
         self.vectorCurve = misc.getShape(self.vectorCurve)
 
     def setDefaults(self):
@@ -64,5 +67,5 @@ class VectorDeformerSimple(base.Deformer):
 
 
     def connectDeformer(self):
-        cmds.connectAttr(self.vectorCurve + ".worldSpace", self.deformer + ".vectorCurve")
+        cmds.connectAttr(self.vectorCurve + ".worldSpace", self.deformer + ".vectorCurve", f=True)
         cmds.connectAttr(self.weightMap, "{0}.vectorWeights".format(self.deformer), f=True)

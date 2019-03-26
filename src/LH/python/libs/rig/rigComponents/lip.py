@@ -124,8 +124,6 @@ def Lip(name="lowerLip",
         controlAutoOrientMesh="slide",
         repositionRivetCtrls=False,
 
-
-
         fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/humanLipTest.ma",
         deformMesh="humanLipsLower",
         base="humanLipsLowerBase",
@@ -152,16 +150,6 @@ def Lip(name="lowerLip",
     if not falloffLipCurlName: # Falloff for lip curl may be more broad, but not as broad as the slide falloff
         falloffLipCurlName = ctrlName
 
-
-
-
-
-
-
-
-
-
-
     if fileName:
         cmds.file( fileName, i=True, f=True )
 
@@ -178,378 +166,228 @@ def Lip(name="lowerLip",
     slideUD = slideSimple.SlideSimple(name + "LipSlide", geoToDeform=deformMesh, slidePatch=slidePatch, slidePatchBase=slidePatchBase, baseGeoToDeform=base)
     slideUD.create()
 
-    autoCreateTimeRange = 20.0
-    offset=0
-    centerWeight = .6
-    outerWeight = .0
-    angle = 50
-    nudge = -0.0
-    intermediateVal = .0
-    intermediateAngle=0
-
-    lastAngle = 50
-    lastIntermediateVal=.8
-    lastIntermediateAngle=30
-
-    curveWeights = weightStack.AnimCurveWeight(name=name + "CurveWeights",
-                                        baseGeo=base,
-                                        ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=False,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = ctrlName + "Primary",
-                                        singleFalloffName = ctrlName,
-                                        autoCreateNum = tierCount1,
-                                        falloffDefaults=falloffDefaults,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-
-    )
-    curveWeights.create()
-
     outputAttrs = [slideUD.deformer + ".weightArrays[0].vWeights"]
     outputAttrs_LR = [slideUD.deformer + ".weightArrays[0].uWeights"]
     # super crappy implementation, this should be made more elegant ASAP
     if multiSlideForBaseCurve:
         outputAttrs = [slideUD.deformer + ".weightArrays[0].vWeights", slideUD.deformer + ".weightArrays[1].vWeights"]
         outputAttrs_LR = [slideUD.deformer + ".weightArrays[0].uWeights", slideUD.deformer + ".weightArrays[1].uWeights"]
+    # Loop Vars each divided into 3
+    tierNames = ["Primary", "Secondary", "Tertiary"]
+    tierCounts = [tierCount1, tierCount2, tierCount3]
+    tierStartElemIdxs = [0, tierCount1, tierCount2 + tierCount1]
+    tierAddAtIndex = [0, tierCount1, tierCount2 + tierCount1]
+    isAddingNewElems = [False, True, True]
+    slideCtrlShapeOffsets = [slideCtrlShapeOffset1, slideCtrlShapeOffset2, slideCtrlShapeOffset3]
+    slideCtrlSizes = [slideCtrlSize1, slideCtrlSize2, slideCtrlSize3]
+    matDefNames = ["MatrixDeformer1", "MatrixDeformer2", "MatrixDeformer3"]
+    matDefCtrlShapeOffsets = [matDefCtrlShapeOffset1, matDefCtrlShapeOffset2, matDefCtrlShapeOffset3]
+    matDefCtrlSizes = [matDefCtrlSize1, matDefCtrlSize2, matDefCtrlSize3]
+    thickCtrlShapeOffsets = [thickCtrlShapeOffset1, thickCtrlShapeOffset2, thickCtrlShapeOffset3]
+    thickCtrlSizes = [thickCtrlSize1, thickCtrlSize2, thickCtrlSize3 ]
+    connectFalloffs = [False, True, True]
+    falloffCurveWeightNodes= [None, name + "CurveWeights", name + "CurveWeights"]
+    slideCtrlPosOffsets = [slideCtrlPosOffset1, slideCtrlPosOffset2, slideCtrlPosOffset3]
+    centerWeights = [.6, .3, .3]
+    outerWeights = [0, .5, .5]
+    angles = [50, 0, 0]
+    nudges = [0, -0.14, -0.14]
+    lastAngles = [50, 60, 60]
 
-    stack = weightStack.WeightStack(name=name + "WeightStack",
-                                    geoToWeight=base,
-                                    ctrlNode=control,
-                                    weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
-                                    addNewElem=False,
-                                    # outputAttrs = ["cluster1.weightList[0]"],
-                                    # outputAttrs_LR = ["cluster2.weightList[0]"],
-                                    outputAttrs = outputAttrs,
-                                    outputAttrs_LR = outputAttrs_LR,
-                                    autoCreate=True,
-                                    controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
-                                    controlPositionOffset=slideCtrlPosOffset1,
-                                    controlRivetMesh = controlRivetMesh,
-                                    controlAutoOrientMesh=controlAutoOrientMesh,
-                                    controlRivetAimMesh=slidePatch,
-                                    controlSpeedDefaults = slideControlSpeedDefaults,
-                                    controlParent = controlParent,
-                                    connectFalloff = False,
-                                    isOutputKDoubleArray=True,
-                                    # falloffCurveWeightNode="TestCurveWeights",
-                                    autoCreateName=ctrlName + "Primary",
-                                    controlSize = slideCtrlSize1,
-                                    controlShapeOffset = slideCtrlShapeOffset1,
-                                    repositionRivetCtrls = repositionRivetCtrls,
-                                    )
-    stack.create()
-    #position = cmds.xform(stack.controls[0], q=True, t=True)
-    # curveWeights.setFalloffDefaults()
+    for idx in range(3):
+        autoCreateTimeRange = 20.0
+        offset=0
+        centerWeight = .6
+        outerWeight = .0
+        angle = 50
+        nudge = -0.0
+        intermediateVal = .0
+        intermediateAngle=0
 
+        lastAngle = 50
+        lastIntermediateVal=.8
+        lastIntermediateAngle=30
 
+        curveWeights = weightStack.AnimCurveWeight(name=name + "CurveWeights",
+                                            baseGeo=base,
+                                            ctrlNode=control,
+                                            projectionGeo=projectionMesh,
+                                            weightAttrNames=[],
+                                            addNewElem=isAddingNewElems[idx],
+                                            autoCreateAnimCurves = True,
+                                            autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                            singleFalloffName = ctrlName,
+                                            autoCreateNum = tierCounts[idx],
+                                            falloffDefaults=falloffDefaults,
+                                            autoCreateTimeRange = autoCreateTimeRange,
+                                            offset=offset,
+                                            centerWeight = centerWeights[idx],
+                                            outerWeight = outerWeights[idx],
+                                            angle = angles[idx],
+                                            nudge = nudges[idx],
+                                            intermediateVal=intermediateVal,
+                                            lastAngle=lastAngles[idx],
+                                            lastIntermediateVal=lastIntermediateVal,
+                                            intermediateAngle=intermediateAngle,
+                                            lastIntermediateAngle=lastIntermediateAngle,
 
-
-
-
-    ################################## LIP THICK DEFORMER #####################################################################
-
-
-    #thickOutputattrs = [slideUD.deformer + ".weightArrays[0].vWeights"]
-
-    # get thick drivers
-    
-    curveWeights = weightStack.AnimCurveWeight(name=name + "ThickDef",
-                                    baseGeo=base,
-                                    ctrlNode=control,
-                                    projectionGeo=projectionMesh,
-                                    weightAttrNames=[],
-                                    addNewElem=False,
-                                    autoCreateAnimCurves = True,
-                                    autoCreateName = ctrlName + "Primary",
-                                    singleFalloffName = falloffLipThickName,
-                                    autoCreateNum = tierCount1,
-                                    falloffCurve = thickFalloffCurve,
-                                    falloffDefaults=falloffThickDefaults,
-                                    falloffItts=["linear","linear","linear","linear"],
-                                    falloffOtts=["linear","linear","linear","linear"],
-                                    autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-
-    )
-    curveWeights.create()
-
-    tyAttrs = []
-    for ctrl in stack.controls:
-        tyAttrs.append(ctrl + ".tyOut")
-    thickShape = elements.upArrow
-    if not upperLip:
-        thickShape = elements.downArrow
+        )
+        curveWeights.create()
 
 
-    stack = weightStack.WeightStack(name=name + "WeightStackThick",
-                                    geoToWeight=deformMesh,
-                                    ctrlNode=control,
-                                    weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
-                                    addNewElem=False,
-                                    UDLR = False,
-                                    #outputAttrs = thickOutputattrs,
-                                    autoCreate=True,
-                                    controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
-                                    # controlPositionOffset=slideCtrlPosOffset1,
-                                    controlRivetMesh = controlRivetMesh,
-                                    controlAutoOrientMesh=controlAutoOrientMesh,
-                                    controlRivetAimMesh=slidePatch,
-                                    #controlSpeedDefaults = slideControlSpeedDefaults,
-                                    controlParent = controlParent,
-                                    controlShape=thickShape,
-                                    connectFalloff = False,
-                                    isOutputKDoubleArray=True,
-                                    # falloffCurveWeightNode="TestCurveWeights",
-                                    autoCreateName=ctrlName + "PrimaryTHICK",
-                                    controlSize = thickCtrlSize1,
-                                    controlShapeOffset = thickCtrlShapeOffset1,
-                                    repositionRivetCtrls = repositionRivetCtrls,
-                                    controlTyConnectionAttrs = tyAttrs,
-                                    controlSpeedDefaults = [1,1,1],
-                                    controlShapeOrient=[0,0,0],
-                                    controlLockAttrs=["tx", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]
-                                    )
-    stack.create()
-    vectorDeformer = vectorDeformerSimple.VectorDeformerSimple(name = name + "THICKTEST", geoToDeform=deformMesh, weightStackNode=stack.node, toPoint = thickToPoint)
-    vectorDeformer.create() 
-
-
-
-
-
-
-
-
-
-    ################################## MATRIX DEFORMER #####################################################################
-    curveWeights = weightStack.AnimCurveWeight(name=name + "MatDef",
-                                        baseGeo=base,
+        stack = weightStack.WeightStack(name=name + "WeightStack",
+                                        geoToWeight=base,
                                         ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=False,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = ctrlName + "Primary",
-                                        singleFalloffName = falloffMatrixDeformerName,
-                                        autoCreateNum = tierCount1,
-                                        falloffDefaults=falloffMatrixDefaults,
-                                        falloffItts=falloffIttsMatDef,
-                                        falloffOtts=falloffOttsMatDef,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
+                                        weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                        addNewElem=isAddingNewElems[idx],
+                                        outputAttrs = outputAttrs,
+                                        outputAttrs_LR = outputAttrs_LR,
+                                        autoCreate=True,
+                                        controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
+                                        controlPositionOffset=slideCtrlPosOffsets[idx],
+                                        controlRivetMesh = controlRivetMesh,
+                                        controlAutoOrientMesh=controlAutoOrientMesh,
+                                        controlRivetAimMesh=slidePatch,
+                                        controlSpeedDefaults = slideControlSpeedDefaults,
+                                        controlParent = controlParent,
+                                        connectFalloff = connectFalloffs[idx],
+                                        isOutputKDoubleArray=True,
+                                        falloffCurveWeightNode=falloffCurveWeightNodes[idx], # If a weight node already exists, use it
+                                        # falloffCurveWeightNode="TestCurveWeights",
+                                        autoCreateName=ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                        controlSize = slideCtrlSizes[idx],
+                                        controlShapeOffset = slideCtrlShapeOffsets[idx],
+                                        repositionRivetCtrls = repositionRivetCtrls,
+                                        )
+        stack.create()
 
-    )
-    curveWeights.create()
-    
-    matDef = matrixDeformer.MatrixDeformer(name=name + "MatrixDeformer1",
-                                    geoToDeform=deformMesh,
-                                    ctrlName=ctrlName + "MatrixDeformer1",
-                                    centerToParent=True,
-                                    addAtIndex=0,
-                                    numToAdd=1,
-                                    # offset=[0,0,1],
-                                    locatorName=name + "Primary",
-                                    rotationTranforms=stack.controls,
-                                    curveWeightsNode=curveWeights.node,
-                                    curveWeightsConnectionIdx=0,
-                                    translations = stack.positionsFromWeights,
-                                    rotations = stack.rotationsFromWeights,
-                                    controlParent = stack.controls,
-                                    rigParent = rigParent,
-                                    offset = matDefCtrlShapeOffset1,
-                                    size = matDefCtrlSize1,
-                                    # locations=[position],
-                                    hide = True)
-    matDef.create()
+        ################################## MATRIX DEFORMER #####################################################################
+        curveWeights = weightStack.AnimCurveWeight(name=name + "MatDef",
+                                                    baseGeo=base,
+                                                    ctrlNode=control,
+                                                    projectionGeo=projectionMesh,
+                                                    weightAttrNames=[],
+                                                    addNewElem=isAddingNewElems[idx],
+                                                    autoCreateAnimCurves = True,
+                                                    autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                                    singleFalloffName = falloffMatrixDeformerName,
+                                                    autoCreateNum = tierCounts[idx],
+                                                    falloffDefaults=falloffMatrixDefaults,
+                                                    falloffItts=falloffIttsMatDef,
+                                                    falloffOtts=falloffOttsMatDef,
+                                                    autoCreateTimeRange = autoCreateTimeRange,
+                                                    offset=offset,
+                                                    centerWeight = centerWeights[idx],
+                                                    outerWeight = outerWeights[idx],
+                                                    angle = angles[idx],
+                                                    nudge = nudges[idx],
+                                                    intermediateVal=intermediateVal,
+                                                    lastAngle=lastAngles[idx],
+                                                    lastIntermediateVal=lastIntermediateVal,
+                                                    intermediateAngle=intermediateAngle,
+                                                    lastIntermediateAngle=lastIntermediateAngle,
+                                                    startElem = tierAddAtIndex[idx],
+        )
+        curveWeights.create()
+
+        print "ADD AT INDEX ", tierAddAtIndex[idx]
+        print "TIER COUNT ", tierCounts[idx]
+
+        matDef = matrixDeformer.MatrixDeformer(name=name + matDefNames[idx],
+                                        geoToDeform=deformMesh,
+                                        ctrlName=ctrlName + matDefNames[idx],
+                                        centerToParent=True,
+                                        addAtIndex=0,
+                                        numToAdd=tierCounts[idx],
+                                        # offset=[0,0,1],
+                                        locatorName=name + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                        rotationTranforms=stack.controls,
+                                        curveWeightsNode=curveWeights.node,
+                                        
+                                        curveWeightsConnectionIdx=tierAddAtIndex[idx],
+                                        translations = stack.positionsFromWeights,
+                                        rotations = stack.rotationsFromWeights,
+                                        controlParent = stack.controls,
+                                        rigParent = rigParent,
+                                        offset = matDefCtrlShapeOffsets[idx],
+                                        size = matDefCtrlSizes[idx],
+                                        # locations=[position],
+                                        hide = True)
+        matDef.create()
 
 
     
-
-
-
-
-
-
-#######################################################################################################################################
-    autoCreateTimeRange = 20.0
-    offset=0
-    centerWeight = .3
-    outerWeight = .5
-    angle = 0
-    nudge = -0.14
-    intermediateVal = .0
-    intermediateAngle=0
-
-    lastAngle = 60
-    lastIntermediateVal=.8
-    lastIntermediateAngle=30
-
-    curveWeights = weightStack.AnimCurveWeight(name=name + "CurveWeights",
+        ################################## LIP THICK DEFORMER #####################################################################    
+        curveWeights = weightStack.AnimCurveWeight(name=name + "ThickDef",
                                         baseGeo=base,
                                         ctrlNode=control,
                                         projectionGeo=projectionMesh,
                                         weightAttrNames=[],
-                                        addNewElem=True,
+                                        addNewElem=isAddingNewElems[idx],
                                         autoCreateAnimCurves = True,
-                                        autoCreateName = ctrlName + "Secondary",
-                                        singleFalloffName = ctrlName,
-                                        autoCreateNum = tierCount2,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                        #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                        startElem = tierCount1,
-
-    )
-    curveWeights.create()
-
-
-    stack = weightStack.WeightStack(name=name + "WeightStack",
-                                    geoToWeight=base,
-                                    ctrlNode=control,
-                                    weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
-                                    addNewElem=True,
-                                    outputAttrs = outputAttrs,
-                                    outputAttrs_LR = outputAttrs_LR,
-                                    autoCreate=True,
-                                    controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
-                                    controlPositionOffset=slideCtrlPosOffset2,
-                                    controlRivetMesh = controlRivetMesh,
-                                    controlAutoOrientMesh=controlAutoOrientMesh,
-                                    controlRivetAimMesh=slidePatch,
-                                    controlSpeedDefaults = slideControlSpeedDefaults,
-                                    controlParent = controlParent,
-                                    falloffCurveWeightNode=name + "CurveWeights",
-                                    autoCreateName = ctrlName + "Secondary",
-                                    isOutputKDoubleArray=True,
-                                    controlSize = slideCtrlSize2,
-                                    controlShapeOffset = slideCtrlShapeOffset2,
-                                    falloffElemStart = tierCount1,
-                                    repositionRivetCtrls = repositionRivetCtrls,
-                                    )
-    stack.create()
-    # curveWeights.setFalloffDefaults()
+                                        autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                        singleFalloffName = falloffLipThickName,
+                                        autoCreateNum = tierCounts[idx],
+                                        falloffCurveDict = thickFalloffCurve,
+                                        falloffDefaults=falloffThickDefaults,
+                                        falloffItts=["linear","linear","linear","linear"],
+                                        falloffOtts=["linear","linear","linear","linear"],
+                                        autoCreateTimeRange = autoCreateTimeRange,
+                                        offset=offset,
+                                        centerWeight = centerWeights[idx],
+                                        outerWeight = outerWeights[idx],
+                                        angle = angles[idx],
+                                        nudge = nudges[idx],
+                                        intermediateVal=intermediateVal,
+                                        lastAngle=lastAngles[idx],
+                                        lastIntermediateVal=lastIntermediateVal,
+                                        intermediateAngle=intermediateAngle,
+                                        lastIntermediateAngle=lastIntermediateAngle,
+                                        startElem = tierAddAtIndex[idx],
 
 
-    curveWeights = weightStack.AnimCurveWeight(name=name + "MatDef",
-                                        baseGeo=base,
+        )
+        curveWeights.create()
+
+        tyAttrs = []
+        for ctrl in stack.controls:
+            tyAttrs.append(ctrl + ".tyOut")
+        thickShape = elements.upArrow
+        if not upperLip:
+            thickShape = elements.downArrow
+
+        stack = weightStack.WeightStack(name=name + "WeightStackThick",
+                                        geoToWeight=deformMesh,
                                         ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=True,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = ctrlName + "Secondary",
-                                        singleFalloffName = falloffMatrixDeformerName,
-                                        autoCreateNum = tierCount2,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                        #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                        startElem = tierCount1,
-
-    )
-    curveWeights.create()
-
-
-
-    matDef = matrixDeformer.MatrixDeformer(name=name + "MatrixDeformer2",
-                                    geoToDeform=deformMesh,
-                                    ctrlName=ctrlName + "MatrixDeformer2",
-                                    # parent=stack.controls,
-                                    centerToParent=True,
-                                    addAtIndex=0,
-                                    numToAdd=tierCount2,
-                                    locatorName= name + "Secondary",
-                                    rotationTranforms=stack.controls,
-                                    curveWeightsNode=curveWeights.node,
-                                    curveWeightsConnectionIdx=tierCount1,
-                                    translations = stack.positionsFromWeights,
-                                    rotations = stack.rotationsFromWeights,
-                                    controlParent = stack.controls,
-                                    rigParent = rigParent,
-                                    offset = matDefCtrlShapeOffset2,
-                                    size = matDefCtrlSize2,
-                                    hide = True)
-    matDef.create()
-    # quit()
-    #############################################################################################################################
-    curveWeights = weightStack.AnimCurveWeight(name=name + "CurveWeights",
-                                        baseGeo=base,
-                                        ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=True,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = ctrlName + "Tertiary",
-                                        singleFalloffName = ctrlName,
-                                        autoCreateNum = tierCount3,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                        #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                        startElem = tierCount2 + tierCount1,
-
-    )
-    curveWeights.create()
-
-
-    stack = weightStack.WeightStack(name=name + "WeightStack",
-                                    geoToWeight=base,
-                                    ctrlNode=control,
-                                    weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
-                                    addNewElem=True,
-                                    outputAttrs = outputAttrs,
-                                    outputAttrs_LR = outputAttrs_LR,
-                                    autoCreate=True,
-                                    controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
-                                    controlPositionOffset=slideCtrlPosOffset3,
-                                    controlRivetMesh = controlRivetMesh,
-                                    controlAutoOrientMesh=controlAutoOrientMesh,
-                                    controlRivetAimMesh=slidePatch,
-                                    controlSpeedDefaults = slideControlSpeedDefaults,
-                                    controlParent = controlParent,
-                                    falloffCurveWeightNode=name + "CurveWeights",
-                                    autoCreateName=ctrlName + "Tertiary",
-                                    isOutputKDoubleArray=True,
-                                    controlSize = slideCtrlSize3,
-                                    controlShapeOffset = slideCtrlShapeOffset3,
-                                    falloffElemStart = tierCount2 + tierCount1,
-                                    repositionRivetCtrls = repositionRivetCtrls,
-                                    )
-    stack.create()
-    # curveWeights.setFalloffDefaults()
-    curveWeights = weightStack.AnimCurveWeight(name=name + "MatDef",
-                                        baseGeo=base,
-                                        ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=True,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = ctrlName + "Tertiary",
-                                        singleFalloffName = falloffMatrixDeformerName,
-                                        autoCreateNum = tierCount3,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                        #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                        startElem = tierCount2 + tierCount1,
-
-    )
-    curveWeights.create()
-
-    matDef = matrixDeformer.MatrixDeformer(name=name + "MatrixDeformer3",
-                                    geoToDeform=deformMesh,
-                                    ctrlName=ctrlName + "MatrixDeformer3",
-                                    centerToParent=True,
-                                    addAtIndex=0,
-                                    numToAdd=tierCount3,
-                                    locatorName=name + "Tertiary",
-                                    #rotationTranforms=stack.controls,
-                                    curveWeightsNode=curveWeights.node,
-                                    curveWeightsConnectionIdx=tierCount2 + tierCount1,
-                                    translations = stack.positionsFromWeights,
-                                    rotations = stack.rotationsFromWeights,
-                                    controlParent = stack.controls,
-                                    rigParent = rigParent,
-                                    offset = matDefCtrlShapeOffset3,
-                                    size = matDefCtrlSize3,
-                                    hide = True)
-    matDef.create()
-    cmds.setAttr(slideUD.deformer + ".cacheBind",1)
+                                        weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                        addNewElem=isAddingNewElems[idx],
+                                        UDLR = False,
+                                        #outputAttrs = thickOutputattrs,
+                                        autoCreate=True,
+                                        controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
+                                        # controlPositionOffset=slideCtrlPosOffset1,
+                                        controlRivetMesh = controlRivetMesh,
+                                        controlAutoOrientMesh=controlAutoOrientMesh,
+                                        controlRivetAimMesh=slidePatch,
+                                        #controlSpeedDefaults = slideControlSpeedDefaults,
+                                        controlParent = controlParent,
+                                        controlShape=thickShape,
+                                        connectFalloff = connectFalloffs[idx],
+                                        isOutputKDoubleArray=True,
+                                        # falloffCurveWeightNode="TestCurveWeights",
+                                        autoCreateName=ctrlName + tierNames[idx] + "THICK", # Primary, Secondary, Or Tertiatry
+                                        controlSize = thickCtrlSizes[idx],
+                                        controlShapeOffset = thickCtrlShapeOffsets[idx],
+                                        repositionRivetCtrls = repositionRivetCtrls,
+                                        controlTyConnectionAttrs = tyAttrs,
+                                        controlSpeedDefaults = [1,1,1],
+                                        controlShapeOrient=[0,0,0],
+                                        controlLockAttrs=["tx", "tz", "rx", "ry", "rz", "sx", "sy", "sz"],
+                                        )
+        stack.create()
+        vectorDeformer = vectorDeformerSimple.VectorDeformerSimple(name = name + "THICKTEST", geoToDeform=deformMesh, weightStackNode=stack.node, toPoint = thickToPoint)
+        vectorDeformer.create() 
     return slideUD.deformer, vectorDeformer.deformer
-
 
 def lipCurveDeformSplit(name="C_UpperLipWire",
                         curve="lipCurve",
@@ -668,18 +506,5 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
 
     if reorderInFrontOfDeformer:
         cmds.reorderDeformers(reorderInFrontOfDeformer, blendshape, misc.getShape(deformedGeometry))
-    # LHCurveDeformerCmds.curveDeformerCmd(
-    #                                     driverCurve = curve,
-    #                                     aimCurve = curveAim,
-    #                                     geom = [blendshapeGeo],
-    #                                     ihi = 1,
-    #                                     lockAttrs = 0,
-    #                                     side='C',
-    #                                     name=name + "CurveDeformer")
 
-
-
-
-    #if removePointIndicies:
-
- 
+    return blendshape

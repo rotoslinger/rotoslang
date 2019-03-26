@@ -127,6 +127,8 @@ class MatrixDeformer(base.Deformer):
                 misc.move(self.matrixBuffers[idx], scale=self.scales[idx])
         
     def connectDeformer(self):
+        print "NUMBER TO ADDD   ", self.numToAdd
+        print "NUMBER TO ADDD   ", self.matrixNodes
         for idx in range(self.numToAdd):
             elemIndex = idx + self.addAtIndex
             cmds.connectAttr("{0}.worldMatrix".format(self.matrixNodes[idx]), "{0}.inputs[{1}].matrix".format(self.deformer, elemIndex))
