@@ -1,4 +1,4 @@
-//==============================================================
+//============================================================== 
 // Ultra simple blendshape deformer that allows 1 target only
 // This deformer is only meant to blend between 2 deformer stacks
 // The maya blendshape has a weight attribute that is difficult to connect weight stacks to, (you have to connect individual weight elements per point)

@@ -47,7 +47,8 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "valarray": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "string": "cpp"
     },
 
 }

@@ -66,8 +66,8 @@ def test():
 
     fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/humanLipTest.ma"
     tierCount1 = 1
-    tierCount2 = 3
-    tierCount3 = 5
+    tierCount2 = 9
+    tierCount3 = 11
 
     slideCtrlSize1=2
     slideCtrlSize2=1
@@ -113,7 +113,7 @@ def test():
         fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/dogLipTest.ma"
         tierCount1 = 1
         tierCount2 = 5
-        tierCount3 = 9
+        tierCount3 = 7
 
         slideCtrlSize1=2.3
         slideCtrlSize2=1.2

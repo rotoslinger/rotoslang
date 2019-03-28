@@ -595,7 +595,10 @@ class WeightStack(Node):
             if self.controlTzConnectionAttrs:
                 tzConnect = self.controlTzConnectionAttrs[idx]
             if self.controlRxConnectionAttrs:
-                rxConnect = self.controlRxConnectionAttrs[idx]
+                if type(self.controlRxConnectionAttrs) == list:
+                    rxConnect = self.controlRxConnectionAttrs[idx]
+                if type(self.controlRxConnectionAttrs) == bool:
+                    rxConnect = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
             if self.controlRyConnectionAttrs:
                 ryConnect = self.controlRyConnectionAttrs[idx]
             if self.controlRzConnectionAttrs:

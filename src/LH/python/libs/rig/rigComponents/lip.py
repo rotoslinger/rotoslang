@@ -25,6 +25,8 @@ from rig.deformers import blendshapeSimple
 reload(blendshapeSimple)
 from rig.deformers import vectorDeformerSimple
 reload(vectorDeformerSimple)
+from rig.deformers import curveRollSimple
+reload(curveRollSimple)
 # reload(deformerUtils)
 # reload(base)
 from rig.utils import weightMapUtils, misc
@@ -148,7 +150,7 @@ def Lip(name="lowerLip",
         falloffLipPuckerName = ctrlName
 
     if not falloffLipCurlName: # Falloff for lip curl may be more broad, but not as broad as the slide falloff
-        falloffLipCurlName = ctrlName
+        falloffLipCurlName = ctrlName + "LIPCURL"
 
     if fileName:
         cmds.file( fileName, i=True, f=True )
@@ -382,12 +384,110 @@ def Lip(name="lowerLip",
                                         controlTyConnectionAttrs = tyAttrs,
                                         controlSpeedDefaults = [1,1,1],
                                         controlShapeOrient=[0,0,0],
-                                        controlLockAttrs=["tx", "tz", "rx", "ry", "rz", "sx", "sy", "sz"],
+                                        controlLockAttrs=["tx", "tz", "ry", "rz", "sx", "sy", "sz"],
                                         )
         stack.create()
         vectorDeformer = vectorDeformerSimple.VectorDeformerSimple(name = name + "THICKTEST", geoToDeform=deformMesh, weightStackNode=stack.node, toPoint = thickToPoint)
         vectorDeformer.create() 
+
+
+        ################################## LIP CURL DEFORMER #####################################################################    
+        curveWeights = weightStack.AnimCurveWeight(name=name + "CurveWeightsCURL",
+                                        baseGeo=base,
+                                        ctrlNode=control,
+                                        projectionGeo=projectionMesh,
+                                        weightAttrNames=[],
+                                        addNewElem=isAddingNewElems[idx],
+                                        autoCreateAnimCurves = True,
+                                        autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                        singleFalloffName = falloffLipCurlName,
+                                        autoCreateNum = tierCounts[idx],
+                                        falloffCurveDict = thickFalloffCurve,
+                                        falloffDefaults=falloffThickDefaults,
+                                        falloffItts=["linear","linear","linear","linear"],
+                                        falloffOtts=["linear","linear","linear","linear"],
+                                        autoCreateTimeRange = autoCreateTimeRange,
+                                        offset=offset,
+                                        centerWeight = centerWeights[idx],
+                                        outerWeight = outerWeights[idx],
+                                        angle = angles[idx],
+                                        nudge = nudges[idx],
+                                        intermediateVal=intermediateVal,
+                                        lastAngle=lastAngles[idx],
+                                        lastIntermediateVal=lastIntermediateVal,
+                                        intermediateAngle=intermediateAngle,
+                                        lastIntermediateAngle=lastIntermediateAngle,
+                                        startElem = tierAddAtIndex[idx],
+
+
+        )
+        curveWeights.create()
+
+        rxAttrs = []
+        # for ctrl in stack.controls:
+        #     rxAttrs.append(ctrl + ".rx")
+        thickShape = elements.upArrow
+        if not upperLip:
+            thickShape = elements.downArrow
+
+        stack = weightStack.WeightStack(name=name + "WeightStackCurl",
+                                        geoToWeight=deformMesh,
+                                        ctrlNode=control,
+                                        weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                        addNewElem=isAddingNewElems[idx],
+                                        UDLR = False,
+                                        #outputAttrs = thickOutputattrs,
+                                        autoCreate=True,
+                                        controlPositionWeightsThreshold=ctrlAutoPositionThreshold,
+                                        # controlPositionOffset=slideCtrlPosOffset1,
+                                        controlRivetMesh = controlRivetMesh,
+                                        controlAutoOrientMesh=controlAutoOrientMesh,
+                                        controlRivetAimMesh=slidePatch,
+                                        #controlSpeedDefaults = slideControlSpeedDefaults,
+                                        controlParent = controlParent,
+                                        controlShape=thickShape,
+                                        connectFalloff = connectFalloffs[idx],
+                                        isOutputKDoubleArray=True,
+                                        # falloffCurveWeightNode="TestCurveWeights",
+                                        autoCreateName=ctrlName + tierNames[idx] + "CURL", # Primary, Secondary, Or Tertiatry
+                                        controlSize = thickCtrlSizes[idx],
+                                        controlShapeOffset = thickCtrlShapeOffsets[idx],
+                                        repositionRivetCtrls = repositionRivetCtrls,
+                                        # controlTyConnectionAttrs = tyAttrs,
+                                        controlRxConnectionAttrs= True,
+                                        controlSpeedDefaults = [1,1,1],
+                                        controlShapeOrient=[0,0,0],
+                                        controlLockAttrs=["tx", "tz", "ty", "ry", "rz", "sx", "sy", "sz"],
+                                        )
+        stack.create()
+        # curlDeformer = vectorDeformerSimple.VectorDeformerSimple(name = name + "THICKTEST", geoToDeform=deformMesh, weightStackNode=stack.node, toPoint = thickToPoint)
+        # curlDeformer.create()
+
+        curveRoll = curveRollSimple.CurveRollSimple(
+                                                    name=name + "CURLTEST",
+                                                    deformerType="LHCurveRollSimple",
+                                                    membershipWeightsAttr = "",
+                                                    rollWeightsAttr = "",
+                                                    geoToDeform=deformMesh,
+
+                                                    baseGeoToDeform=base,
+                                                    rollCurve="upperLipCurve",
+                                                    duplicateCurve=True,
+                                                    simplifyCurve=True,
+                                                    cvCount = 6,
+                                                    weightStackNode=stack.node,
+
+        )
+        curveRoll.create()
+ 
     return slideUD.deformer, vectorDeformer.deformer
+
+
+
+
+
+
+
 
 def lipCurveDeformSplit(name="C_UpperLipWire",
                         curve="lipCurve",
