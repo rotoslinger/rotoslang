@@ -45,6 +45,15 @@ class VectorDeformerSimple(base.Deformer):
         self.deformerType = "LHVectorDeformerSimple"
         self.weightMap = ""
 
+
+    def getDeformer(self):
+        if cmds.objExists(self.name):
+            self.deformer = self.name
+            return
+        self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name, par=True)[0]
+
+
+
     def getNodes(self):
         if not self.vectorCurve:
             if cmds.objExists(self.name + "Curve"):

@@ -28,6 +28,7 @@ class MatrixDeformer(base.Deformer):
                     rigParent="",
                     centerToParent=False,
                     doCreateCtrls=True,
+                    controlShapeDict=None,
                     rotationTranforms=[],
                     translations = [],
                     rotations = [],
@@ -52,6 +53,7 @@ class MatrixDeformer(base.Deformer):
         self.controlParent = controlParent
         self.rigParent = rigParent
         self.doCreateCtrls = doCreateCtrls
+        self.controlShapeDict = controlShapeDict
         self.centerToParent = centerToParent
         self.rotationTranforms = rotationTranforms
         self.translations = translations
@@ -127,8 +129,6 @@ class MatrixDeformer(base.Deformer):
                 misc.move(self.matrixBuffers[idx], scale=self.scales[idx])
         
     def connectDeformer(self):
-        print "NUMBER TO ADDD   ", self.numToAdd
-        print "NUMBER TO ADDD   ", self.matrixNodes
         for idx in range(self.numToAdd):
             elemIndex = idx + self.addAtIndex
             cmds.connectAttr("{0}.worldMatrix".format(self.matrixNodes[idx]), "{0}.inputs[{1}].matrix".format(self.deformer, elemIndex))
@@ -174,6 +174,7 @@ class MatrixDeformer(base.Deformer):
                                         scale = scales[idx],
                                         offset = self.offset,
                                         size=self.size,
+                                        curveData = self.controlShapeDict,
                                         )  
                 ctrl.create()
                 controlName = ctrl.ctrl           

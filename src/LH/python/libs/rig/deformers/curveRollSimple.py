@@ -58,9 +58,18 @@ class CurveRollSimple(base.Deformer):
         self.simplifyCurve=simplifyCurve
         self.cvCount = cvCount
 
+    def getDeformer(self):
+        if cmds.objExists(self.name):
+            self.deformer = self.name
+            return
+        self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name, par=True)[0]
+
     def getNodes(self):
-        if self.duplicateCurve:
+        if self.duplicateCurve and not cmds.objExists(self.name+"RollCurve"):
             self.rollCurve = cmds.duplicate(self.rollCurve, name = self.name+"RollCurve")[0]
+        if self.duplicateCurve and cmds.objExists(self.name+"RollCurve"):
+            self.rollCurve = self.name+"RollCurve"
+        
         if self.simplifyCurve:
 
             cmds.rebuildCurve(self.rollCurve, rt = 0, ch=False, rpo=True, s=self.cvCount, d=3, kr=True, end=0, kep=True)
@@ -79,36 +88,22 @@ class CurveRollSimple(base.Deformer):
         for idx, geo in enumerate(self.geoToDeform):
             self.geoToDeform[idx] = misc.getShape(geo)
 
-
-
-        if not cmds.objExists(self.membershipWeightsAttr):
+        if not cmds.objExists( self.geoToDeform[0] + "." + self.name + "MembershipWeights"):
             self.membershipWeightsAttr = weightMapUtils.createWeightMapOnSingleObject(self.geoToDeform[0], self.name + "MembershipWeights", defaultValue=1.0, addAttr=True)
-        
+        else:
+            self.membershipWeightsAttr = self.geoToDeform[0] + "." + self.name + "MembershipWeights"
+
         if not self.weightStackNode and not cmds.objExists(self.rollWeightsAttr):
             self.weightMap = weightMapUtils.createWeightMapOnSingleObject(self.geoToDeform[0], self.name + "RollWeights", defaultValue=1.0, addAttr=True)
         else:
             self.weightMap = "{0}.outWeightsDoubleArray".format(self.weightStackNode)
 
-
-        # if not self.weightMap:
-
-        
-        # if not cmds.objExists(self.rollWeightsAttr):
-        #     self.weightMap = weightMapUtils.createWeightMapOnSingleObject(self.geoToDeform[0], self.name + "RollWeights", defaultValue=1.0, addAttr=True)
-
     def setDefaults(self):
         if not type(self.geoToDeform) == list:
             self.geoToDeform = [self.geoToDeform]
-        # for idx, deformGeo in enumerate(self.geoToDeform):
-        #     iterGeo = misc.getOMItergeo(deformGeo)
-        #     polyCount = iterGeo.count()
-        #     defaultVals = [1.0 for x in range(polyCount)]
-        #     finalAttrName = "{0}.{1}[{2}].{3}".format(self.deformer, "weightArrays", idx, "membershipWeight")
-        #     cmds.getAttr(finalAttrName)
-        #     cmds.setAttr(finalAttrName, defaultVals, type="doubleArray")
 
     def connectDeformer(self):
-        cmds.connectAttr(self.rollCurve + ".worldSpace", self.deformer + ".rollCurve")
+        cmds.connectAttr(self.rollCurve + ".worldSpace", self.deformer + ".rollCurve", f=True)
 
         if not type(self.baseGeoToDeform) == list:
             self.baseGeoToDeform = [self.baseGeoToDeform]
@@ -121,9 +116,9 @@ class CurveRollSimple(base.Deformer):
             if objectType == "lattice":
                 geoAttrType = ".worldLattice"
 
-            cmds.connectAttr(geo + geoAttrType, self.deformer + ".weightArrays[{0}].baseGeo".format(idx))
-            cmds.connectAttr(self.membershipWeightsAttr, self.deformer + ".weightArrays[{0}].membershipWeight".format(idx))
-            cmds.connectAttr(self.weightMap, self.deformer + ".weightArrays[{0}].rollWeights".format(idx))
+            cmds.connectAttr(geo + geoAttrType, self.deformer + ".weightArrays[{0}].baseGeo".format(idx), f=True)
+            cmds.connectAttr(self.membershipWeightsAttr, self.deformer + ".weightArrays[{0}].membershipWeight".format(idx), f=True)
+            cmds.connectAttr(self.weightMap, self.deformer + ".weightArrays[{0}].rollWeights".format(idx), f=True)
 
     def cleanup(self):
         cmds.setAttr(self.deformer + ".cacheBind", 1)

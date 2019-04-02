@@ -356,6 +356,9 @@ class WeightStack(Node):
                  controlRxConnectionAttrs=[],
                  controlRyConnectionAttrs=[],
                  controlRzConnectionAttrs=[],
+                 controlSxConnectionAttrs=[],
+                 controlSyConnectionAttrs=[],
+                 controlSzConnectionAttrs=[],
                  controlShape = elements.slideIcon,
                  controlShapeOffset = [0,0,.1],
                  controlShapeOrient = [90, 0, 0],
@@ -403,6 +406,9 @@ class WeightStack(Node):
         self.controlRxConnectionAttrs = controlRxConnectionAttrs
         self.controlRyConnectionAttrs = controlRyConnectionAttrs
         self.controlRzConnectionAttrs = controlRzConnectionAttrs
+        self.controlSxConnectionAttrs = controlSxConnectionAttrs
+        self.controlSyConnectionAttrs = controlSyConnectionAttrs
+        self.controlSzConnectionAttrs = controlSzConnectionAttrs
         self.controlShape = controlShape
         self.controlShapeOffset = controlShapeOffset
         self.controlShapeOrient = controlShapeOrient
@@ -580,13 +586,14 @@ class WeightStack(Node):
             
             side, name = misc.getNameSide(self.factorAttrNames[idx])
 
-
-
             tyConnect = None
             tzConnect = None
             rxConnect = None
             ryConnect = None
             rzConnect = None
+            sxConnect = None
+            syConnect = None
+            szConnect = None
 
             if self.controlTxConnectionAttrs:
                 txConnect = self.controlTxConnectionAttrs[idx]
@@ -595,46 +602,58 @@ class WeightStack(Node):
             if self.controlTzConnectionAttrs:
                 tzConnect = self.controlTzConnectionAttrs[idx]
             if self.controlRxConnectionAttrs:
-                if type(self.controlRxConnectionAttrs) == list:
-                    rxConnect = self.controlRxConnectionAttrs[idx]
-                if type(self.controlRxConnectionAttrs) == bool:
-                    rxConnect = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
+                rxConnect = self.controlRxConnectionAttrs[idx]
             if self.controlRyConnectionAttrs:
                 ryConnect = self.controlRyConnectionAttrs[idx]
+
             if self.controlRzConnectionAttrs:
                 rzConnect = self.controlRzConnectionAttrs[idx]
+
+            if self.controlSxConnectionAttrs:
+                sxConnect = self.controlSxConnectionAttrs[idx]
+
+            if self.controlSyConnectionAttrs:
+                syConnect = self.controlSyConnectionAttrs[idx]
+
+            if self.controlSxConnectionAttrs:
+                szConnect = self.controlSzConnectionAttrs[idx]
+
+
 
 
             if cmds.objExists("{0}_{1}_CPT".format(side, name)):
                 ctrlName = "{0}_{1}_CTL".format(side, name)
                 if ctrlName not in self.controls:
                     self.controls.append(ctrlName)
+                    connectionAttr = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
                     # "txOut", "tyOut", "tzOut"
                     if self.UDLR:
                         txConnectionAttr=txConnect
                         cmds.connectAttr(ctrlName + ".txOut", txConnect, f=True)
                         tyConnectionAttr="{0}.inputs[{1}].factor".format(self.node, elemIdx)
                         cmds.connectAttr(ctrlName + ".tyOut", tyConnectionAttr, f=True)
-                    # Should only connect one at a time
-                    # if txConnect:
-                    #     cmds.connectAttr( txConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
-                    # if tyConnect:
-                    #     cmds.connectAttr( tyConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
-                    # if tzConnect:
-                    #     cmds.connectAttr( tzConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
 
-                    # if rxConnect:
-                    #     cmds.connectAttr( rxConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
-                    # if ryConnect:
-                    #     cmds.connectAttr( ryConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
-                    # if rzConnect:
-                    #     cmds.connectAttr( rzConnect, "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
+
+                    if self.controlRxConnectionAttrs:
+                        cmds.connectAttr(rxConnect, connectionAttr, f=True)
+                    if self.controlRyConnectionAttrs:
+                        cmds.connectAttr(ryConnect, connectionAttr, f=True)
+                    if self.controlRzConnectionAttrs:
+                        cmds.connectAttr(rzConnect, connectionAttr, f=True)
+
+                        
+                    if self.controlSxConnectionAttrs:
+                        cmds.connectAttr(sxConnect, connectionAttr, f=True)
+                    if self.controlSyConnectionAttrs:
+                        cmds.connectAttr(syConnect, connectionAttr, f=True)
+                    if self.controlSzConnectionAttrs:
+                        cmds.connectAttr(szConnect, connectionAttr, f=True)
 
 
                 continue
-            sxConnect = None
-            if self.connectFalloff and self.falloffCurveWeightNode:
-                sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
+            # sxConnect = None
+            # if self.connectFalloff and self.falloffCurveWeightNode:
+            #     sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
             tyConnect = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
 
             # print "POSITIONS!!!!", self.positionsFromWeights
@@ -660,8 +679,8 @@ class WeightStack(Node):
                                                 rzConnectionAttr=rzConnect,
 
                                                 sxConnectionAttr=sxConnect,
-                                                # syConnectionAttr=None,
-                                                # szConnectionAttr=None,
+                                                syConnectionAttr=syConnect,
+                                                szConnectionAttr=szConnect,
 
                                                 normalConstraintPatch=self.controlRivetAimMesh,
                                                 selection=False,
