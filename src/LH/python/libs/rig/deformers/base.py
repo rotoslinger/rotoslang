@@ -36,7 +36,12 @@ class Deformer(object):
                     curveWeightsConnectionIdx=0,
                     locations=[],
                     hide=True,
+                    orderFrontOfChain=True,
+                    orderParallel=False,
+                    orderBefore=False,
+                    orderAfter=False,
                  **kw):
+        # args
         self.name = name
         self.addAtIndex = addAtIndex
         self.deformerType = deformerType
@@ -50,6 +55,12 @@ class Deformer(object):
         self.curveWeightsConnectionIdx = curveWeightsConnectionIdx
         self.locations = locations
         self.hide = hide
+        self.orderFrontOfChain = orderFrontOfChain
+        self.orderParallel = orderParallel
+        self.orderBefore = orderBefore
+        self.orderAfter = orderAfter
+
+        # attrs
         self.deformer = ""
         self.matrixNodes = []
         self.matrixBaseNodes = []
@@ -61,7 +72,11 @@ class Deformer(object):
         if cmds.objExists(self.name):
             self.deformer = self.name
             return
-        self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name, foc=True)[0]
+        self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name,
+                                      foc=self.orderFrontOfChain,
+                                      bf=self.orderBefore,
+                                      af=self.orderAfter, 
+                                      par=self.orderParallel)[0]
 
     def getNodes(self):
         return

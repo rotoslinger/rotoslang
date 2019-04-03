@@ -388,7 +388,7 @@ def test():
                             addAtIndex=tierCount1+tierCount2+tierCount3,
                             handPaint=False,
                             upperLip=False,
-                            reorderInFrontOfDeformer=lowerLipThick,
+                            reorderInFrontOfDeformer=lowerLipSlide,
                             removePointIndicies=lowerRemovePointIndicies,
                             falloffDefaults = "")
 
@@ -521,7 +521,7 @@ def test():
                                         handPaint=False,
                                         upperLip=True,
                                         removePointIndicies=upperRemovePointIndicies,
-                                        reorderInFrontOfDeformer=upperLipThick,
+                                        reorderInFrontOfDeformer=upperLipSlide,
                                         falloffDefaults = "")
 
 

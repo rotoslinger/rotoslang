@@ -332,8 +332,34 @@ def Lip(name="lowerLip",
                                                     startElem = tierAddAtIndex[idx],
         )
         curveWeights.create()
+        
+        # Create a single matrix deformer (rotation order issues)
+        matDef = matrixDeformer.MatrixDeformer(name=name + "_MatDef",
+                                geoToDeform=deformMesh,
+                                ctrlName=ctrlName + matDefNames[idx],
+                                centerToParent=True,
+                                addAtIndex=tierAddAtIndex[idx],
+                                numToAdd=tierCounts[idx],
+                                # offset=[0,0,1],
+                                locatorName=name + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                rotationTranforms=stack.controls,
+                                curveWeightsNode=curveWeights.node,
+                                geoToConstrainMesh=deformMesh,
+                                curveWeightsConnectionIdx=tierAddAtIndex[idx],
+                                translations = stack.positionsFromWeights,
+                                rotations = stack.rotationsFromWeights,
+                                controlParent = stack.controls,
+                                rigParent = rigParent,
+                                offset = matDefCtrlShapeOffsets[idx],
+                                size = matDefCtrlSizes[idx],
+                                # locations=[position],
+                                hide = True,
+                                controlShapeDict=matDefIconShapeDicts[idx],)
+        matDef.create()
+        
 
-
+        '''
+        # Create For every Tier
         matDef = matrixDeformer.MatrixDeformer(name=name + matDefNames[idx],
                                         geoToDeform=deformMesh,
                                         ctrlName=ctrlName + matDefNames[idx],
@@ -354,8 +380,19 @@ def Lip(name="lowerLip",
                                         size = matDefCtrlSizes[idx],
                                         # locations=[position],
                                         hide = True,
-                                        controlShapeDict=matDefIconShapeDicts[idx],)
+                                        controlShapeDict=matDefIconShapeDicts[idx],
+                                        # orderFrontOfChain=False,
+                                        # orderParallel=True,
+                                        # orderBefore=False,
+                                        # orderAfter=False,
+                                        
+                                        
+                                        
+                                        
+                                        )
         matDef.create()
+        '''
+
 
         for ctrl in matDef.controls:
             cmds.container(container, edit=True, addNode=[ctrl])
@@ -573,7 +610,14 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
         falloffOtts=["linear","linear","spline","linear"]
     blendshapeGeo = cmds.duplicate(deformedGeometry, n=name+"BlendshapeGeo")[0]
     cmds.setAttr(blendshapeGeo + ".visibility", 0)
-    blendshape = blendshapeSimple.BlendshapeSimple(name = name + "ReverseBlendshape", geoToDeform=deformedGeometry, targetGeom=blendshapeGeo)
+    blendshape = blendshapeSimple.BlendshapeSimple(name = name + "ReverseBlendshape",
+                                                   geoToDeform=deformedGeometry,
+                                                   targetGeom=blendshapeGeo,
+                                                    # orderFrontOfChain=False,
+                                                    # orderParallel=True,
+                                                    # orderBefore=False,
+                                                    # orderAfter=False,
+                                                   )
     blendshape.create()
     # Turn on Blending
     cmds.setAttr(blendshape.amountAttr, 1)

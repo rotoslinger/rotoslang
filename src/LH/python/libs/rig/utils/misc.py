@@ -2461,8 +2461,8 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     driverMesh = getShape(driverMesh)
     if not name:
         name = "C_test_GCS"
-    
-    offsetTransform = getSetMaintainOffset(offsetBuffer, None, maintainOffsetT, maintainOffsetR, maintainOffsetS)
+    if offsetBuffer:
+        offsetTransform = getSetMaintainOffset(offsetBuffer, None, maintainOffsetT, maintainOffsetR, maintainOffsetS)
     constraint = cmds.createNode("LHGeometryConstraint", n=name)
     int_array, closest_point, pointA, pointB, pointC = getClosestPolygonToTransform(driverMesh, driven)
     pointIdAttrs = ["a", "b", "c", "d"]
@@ -2490,7 +2490,8 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
         cmds.normalConstraint(normalConstraintPatch, driven)
     if scale:
         cmds.connectAttr(decompose + ".outputScale", driven + ".scale" )
-    getSetMaintainOffset(offsetBuffer, offsetTransform)
+    if offsetBuffer:
+        getSetMaintainOffset(offsetBuffer, offsetTransform)
 
     return constraint
 

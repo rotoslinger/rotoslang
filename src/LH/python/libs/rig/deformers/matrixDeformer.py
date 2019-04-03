@@ -22,6 +22,7 @@ class MatrixDeformer(base.Deformer):
     def __init__(self,
                     name="testMatrixDeformer",
                     deformerType="LHMatrixDeformer",
+                    geoToConstrainMesh = "",
                     ctrlName = "",
                     geoToDeform="",
                     controlParent=[],
@@ -43,12 +44,19 @@ class MatrixDeformer(base.Deformer):
                     curveWeightsConnectionIdx=0,
                     autoNameWithSide=True,
                     hide=True,
+                    # inherited args
+                    # orderFrontOfChain=True,
+                    # orderParallel=False,
+                    # orderBefore=False,
+                    # orderAfter=False,
+
                  **kw):
         super(MatrixDeformer, self).__init__(**kw)
         self.name = name
         self.addAtIndex = addAtIndex
         self.ctrlName = ctrlName
         self.deformerType = deformerType
+        self.geoToConstrainMesh = geoToConstrainMesh
         self.geoToDeform = geoToDeform
         self.controlParent = controlParent
         self.rigParent = rigParent
@@ -74,11 +82,11 @@ class MatrixDeformer(base.Deformer):
         self.matrixBuffers = []
         self.controls = []
 
-    def getDeformer(self):
-        if cmds.objExists(self.name):
-            self.deformer = self.name
-            return
-        self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name, foc=True)[0]
+    # def getDeformer(self):
+    #     if cmds.objExists(self.name):
+    #         self.deformer = self.name
+    #         return
+    #     self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name, foc=True)[0]
 
     def getNodes(self):
         self.matrixNodes = []
@@ -167,17 +175,18 @@ class MatrixDeformer(base.Deformer):
             controlName = "{0}_{1}MatrixDef_CTL".format(side, name)
             if not cmds.objExists(controlName):
                 ctrl = simpleton.Component(side=side,
-                                        name=name+"MatrixDef",
-                                        parent=self.controlParent[idx],
-                                        translate = translations[idx],
-                                        rotate = rotations[idx],
-                                        scale = scales[idx],
-                                        offset = self.offset,
-                                        size=self.size,
-                                        curveData = self.controlShapeDict,
-                                        )  
+                                           name=name+"MatrixDef", 
+                                           parent=self.controlParent[idx],
+                                           translate = translations[idx],
+                                           rotate = rotations[idx],
+                                           scale = scales[idx],
+                                           offset = self.offset,
+                                           size=self.size,
+                                           curveData = self.controlShapeDict,
+                                        )
                 ctrl.create()
-                controlName = ctrl.ctrl           
+                controlName = ctrl.ctrl
+                # cmds.parent(self.matrixNodes[idx], self.matrixBaseNodes[idx], ctrl.locator)       
             if not controlName in self.controls:
                 self.controls.append(controlName)
 
@@ -188,6 +197,22 @@ class MatrixDeformer(base.Deformer):
             cmds.connectAttr(ctrl + ".translate", self.matrixNodes[idx] + ".translate", f=True)
             cmds.connectAttr(ctrl + ".rotate", self.matrixNodes[idx] + ".rotate", f=True)
             cmds.connectAttr(ctrl + ".scale", self.matrixNodes[idx] + ".scale", f=True)
+        # Geo constraint
+        # if not self.geoToConstrainMesh:
+        #     return
+        # for idx in range(len(self.matrixBuffers)):
+        #     side, name = misc.getNameSide(self.matrixBuffers[idx])
+        #     misc.geoConstraint(driverMesh = self.geoToConstrainMesh,
+        #                        driven = self.matrixBuffers[idx],
+        #                        parent = self.rigParent,
+        #                        name = "{0}_{1}_GCS".format(side, name),
+        #                        translate=True,
+        #                        rotate=True,
+        #                        scale=False,
+        #                        offsetBuffer =None,
+        #                        maintainOffsetT=False,
+        #                        maintainOffsetR=False, maintainOffsetS=True)
+
 
     def cleanup(self):
         for node in self.matrixNodes + self.matrixBaseNodes:
