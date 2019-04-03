@@ -22,6 +22,7 @@ MObject LHMatrixDeformer::aMultiThread;
 MObject LHMatrixDeformer::aMatrixWeight;
 // MObject LHMatrixDeformer::aMatrixWeights;
 MObject LHMatrixDeformer::aMembershipWeight;
+MObject LHMatrixDeformer::aReverseDeformOrder;
 
 
 
@@ -72,6 +73,19 @@ MStatus LHMatrixDeformer::initialize() {
   attributeAffects(aStart, outputGeom);
   attributeAffects(aEnd, outputGeom);
   attributeAffects(aNumTasks, outputGeom);
+
+
+  aReverseDeformOrder = nAttr.create( "reverseDeformationOrder", "revOrder", MFnNumericData::kInt);
+  nAttr.setKeyable(true);
+  nAttr.setWritable(true);
+  nAttr.setStorable(true);
+  nAttr.setMin(0);
+  nAttr.setMax(1);
+  nAttr.setDefault(0);
+  nAttr.setChannelBox(true);
+  addAttribute( aReverseDeformOrder );
+  attributeAffects(aReverseDeformOrder, outputGeom);
+
 
 
   aMatrix = mAttr.create("matrix", "matrix");
@@ -328,6 +342,8 @@ MStatus LHMatrixDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
     int end = data.inputValue(aEnd).asInt();
     int numTasks = data.inputValue(aNumTasks).asInt();
     int multiThread = data.inputValue(aMultiThread).asInt();
+    int reverseOrder = data.inputValue(aReverseDeformOrder).asInt();
+    
     if (multiThread and numTasks==0)
     {
         return MS::kFailure;
@@ -370,12 +386,31 @@ MStatus LHMatrixDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
     MPoint pt;
     MPointArray finalPoints;
     MPointArray allPoints;
-    itGeo.allPositions(allPoints);
+    itGeo.allPositions(allPoints, MSpace::kObject);
+
+    if (reverseOrder)
+    {
+        // reverse matrixArray and matrixArrayBase
+        MMatrixArray matrixArrayReverse;
+        MMatrixArray matrixArrayBaseReverse;
+        std::vector <MDoubleArray> matrixWeightsReverse;
+
+        // reverse loop
+        for (int i = nPlugs; i --> 0; )
+        {
+            matrixArrayReverse.append(matrixArray[i]);
+            matrixArrayBaseReverse.append(matrixArrayBase[i]);
+            matrixWeightsReverse.push_back(matrixWeights[i]);
+        }
+        matrixArray = matrixArrayReverse;
+        matrixArrayBase = matrixArrayBaseReverse;
+        matrixWeights = matrixWeightsReverse;
+    }
 
     if (multiThread == 0)
     {
         serialDeform(allPoints, nPlugs, matrixWeights, matrixArray, matrixArrayBase);
-        itGeo.setAllPositions(allPoints);
+        itGeo.setAllPositions(allPoints, MSpace::kObject);
         return MS::kSuccess;
     }
 

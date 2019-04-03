@@ -333,15 +333,18 @@ def Lip(name="lowerLip",
         )
         curveWeights.create()
         
+
+
         # Create a single matrix deformer (rotation order issues)
-        matDef = matrixDeformer.MatrixDeformer(name=name + "_MatDef",
+        matDef = matrixDeformer.MatrixDeformer(name=name + "_MatDefTranslate",
                                 geoToDeform=deformMesh,
                                 ctrlName=ctrlName + matDefNames[idx],
                                 centerToParent=True,
                                 addAtIndex=tierAddAtIndex[idx],
                                 numToAdd=tierCounts[idx],
                                 # offset=[0,0,1],
-                                locatorName=name + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                reverseDeformerOrder = True,
+                                locatorName=name + tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
                                 rotationTranforms=stack.controls,
                                 curveWeightsNode=curveWeights.node,
                                 geoToConstrainMesh=deformMesh,
@@ -352,11 +355,44 @@ def Lip(name="lowerLip",
                                 rigParent = rigParent,
                                 offset = matDefCtrlShapeOffsets[idx],
                                 size = matDefCtrlSizes[idx],
+                                # locatorName = name + "MatDefTranslateLocator",
                                 # locations=[position],
                                 hide = True,
+                                connectTranslate = True,
+                                connectRotate = False,
+                                connectScale = False,
+
                                 controlShapeDict=matDefIconShapeDicts[idx],)
         matDef.create()
-        
+
+        matDef = matrixDeformer.MatrixDeformer(name=name + "_MatDefRotate",
+                                geoToDeform=deformMesh,
+                                ctrlName=ctrlName + matDefNames[idx],
+                                centerToParent=True,
+                                addAtIndex=tierAddAtIndex[idx],
+                                numToAdd=tierCounts[idx],
+                                # offset=[0,0,1],
+                                reverseDeformerOrder = True,
+                                locatorName=name + tierNames[idx] + "ROT", # Primary, Secondary, Or Tertiatry
+                                rotationTranforms=stack.controls,
+                                curveWeightsNode=curveWeights.node,
+                                geoToConstrainMesh=deformMesh,
+                                curveWeightsConnectionIdx=tierAddAtIndex[idx],
+                                translations = stack.positionsFromWeights,
+                                rotations = stack.rotationsFromWeights,
+                                controlParent = stack.controls,
+                                rigParent = rigParent,
+                                offset = matDefCtrlShapeOffsets[idx],
+                                size = matDefCtrlSizes[idx],
+                                # locatorName = name + "MatDefRotateLocator",
+                                # locations=[position],
+                                hide = True,
+                                connectTranslate = False,
+                                connectRotate = True,
+                                connectScale = True,
+
+                                controlShapeDict=matDefIconShapeDicts[idx],)
+        matDef.create()
 
         '''
         # Create For every Tier

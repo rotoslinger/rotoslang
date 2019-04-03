@@ -44,6 +44,10 @@ class MatrixDeformer(base.Deformer):
                     curveWeightsConnectionIdx=0,
                     autoNameWithSide=True,
                     hide=True,
+                    reverseDeformerOrder = False,
+                    connectTranslate=True,
+                    connectRotate=True,
+                    connectScale=True,
                     # inherited args
                     # orderFrontOfChain=True,
                     # orderParallel=False,
@@ -76,6 +80,13 @@ class MatrixDeformer(base.Deformer):
         self.curveWeightsConnectionIdx = curveWeightsConnectionIdx
         self.autoNameWithSide = autoNameWithSide
         self.hide = hide
+        self.reverseDeformerOrder = reverseDeformerOrder
+        self.connectTranslate = connectTranslate
+        self.connectRotate = connectRotate
+        self.connectScale = connectScale
+
+
+
         self.deformer = ""
         self.matrixNodes = []
         self.matrixBaseNodes = []
@@ -135,6 +146,7 @@ class MatrixDeformer(base.Deformer):
                 misc.move(self.matrixBuffers[idx], rotate=self.rotations[idx])
             if len(self.scales)-1 >= idx:
                 misc.move(self.matrixBuffers[idx], scale=self.scales[idx])
+            
         
     def connectDeformer(self):
         for idx in range(self.numToAdd):
@@ -147,6 +159,8 @@ class MatrixDeformer(base.Deformer):
                 cmds.connectAttr(weightMap, "{0}.inputs[{1}].matrixWeight".format(self.deformer, elemIndex))
             if self.rotationTranforms:
                 cmds.connectAttr("{0}.rotate".format(self.rotationTranforms[idx]), "{0}.rotate".format(self.matrixNodes[idx]))
+        if self.reverseDeformerOrder:
+            cmds.setAttr(self.deformer + ".reverseDeformationOrder", 1)
 
     def createCtrls(self):
         if not self.doCreateCtrls:
@@ -194,9 +208,12 @@ class MatrixDeformer(base.Deformer):
         if not self.doCreateCtrls:
             return
         for idx, ctrl in enumerate(self.controls):
-            cmds.connectAttr(ctrl + ".translate", self.matrixNodes[idx] + ".translate", f=True)
-            cmds.connectAttr(ctrl + ".rotate", self.matrixNodes[idx] + ".rotate", f=True)
-            cmds.connectAttr(ctrl + ".scale", self.matrixNodes[idx] + ".scale", f=True)
+            if self.connectTranslate:
+                cmds.connectAttr(ctrl + ".translate", self.matrixNodes[idx] + ".translate", f=True)
+            if self.connectRotate:
+                cmds.connectAttr(ctrl + ".rotate", self.matrixNodes[idx] + ".rotate", f=True)
+            if self.connectScale:
+                cmds.connectAttr(ctrl + ".scale", self.matrixNodes[idx] + ".scale", f=True)
         # Geo constraint
         # if not self.geoToConstrainMesh:
         #     return

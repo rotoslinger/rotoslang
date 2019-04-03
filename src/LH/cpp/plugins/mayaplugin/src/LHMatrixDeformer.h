@@ -72,6 +72,7 @@ class LHMatrixDeformer : public MPxDeformerNode {
   static MObject aMultiThread;
   static MObject aMatrixWeight;
   static MObject aMembershipWeight;
+  static MObject aReverseDeformOrder;
 
 
   inline MString FormatError( const MString &msg, const MString
