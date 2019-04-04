@@ -11,6 +11,7 @@
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnTypedAttribute.h>
+#include <maya/MFnIntArrayData.h>
 #include <maya/MObjectArray.h>
 #include <vector>
 
@@ -30,7 +31,9 @@ class LHMultiWrap : public MPxDeformerNode {
   static MObject aInputGeo;
   static MObject aInputParent;
   static MObject aBaseMesh;
+  static MObject aBindVertexIDArray;
 
   std::vector <MIntArray> vertIndexArray;
+  std::vector <MIntArray> storedVertIndexArray;
 
 };

@@ -17,17 +17,26 @@ MObject LHMultiWrap::aCacheClosest;
 MObject LHMultiWrap::aInputGeo;
 MObject LHMultiWrap::aInputParent;
 MObject LHMultiWrap::aBaseMesh;
+MObject LHMultiWrap::aBindVertexIDArray;
 
 MStatus LHMultiWrap::initialize() {
   MFnNumericAttribute nAttr;
   MFnCompoundAttribute cAttr;
   MFnTypedAttribute tAttr;
+  
   aAmount = nAttr.create("bindThreshold", "bindthreshold", MFnNumericData::kFloat);
   nAttr.setMin(0.0);
   nAttr.setDefault(0.0);
   nAttr.setKeyable(true);
   addAttribute(aAmount);
   attributeAffects(aAmount, outputGeom);
+
+  aBindVertexIDArray = tAttr.create( "bindVertexIDArray", "bindvertexidarray", MFnData::kIntArray );
+  tAttr.setKeyable(false);
+  tAttr.setStorable(true);
+
+  addAttribute( aBindVertexIDArray );
+
 
   aCacheClosest = nAttr.create("cacheClosestPoint", "cacheclosest", MFnNumericData::kInt);
   nAttr.setKeyable(false);
@@ -49,6 +58,7 @@ MStatus LHMultiWrap::initialize() {
   cAttr.setKeyable(false);
   cAttr.setArray(true);
   cAttr.addChild( aInputGeo );
+  cAttr.addChild( aBindVertexIDArray );
   cAttr.setReadable(true);
   cAttr.setWritable(true);
   cAttr.setConnectable(true);
@@ -85,13 +95,24 @@ MStatus LHMultiWrap::deform(MDataBlock& data, MItGeometry& itGeo,
 
   MArrayDataHandle inputsArrayHandle(data.inputArrayValue( LHMultiWrap::aInputParent, &status));
   CHECK_MSTATUS_AND_RETURN_IT( status);
+
+
   int inputCount = inputsArrayHandle.elementCount(&status);
   CHECK_MSTATUS_AND_RETURN_IT( status);
+
   MObjectArray oColMeshArray;
   MObject oTestMesh;
+  MDataHandle testHandle;
+  MIntArray vertIDArray;
   for (int i=0;i < inputCount; i++){
       status = inputsArrayHandle.jumpToElement(i);
-      oTestMesh =inputsArrayHandle.inputValue().child( LHMultiWrap::aInputGeo).asMeshTransformed();
+      CHECK_MSTATUS_AND_RETURN_IT( status);
+
+      testHandle = inputsArrayHandle.inputValue(&status);
+      CHECK_MSTATUS_AND_RETURN_IT( status);
+
+
+      oTestMesh = testHandle.child( LHMultiWrap::aInputGeo).asMeshTransformed();
       if (oTestMesh.isNull()){
     	  continue;
       }
@@ -102,6 +123,34 @@ MStatus LHMultiWrap::deform(MDataBlock& data, MItGeometry& itGeo,
     MGlobal::displayError(MString("Couldn't get any driver meshes, connect to inputGeo"));
     return MS::kFailure;
   }
+
+
+  // Get bind data
+  if (!cache || !storedVertIndexArray.size() || storedVertIndexArray.size() != oColMeshArray.length())
+  {
+    if (storedVertIndexArray.size())
+    {
+      storedVertIndexArray.clear();
+    }
+    for (int i=0;i < inputCount; i++)
+    {
+      status = inputsArrayHandle.jumpToElement(i);
+      CHECK_MSTATUS_AND_RETURN_IT( status);
+
+      testHandle = inputsArrayHandle.inputValue(&status);
+      CHECK_MSTATUS_AND_RETURN_IT( status);
+
+
+      // Get the stored bind data
+      MDataHandle hInputArray = testHandle.child( aBindVertexIDArray);
+      MObject oInputArray = hInputArray.data();
+      MFnIntArrayData dataIntArrayFn(oInputArray);
+      dataIntArrayFn.copyTo(vertIDArray);
+      // Put the stored bind data into a std vector
+      storedVertIndexArray.push_back(vertIDArray);
+    }
+  }
+
 
   // Make sure base mesh and input geo are the same number of points, return if not
   MArrayDataHandle inputGeoArrayHandle(data.inputArrayValue( input, &status));
@@ -134,6 +183,15 @@ MStatus LHMultiWrap::deform(MDataBlock& data, MItGeometry& itGeo,
   MPoint baseCurrentPoint;
   MMeshIsectAccelParams mmAccelParams = fnBaseMesh->autoUniformGridParams();
 
+
+  // only checking the first index could be risky,
+  // but this is probably the fastest way to make sure the bind data is valid without checking all kinds of different things
+  if (storedVertIndexArray.size() && storedVertIndexArray[0].length() == vertCount)
+  {
+    vertIndexArray = storedVertIndexArray;
+  }
+
+  
   // Closest point cache
   if (!cache || !vertIndexArray.size() || vertIndexArray.size() != oColMeshArray.length())
   {
@@ -146,7 +204,6 @@ MStatus LHMultiWrap::deform(MDataBlock& data, MItGeometry& itGeo,
       MIntArray tempVertIdxArray;
       for (int vertID = 0; vertID < vertCount; vertID++)
       {
-        // inputFnMeshArray[inputMeshID]->getPoint(vertID, currentPoint);
         fnBaseMesh->getPoint(vertID, currentPoint);
         inputFnMeshArray[inputMeshID]->getClosestPoint(currentPoint, closestPointDummy, MSpace::kWorld, &polyID, &mmAccelParams);
         inputFnMeshArray[inputMeshID]->getPolygonVertices(polyID, polyPointIds);
@@ -157,53 +214,33 @@ MStatus LHMultiWrap::deform(MDataBlock& data, MItGeometry& itGeo,
           if (currentPoint.distanceTo(baseCurrentPoint) <= thresholdAmt)
           {
             closestIdx = polyPointIds[polyPointID];
-            //MGlobal::displayInfo(MString("Closest ") + polyPointIds[polyPointID] + " " + currentPoint.distanceTo(baseCurrentPoint));
             break;
           }
         }
-        //MGlobal::displayInfo(MString("Closest ") + closestIdx + " " + vertID + " " + currentPoint.distanceTo(baseCurrentPoint));
-
         tempVertIdxArray.append(closestIdx);
       }
       vertIndexArray.push_back(tempVertIdxArray);
     }
+    for (int i=0;i < inputCount; i++)
+    {
+      status = inputsArrayHandle.jumpToElement(i);
+      CHECK_MSTATUS_AND_RETURN_IT( status);
+
+      // Set value in MObject
+      MFnIntArrayData outputIntArrayFn;
+      MObject oOutputArray = outputIntArrayFn.create(vertIndexArray[i]);
+      if (oOutputArray.isNull())
+      {
+          MGlobal::displayInfo(MString("The output is NULL"));
+          return MS::kFailure;
+      }
+      MDataHandle handle = inputsArrayHandle.outputValue().child(LHMultiWrap::aBindVertexIDArray);
+      handle.setMObject(oOutputArray);
+    }
+    data.setClean(LHMultiWrap::aBindVertexIDArray);
+    data.setClean(LHMultiWrap::aInputParent);
   }
-  // // Closest point cache
-  // if (!cache || !vertIndexArray.size() || vertIndexArray.size() != oColMeshArray.length())
-  // {
-  //   if (vertIndexArray.size())
-  //   {
-  //     vertIndexArray.clear();
-  //   }
-  //   for (int inputMeshID = 0; inputMeshID < inputFnMeshArray.size(); inputMeshID++)
-  //   {
-  //     MIntArray tempVertIdxArray;
-  //     for (int vertID = 0; vertID < vertCount; vertID++)
-  //     {
-  //       // inputFnMeshArray[inputMeshID]->getPoint(vertID, currentPoint);
-  //       inputFnMeshArray[inputMeshID]->getPoint(vertID, currentPoint);
-  //       fnBaseMesh->getClosestPoint(currentPoint, closestPointDummy, MSpace::kWorld, &polyID, &mmAccelParams);
-  //       fnBaseMesh->getPolygonVertices(polyID, polyPointIds);
-  //       int closestIdx = -1;
-  //       for (int polyPointID = 0; polyPointID < polyPointIds.length(); polyPointID++)
-  //       {
-  //         fnBaseMesh->getPoint(polyPointIds[polyPointID], baseCurrentPoint);
-  //         if (currentPoint.distanceTo(baseCurrentPoint) <= thresholdAmt)
-  //         {
-  //           closestIdx = polyPointIds[polyPointID];
-  //           //MGlobal::displayInfo(MString("Closest ") + polyPointIds[polyPointID] + " " + currentPoint.distanceTo(baseCurrentPoint));
-  //           break;
-  //         }
-  //       }
-  //       MGlobal::displayInfo(MString("Closest ") + closestIdx + " " + vertID + " " + currentPoint.distanceTo(baseCurrentPoint));
 
-  //       tempVertIdxArray.append(closestIdx);
-  //     }
-  //     vertIndexArray.push_back(tempVertIdxArray);
-  //   }
-  // }
-
-  //  thresholdAmt *= env;
   MPointArray accumulatedVectors;
   MPoint pt;
   MPoint toPoint;

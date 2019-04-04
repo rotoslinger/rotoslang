@@ -40,6 +40,8 @@ class Deformer(object):
                     orderParallel=False,
                     orderBefore=False,
                     orderAfter=False,
+                    orderSplit=False,
+                    orderExclusive=False,
                  **kw):
         # args
         self.name = name
@@ -59,6 +61,8 @@ class Deformer(object):
         self.orderParallel = orderParallel
         self.orderBefore = orderBefore
         self.orderAfter = orderAfter
+        self.orderSplit = orderSplit
+        self.orderExclusive = orderExclusive
 
         # attrs
         self.deformer = ""
@@ -72,11 +76,16 @@ class Deformer(object):
         if cmds.objExists(self.name):
             self.deformer = self.name
             return
+
         self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name,
                                       foc=self.orderFrontOfChain,
                                       bf=self.orderBefore,
                                       af=self.orderAfter, 
-                                      par=self.orderParallel)[0]
+                                      par=self.orderParallel,
+                                    #   sp = self.orderSplit,
+                                    #   ex = self.orderExclusive,
+                                      
+                                      )[0]
 
     def getNodes(self):
         return

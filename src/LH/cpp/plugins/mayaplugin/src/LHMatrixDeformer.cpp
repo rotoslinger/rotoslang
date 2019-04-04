@@ -396,7 +396,7 @@ MStatus LHMatrixDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
         std::vector <MDoubleArray> matrixWeightsReverse;
 
         // reverse loop
-        for (int i = nPlugs; i --> 0; )
+        for (int i = nPlugs; i-- > 0; )
         {
             matrixArrayReverse.append(matrixArray[i]);
             matrixArrayBaseReverse.append(matrixArrayBase[i]);

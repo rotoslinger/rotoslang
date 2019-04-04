@@ -64,7 +64,7 @@ def test():
     cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
 
     dog=False
-    superman=False
+    superman=True
 
     fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
     tierCount1 = 1
@@ -241,6 +241,7 @@ def test():
         lowerCurveAim = "lowerLipCurveAim"
         deformMeshLower="humanLipsLower"
         baseLower="humanLipsLowerBase"
+        rollCurveNameLower = "lowerLipCurveRollOuter"
 
 
         # Upper Mesh Defaults
@@ -255,6 +256,7 @@ def test():
         slidePatch="lipModelPackage_slide"
         slidePatchBase="lipModelPackage_slideBase"
         controlAutoOrientMesh = "lipModelPackage_slide"
+        rollCurveNameUpper = "upperLipCurveRollOuter"
 
     cmds.file( fileName, i=True, f=True )
 

@@ -345,7 +345,7 @@ def Lip(name="lowerLip",
                                 # offset=[0,0,1],
                                 reverseDeformerOrder = True,
                                 locatorName=name + tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
-                                rotationTranforms=stack.controls,
+                                # rotationTranforms=stack.controls,
                                 curveWeightsNode=curveWeights.node,
                                 geoToConstrainMesh=deformMesh,
                                 curveWeightsConnectionIdx=tierAddAtIndex[idx],
@@ -361,8 +361,9 @@ def Lip(name="lowerLip",
                                 connectTranslate = True,
                                 connectRotate = False,
                                 connectScale = False,
-
-                                controlShapeDict=matDefIconShapeDicts[idx],)
+                                controlShapeDict=matDefIconShapeDicts[idx],
+                                
+                                )
         matDef.create()
 
         matDef = matrixDeformer.MatrixDeformer(name=name + "_MatDefRotate",
@@ -374,7 +375,7 @@ def Lip(name="lowerLip",
                                 # offset=[0,0,1],
                                 reverseDeformerOrder = True,
                                 locatorName=name + tierNames[idx] + "ROT", # Primary, Secondary, Or Tertiatry
-                                rotationTranforms=stack.controls,
+                                # rotationTranforms=stack.controls,
                                 curveWeightsNode=curveWeights.node,
                                 geoToConstrainMesh=deformMesh,
                                 curveWeightsConnectionIdx=tierAddAtIndex[idx],
@@ -390,9 +391,53 @@ def Lip(name="lowerLip",
                                 connectTranslate = False,
                                 connectRotate = True,
                                 connectScale = True,
-
-                                controlShapeDict=matDefIconShapeDicts[idx],)
+                                controlShapeDict=matDefIconShapeDicts[idx],
+                                
+                                
+                                )
         matDef.create()
+
+
+
+        # matDef = matrixDeformer.MatrixDeformer(name=name + "_MatDefScale",
+        #                         geoToDeform=deformMesh,
+        #                         ctrlName=ctrlName + matDefNames[idx],
+        #                         centerToParent=True,
+        #                         addAtIndex=tierAddAtIndex[idx],
+        #                         numToAdd=tierCounts[idx],
+        #                         # offset=[0,0,1],
+        #                         reverseDeformerOrder = True,
+        #                         locatorName=name + tierNames[idx] + "SCALE", # Primary, Secondary, Or Tertiatry
+        #                         rotationTranforms=stack.controls,
+        #                         curveWeightsNode=curveWeights.node,
+        #                         geoToConstrainMesh=deformMesh,
+        #                         curveWeightsConnectionIdx=tierAddAtIndex[idx],
+        #                         translations = stack.positionsFromWeights,
+        #                         rotations = stack.rotationsFromWeights,
+        #                         controlParent = stack.controls,
+        #                         rigParent = rigParent,
+        #                         offset = matDefCtrlShapeOffsets[idx],
+        #                         size = matDefCtrlSizes[idx],
+        #                         # locatorName = name + "MatDefRotateLocator",
+        #                         # locations=[position],
+        #                         hide = True,
+        #                         connectTranslate = False,
+        #                         connectRotate = False,
+        #                         connectScale = True,
+        #                         controlShapeDict=matDefIconShapeDicts[idx],
+        #                         orderFrontOfChain=True,
+        #                         orderParallel=False,
+        #                         orderBefore=False,
+        #                         orderAfter=False,
+        #                         orderSplit=False,
+        #                         orderExclusive=False,
+
+                                
+                                
+        #                         )
+        # matDef.create()
+
+
 
         '''
         # Create For every Tier
