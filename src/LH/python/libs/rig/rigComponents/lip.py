@@ -244,7 +244,7 @@ def Lip(name="lowerLip",
                                             baseGeo=base,
                                             ctrlNode=control,
                                             projectionGeo=projectionMesh,
-                                            weightAttrNames=[],
+                                            weightCurveNames=[],
                                             addNewElem=isAddingNewElems[idx],
                                             autoCreateAnimCurves = True,
                                             autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
@@ -270,7 +270,7 @@ def Lip(name="lowerLip",
         stack = weightStack.WeightStack(name=name + "WeightStack",
                                         geoToWeight=base,
                                         ctrlNode=control,
-                                        weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                        inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                         addNewElem=isAddingNewElems[idx],
                                         outputAttrs = outputAttrs,
                                         outputAttrs_LR = outputAttrs_LR,
@@ -308,7 +308,7 @@ def Lip(name="lowerLip",
                                                     baseGeo=base,
                                                     ctrlNode=control,
                                                     projectionGeo=projectionMesh,
-                                                    weightAttrNames=[],
+                                                    weightCurveNames=[],
                                                     addNewElem=isAddingNewElems[idx],
                                                     autoCreateAnimCurves = True,
                                                     autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
@@ -488,7 +488,7 @@ def Lip(name="lowerLip",
                                             baseGeo=base,
                                             ctrlNode=control,
                                             projectionGeo=projectionMesh,
-                                            weightAttrNames=[],
+                                            weightCurveNames=[],
                                             addNewElem=isAddingNewElems[idx],
                                             autoCreateAnimCurves = True,
                                             autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
@@ -529,7 +529,7 @@ def Lip(name="lowerLip",
             stack = weightStack.WeightStack(name=name + "WeightStackThick",
                                             geoToWeight=deformMesh,
                                             ctrlNode=control,
-                                            weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                            inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                             addNewElem=isAddingNewElems[idx],
                                             UDLR = False,
                                             autoCreate=True,
@@ -567,7 +567,7 @@ def Lip(name="lowerLip",
                                             baseGeo=base,
                                             ctrlNode=control,
                                             projectionGeo=projectionMesh,
-                                            weightAttrNames=[],
+                                            weightCurveNames=[],
                                             addNewElem=isAddingNewElems[idx],
                                             autoCreateAnimCurves = True,
                                             autoCreateName = ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
@@ -604,7 +604,7 @@ def Lip(name="lowerLip",
             stack = weightStack.WeightStack(name=name + "WeightStackRoll",
                                             geoToWeight=deformMesh,
                                             ctrlNode=control,
-                                            weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                            inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                             addNewElem=isAddingNewElems[idx],
                                             UDLR = False,
                                             #outputAttrs = thickOutputattrs,
@@ -706,13 +706,13 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
 
     geoToWeight = deformedGeometryBase
     curveWeights = None
-    weightMapAttrNames=[]
+    inputWeightAttrs=[]
     if not handPaint:
         curveWeights = weightStack.AnimCurveWeight(name=name + "ReverseCurveDeformerAnimCurveWeights",
                                     baseGeo=deformedGeometryBase,
                                     ctrlNode=blendshapeGeo,
                                     projectionGeo=projectionPatch,
-                                    weightAttrNames=[name + "CurveDeformerNormalize"],
+                                    weightCurveNames=[name + "CurveDeformerNormalize"],
                                     addNewElem=False,
                                     autoCreateAnimCurves = False,
                                     autoCreateName = '',
@@ -726,15 +726,15 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
         curveWeights.create()
         cmds.getAttr(curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray")
 
-        weightMapAttrNames=[curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray", curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray"]
+        inputWeightAttrs=[curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray", curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray"]
     factorAttrNames = ["reverse", "dummy"]
-    weightMapAttrNames=["reverseWeights", "dummyWeights"]
+    inputWeightAttrs=["reverseWeights", "dummyWeights"]
 
 
     stack = weightStack.WeightStack(name=name + "NormalizeCurveDeformerWeights",
                                     geoToWeight=geoToWeight,
                                     ctrlNode=blendshapeGeo,
-                                    weightMapAttrNames=weightMapAttrNames,
+                                    inputWeightAttrs=inputWeightAttrs,
                                     factorAttrNames = factorAttrNames,
                                     operationVals=[0,6],
                                     addNewElem=False,

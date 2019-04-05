@@ -584,11 +584,6 @@ def getAnimCurve(animCurve):
                 "out_y_tangents":   out_y_tangents,
                 "in_tangents_type": in_tangents_type,
                 "out_tangents_type":out_tangents_type
-                
-                
-                
-                
-                
                 }
     return curve_dict
 
@@ -649,3 +644,14 @@ def setAnimCurveShape(animCurve, animCurveDict):
         # set out tangent 0
         api_anim_curve.setOutTangentType(index,
                                     out_tangents_type[i])
+
+def create_set_anim_curves(animCurveDictList):
+    retCurves=[]
+    for animCurveDict in animCurveDictList:
+        newCurve = getNodeAgnostic(nodeType="animCurveTU", name=animCurveDict["name"], parent=None)
+        setAnimCurveShape(newCurve, animCurveDict)
+        retCurves.append(newCurve)
+    return retCurves
+
+
+        

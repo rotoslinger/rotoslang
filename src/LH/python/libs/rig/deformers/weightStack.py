@@ -11,6 +11,11 @@ reload(meshRivetCtrl)
 from rig.rigComponents import elements
 reload(elements)
 
+
+from decorators import initialize
+reload(elements)
+
+
 class Node(object):
     def __init__(self,
                  name,
@@ -81,12 +86,13 @@ class Node(object):
         self.positionControls()
 
 class AnimCurveWeight(Node):
+    @initialize.initializer
     def __init__(self,
-                #  weightMapAttrNames = [],
+                 #  inputWeightAttrs = [],
                  baseGeo = "",
                  ctrlNode="",
                  projectionGeo = "",
-                 weightAttrNames = [],
+                 weightCurveNames = [],
                  animCurveSuffix = "ACV",
                  autoCreateAnimCurves = False,
                  autoCreateName = "lip",
@@ -98,10 +104,12 @@ class AnimCurveWeight(Node):
                  falloffDefaults=(-10, -9, 9, 10),
                  falloffItts=["linear","linear","linear","linear"],
                  falloffOtts=["linear","linear","linear","linear"],
-                 singleFalloffName = "", # if you are not auto creating you need to give the single falloff name
+                 singleFalloffName = "",  # if you are not auto creating you need to give the single falloff name
                  addFalloff = True,
                  startElem = 0,
                  offset=.15, centerWeight = .35, outerWeight = .3, angle = 30, nudge = 1.0, intermediateVal = .2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=30, lastIntermediateAngle=0,
+                 inputWeightCurvesDict=[],
+                 inputWeightCurvesFalloffDict=[],
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -112,63 +120,59 @@ class AnimCurveWeight(Node):
                  **kw):
 
         super(AnimCurveWeight, self).__init__(**kw)
-        self.baseGeo = baseGeo
-        self.ctrlNode = ctrlNode
-        self.projectionGeo = projectionGeo
-        self.weightAttrNames = weightAttrNames
-        self.animCurveSuffix = animCurveSuffix
-        self.startElem = startElem
+        # self.baseGeo = baseGeo
+        # self.ctrlNode = ctrlNode
+        # self.projectionGeo = projectionGeo
+        # self.weightCurveNames = weightCurveNames
+        # self.animCurveSuffix = animCurveSuffix
+        # self.startElem = startElem
+        # self.autoCreateAnimCurves = autoCreateAnimCurves
+        # self.autoCreateNum = autoCreateNum
+        # self.autoCreateTimeRange = autoCreateTimeRange
+        # self.autoCreateName = autoCreateName
+
+        # self.addFalloff=addFalloff
+        # self.offset=offset
+        # self.centerWeight =centerWeight
+        # self.outerWeight = outerWeight
+        # self.angle = angle
+        # self.nudge = nudge
+        # self.intermediateVal = intermediateVal
+        # self.lastAngle = lastAngle
+        # self.lastIntermediateVal = lastIntermediateVal
+        # self.intermediateAngle = intermediateAngle
+        # self.lastIntermediateAngle = lastIntermediateAngle
+        # self.createSingleFalloff = createSingleFalloff
+        # self.uKeyframesAllOnes = uKeyframesAllOnes
+        # self.falloffDefaults = falloffDefaults
+        # self.falloffCurveDict = falloffCurveDict
+        # self.falloffItts = falloffItts
+        # self.falloffOtts = falloffOtts
+        # self.singleFalloffName = singleFalloffName
+
         self.membershipWeights = ""
         self.projectionMesh = ""
         self.baseMesh = ""
-        self.weightNames = ["{0}_{1}".format(x, self.animCurveSuffix) for x in self.weightAttrNames]
-        self.weightNamesFalloff = ["{0}Falloff_{1}".format(x, self.animCurveSuffix) for x in self.weightAttrNames]
-        self.autoCreateAnimCurves = autoCreateAnimCurves
-        self.autoCreateNum = autoCreateNum
-        self.autoCreateTimeRange = autoCreateTimeRange
-        self.autoCreateName = autoCreateName
         self.kDoubleArrayOutputPlugs = []
         self.kFloatArrayOutputPlugs = []
-
-        self.addFalloff=addFalloff
-        self.offset=offset
-        self.centerWeight =centerWeight
-        self.outerWeight = outerWeight
-        self.angle = angle
-        self.nudge = nudge
-        self.intermediateVal = intermediateVal
-        self.lastAngle = lastAngle
-        self.lastIntermediateVal = lastIntermediateVal
-        self.intermediateAngle = intermediateAngle
-        self.lastIntermediateAngle = lastIntermediateAngle
-        self.createSingleFalloff = createSingleFalloff
-        self.uKeyframesAllOnes = uKeyframesAllOnes
-        self.falloffDefaults = falloffDefaults
-        self.falloffCurveDict = falloffCurveDict
-        self.falloffItts = falloffItts
-        self.falloffOtts = falloffOtts
-
-        self.singleFalloffName = singleFalloffName
-
-
         # These attributes will be filled with the latest created plugs, if you want a list of all the plugs check the kDoubleArrayOutputPlugs
         self.newKDoubleArrayOutputPlugs = []
         self.newKFloatArrayOutputPlugs = []
-
         self.nodeType = "LHCurveWeightNode"
 
         # only support single base mesh for now
         if type(self.baseGeo) == list:
             self.baseGeo = self.baseGeo[0]
-
-
+            
+        self.weightNames = ["{0}_{1}".format(x, self.animCurveSuffix) for x in self.weightCurveNames]
+        self.weightNamesFalloff = ["{0}Falloff_{1}".format(x, self.animCurveSuffix) for x in self.weightCurveNames]
 
 
     def check(self):
         if not self.outputAttrs:
             return
 
-        if len(self.outputAttrs) != len(self.weightAttrNames):
+        if len(self.outputAttrs) != len(self.weightCurveNames):
             raise Exception('Make sure the length of the outputAttrs arg matches the number of input arg elements')
             quit()
 
@@ -192,8 +196,12 @@ class AnimCurveWeight(Node):
         self.projectionMesh = misc.getShape(self.projectionGeo)
         self.baseMesh = misc.getShape(self.baseGeo)
 
-        if self.autoCreateAnimCurves:
+        if self.inputWeightCurvesDict and self.inputWeightCurvesFalloffDict:
+            self.weightCurves = deformerUtils.create_set_anim_curves(self.inputWeightCurvesDict)
+            self.weightCurvesFalloff = deformerUtils.create_set_anim_curves(self.inputWeightCurvesFalloffDict)
+            return
 
+        if self.autoCreateAnimCurves:
             self.weightCurves, self.weightCurvesFalloff = deformerUtils.createNormalizedAnimWeights(name=self.autoCreateName, num=self.autoCreateNum,
                                                                                       timeRange=self.autoCreateTimeRange, suffix=self.animCurveSuffix,
                                                                                       offset=self.offset, centerWeight =self.centerWeight, outerWeight = self.outerWeight,
@@ -334,14 +342,15 @@ base = cmds.polySphere(n="BASE")[0]
 cmds.setAttr(base + ".v",0)
 projectionMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2)[0]
 cmds.move(2, projectionMesh, z=True)
-stack = weightStack.AnimCurveWeight(name="TestCurveWeights", baseGeo=base, projectionGeo=projectionMesh, weightAttrNames=["test001"], addNewElem=False, outputAttrs = ["cluster1.weightList[0]"])
+stack = weightStack.AnimCurveWeight(name="TestCurveWeights", baseGeo=base, projectionGeo=projectionMesh, weightCurveNames=["test001"], addNewElem=False, outputAttrs = ["cluster1.weightList[0]"])
 stack.create()
 """
 
 class WeightStack(Node):
+    @initialize.initializer
     def __init__(self,
                  ctrlNode="",
-                 weightMapAttrNames = [],
+                 inputWeightAttrs = [],
                  factorAttrNames = [],
                  geoToWeight = "",
                  operationVals=[],
@@ -378,6 +387,8 @@ class WeightStack(Node):
                  falloffElemStart = 0,
                  controlSpeedDefaults = [.1,.1,.1],
                  repositionRivetCtrls=False,
+                 inputWeightAttrs_UD=[],
+                 inputWeightAttrs_LR=[],
                 #  outputToBlendshape=False,
                  # Inherited args
                  # outputAttrs=[],
@@ -389,36 +400,46 @@ class WeightStack(Node):
                  **kw):
 
         super(WeightStack, self).__init__(**kw)
-        self.ctrlNode = ctrlNode
-        self.weightMapAttrNames = weightMapAttrNames
-        self.factorAttrNames = factorAttrNames
-        self.geoToWeight = geoToWeight
-        self.operationVals = operationVals
-        self.startElem = 0
-        self.autoCreate = autoCreate
-        self.autoCreateName = autoCreateName
-        self.autoCreateOperationVal = autoCreateOperationVal
-        self.createControl = createControl
-        self.controlSize = controlSize
-        self.controlTxConnectionAttrs = controlTxConnectionAttrs
-        self.controlTyConnectionAttrs = controlTyConnectionAttrs
-        self.controlTzConnectionAttrs = controlTzConnectionAttrs
-        self.controlRxConnectionAttrs = controlRxConnectionAttrs
-        self.controlRyConnectionAttrs = controlRyConnectionAttrs
-        self.controlRzConnectionAttrs = controlRzConnectionAttrs
-        self.controlSxConnectionAttrs = controlSxConnectionAttrs
-        self.controlSyConnectionAttrs = controlSyConnectionAttrs
-        self.controlSzConnectionAttrs = controlSzConnectionAttrs
-        self.controlShape = controlShape
-        self.controlShapeOffset = controlShapeOffset
-        self.controlShapeOrient = controlShapeOrient
-        self.controlShapeScale = controlShapeScale
-        self.controlLockAttrs = controlLockAttrs
-        self.controlPositionWeightsThreshold = controlPositionWeightsThreshold
-        self.controlPositionOffset = controlPositionOffset
-        self.controlAutoOrientMesh = controlAutoOrientMesh
-        self.controlParent = controlParent
-        self.UDLR = UDLR
+        # self.ctrlNode = ctrlNode
+        # self.inputWeightAttrs = inputWeightAttrs
+        # self.factorAttrNames = factorAttrNames
+        # self.geoToWeight = geoToWeight
+        # self.operationVals = operationVals
+        # self.autoCreate = autoCreate
+        # self.autoCreateName = autoCreateName
+        # self.autoCreateOperationVal = autoCreateOperationVal
+        # self.createControl = createControl
+        # self.controlSize = controlSize
+        # self.controlTxConnectionAttrs = controlTxConnectionAttrs
+        # self.controlTyConnectionAttrs = controlTyConnectionAttrs
+        # self.controlTzConnectionAttrs = controlTzConnectionAttrs
+        # self.controlRxConnectionAttrs = controlRxConnectionAttrs
+        # self.controlRyConnectionAttrs = controlRyConnectionAttrs
+        # self.controlRzConnectionAttrs = controlRzConnectionAttrs
+        # self.controlSxConnectionAttrs = controlSxConnectionAttrs
+        # self.controlSyConnectionAttrs = controlSyConnectionAttrs
+        # self.controlSzConnectionAttrs = controlSzConnectionAttrs
+        # self.controlShape = controlShape
+        # self.controlShapeOffset = controlShapeOffset
+        # self.controlShapeOrient = controlShapeOrient
+        # self.controlShapeScale = controlShapeScale
+        # self.controlLockAttrs = controlLockAttrs
+        # self.controlPositionWeightsThreshold = controlPositionWeightsThreshold
+        # self.controlPositionOffset = controlPositionOffset
+        # self.controlAutoOrientMesh = controlAutoOrientMesh
+        # self.controlParent = controlParent
+        # self.UDLR = UDLR
+        # self.outputAttrs_LR = outputAttrs_LR
+        # self.isOutputKDoubleArray = isOutputKDoubleArray
+        # self.controlRivetMesh = controlRivetMesh            
+        # self.controlRivetAimMesh = controlRivetAimMesh            
+        # self.connectFalloff = connectFalloff            
+        # self.falloffCurveWeightNode = falloffCurveWeightNode            
+        # self.falloffElemStart = falloffElemStart            
+        # self.controlSpeedDefaults = controlSpeedDefaults            
+        # self.repositionRivetCtrls = repositionRivetCtrls    
+
+
         self.factorAttrNamesLR = []
         self.floatAttrs_LR = []
         self.name_LR = ""
@@ -428,32 +449,11 @@ class WeightStack(Node):
         self.node_LR = ""
         self.isKDoubleArrayOutputWeights = True
         self.nodeType = "LHWeightNode"
-        self.outputAttrs_LR = outputAttrs_LR
-        self.isOutputKDoubleArray = isOutputKDoubleArray
-        self.controlRivetMesh = controlRivetMesh            
-        self.controlRivetAimMesh = controlRivetAimMesh            
-        self.connectFalloff = connectFalloff            
-        self.falloffCurveWeightNode = falloffCurveWeightNode            
-        self.falloffElemStart = falloffElemStart            
-        self.controlSpeedDefaults = controlSpeedDefaults            
-        self.repositionRivetCtrls = repositionRivetCtrls    
-        # print "CON",controlTzConnectionAttrs
-        # print "CON",controlTzConnectionAttrs
-        # print "CON",controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-        # print "CON",self.controlTzConnectionAttrs
-
-
-
         self.controls = []
         self.positionsFromWeights = []
         self.rotationsFromWeights = []
+        self.startElem = 0
+
         # self.outputToBlendshape = outputToBlendshape
         # Don't support multiple geos right now
         if type(self.geoToWeight) == list:
@@ -462,11 +462,28 @@ class WeightStack(Node):
     def check(self):
         if self.autoCreate:
             return
-        listsToCheck = [self.weightMapAttrNames, self.factorAttrNames, self.operationVals]
-        if any(len(listArray) != len(self.weightMapAttrNames) for listArray in listsToCheck):
-            raise Exception("weightMapAttrs, factorAttrs, and operationVals all need to be the same length, " +
+
+        # If specifying different UD and LR weights
+        if self.inputWeightAttrs_UD and self.inputWeightAttrs_LR and not self.operationVals:
+            for idx in range(len(self.inputWeightAttrs_UD)):
+                self.operationVals.append(0)
+            listsToCheck = [self.inputWeightAttrs_UD, self.inputWeightAttrs_LR, self.factorAttrNames, self.operationVals]
+            if any(len(listArray) != len(self.inputWeightAttrs_UD) for listArray in listsToCheck):
+                raise Exception("inputWeightAttrs_UD, inputWeightAttrs_LR, factorAttrs, and operationVals all need to be the same length, " +
+                                "if you want multiple maps to be connected to multiple factor attrs, use the same " + 
+                                "weightMapAttrs multiple times")
+                quit()
+            return
+
+        # using only 1 set of weights for both UD and LR
+        if not self.operationVals:
+            for idx in range(len(self.inputWeightAttrs)):
+                self.operationVals.append(0)
+        listsToCheck = [self.inputWeightAttrs, self.factorAttrNames, self.operationVals]
+        if any(len(listArray) != len(self.inputWeightAttrs) for listArray in listsToCheck):
+            raise Exception("inputWeightAttrs, factorAttrs, and operationVals all need to be the same length, " +
                             "if you want multiple maps to be connected to multiple factor attrs, use the same " + 
-                            "weightMapAttrs multiple times")
+                            "inputWeightAttrs multiple times")
             quit()
 
     def getNode(self):
@@ -480,13 +497,22 @@ class WeightStack(Node):
 
     def getAttrs(self):
         self.weightMapAttrs = []
+        self.weightMapAttrs_LR = []
+
         if self.autoCreate:
-            self.weightMapAttrs = self.weightMapAttrNames
-            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=len(self.weightMapAttrNames), name=self.autoCreateName, suffixSeperator="")
-            self.operationVals = [self.autoCreateOperationVal for x in range(len(self.weightMapAttrNames))]
+            self.weightMapAttrs = self.inputWeightAttrs
+            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=len(self.inputWeightAttrs), name=self.autoCreateName, suffixSeperator="")
+            self.operationVals = [self.autoCreateOperationVal for x in range(len(self.inputWeightAttrs))]
+
+        # If the given weight map already exists in maya
+        if self.inputWeightAttrs and cmds.objExists(self.inputWeightAttrs[0]):
+            self.weightMapAttrs = self.inputWeightAttrs
+        
+        
+        # Create the weight map if it doesn't already exist
         if not self.weightMapAttrs:
             self.weightMapAttrs = deformerUtils.attrCheck(node=self.geoToWeight,
-                                            attrs=self.weightMapAttrNames,
+                                            attrs=self.inputWeightAttrs,
                                             attrType=None,
                                             weightmap=True)
 
@@ -506,18 +532,30 @@ class WeightStack(Node):
                                     attrs=self.factorAttrNames,
                                     attrType="float",
                                     k=True)
-    
+        
+        # 
+        if not self.weightMapAttrs and self.inputWeightAttrs_UD and self.inputWeightAttrs_LR:
+            self.weightMapAttrs = self.inputWeightAttrs_UD
+            self.weightMapAttrs_LR = self.inputWeightAttrs_LR
+
+
     def inputConnections(self):
         self.elemCheck("{0}.inputs".format(self.node))
         self.positionsFromWeights = []
+        
         for idx in range(len(self.weightMapAttrs)):
             elemIdx = idx + self.startElem
             cmds.connectAttr(self.weightMapAttrs[idx], "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx), f=True)
+            # if self.inputWeightAttrs_UD:
+            #     cmds.connectAttr(self.inputWeightAttrs_UD[idx], "{0}.inputs[{1}].inputWeights".format(self.node, elemIdx), f=True)
+
             cmds.connectAttr(self.floatAttrs[idx], "{0}.inputs[{1}].factor".format(self.node, elemIdx), f=True)
             cmds.setAttr("{0}.inputs[{1}].operation".format(self.node, elemIdx), self.operationVals[idx])
             if self.UDLR:
                 # elemIdx = elemIdx + len(self.weightMapAttrs)
                 cmds.connectAttr(self.weightMapAttrs[idx], "{0}.inputs[{1}].inputWeights".format(self.node_LR, elemIdx), f=True)
+                if self.weightMapAttrs_LR:
+                    cmds.connectAttr(self.weightMapAttrs_LR[idx], "{0}.inputs[{1}].inputWeights".format(self.node_LR, elemIdx), f=True)
                 cmds.connectAttr(self.floatAttrs_LR[idx], "{0}.inputs[{1}].factor".format(self.node_LR, elemIdx), f=True)
                 cmds.setAttr("{0}.inputs[{1}].operation".format(self.node_LR, elemIdx), self.operationVals[idx])
 
@@ -543,12 +581,6 @@ class WeightStack(Node):
         if not self.outputAttrs:
             return
         for idx, attr in enumerate(self.outputAttrs):
-            # attrType = deformerUtils.checkOutputWeightType(attr)
-            # if self.outputToBlendshape:
-            #     cmds.connectAttr("{0}.outWeightsFloatArray[0].outFloatWeights[0]".format(self.node), attr, f=True)
-            #     return
-
-
             if self.isOutputKDoubleArray:
                 # If True, then this output attribute will get the kDoubleArray Output
                 cmds.connectAttr("{0}.outWeightsDoubleArray".format(self.node), attr, f=True)
@@ -618,9 +650,6 @@ class WeightStack(Node):
             if self.controlSxConnectionAttrs:
                 szConnect = self.controlSzConnectionAttrs[idx]
 
-
-
-
             if cmds.objExists("{0}_{1}_CPT".format(side, name)):
                 ctrlName = "{0}_{1}_CTL".format(side, name)
                 if ctrlName not in self.controls:
@@ -648,15 +677,10 @@ class WeightStack(Node):
                         cmds.connectAttr(syConnect, connectionAttr, f=True)
                     if self.controlSzConnectionAttrs:
                         cmds.connectAttr(szConnect, connectionAttr, f=True)
-
-
                 continue
-            # sxConnect = None
-            # if self.connectFalloff and self.falloffCurveWeightNode:
-            #     sxConnect = "{0}.inputs[{1}].falloffU".format(self.falloffCurveWeightNode, idx + self.falloffElemStart)
+
             tyConnect = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
 
-            # print "POSITIONS!!!!", self.positionsFromWeights
             tmpCtrl = meshRivetCtrl.Component(name = name,
                                                 side=side,
                                                 speedTxDefault=self.controlSpeedDefaults[0],
@@ -782,7 +806,7 @@ curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
                                     baseGeo=base,
                                     ctrlNode=control,
                                     projectionGeo=projectionMesh,
-                                    weightAttrNames=[],
+                                    weightCurveNames=[],
                                     addNewElem=False,
                                     autoCreateAnimCurves = True,
                                     autoCreateName = "lipSingle",
@@ -796,7 +820,7 @@ curveWeights.create()
 stack = weightStack.WeightStack(name="TestWeights",
                                 geoToWeight=base,
                                 ctrlNode=control,
-                                weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                 addNewElem=False,
                                 outputAttrs = ["cluster1.weightList[0]"],
                                 outputAttrs_LR = ["cluster2.weightList[0]"],
@@ -828,7 +852,7 @@ curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
                                     baseGeo=base,
                                     ctrlNode=control,
                                     projectionGeo=projectionMesh,
-                                    weightAttrNames=[],
+                                    weightCurveNames=[],
                                     addNewElem=True,
                                     autoCreateAnimCurves = True,
                                     autoCreateName = "lipPrime",
@@ -844,7 +868,7 @@ curveWeights.create()
 stack = weightStack.WeightStack(name="TestWeights",
                                 geoToWeight=base,
                                 ctrlNode=control,
-                                weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                 addNewElem=True,
                                 outputAttrs = ["cluster1.weightList[0]"],
                                 outputAttrs_LR = ["cluster2.weightList[0]"],
@@ -866,7 +890,7 @@ curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
                                     baseGeo=base,
                                     ctrlNode=control,
                                     projectionGeo=projectionMesh,
-                                    weightAttrNames=[],
+                                    weightCurveNames=[],
                                     addNewElem=True,
                                     autoCreateAnimCurves = True,
                                     autoCreateName = "lipSecondary",
@@ -882,7 +906,7 @@ curveWeights.create()
 stack = weightStack.WeightStack(name="TestWeights",
                                 geoToWeight=base,
                                 ctrlNode=control,
-                                weightMapAttrNames=curveWeights.newKDoubleArrayOutputPlugs,
+                                inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                 addNewElem=True,
                                 outputAttrs = ["cluster1.weightList[0]"],
                                 outputAttrs_LR = ["cluster2.weightList[0]"],
