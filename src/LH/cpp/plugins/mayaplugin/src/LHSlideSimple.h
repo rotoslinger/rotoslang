@@ -70,9 +70,9 @@ class LHSlideSimple : public MPxDeformerNode {
   MObject oSurfaceBase;
   MPointOnNurbs ptON;
   MPoint UV;
-  std::vector < std::vector < MEulerRotation > > baseEuler;
+  std::vector < std::vector < MEulerRotation > > slideEuler, slideBaseEuler;
   MVector xVec, yVec, zVec, normal, yVector, zVector, xVector;
-  MEulerRotation rotateEuler;
+  MEulerRotation rotateBaseEuler;
   MMatrix BaseMatrix, rotateMatrixX, rotateMatrixY, rotateMatrixZ, finalMatrix;
   double  uMinParam,uMaxParam,vMinParam,vMaxParam;
   MPoint slideUVPoint;

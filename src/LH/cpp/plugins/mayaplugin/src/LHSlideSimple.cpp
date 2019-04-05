@@ -174,7 +174,7 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
     CheckStatusReturn( status, "Couldn't cache closest points" );
   }
 
-  if (!cacheBind || !baseEuler.size() || baseEuler.size()-1 < mIndex ||  !baseEuler[mIndex].size() || baseEuler[mIndex].size() != deformedVertIds[mIndex].length())
+  if (!cacheBind || !slideBaseEuler.size() || slideBaseEuler.size()-1 < mIndex ||  !slideBaseEuler[mIndex].size() || slideBaseEuler[mIndex].size() != deformedVertIds[mIndex].length())
   {
     // MGlobal::displayInfo(MString("NOT CACHING"));
     status = LHSlideSimple::CacheBaseRotations();
@@ -258,19 +258,19 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
             zVec.normalize();
             xVec = yVec ^ zVec;
             xVec.normalize();
-            rotateEuler = baseEuler[mIndex][idx];
+            rotateBaseEuler = slideBaseEuler[mIndex][idx];
             // apply rotate offset dereference address pointer rotateMatrix with *
-            MQuaternion rotateX(-(rotateEuler[0]),xVec);
+            MQuaternion rotateX(-(rotateBaseEuler[0]),xVec);
             rotateMatrixX = rotateX.asMatrix();
             yVec = yVec * rotateMatrixX;
             zVec = zVec * rotateMatrixX;
 
-            MQuaternion rotateY(-(rotateEuler[1]),yVec);
+            MQuaternion rotateY(-(rotateBaseEuler[1]),yVec);
             rotateMatrixY = rotateY.asMatrix();
             xVec = xVec * rotateMatrixY;
             zVec = zVec * rotateMatrixY;
 
-            MQuaternion rotateZ(-(rotateEuler[2]),zVec);
+            MQuaternion rotateZ(-(rotateBaseEuler[2]),zVec);
             rotateMatrixZ = rotateZ.asMatrix();
             xVec = xVec * rotateMatrixZ;
             yVec = yVec * rotateMatrixZ;
@@ -314,7 +314,11 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
   itGeo.setAllPositions(allPoints);
   return MS::kSuccess;
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Tried to do the algoritm outside the main deform block and it didn't work... why is that?
+// I've done this in other deformers and it helps organization, but I must have made a mistake here
+// should I abandon this?  The algorithm is quite long.....
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 // void LHSlideSimple::Algorithm(int mIndex, int idx, MDoubleArray uWeights, MDoubleArray vWeights, int currentVertID, MPoint &pt, float uAmount)
 // {
@@ -375,19 +379,19 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
 //             zVec.normalize();
 //             xVec = yVec ^ zVec;
 //             xVec.normalize();
-//             rotateEuler = baseEuler[mIndex][idx];
+//             rotateBaseEuler = slideBaseEuler[mIndex][idx];
 //             // apply rotate offset dereference address pointer rotateMatrix with *
-//             MQuaternion rotateX(-(rotateEuler[0]),xVec);
+//             MQuaternion rotateX(-(rotateBaseEuler[0]),xVec);
 //             rotateMatrixX = rotateX.asMatrix();
 //             yVec = yVec * rotateMatrixX;
 //             zVec = zVec * rotateMatrixX;
 
-//             MQuaternion rotateY(-(rotateEuler[1]),yVec);
+//             MQuaternion rotateY(-(rotateBaseEuler[1]),yVec);
 //             rotateMatrixY = rotateY.asMatrix();
 //             xVec = xVec * rotateMatrixY;
 //             zVec = zVec * rotateMatrixY;
 
-//             MQuaternion rotateZ(-(rotateEuler[2]),zVec);
+//             MQuaternion rotateZ(-(rotateBaseEuler[2]),zVec);
 //             rotateMatrixZ = rotateZ.asMatrix();
 //             xVec = xVec * rotateMatrixZ;
 //             yVec = yVec * rotateMatrixZ;
@@ -434,9 +438,9 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
 MStatus LHSlideSimple::CacheBaseRotations()
 {
     MStatus status;
-    if (baseEuler.size())
+    if (slideBaseEuler.size())
     {
-      baseEuler.clear();
+      slideBaseEuler.clear();
     }
     if (!allGeoIter.size())
     {
@@ -449,7 +453,7 @@ MStatus LHSlideSimple::CacheBaseRotations()
         return MS::kFailure;
       }
       allGeoIter[x]->allPositions(currentGeoPoints);
-      std::vector <  MEulerRotation > tempBaseEuler;
+      std::vector <  MEulerRotation > tempSlideBaseEuler;
       for (int i=0;i < deformedVertIds[x].length(); i++)
       {
         currentPt = currentGeoPoints[deformedVertIds[x][i]];
@@ -468,10 +472,12 @@ MStatus LHSlideSimple::CacheBaseRotations()
                       { yVector[0], yVector[1], yVector[2], 0.0},
                       { zVector[0], zVector[1], zVector[2], 0.0},
                       {         0.0,         0.0,         0.0, 1.0},};
-        rotateEuler = rotateEuler.decompose(BaseMatrix, MEulerRotation::kXYZ);
-        tempBaseEuler.push_back(rotateEuler);
+        MMatrix tmpMatrix(baseMatrix);
+   
+        rotateBaseEuler = rotateBaseEuler.decompose(tmpMatrix, MEulerRotation::kXYZ);
+        tempSlideBaseEuler.push_back(rotateBaseEuler);
       }
-      baseEuler.push_back(tempBaseEuler);
+      slideBaseEuler.push_back(tempSlideBaseEuler);
     }
     return MS::kSuccess;
     }
