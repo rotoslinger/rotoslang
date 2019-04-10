@@ -436,10 +436,10 @@ class lh_deformer_import(object):
                                    amountVDefault=self.amountVDefault,
                                    uOutConnectionAttr=self.uOutConnectionAttr,
                                    vOutConnectionAttr=self.vOutConnectionAttr,
-                                   curveData=self.nurbsShape
+                                   curveData=self.nurbsShape)
             slidingCtrl.create()
 
-            )
+            
 
     def create(self):
         self.create_instance_variables()
@@ -567,20 +567,23 @@ class lh_component_import(object):
                  path = "",
                  create_geo = True,
                  geo_name = None,
-                 guides = False
+                 guides = False,
+                 manipDict = None,
                  ):
         #---args
         self.path                    = path
         self.create_geo              = create_geo
         self.geo_name                = geo_name
         self.guides                  = guides
+        self.manipDict               = manipDict
 
         self.create()
 
     def getFileData(self):
-        file = open(self.path, "rb")
-        self.manipDict = json.load(file)
-        file.close()
+        if not self.manipDict:
+            file = open(self.path, "rb")
+            self.manipDict = json.load(file)
+            file.close()
 
     # def unpack(self):
     #     "imports the dictionary, separates all of the info for later use"
@@ -657,7 +660,10 @@ class lh_component_import(object):
                     # print connectedAttrName
                     if not cmds.objExists(connectedAttrName):
                         continue
-                    cmds.connectAttr(attrName, connectedAttrName, f=True)
+                    # check if attr is locked, if not connect
+                    if not cmds.getAttr(connectedAttrName, l=True):
+                    # if cmds.attributeQuery(attr.split(".")[1], node = ctrl, connectable=True):
+                        cmds.connectAttr(attrName, connectedAttrName, f=True)
     
     def cleanup(self):
         if not self.guides:

@@ -96,9 +96,14 @@ class slideDeformerGui(object):
                     self.geo = self.geo1+self.geo2
                     self.geo = list(set(self.geo))
                 else:
-                    self.geo = cmds.deformer(deformer,
-                                             q = True,
-                                             g = True)
+                    if cmds.objectType(deformer[0]) == "LHWeightNode":
+                        self.geo = cmds.listConnections(deformer[0] + ".weightedMesh")
+                        if self.geo:
+                            self.geo = self.geo[0]
+                    else:
+                        self.geo = cmds.deformer(deformer,
+                                                q = True,
+                                                g = True)
                 #---clear it
                 cmds.textScrollList(self.geo_list,
                                     e = 1, 
@@ -153,8 +158,46 @@ class slideDeformerGui(object):
             deformer = cmds.textScrollList(self.deformer_list, 
                                            q = 1, 
                                            selectItem = 1)
+            geo = None
+            if cmds.objectType(deformer[0]) == "LHWeightNode":
+                geo = cmds.listConnections(deformer[0] + ".weightedMesh")
+                # if geo:
+                #     geo= geo[0]
+            else:
+                geo = cmds.deformer(deformer,
+                                        q = True,
+                                        g = True)
+
             # geo = cmds.deformer(deformer, q=True, geometry=True)
+            if geo:
+                geo= geo[0]
             idx = len(weights_source)-1
+            print deformer
+            if cmds.objectType(deformer[0]) == "LHMatrixDeformer":
+                geoTransform = cmds.listRelatives(geo, p=True)[0]
+                self.current_weights= geo + "." + weights_source[idx]
+                cmds.makePaintable("mesh", self.current_weights)
+                mel.eval('artSetToolAndSelectAttr( "artAttrCtx", "mesh.' +self.current_weights+ '" );')
+                self.weightDragger.weightAttr = self.current_weights
+                return
+            
+            if cmds.objectType(deformer[0]) == "LHWeightNode":
+                geoTransform = cmds.listRelatives(geo, p=True)[0]
+                shape = misc.getShape(geo)
+                self.current_weights= shape + "." + weights_source[idx]
+                print self.current_weights
+                print self.current_weights
+                print self.current_weights
+                print self.current_weights
+                print self.current_weights
+                cmds.makePaintable("mesh", self.current_weights)
+                mel.eval('artSetToolAndSelectAttr( "artAttrCtx", "mesh.' + self.current_weights+ '" );')
+                self.weightDragger.weightAttr = self.current_weights
+                return
+
+
+
+
             try:
                 self.current_weights= "LHSlideDeformer." + deformer[0] + "." + weights_source[idx]
             except:
@@ -282,6 +325,76 @@ class slideDeformerGui(object):
                                     append = self.source_string,
                                     sc =self.selectSourceWeightAction)
             return
+
+        if deformerType == "LHWeightNode":
+            # filter source
+            self.source_string = cmds.textFieldGrp(filterTextGroup, q = 1, text = 1)
+            if self.source_string == "":
+                elemLength = cmds.getAttr(deformer[index] + ".inputs", s=True)
+                self.names = []
+                for elem in range(elemLength):
+                    attrName = deformer[index] + ".inputs[{0}].inputWeights".format(elem)
+                    con = cmds.listConnections(attrName, d=False, s=True, p =True)
+                    if not con:
+                        continue
+                    con = con[0]
+                    if cmds.objectType(con) != 'mesh':
+                        print cmds.objectType(con)
+                        continue
+                    attrNameCon = cmds.listConnections(attrName, p=True)
+                    if not attrNameCon:
+                        continue
+                    attrNameCon = attrNameCon[0]
+                    self.names.append(attrNameCon.split(".")[1])
+
+
+                # self.names = [deformer[index] + ".matrixWeight"]   
+                self.source_string = self.__filter(filter_string = self.source_string,
+                                                    list = self.names)
+                #---clear weights from
+                cmds.textScrollList(weightsTextScrollList,
+                                    e = 1, 
+                                    ra = 1)
+                #---fill weights from
+                cmds.textScrollList(weightsTextScrollList,
+                                    e = 1, 
+                                    append = self.source_string,
+                                    sc =self.selectSourceWeightAction)
+            return
+        if deformerType == "LHMatrixDeformer":
+            # filter source
+            self.source_string = cmds.textFieldGrp(filterTextGroup, q = 1, text = 1)
+            if self.source_string == "":
+                elemLength = cmds.getAttr(deformer[index] + ".inputs", s=True)
+                self.names = []
+                for elem in range(elemLength):
+                    attrName = deformer[index] + ".inputs[{0}].matrixWeight".format(elem)
+                    con = cmds.listConnections(attrName)
+                    if not con:
+                        continue
+                    con = con[0]
+                    if cmds.objectType(con) != 'transform':
+                        continue
+                    attrNameCon = cmds.listConnections(attrName, p=True)
+                    if not attrNameCon:
+                        continue
+                    attrNameCon = attrNameCon[0]
+                    self.names.append(attrNameCon.split(".")[1])
+
+
+                # self.names = [deformer[index] + ".matrixWeight"]   
+                self.source_string = self.__filter(filter_string = self.source_string,
+                                                    list = self.names)
+                #---clear weights from
+                cmds.textScrollList(weightsTextScrollList,
+                                    e = 1, 
+                                    ra = 1)
+                #---fill weights from
+                cmds.textScrollList(weightsTextScrollList,
+                                    e = 1, 
+                                    append = self.source_string,
+                                    sc =self.selectSourceWeightAction)
+            return
                                        
         if weightType == 1:
             #---get weights
@@ -397,7 +510,9 @@ class slideDeformerGui(object):
         self.curveRollDeformers = cmds.ls(type = "LHCurveRollDeformer")
         # self.weightDeformers = cmds.ls(type = "LHWeightDeformer")
         self.clusterDeformers = cmds.ls(type = "cluster")
-        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers  + self.clusterDeformers
+        self.weightNodes = cmds.ls(type = "LHWeightNode")
+        self.matrixDeformers = cmds.ls(type = "LHMatrixDeformer")
+        self.deformers = self.slideDeformers + self.vecDeformers + self.curveRollDeformers  + self.clusterDeformers + self.weightNodes + self.matrixDeformers
 #         self.deformers.append(cmds.ls(type = "LHVectorDeformer"))
 
         cmds.textScrollList(self.deformer_list,
@@ -660,6 +775,14 @@ class slideDeformerGui(object):
                                            selectItem = 1)
             weights_source = []
     
+            if cmds.objectType(deformer) == "LHMatrixDeformer":
+                weightAttr = geo[0] + "." + tmp_weights_source[0]
+                faceWeights.mirror_double_array_attrs(source = tmp_weights_source,
+                                                      geo = geo[0],
+                                                      side = side,
+                                                        )
+                return
+
             for i in tmp_weights_source:
                 weights_source.append(self.weight_dict.get(i))
     
@@ -797,10 +920,6 @@ class slideDeformerGui(object):
                                 # sourceAttr = src_deformer + "." + weights_split[0] + "[" + str(index) + "]." + weights_split[1]
                                 # sourceWeights = cmds.getAttr(sourceAttr)
 
-                                # print cmds.polyEvaluate(geo_tmp, v=1), "numVERTS"
-                                # print "LENGTH TARGET", len(sourceWeights)
-
-
 
                                 if len(deformer)>1:
                                     trg_deformer = deformer[1]
@@ -819,8 +938,6 @@ class slideDeformerGui(object):
                                     sourceAttr = tmp_target[j]
                                     sourceWeights = cmds.getAttr(sourceAttr)
 
-                                    print cmds.polyEvaluate(geo_tmp, v=1), "numVERTS"
-                                    print "LENGTH TARGET", len(sourceWeights)
 
                                 faceWeights.copy_double_array_weights(source = src_deformer
                                                                       +"."
@@ -868,7 +985,6 @@ class slideDeformerGui(object):
         cmds.textFieldGrp(self.import_file, e = True, text=self.import_path)
 
     def __export_file_browser(self, *args):
-#         print " establish symmetry"
         self.export_path = str(cmds.fileDialog2(fm = 0,
                                                 ff = "LHDeformer Files (*.sld *.vec *.crd)")[0])
         cmds.textFieldGrp(self.export_file, e = True, text=self.export_path)
@@ -978,7 +1094,6 @@ class slideDeformerGui(object):
         ""
 
     def __select_geo(self, *args):
-#         print "STUF"
         self.geo_selection = cmds.textScrollList(self.geo_list,
                                                  q = True, 
                                                  selectItem = True)
@@ -1156,7 +1271,6 @@ class slideDeformerGui(object):
                                        selectItem = 1)
         if deformer:
             deformer_type = cmds.nodeType(deformer[0])
-#             print deformer_type
             self.attr_names = cmds.listAttr(deformer, 
                                        ud = True, 
                                        s = True)
@@ -1191,7 +1305,6 @@ class slideDeformerGui(object):
                                        selectItem = 1)
         if deformer:
             deformer_type = cmds.nodeType(deformer[0])
-#             print deformer_type
             self.attr_names = cmds.listAttr(deformer, 
                                        ud = True, 
                                        s = True)
@@ -1268,7 +1381,6 @@ class slideDeformerGui(object):
                     attr_connections.append("dummy")
             attr_type = []
             for i in range(len(full_attrs)):
-    #             print attr_connections[i]
                 if attr_connections[i] != "dummy":
                     tmp = attr_connections[i].split(".")
                     attr_type.append(tmp[1][0])
@@ -1288,14 +1400,11 @@ class slideDeformerGui(object):
 #                     u_anim_curves.append(coor_attrs.u_anim_curve)
 #                     v_anim_curves.append(coor_attrs.v_anim_curve)
 #                     pivots.append(coor_attrs.pivot)
-#                     print tmp[1]
                     search_final = ""
                     if not search_string:
                         search_final = tmp[1]
                     else:
                         search_final = search_string
-#                         print tmp[1]
-#                     print coor_attrs.end
                     if coor_attrs.end == 0:
                         if search_string in full_attrs[i]:
                             new_attr = tmp[1].replace(search_final, replace_string)
@@ -2255,7 +2364,7 @@ class slideDeformerGui(object):
                                                                    'Vertex Weight Switch'],
                                                       cw5=[80,80,80,80, 80],
                                                       cal=[(1, "right"), (1, "left"), (3, "left")],
-                                                      valueArray3=[True, False, False],
+                                                      valueArray3=[False, False, False],
                                                       cc=self.updateVertexColorToggle,
                                                       onCommand3=self.turnOnVertexWeightColors,
                                                       offCommand3=weightingUtils.turnOffVertexColor

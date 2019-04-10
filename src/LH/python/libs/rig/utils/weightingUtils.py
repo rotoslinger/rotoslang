@@ -137,9 +137,14 @@ def setWeightsOnSelectedAcculmulative(weightAttr="LHWeightDeformer.C_testFace_SL
 
 def getAllWeightValues(weightAttr):
     weightAttrSplit = weightAttr.split(".")
-    # ---get deformer
-    deformer = weightAttr.split(".")[1]
-    geo = cmds.deformer(deformer, q=True, g=True)
+    if len(weightAttrSplit) == 2:
+        # ---get deformer
+        geo = [weightAttrSplit[0]]
+
+    elif not len(weightAttrSplit) > 2:
+        deformer = weightAttr.split(".")[1]
+        geo = cmds.deformer(deformer, q=True, g=True)
+
     geoTransform = [cmds.listRelatives(i, parent=True)[0] for i in geo]
     # ---make sure selected are points, and are in the deformer
     selected = cmds.ls(sl=True, fl=True)
@@ -150,8 +155,10 @@ def getAllWeightValues(weightAttr):
     weightAttrs = []
     allWeightValues = []
     for i in range(len(geoTransform)):
-        weightAttrs.append(
-            weightAttrSplit[1] + "." + weightAttrSplit[2] + "s[" + str(i) + "]." + weightAttrSplit[2])
+        if len(weightAttrSplit) == 2:
+            weightAttrs.append( weightAttr)
+        elif not len(weightAttrSplit) > 2:
+            weightAttrs.append( weightAttrSplit[1] + "." + weightAttrSplit[2] + "s[" + str(i) + "]." + weightAttrSplit[2])
         allWeightValues.append(cmds.getAttr(weightAttrs[i]))
     return allWeightValues, finalPoints, geoTransform, points, weightAttrs
 

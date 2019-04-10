@@ -23,6 +23,9 @@ reload(exportUtils)
 from rig.utils import weightMapUtils
 reload(weightMapUtils)
 
+from rig.rigComponents import meshRivetCtrl
+reload(meshRivetCtrl)
+
 def calimari(skinCluster, mesh, bias, hide=True):
     vertCount = cmds.polyEvaluate(mesh, v=1) - 1
     jnts = cmds.skinCluster(skinCluster, q=True, inf=True)
@@ -653,5 +656,413 @@ def create_set_anim_curves(animCurveDictList):
         retCurves.append(newCurve)
     return retCurves
 
+###################################################################################################
+############################ Matrix deformer utils ################################################
+###################################################################################################
 
-        
+def getMatrixDeformerFromControl(ctrl=None, attrConnectionToCheck = ".rotate"):
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+    locator = cmds.listConnections(ctrl + attrConnectionToCheck)
+    if not locator:
+        return
+    locator = locator[0]
+    matDef = cmds.listConnections(locator + ".worldMatrix", d=True, s=False, scn=True)
+    if not matDef:
+        return
+    return matDef[0]
+
+def getMatrixDeformerPivotLocations(matrixDeformer=None, debug=False):
+    if matrixDeformer == None:
+        matrixDeformer = cmds.ls(sl=True, typ="LHMatrixDeformer")
+        if matrixDeformer:
+            matrixDeformer = matrixDeformer[0]
+    if not matrixDeformer:
+        matrixDeformer = getMatrixDeformerFromControl()
+    elemLength = cmds.getAttr(matrixDeformer + ".inputs", s=True)
+    rotations = []
+    translations = []
+    scales = []
+    for idx in range(elemLength):
+        # print cmds.getAttr(matrixDeformer + ".inputs[{0}].matrix".format(idx))
+        locator = cmds.listConnections(matrixDeformer + ".inputs[{0}].matrix".format(idx))[0]
+        translations.append(cmds.xform(locator, q=True, ws=True, t=True))
+        rotations.append(cmds.xform(locator, q=True, ws=True, ro=True))
+        scales.append(cmds.xform(locator, q=True, ws=True, s=True))
+    if debug:
+        print "rotations", rotations
+        print "translations", translations
+        print "scales", scales
+
+    return rotations, translations, scales
+
+def getMatrixDeformerCtrlLocations(matrixDeformer=None, debug=False):
+    if matrixDeformer == None:
+        matrixDeformer = cmds.ls(sl=True, typ="LHMatrixDeformer")
+        if matrixDeformer:
+            matrixDeformer = matrixDeformer[0]
+    if not matrixDeformer:
+        matrixDeformer = getMatrixDeformerFromControl()
+    ctrls = getMatrixDeformerCtrls(matrixDeformer)
+    rotations = []
+    translations = []
+    scales = []
+    for idx, ctrl in enumerate(ctrls):
+        buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = meshRivetCtrl.getRivetParts(ctrl)
+        # print cmds.getAttr(matrixDeformer + ".inputs[{0}].matrix".format(idx))
+        translations.append(cmds.xform(locator, q=True, ws=True, t=True))
+        rotations.append(cmds.xform(locator, q=True, ws=True, ro=True))
+        scales.append(cmds.xform(locator, q=True, ws=True, s=True))
+    if debug:
+        print "rotations", rotations
+        print "translations", translations
+        print "scales", scales
+
+    return rotations, translations, scales
+
+def mirrorSelectedLocatorLToR(ctrls=None):
+    if not ctrls:
+        ctrls = cmds.ls(sl=True, typ="transform")
+    for ctrl in ctrls:
+        mirrorSelectedLocatorLToRSingle(ctrl=ctrl)
+
+def mirrorSelectedLocatorLToRSingle(ctrl=None):
+    locator = cmds.listConnections(ctrl + ".rotate")
+    if not locator:
+        return
+    lParent = cmds.listRelatives(locator, p=True)[0]
+    if not "L_" in lParent:
+        return
+    rParent = lParent.replace("L_", "R_")
+    if not cmds.objExists(rParent):
+        return
+    lParentTranslate = cmds.xform(lParent, q=True, ws = True, t=True)
+    rParentTranslate = [lParentTranslate[0] *-1, lParentTranslate[1], lParentTranslate[2] ]
+    lParentRotate = cmds.xform(lParent, q=True, ws = True, ro=True)
+    rParentRotate,rParentScale = getMirroredTransform(lParentTranslate, lParentRotate)
+    cmds.xform(rParent, ws=True, ro=rParentRotate, t=rParentTranslate, s=rParentScale)
+
+def getMirroredTransform(position, rotation):
+    rootGrp  = cmds.createNode("transform", n="TEMP_ROOT_GRP")
+    tmpRootJnt = cmds.joint(rootGrp, name = "ROOT", o=[0,0,0], p=[0,0,0])
+    tmpJnt = cmds.joint(tmpRootJnt, name = "TEMPO", o=rotation, p=position)
+    tmpFinal = cmds.mirrorJoint(tmpJnt, mirrorBehavior=True, mirrorYZ=True, sr = ["L_", "R_"])[0]
+    rotate = cmds.xform(tmpFinal, q=True, ws=True, ro=True)
+    scale = cmds.xform(tmpFinal, q=True, ws=True, s=True)
+    cmds.delete([rootGrp, tmpRootJnt, tmpJnt, tmpFinal])
+    return rotate, scale
+
+
+def getMatrixDeformerCtrls(matrixDeformer=None):
+    retCtrls = []
+    if matrixDeformer == None:
+        matrixDeformer = cmds.ls(sl=True, typ="LHMatrixDeformer")
+        if matrixDeformer:
+            matrixDeformer = matrixDeformer[0]
+    if not matrixDeformer:
+        matrixDeformer = getMatrixDeformerFromControl()
+    shapeDict = {}
+    elemLength = cmds.getAttr(matrixDeformer + ".inputs", s=True)
+    for idx in range(elemLength):
+        locator = cmds.listConnections(matrixDeformer + ".inputs[{0}].matrix".format(idx))[0]
+        retCtrls.append(cmds.listConnections(locator + ".rotate".format(idx))[0])
+    return retCtrls
+
+def getControlShapes(matrixDeformer=None, attrConnectionToCheck=".rotate"):
+    # Get the matrix deformer if arg not set
+    if matrixDeformer == None:
+        matrixDeformer = cmds.ls(sl=True, typ="LHMatrixDeformer")
+        if matrixDeformer:
+            matrixDeformer = matrixDeformer[0]
+    if not matrixDeformer:
+        matrixDeformer = getMatrixDeformerFromControl()
+    shapeDict = {}
+    elemLength = cmds.getAttr(matrixDeformer + ".inputs", s=True)
+    for idx in range(elemLength):
+        locator = cmds.listConnections(matrixDeformer + ".inputs[{0}].matrix".format(idx))[0]
+        control = cmds.listConnections(locator + attrConnectionToCheck.format(idx))[0]
+        shape = cmds.listRelatives(control, s=True)[0]
+        shapeDict[control] = exportUtils.nurbsCurveData(name = shape, space=OpenMaya.MSpace.kObject).nurbsCurve
+    print shapeDict
+    return shapeDict
+
+def getMatDefElemIndexFromCtrl(ctrl=None, attrConnectionToCheck=".rotate"):
+    # get the index the ctrl is connected to in the array of inputs on the matrix deformer
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+    locator = cmds.listConnections(ctrl + attrConnectionToCheck)
+    if not locator:
+        return
+    locator = locator[0]
+    connection = cmds.listConnections(locator + ".worldMatrix", d=True, s=False, scn=True, plugs=True)
+    if not connection:
+        return
+    connection= connection[0]
+    if not "[" in connection:
+        return
+    elemIndex = int(connection.split("[")[1].split("]")[0])
+    return elemIndex
+
+def getMatDefWeightInfoFromCtrl(ctrl=None, attrConnectionToCheck=".rotate"):
+    # Will return
+    # elementIdex
+    # weightValues
+    # weightConnectionObjectType (to check whether or not the connection comes from curve weights)
+    # weightedMesh
+    emptyRet = None, None, None, None, None
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+    elemIndex = getMatDefElemIndexFromCtrl(ctrl, attrConnectionToCheck)
+    # The element index could be 0 so we need to specifically check if the return was None to see if the output was return correctly....
+    if elemIndex == None:
+        return emptyRet
+    matDef = getMatrixDeformerFromControl(ctrl, attrConnectionToCheck)
+    if not matDef:
+        return emptyRet
+    weightConnection = cmds.listConnections(matDef + ".inputs[{0}].matrixWeight".format(elemIndex))
+    if weightConnection:
+        weightConnection = weightConnection[0]
+    else:
+        weightConnection = None
+    weightValues = cmds.getAttr(matDef + ".inputs[{0}].matrixWeight".format(elemIndex))
+    weightConnectionObjectType = None
+    weightedMesh = cmds.deformer(matDef, q=True ,g=True)
+    if weightedMesh:
+        weightedMesh = weightedMesh[0]
+    weightPlug = matDef + ".inputs[{0}].matrixWeight".format(elemIndex)
+    if weightConnection:
+        # get the weights from the deformer input so you can add a hand weights attribute
+        weightConnection = cmds.listConnections(matDef + ".inputs[{0}].matrixWeight".format(elemIndex), d=False, s=True)
+        weightConnectionObjectType = cmds.objectType(weightConnection)
+
+    return elemIndex, weightValues, weightConnectionObjectType, weightedMesh, weightPlug
+
+    
+def convertAnimCurveWeightsToHandWeights(ctrl=None, matDef=True, attrsToCheck = [".rotate", ".tOut"], weightValuesOverride=None):
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+
+    for attr in attrsToCheck:
+        if matDef:
+            elemIndex, weightValues, weightConObjectType, weightedMesh, weightPlug = getMatDefWeightInfoFromCtrl(ctrl, attrConnectionToCheck=attr)
+        # If the attribute is already connected to a mesh that means it is connected to hand weights and we dont need to do anything
+        if weightConObjectType == "transform":
+            continue
+        weightName = ctrl.replace("_CTL", "_WEIGHTS")
+        if not weightedMesh:
+            continue
+        weightAttr = None
+        if not cmds.objExists(weightedMesh + "." + weightName):
+            weightMapUtils.createWeightMapOnSingleObject(mayaObject=weightedMesh,
+                                                        weightName=weightName)
+        weightAttr = weightedMesh + "." + weightName
+
+        if weightValuesOverride:
+            weightValues = weightValuesOverride
+        # set the weights
+        cmds.setAttr(weightAttr, weightValues, type="doubleArray")
+        cmds.connectAttr(weightAttr, weightPlug, f=True)
+
+def getMatDefWeightsDict(attrsToCheck = [".rotate", ".tOut"]):
+    ctrls = getMatrixDeformerCtrls()
+    retWeightDict = {}
+    for ctrl in ctrls:
+        attrDict = {}
+        for attr in attrsToCheck:
+            elemIndex, weightValues, weightConObjectType, weightedMesh, weightPlug = getMatDefWeightInfoFromCtrl(ctrl, attr)
+            if weightConObjectType != "transform" and weightConObjectType != "mesh":
+                continue
+            if not weightValues or not weightConObjectType or not weightedMesh or not weightPlug:
+                continue
+            internalWeightDict = {}
+            internalWeightDict["elemIndex"] = elemIndex
+            internalWeightDict["weightValues"] = weightValues
+            internalWeightDict["weightConObjectType"] = weightConObjectType
+            internalWeightDict["weightedMesh"] = weightedMesh
+            internalWeightDict["weightPlug"] = weightPlug
+            attrDict[attr] = internalWeightDict
+            retWeightDict[ctrl] = attrDict
+    print retWeightDict
+    return retWeightDict
+
+def rebuildMatDefWeightOverrides(weightDict):
+    for ctrl in weightDict.keys():
+        # unpack from the dict
+        weightName = ctrl.replace("_CTL", "_WEIGHTS")
+        for attrType in weightDict[ctrl].keys():
+
+            internalWeightDict = weightDict[ctrl][attrType]
+            elemIndex = internalWeightDict["elemIndex"]
+            weightValues = internalWeightDict["weightValues"]
+            weightConObjectType = internalWeightDict["weightConObjectType"]
+            weightedMesh = internalWeightDict["weightedMesh"]
+            weightPlug = internalWeightDict["weightPlug"]
+
+            weightAttr = None
+            if not cmds.objExists(weightedMesh + "." + weightName):
+                weightMapUtils.createWeightMapOnSingleObject(mayaObject=weightedMesh,
+                                                            weightName=weightName)
+            weightAttr = weightedMesh + "." + weightName
+
+            # set the weights
+            cmds.setAttr(weightAttr, weightValues, type="doubleArray")
+            cmds.connectAttr(weightAttr, weightPlug, f=True)
+
+################################################################################################
+############################ Weight Stack utils ################################################
+################################################################################################
+
+def getWeightStackFromCtrl(ctrl=None, attrConnectionToCheck = ".txOut"):
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+    elemIndex = getWeightStackElemIndexFromCtrl(ctrl)
+    weightStack = cmds.listConnections(ctrl + attrConnectionToCheck)
+    if not weightStack:
+        return
+    return weightStack[0]
+
+    
+def getWeightStackElemIndexFromCtrl(ctrl=None, attrConnectionToCheck=".txOut"):
+    # get the index the ctrl is connected to in the array of inputs on the matrix deformer
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+    connection = cmds.listConnections(ctrl + attrConnectionToCheck, plugs=True)
+    if not connection:
+        return
+    connection= connection[0]
+    if not "[" in connection:
+        return
+    elemIndex = int(connection.split("[")[1].split("]")[0])
+    return elemIndex
+
+def getControlsFromWeightStack(weightStack=None, attrConnectionToCheck=".txOut"):
+    retCtrls = []
+    if weightStack == None:
+        weightStack = cmds.ls(sl=True, typ="LHMatrixDeformer")
+        if weightStack:
+            weightStack = weightStack[0]
+    if not weightStack:
+        weightStack = getWeightStackFromCtrl()
+    elemLength = cmds.getAttr(weightStack + ".inputs", s=True)
+    for idx in range(elemLength):
+        ctrl = cmds.listConnections(weightStack + ".inputs[{0}].factor".format(idx))
+        if not ctrl:
+            continue
+        retCtrls.append(ctrl[0])
+    return retCtrls
+
+
+def getWeightStackInfoFromCtrl(ctrl=None, attrConnectionToCheck=".txOut"):
+    # Will return
+    # elementIdex
+    # weightValues
+    # weightConnectionObjectType (to check whether or not the connection comes from curve weights)
+    # weightedMesh
+    emptyRet = None, None, None, None, None, None
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+    elemIndex = getWeightStackElemIndexFromCtrl(ctrl, attrConnectionToCheck)
+    # The element index could be 0 so we need to specifically check if the return was None to see if the output was return correctly....
+    if elemIndex == None:
+        return emptyRet
+    weightStack = getWeightStackFromCtrl(ctrl, attrConnectionToCheck)
+    if not weightStack:
+        return emptyRet
+    weightConnection = cmds.listConnections(weightStack + ".inputs[{0}].inputWeights".format(elemIndex))
+    weightAttribute = cmds.listConnections(weightStack + ".inputs[{0}].inputWeights".format(elemIndex), p=True)
+    if weightConnection:
+        weightConnection = weightConnection[0]
+        weightAttribute = weightAttribute[0]
+    else:
+        weightConnection = None
+        weightAttribute = None
+    weightValues = cmds.getAttr(weightStack + ".inputs[{0}].inputWeights".format(elemIndex))
+    weightConnectionObjectType = None
+    weightedMesh = cmds.listConnections(weightStack + ".weightedMesh")
+    if weightedMesh:
+        weightedMesh = weightedMesh[0]
+    weightPlug = weightStack + ".inputs[{0}].inputWeights".format(elemIndex)
+    if weightConnection:
+        # get the weights from the deformer input so you can add a hand weights attribute
+        weightConnection = cmds.listConnections(weightStack + ".inputs[{0}].inputWeights".format(elemIndex), d=False, s=True)
+        weightConnectionObjectType = cmds.objectType(weightConnection)
+    return elemIndex, weightValues, weightConnectionObjectType, weightedMesh, weightPlug, weightAttribute
+
+    
+def convertWeightStackAnimCurveWeightsToHandWeights(ctrl=None, weightStack=True, attrsToCheck = [".txOut", ".tyOut"],
+                                         weightValuesOverride=None, splitUDLR=False, splitSides = ["LR", "UD"]):
+    if not ctrl:
+        ctrl = cmds.ls(sl=True, typ="transform")[0]
+
+    for idx, attr in enumerate(attrsToCheck):
+        if weightStack:
+            elemIndex, weightValues, weightConObjectType, weightedMesh, weightPlug, weightAttribute = getWeightStackInfoFromCtrl(ctrl, attrConnectionToCheck=attr)
+        # If the attribute is already connected to a mesh that means it is connected to hand weights and we dont need to do anything
+        if weightConObjectType == "transform":
+            continue
+        if not splitUDLR:
+            splitSides = ""
+        weightName = ctrl.replace("_CTL", "{0}_WEIGHTS".format(splitSides[idx]))
+        if not weightedMesh:
+            continue
+        weightAttr = None
+        if not cmds.objExists(weightedMesh + "." + weightName):
+            weightMapUtils.createWeightMapOnSingleObject(mayaObject=weightedMesh,
+                                                        weightName=weightName)
+        weightAttr = weightedMesh + "." + weightName
+
+        if weightValuesOverride:
+            weightValues = weightValuesOverride
+        # set the weights
+        cmds.setAttr(weightAttr, weightValues, type="doubleArray")
+        cmds.connectAttr(weightAttr, weightPlug, f=True)
+
+
+def getWeightStackHandWeightsDict(attrsToCheck = [".txOut", ".tyOut"], splitSides = ["LR", "UD"]):
+    ctrls = getControlsFromWeightStack()
+    retWeightDict = {}
+    for ctrl in ctrls:
+        attrDict = {}
+        for attr in attrsToCheck:
+            elemIndex, weightValues, weightConObjectType, weightedMesh, weightPlug, weightAttribute = getWeightStackInfoFromCtrl(ctrl, attr)
+            print weightPlug
+            if weightConObjectType != "transform" and weightConObjectType != "mesh":
+                continue
+            if not weightValues or not weightConObjectType or not weightedMesh or not weightPlug:
+                continue
+            weightName = weightAttribute.split(".")[1]
+            internalWeightDict = {}
+            internalWeightDict["elemIndex"] = elemIndex
+            internalWeightDict["weightName"] = weightName
+            internalWeightDict["weightValues"] = weightValues
+            internalWeightDict["weightConObjectType"] = weightConObjectType
+            internalWeightDict["weightedMesh"] = weightedMesh
+            internalWeightDict["weightPlug"] = weightPlug
+            attrDict[attr] = internalWeightDict
+            retWeightDict[ctrl] = attrDict
+    print retWeightDict
+    return retWeightDict
+
+
+def rebuildSlideWeightOverrides(weightDict):
+    for ctrl in weightDict.keys():
+        # unpack from the dict
+        # weightName = ctrl.replace("txOut", "tyOut")
+        for attrType in weightDict[ctrl].keys():
+
+            internalWeightDict = weightDict[ctrl][attrType]
+            weightName = internalWeightDict["weightName"]
+            elemIndex = internalWeightDict["elemIndex"]
+            weightValues = internalWeightDict["weightValues"]
+            weightConObjectType = internalWeightDict["weightConObjectType"]
+            weightedMesh = internalWeightDict["weightedMesh"]
+            weightPlug = internalWeightDict["weightPlug"]
+            weightAttr = None
+            if not cmds.objExists(weightedMesh + "." + weightName):
+                weightMapUtils.createWeightMapOnSingleObject(mayaObject=weightedMesh,
+                                                            weightName=weightName)
+            weightAttr = weightedMesh + "." + weightName
+
+            # set the weights
+            cmds.setAttr(weightAttr, weightValues, type="doubleArray")
+            cmds.connectAttr(weightAttr, weightPlug, f=True)

@@ -50,7 +50,9 @@
         "cstring": "cpp",
         "string": "cpp"
     },
-    "python.pythonPath": "/usr/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.prospectorEnabled": false,
+    "python.linting.pep8Enabled": true,
 
 }
 

@@ -6,6 +6,8 @@ from rig.deformers import base
 reload(base)
 from rig.rigComponents import simpleton
 reload(simpleton)
+from rig.rigComponents import meshRivetCtrl
+reload(meshRivetCtrl)
 
 def createTestMatrixDeformer():
     deformMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=100, sy=100,  n="deformMesh")[0]
@@ -24,6 +26,7 @@ class MatrixDeformer(base.Deformer):
                     deformerType="LHMatrixDeformer",
                     geoToConstrainMesh = "",
                     ctrlName = "",
+                    manualLocatorNames=[],
                     geoToDeform="",
                     controlParent=[],
                     rigParent="",
@@ -34,6 +37,7 @@ class MatrixDeformer(base.Deformer):
                     translations = [],
                     rotations = [],
                     scales = [],
+
                     offset = [0,0,0],
                     posOffset = [0,0,0],
                     size = 1,
@@ -48,6 +52,10 @@ class MatrixDeformer(base.Deformer):
                     connectTranslate=True,
                     connectRotate=True,
                     connectScale=True,
+                    # 0 is simpleton, 1 is rivet control
+                    controlType = 0,
+                    controlAutoOrientMesh="",
+                    customControlShapes = [],
                     # inherited args
                     # orderFrontOfChain=True,
                     # orderParallel=False,
@@ -59,6 +67,7 @@ class MatrixDeformer(base.Deformer):
         self.name = name
         self.addAtIndex = addAtIndex
         self.ctrlName = ctrlName
+        self.manualLocatorNames = manualLocatorNames
         self.deformerType = deformerType
         self.geoToConstrainMesh = geoToConstrainMesh
         self.geoToDeform = geoToDeform
@@ -71,6 +80,7 @@ class MatrixDeformer(base.Deformer):
         self.translations = translations
         self.rotations = rotations
         self.scales = scales
+        
         self.offset = offset
         self.posOffset = posOffset
         self.size = size
@@ -84,8 +94,12 @@ class MatrixDeformer(base.Deformer):
         self.connectTranslate = connectTranslate
         self.connectRotate = connectRotate
         self.connectScale = connectScale
+        self.controlType = controlType
+        self.controlAutoOrientMesh = controlAutoOrientMesh
+        self.customControlShapes = customControlShapes
 
-
+        if not self.numToAdd and self.manualLocatorNames:
+            self.numToAdd = len(self.manualLocatorNames)
 
         self.deformer = ""
         self.matrixNodes = []
@@ -103,17 +117,24 @@ class MatrixDeformer(base.Deformer):
         self.matrixNodes = []
         self.matrixBaseNodes = []
         self.deformerParent = cmds.createNode("transform", name = self.name + "_DEFORM", parent = self.rigParent)
-        self.locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.locatorName, suffixSeperator="")
+        self.locatorNames = self.manualLocatorNames
+        if not self.manualLocatorNames:
+            self.locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.locatorName, suffixSeperator="")
         for idx in range(self.numToAdd):
             locatorName = self.locatorNames[idx]
-            if not self.autoNameWithSide:
+            if not self.autoNameWithSide and not self.manualLocatorNames:
                 locatorName = self.locatorName
             currParent = self.deformerParent
             # if type(self.controlParent) == list:
             #     currParent = self.deformerParent[idx]
             idx = idx + self.addAtIndex
 
-            bufferName = "{0}{1:02}_BUF".format(locatorName, idx)
+            bufferFormatName = "{0}{1:02}_BUF"
+            if self.manualLocatorNames:
+                bufferFormatName = "{0}_BUF"
+
+
+            bufferName = bufferFormatName.format(locatorName, idx)
 
             if not bufferName in self.matrixBuffers:
                 self.matrixBuffers.append(bufferName)
@@ -121,17 +142,27 @@ class MatrixDeformer(base.Deformer):
             if not cmds.objExists(bufferName):
                 cmds.createNode("transform", n=bufferName, p=currParent)
 
-            matrixNodeName = "{0}{1:02}_LOC".format(locatorName, idx)
-            matrixBaseNodeName = "{0}Base{1:02}_LOC".format(locatorName, idx)
+            # Sometimes the name has to be numbered, but sometimes you have an individual name for every node...
+            locatorFormatName ="{0}{1:02}_LOC"
+            locatorBaseFormatName = "{0}Base{1:02}_LOC"
+            if self.manualLocatorNames:
+                locatorFormatName ="{0}_LOC"
+                locatorBaseFormatName = "{0}Base_LOC"
+
+
+            matrixNodeName = locatorFormatName.format(locatorName, idx)
+            matrixBaseNodeName = locatorBaseFormatName.format(locatorName, idx)
+
+
             if not cmds.objExists(matrixNodeName):
-                loc = cmds.spaceLocator(name="{0}{1:02}_LOC".format(locatorName, idx))[0]
+                loc = cmds.spaceLocator(name=locatorFormatName.format(locatorName, idx))[0]
                 self.matrixNodes.append(loc)
                 if cmds.objExists(bufferName):
                     cmds.parent(loc, bufferName)
             else:
                 self.matrixNodes.append(matrixNodeName)
             if not cmds.objExists(matrixBaseNodeName):
-                loc = cmds.spaceLocator(name="{0}Base{1:02}_LOC".format(locatorName, idx))[0]
+                loc = cmds.spaceLocator(name=locatorBaseFormatName.format(locatorName, idx))[0]
                 self.matrixBaseNodes.append(loc)
                 if cmds.objExists(bufferName):
                     cmds.parent(loc, bufferName)
@@ -169,7 +200,7 @@ class MatrixDeformer(base.Deformer):
         translations = [[0,0,0] for x in range(len(self.matrixNodes))]
         rotations = [[0,0,0] for x in range(len(self.matrixNodes))]
         scales = [[1,1,1] for x in range(len(self.matrixNodes))]
-        
+
         if len(self.translations) == len(self.matrixNodes):
             translations = self.translations
         if len(self.rotations) == len(self.matrixNodes):
@@ -178,29 +209,66 @@ class MatrixDeformer(base.Deformer):
             scales = self.scales
 
         locatorNames = self.locatorNames
-        if self.ctrlName:
+
+        if self.ctrlName and not self.manualLocatorNames and not type(self.ctrlName) == list:
             locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.ctrlName, suffixSeperator="")
+
+        if type(self.ctrlName) == list:
+            locatorNames = self.ctrlName
+
+
+        # if there is only 1 control parent, make that the parent for every item in the array
+        if type(self.controlParent) != list:
+            self.controlParent = [self.controlParent for x in range(len(self.matrixNodes))]
 
         for idx, node in enumerate(self.matrixNodes):
             locatorName = locatorNames[idx]
-            if not self.autoNameWithSide:
+            if not self.autoNameWithSide and not self.manualLocatorNames:
                 locatorName = self.locatorName
             side, name = misc.getNameSide(locatorName)
             controlName = "{0}_{1}MatrixDef_CTL".format(side, name)
+            
+            controlShape = self.controlShapeDict
+            if self.customControlShapes and len(self.customControlShapes) == len(self.matrixNodes):
+                controlShape = self.customControlShapes[controlName]
+            # if a name exists in self.customControlShapes exract it now and use that control shape dict instead of the default
+            # customControlShapes
+
             if not cmds.objExists(controlName):
-                ctrl = simpleton.Component(side=side,
-                                           name=name+"MatrixDef", 
-                                           parent=self.controlParent[idx],
-                                           translate = translations[idx],
-                                           rotate = rotations[idx],
-                                           scale = scales[idx],
-                                           offset = self.offset,
-                                           size=self.size,
-                                           curveData = self.controlShapeDict,
-                                        )
+                if self.controlType == 0:
+                    ctrl = simpleton.Component(side=side,
+                                            name=name+"MatrixDef", 
+                                            parent=self.controlParent[idx],
+                                            translate = translations[idx],
+                                            rotate = rotations[idx],
+                                            scale = scales[idx],
+                                            offset = self.offset,
+                                            size=self.size,
+                                            curveData = controlShape,
+                                            )
+                elif self.controlType == 1:
+                    ctrl = meshRivetCtrl.Component(name = name+"MatrixDef", 
+                                                        side=side,
+                                                        speedTxDefault=1,
+                                                        speedTyDefault=1,
+                                                        speedTzDefault=1,
+                                                        parent=self.controlParent[idx],
+                                                        curveData=controlShape,
+                                                        mesh = self.geoToDeform,
+                                                        translate = translations[idx],
+                                                        rotate = rotations[idx],
+                                                        normalConstraintPatch=self.controlAutoOrientMesh,
+                                                        selection=False,
+                                                        mirror=False,
+                                                        size=self.size,
+                                                        offset = self.offset,
+                                                        # orient = self.controlShapeOrient,
+                                                        # shapeScale = self.controlShapeScale,
+                                                        lockAttrs = [],
+                                                        )
                 ctrl.create()
                 controlName = ctrl.ctrl
-                # cmds.parent(self.matrixNodes[idx], self.matrixBaseNodes[idx], ctrl.locator)       
+
             if not controlName in self.controls:
                 self.controls.append(controlName)
 
@@ -209,7 +277,7 @@ class MatrixDeformer(base.Deformer):
             return
         for idx, ctrl in enumerate(self.controls):
             if self.connectTranslate:
-                cmds.connectAttr(ctrl + ".translate", self.matrixNodes[idx] + ".translate", f=True)
+                cmds.connectAttr(ctrl + ".tOut", self.matrixNodes[idx] + ".translate", f=True)
             if self.connectRotate:
                 cmds.connectAttr(ctrl + ".rotate", self.matrixNodes[idx] + ".rotate", f=True)
             if self.connectScale:

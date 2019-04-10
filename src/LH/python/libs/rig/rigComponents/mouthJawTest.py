@@ -27,6 +27,8 @@ from rig.deformers import vectorDeformerSimple
 reload(vectorDeformerSimple)
 from rig.deformers import curveRollSimple
 reload(curveRollSimple)
+from rig.deformers import utils as deformerUtils
+reload(deformerUtils)
 # reload(deformerUtils)
 # reload(base)
 from rig.utils import weightMapUtils, misc
@@ -83,7 +85,16 @@ def test():
                  controlParent="C_control_GRP",
                  rigParent="C_rig_GRP",
                  ctrlAutoPositionThreshold=.09,
+                 matDefTranslations = elements.JAW_MOUTH_MATDEF_TRANSLATIONS,
+                 matDefRotations = elements.JAW_MOUTH_MATDEF_ROTATIONS,
+                 matDefScales = elements.JAW_MOUTH_MATDEF_SCALES,
+                 matDefHandWeightsDictionary = elements.JAW_MOUTH_MATDEF_WEIGHT_DICT,
+                 slideHandWeightsDictionary = elements.JAW_MOUTH_SLIDE_WEIGHT_DICT,
+                
+
     )
 
 
     MouthJawClass.create() 
+    MouthJawClass.setPositions() 
+    MouthJawClass.setHandWeights() 

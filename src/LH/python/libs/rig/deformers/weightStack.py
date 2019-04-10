@@ -110,6 +110,8 @@ class AnimCurveWeight(Node):
                  offset=.15, centerWeight = .35, outerWeight = .3, angle = 30, nudge = 1.0, intermediateVal = .2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=30, lastIntermediateAngle=0,
                  inputWeightCurvesDict=[],
                  inputWeightCurvesFalloffDict=[],
+                 autoPositionThreshhold = .9,
+                 controlAutoOrientMesh = "",
                  # Inherited args
                  # outputAttrs=[],
                  # name,
@@ -299,6 +301,29 @@ class AnimCurveWeight(Node):
             cmds.getAttr(weightAttr)
             cmds.connectAttr(weightAttr, attr, f=True)
 
+    def getPositionsAndRotationsFromWeights(self):
+        self.positionsFromWeights = []
+        self.rotationsFromWeights = []
+        for idx, attr in enumerate(self.weightCurves):
+            weightAttr = "{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.node, idx)
+            weightlist = cmds.getAttr(weightAttr)
+            # self.positionsFromWeights.append(deformerUtils.getPointPositionByWeights(weightlist, self.baseGeo, self.autoPositionThreshhold))
+            height, width, depth, center = deformerUtils.getPointPositionByWeights(weightlist, self.baseGeo, self.autoPositionThreshhold)
+            self.positionsFromWeights.append([center.x, center.y, center.z])
+
+            
+            if self.controlAutoOrientMesh:
+                self.rotationsFromWeights.append(self.getRotationOrientation(self.positionsFromWeights[idx], self.controlAutoOrientMesh))
+
+    def getRotationOrientation(self, position, controlAutoOrientMesh):
+            tempLocation = position
+            temp = cmds.createNode("transform")
+            cmds.xform(temp, ws=True, t=tempLocation)
+            normalCons = cmds.normalConstraint(controlAutoOrientMesh, temp, aimVector=[0, 0, 1])
+            rotate = cmds.xform(temp, q=True, ws=True, ro=True)
+            cmds.delete(temp)
+            return rotate
+
     def setFalloffDefaults(self):
         self.getWorldLocationBasedOnWeights()
         for idx in range(len(self.weightCurves)):
@@ -330,7 +355,7 @@ class AnimCurveWeight(Node):
             self.closestV.append(v)
 
 
-        
+
 
 
 """
@@ -496,6 +521,19 @@ class WeightStack(Node):
         self.node_LR = cmds.createNode(self.nodeType, n=self.name_LR, p=self.parent)
 
     def getAttrs(self):
+        # We will always need to know what mesh the weight stack is weighting, this message attr does that
+        if self.geoToWeight:
+            for node in [self.node, self.node_LR]:
+                if not node:
+                    continue
+                cmds.addAttr(node, ln = "weightedMesh", at = "message")
+                geo = self.geoToWeight
+                if type(self.geoToWeight) == list:
+                    geo = geo[0]
+                shape = misc.getShape(geo)
+                cmds.connectAttr(shape + ".message", node + ".weightedMesh")
+
+
         self.weightMapAttrs = []
         self.weightMapAttrs_LR = []
 

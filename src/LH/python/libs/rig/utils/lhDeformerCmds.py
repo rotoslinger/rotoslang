@@ -505,16 +505,17 @@ class bake_blendshape():
 
 
 def refresh_paintable_attrs(deformer_name, deformer_type ):
-    "if paintable attrs do not exist, remove them"
-    cmds.makePaintable(deformer_type, ca = True, attrType = "doubleArray", shapeMode='deformer')
-    # get all double array attributes
-    attrs = cmds.listAttr(deformer_name, ud = True, a = True)
-    if not attrs:
-        return
-    for i in attrs:
-        paint = i.split(".")[1]
-#         cmds.makePaintable()
-        cmds.makePaintable(deformer_type, paint, attrType='doubleArray', shapeMode='deformer')
+    return
+#     "if paintable attrs do not exist, remove them"
+#     cmds.makePaintable(deformer_type, ca = True, attrType = "doubleArray", shapeMode='deformer')
+#     # get all double array attributes
+#     attrs = cmds.listAttr(deformer_name, ud = True, a = True)
+#     if not attrs:
+#         return
+#     for i in attrs:
+#         paint = i.split(".")[1]
+# #         cmds.makePaintable()
+#         cmds.makePaintable(deformer_type, paint, attrType='doubleArray', shapeMode='deformer')
 
 def setFaceIdsOnLocator(locatorName):
     faces = cmds.ls(sl = True, fl=True)

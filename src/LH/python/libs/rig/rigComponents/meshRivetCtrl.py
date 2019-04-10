@@ -107,7 +107,6 @@ class Component(base.Component):
     def createAttrs(self):
         inputAttrs = ["speedTx", "speedTy", "speedTz"]
         for attr in inputAttrs:
-            print self.ctrl
             cmds.setAttr(self.ctrl + "." + attr, getattr(self, "{0}Default".format(attr)))
         for node in self.cmptMasterParent, self.ctrl, self.locator, self.buffer1, self.buffer2:
             self.addComponentTypeAttr(node)
@@ -153,9 +152,10 @@ def updateWithGeoConstraint():
     cmds.connectAttr(cmds.ls(sl=True)[1] + ".message", cmds.ls(sl=True)[0] + ".geoConstraint")
     
 def findOppositeSlideConnection(ctrl, attr):
-    outU = cmds.listConnections(ctrl + "." + attr, d=True, p=True, t="LHSlideDeformer", et=True)[0]
+    outU = cmds.listConnections(ctrl + "." + attr, d=True, p=True, t="LHSlideDeformer", et=True)
     if not outU:
         return
+    outU = outU[0]
     outUAttrShort = outU.split(".")[1]
     deformer = outU.split(".")[0]
     if not "L_" and not "R_" in outUAttrShort:
@@ -168,11 +168,13 @@ def findOppositeSlideConnection(ctrl, attr):
     if cmds.objExists(deformer + "." + outUAttrShort):
         return deformer + "." + outUAttrShort
 
-def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False, guide=False, normalConstraintPatch="C_mouthSurface_EX", geo="C_body_HI", flip=False):
+def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False, guide=False, normalConstraintPatch=None, geo=None, flip=False, flipAll=False):
     if not mayaObjects: mayaObjects = cmds.ls(sl=True)
     for ctrl in mayaObjects:
         # Get name and side of selected control
         side=""
+        if not normalConstraintPatch or not geo:
+            buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = getRivetParts(ctrl)
         if not "L_" and not "R_" in ctrl:
             continue
         if "L_" in ctrl:
@@ -187,11 +189,11 @@ def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False, guide=False, norma
             attrsDict[ctrl + attr] = cmds.getAttr(ctrl + attr)
         # Get connected attributes, find L to R, or R to L depending on what is selected
         inU = findOppositeSlideConnection(ctrl, "txOut")
-        if not inU:
-            continue
+        # if not inU:
+        #     continue
         inV = findOppositeSlideConnection(ctrl, "tyOut")
-        if not inV:
-            continue
+        # if not inV:
+        #     continue
 
         # Find Surface
 
@@ -202,9 +204,9 @@ def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False, guide=False, norma
         # slideComponent = component(name=name, side=side, helperGeo = nurbs, uOutConnectionAttr = inU, vOutConnectionAttr = inV)
 
         # Get opposite side
-        locator = cmds.listRelatives(ctrl, f=True, p=True)[0]
-        locator = cmds.listRelatives(locator,f=True, p=True)[0]
-        locator = cmds.listRelatives(locator,f=True, p=True)[0]
+        # locator = cmds.listRelatives(ctrl, f=True, p=True)[0]
+        # locator = cmds.listRelatives(locator,f=True, p=True)[0]
+        # locator = cmds.listRelatives(locator,f=True, p=True)[0]
         translate = cmds.xform(locator, q=True, t=True, ws=True)
         rotate = cmds.xform(locator, q=True, ro=True, ws=True)
         scale = cmds.xform(locator, q=True, s=True,ws=True)
@@ -224,40 +226,30 @@ def mirrorSlidingCtrls(mayaObjects=None, mirrorWeights=False, guide=False, norma
 
 
         # cmds.xform(self.cmptMasterParent, ws=True, s=[-1,1,1])
-
-
-        rivetComponent = Component(name=name, guide=guide, side=side, normalConstraintPatch = normalConstraintPatch,
-                                   txConnectionAttr = inU, tyConnectionAttr = inV, mesh = geo, selection=False, mirror=True, translate=translate, rotate=rotate, scale=scale)
-
+        rivetCtrl = "{0}_{1}_CTL".format(side, name)
+        if not cmds.objExists("{0}_{1}_CPT".format(side, name)):
+            rivetComponent = Component(name=name, guide=guide, side=side, normalConstraintPatch = normalConstraintGeo,
+                                    txConnectionAttr = inU, tyConnectionAttr = inV, mesh = mesh, selection=False, mirror=True, translate=translate, rotate=rotate, scale=scale)
+            rivetComponent.create()
         # Set the location and the attributes
 
         for attr in attrs:
-            cmds.setAttr(rivetComponent.ctrl + attr, attrsDict[ctrl + attr])
+            cmds.setAttr(rivetCtrl + attr, attrsDict[ctrl + attr])
 
         # Copy Curve shape, then mirror curve shape
-        misc.pushCurveShape(ctrl, rivetComponent.ctrl, mirror=True, inheritColor=True)
+        misc.pushCurveShape(ctrl, rivetCtrl, mirror=True, inheritColor=True)
         if flip:
-            speedTx = cmds.getAttr(rivetComponent.ctrl + ".speedTx")
-            cmds.setAttr(rivetComponent.ctrl + ".speedTx", speedTx * -1.0)
+            speedTx = cmds.getAttr(rivetCtrl + ".speedTx")
+            cmds.setAttr(rivetCtrl + ".speedTx", speedTx * -1.0)
                 # if self.mirror:
+        if flipAll:
+            speedTx = cmds.getAttr(rivetCtrl + ".speedTx")
+            cmds.setAttr(rivetCtrl + ".speedTx", speedTx * -1.0)
+            speedTx = cmds.getAttr(rivetCtrl + ".speedTy")
+            cmds.setAttr(rivetCtrl + ".speedTy", speedTx * -1.0)
+            speedTx = cmds.getAttr(rivetCtrl + ".speedTz")
+            cmds.setAttr(rivetCtrl + ".speedTz", speedTx * -1.0)
 
-        #     # cmds.setAttr(self.cmptMasterParent + ".sx", -1)
-        #     cmds.refresh()
-
-
-        # misc.updateGeoConstraint(offsetBuffer = rivetComponent.buffer2)
-        # uMirror = cmds.getAttr(ctrl + ".baseU")
-        # if uMirror < .5:
-        #     uMirror = abs(uMirror-0.5)
-        #     uMirror = .5 + uMirror
-        # elif uMirror > .5:
-        #     uMirror = uMirror-0.5
-        #     uMirror = .5 - uMirror
-        # for uAttr in (".baseU", ".initU"):
-        #     cmds.setAttr(slideComponent.ctrl + uAttr, uMirror)
-
-        # # Normalize Control
-        # normalizeSlidingCtrls([slideComponent.ctrl])
 
 def getSlideWeightAttrNames(attrName):
     splitName = attrName.split(".")
@@ -305,11 +297,9 @@ def getRivetParts(ctrl):
     normalConstraint = cmds.listConnections(locator + ".rx")
     normalConstraintGeo = None
     if normalConstraint:
-        # print normalConstraint[0], "THIS THING"
         normalConstraintGeo = cmds.listConnections(normalConstraint[0] + ".target[0].targetGeometry")
         if normalConstraintGeo:
             normalConstraintGeo = normalConstraintGeo[0]
-        # print normalConstraintGeo
     geoConstraint = cmds.listConnections(buffer2 + ".geoConstraint")[0]
     mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
     return buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo
@@ -318,5 +308,7 @@ def rivetGuidesVis(vis=False):
     controls = base.getComponents("meshRivetCtrl")
     for control in controls:
         buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = getRivetParts(control)
-        guideShape = cmds.listRelatives(buffer2, s=True)[0]
-        cmds.setAttr(guideShape + ".v", vis)
+        guideShape = cmds.listRelatives(buffer2, s=True)
+        if not guideShape:
+            return
+        cmds.setAttr(guideShape[0] + ".v", vis)

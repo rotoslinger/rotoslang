@@ -196,120 +196,124 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
   {
     int currentVertID = deformedVertIds[mIndex][idx];
     //  allPoints[deformedVertIds[mIndex][x]] = allPoints[deformedVertIds[mIndex][x]] + (direction * uAmount);
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // Tried to do the algoritm outside the main deform block and it didn't work... why is that?
+    // I've done this in other deformers and it helps organization, but I must have made a mistake here
+    // should I abandon this?  The algorithm is quite long.....
+    //////////////////////////////////////////////////////////////////////////////////////////////
     // LHSlideSimple::Algorithm(mIndex, x, uWeights, vWeights, deformedVertIds[mIndex][x], allPoints[deformedVertIds[mIndex][x]], uAmount);
-//     void LHSlideSimple::Algorithm(int mIndex, int idx, MDoubleArray uWeights, MDoubleArray vWeights, int currentVertID, MPoint &pt, float uAmount)
-// {
-        MPoint slideUVBasePoint = closestPointArray[mIndex][idx];
-        //curveBasePtParam
-        double slideUBasePointParam = slideUParam[mIndex][idx];
-        double slideVBasePointParam = slideVParam[mIndex][idx];
 
-        // get min&&max parameter
-        // MGlobal::displayInfo(MString("WEIGHTS!!!") + uWeights[currentVertID]);
-        double unclampedUValue = slideUBasePointParam + uWeights[currentVertID];
-        // double unclampedUValue = slideUBasePointParam + uWeights[currentVertID]* vAmount;
-        double clampedUValue = std::max(uMinParam, std::min(unclampedUValue, uMaxParam));
+      MPoint slideUVBasePoint = closestPointArray[mIndex][idx];
+      //curveBasePtParam
+      double slideUBasePointParam = slideUParam[mIndex][idx];
+      double slideVBasePointParam = slideVParam[mIndex][idx];
 
-        // double unclampedVValue = slideVBasePointParam + vWeights[currentVertID] * uAmount;
-        double unclampedVValue = slideVBasePointParam + vWeights[currentVertID];
-        double clampedVValue = std::max(vMinParam, std::min(unclampedVValue, vMaxParam));
-        fnSurface->getDerivativesAtParm( clampedUValue,
-                                        clampedVValue,
-                                        slideUVPoint, fnUVec, fnVVec,
-                                        MSpace::kObject);
-        // U Min
-        if (unclampedUValue <= uMinParam)
-        {
-            slideUVec = fnUVec;
-            slideUVPoint -= -slideUVec * unclampedUValue;
-        }
-        // U Max
-        else if (unclampedUValue >= uMaxParam)
-        {
-            slideUVec = fnUVec;
-            unclampedUValue = unclampedUValue -1;
-            slideUVPoint -= -slideUVec * unclampedUValue;
-        }
-        // V Min
-        if (unclampedVValue <= vMinParam)
-        {
+      // get min&&max parameter
+      // MGlobal::displayInfo(MString("WEIGHTS!!!") + uWeights[currentVertID]);
+      double unclampedUValue = slideUBasePointParam + uWeights[currentVertID];
+      // double unclampedUValue = slideUBasePointParam + uWeights[currentVertID]* vAmount;
+      double clampedUValue = std::max(uMinParam, std::min(unclampedUValue, uMaxParam));
+
+      // double unclampedVValue = slideVBasePointParam + vWeights[currentVertID] * uAmount;
+      double unclampedVValue = slideVBasePointParam + vWeights[currentVertID];
+      double clampedVValue = std::max(vMinParam, std::min(unclampedVValue, vMaxParam));
+      fnSurface->getDerivativesAtParm( clampedUValue,
+                                      clampedVValue,
+                                      slideUVPoint, fnUVec, fnVVec,
+                                      MSpace::kObject);
+      // U Min
+      if (unclampedUValue <= uMinParam)
+      {
+          slideUVec = fnUVec;
+          slideUVPoint -= -slideUVec * unclampedUValue;
+      }
+      // U Max
+      else if (unclampedUValue >= uMaxParam)
+      {
+          slideUVec = fnUVec;
+          unclampedUValue = unclampedUValue -1;
+          slideUVPoint -= -slideUVec * unclampedUValue;
+      }
+      // V Min
+      if (unclampedVValue <= vMinParam)
+      {
+        slideVVec = fnVVec;
+        slideUVPoint -= -slideVVec * unclampedVValue;
+      }
+      // V Max
+      else if (unclampedVValue >= vMaxParam)
+      {
           slideVVec = fnVVec;
+          unclampedVValue = unclampedVValue -1;
           slideUVPoint -= -slideVVec * unclampedVValue;
-        }
-        // V Max
-        else if (unclampedVValue >= vMaxParam)
-        {
-            slideVVec = fnVVec;
-            unclampedVValue = unclampedVValue -1;
-            slideUVPoint -= -slideVVec * unclampedVValue;
-        }
+      }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////// Slide Ends //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // float rotationAmount = 0.0;
-        if (rotationAmount != 0)
-        {
-            fnSurface->getTangents( clampedUValue, clampedVValue, xVec, yVec, MSpace::kObject );
-            normal = fnSurface->normal( clampedUValue, clampedVValue, MSpace::kObject );
-            yVec.normalize();
-            zVec = normal;
-            zVec.normalize();
-            xVec = yVec ^ zVec;
-            xVec.normalize();
-            rotateBaseEuler = slideBaseEuler[mIndex][idx];
-            // apply rotate offset dereference address pointer rotateMatrix with *
-            MQuaternion rotateX(-(rotateBaseEuler[0]),xVec);
-            rotateMatrixX = rotateX.asMatrix();
-            yVec = yVec * rotateMatrixX;
-            zVec = zVec * rotateMatrixX;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////// Slide Ends //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // float rotationAmount = 0.0;
+      if (rotationAmount != 0)
+      {
+          fnSurface->getTangents( clampedUValue, clampedVValue, xVec, yVec, MSpace::kObject );
+          normal = fnSurface->normal( clampedUValue, clampedVValue, MSpace::kObject );
+          yVec.normalize();
+          zVec = normal;
+          zVec.normalize();
+          xVec = yVec ^ zVec;
+          xVec.normalize();
+          rotateBaseEuler = slideBaseEuler[mIndex][idx];
+          // apply rotate offset dereference address pointer rotateMatrix with *
+          MQuaternion rotateX(-(rotateBaseEuler[0]),xVec);
+          rotateMatrixX = rotateX.asMatrix();
+          yVec = yVec * rotateMatrixX;
+          zVec = zVec * rotateMatrixX;
 
-            MQuaternion rotateY(-(rotateBaseEuler[1]),yVec);
-            rotateMatrixY = rotateY.asMatrix();
-            xVec = xVec * rotateMatrixY;
-            zVec = zVec * rotateMatrixY;
+          MQuaternion rotateY(-(rotateBaseEuler[1]),yVec);
+          rotateMatrixY = rotateY.asMatrix();
+          xVec = xVec * rotateMatrixY;
+          zVec = zVec * rotateMatrixY;
 
-            MQuaternion rotateZ(-(rotateBaseEuler[2]),zVec);
-            rotateMatrixZ = rotateZ.asMatrix();
-            xVec = xVec * rotateMatrixZ;
-            yVec = yVec * rotateMatrixZ;
+          MQuaternion rotateZ(-(rotateBaseEuler[2]),zVec);
+          rotateMatrixZ = rotateZ.asMatrix();
+          xVec = xVec * rotateMatrixZ;
+          yVec = yVec * rotateMatrixZ;
 
-            double driveMatrix[4][4]={{ xVec[0], xVec[1], xVec[2], 0.0},
-                          { yVec[0], yVec[1], yVec[2], 0.0},
-                          { zVec[0], zVec[1], zVec[2], 0.0},
-                          {         0.0,         0.0,         0.0, 1.0},};
+          double driveMatrix[4][4]={{ xVec[0], xVec[1], xVec[2], 0.0},
+                        { yVec[0], yVec[1], yVec[2], 0.0},
+                        { zVec[0], zVec[1], zVec[2], 0.0},
+                        {         0.0,         0.0,         0.0, 1.0},};
 
-            MMatrix DriveMatrix(driveMatrix);
+          MMatrix DriveMatrix(driveMatrix);
 
-            // find the rotation offset, then apply later
-            MEulerRotation DriveMatrixEuler;
-            DriveMatrixEuler = DriveMatrixEuler.decompose(DriveMatrix,
-                                                          MEulerRotation::kXYZ);
-            // apply rotation uAmount
-            DriveMatrixEuler = MEulerRotation( DriveMatrixEuler[0] * rotationAmount,
-                                               DriveMatrixEuler[1] * rotationAmount,
-                                               DriveMatrixEuler[2] * rotationAmount);
-            DriveMatrix = DriveMatrixEuler.asMatrix();
-            // finalMatrix = DriveMatrix;
+          // find the rotation offset, then apply later
+          MEulerRotation DriveMatrixEuler;
+          DriveMatrixEuler = DriveMatrixEuler.decompose(DriveMatrix,
+                                                        MEulerRotation::kXYZ);
+          // apply rotation uAmount
+          DriveMatrixEuler = MEulerRotation( DriveMatrixEuler[0] * rotationAmount,
+                                              DriveMatrixEuler[1] * rotationAmount,
+                                              DriveMatrixEuler[2] * rotationAmount);
+          DriveMatrix = DriveMatrixEuler.asMatrix();
+          // finalMatrix = DriveMatrix;
 
 
 
-            
-            ////// ApplyRotation uAmount
-            MVector toCenterBase(-slideUVBasePoint.x,
-                                 -slideUVBasePoint.y,
-                                 -slideUVBasePoint.z);
-            allPoints[currentVertID] = allPoints[currentVertID] + toCenterBase;
+          
+          ////// ApplyRotation uAmount
+          MVector toCenterBase(-slideUVBasePoint.x,
+                                -slideUVBasePoint.y,
+                                -slideUVBasePoint.z);
+          allPoints[currentVertID] = allPoints[currentVertID] + toCenterBase;
 
-            // do rotationAmount, then put pts back
-            allPoints[currentVertID] = ( allPoints[currentVertID] * DriveMatrix ) - toCenterBase;
-        }
+          // do rotationAmount, then put pts back
+          allPoints[currentVertID] = ( allPoints[currentVertID] * DriveMatrix ) - toCenterBase;
+      }
 
-        ////// apply slide
-        allPoints[currentVertID].x +=(slideUVPoint.x - slideUVBasePoint.x);
-        allPoints[currentVertID].y +=(slideUVPoint.y - slideUVBasePoint.y);
-        allPoints[currentVertID].z +=(slideUVPoint.z - slideUVBasePoint.z);
+      ////// apply slide
+      allPoints[currentVertID].x +=(slideUVPoint.x - slideUVBasePoint.x);
+      allPoints[currentVertID].y +=(slideUVPoint.y - slideUVBasePoint.y);
+      allPoints[currentVertID].z +=(slideUVPoint.z - slideUVBasePoint.z);
   }
   itGeo.setAllPositions(allPoints);
   return MS::kSuccess;

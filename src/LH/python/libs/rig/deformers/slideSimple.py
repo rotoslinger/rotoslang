@@ -24,6 +24,7 @@ class SlideSimple(base.Deformer):
                     curveWeightsConnectionIdx=0,
                     locations=[],
                     hide=True,
+                    rotationAmount = 0,
                  **kw):
         super(SlideSimple, self).__init__(**kw)
         self.name = name
@@ -43,6 +44,9 @@ class SlideSimple(base.Deformer):
         self.curveWeightsConnectionIdx = curveWeightsConnectionIdx
         self.locations = locations
         self.hide = hide
+        self.rotationAmount = rotationAmount
+
+
         self.deformer = ""
         self.matrixNodes = []
         self.matrixBaseNodes = []
@@ -66,6 +70,8 @@ class SlideSimple(base.Deformer):
             finalAttrName = "{0}.{1}[{2}].{3}".format(self.deformer, "weightArrays", idx, "membershipWeight")
             cmds.getAttr(finalAttrName)
             cmds.setAttr(finalAttrName, defaultVals, type="doubleArray")
+        if self.rotationAmount:
+            cmds.setAttr(self.deformer + ".rotationAmount", 1)
 
     def connectDeformer(self):
         cmds.connectAttr(self.slidePatch + ".worldSpace", self.deformer + ".surface")

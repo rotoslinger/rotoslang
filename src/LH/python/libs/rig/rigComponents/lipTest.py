@@ -33,10 +33,6 @@ from rig.utils import weightMapUtils
 from rig.utils import misc
 from rig.deformers import base
 from rig.deformers import weightStack
-from rig.deformers import tests 
-from rig.deformers import test2
-from rig.deformers import test3
-from rig.deformers import test4
 from rig.deformers import matrixDeformer 
 from rig.deformers import utils 
 from rig.rigComponents import lip 
@@ -49,10 +45,6 @@ reload(weightMapUtils)
 reload(lip)
 reload(utils)
 reload(matrixDeformer)
-reload(tests)
-reload(test2)
-reload(test3)
-reload(test4)
 reload(weightStack)
 reload(base)
 
