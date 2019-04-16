@@ -126,3 +126,42 @@ componentNurbs = {'degreeInV': 3, 'degreeInU': 3, 'parent': u'C_component_CPT', 
 componentMesh = {'uArray': [0.0, 0.25, 0.5, 0.75, 1.0, 0.0, 0.25, 0.5, 0.75, 1.0, 0.0, 0.25, 0.5, 0.75, 1.0, 0.0, 0.25, 0.5, 0.75, 1.0, 0.0, 0.25, 0.5, 0.75, 1.0], 'parent': '', 'polygonCounts': [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], 'uvCount': [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], 'numVertices': 25, 'name': u'pPlane1', 'vertexArray': [(0.0, 0.5, 0.5), (0.0, 0.25, 0.5), (-1.1102230246251565e-16, 0.0, 0.5), (0.0, -0.25, 0.5), (0.0, -0.5, 0.5), (0.0, 0.5, 0.25), (0.0, 0.25, 0.25), (-5.551115123125783e-17, 0.0, 0.25), (0.0, -0.25, 0.25), (0.0, -0.5, 0.25), (0.0, 0.5, 0.0), (0.0, 0.25, 0.0), (0.0, 0.0, 0.0), (0.0, -0.25, 0.0), (0.0, -0.5, 0.0), (0.0, 0.5, -0.25), (0.0, 0.25, -0.25), (5.551115123125783e-17, 0.0, -0.25), (0.0, -0.25, -0.25), (0.0, -0.5, -0.25), (0.0, 0.5, -0.5), (0.0, 0.25, -0.5), (1.1102230246251565e-16, 0.0, -0.5), (0.0, -0.25, -0.5), (0.0, -0.5, -0.5)], 'vArray': [0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 1.0, 1.0, 1.0, 1.0, 1.0], 'polygonConnects': [0, 1, 6, 5, 1, 2, 7, 6, 2, 3, 8, 7, 3, 4, 9, 8, 5, 6, 11, 10, 6, 7, 12, 11, 7, 8, 13, 12, 8, 9, 14, 13, 10, 11, 16, 15, 11, 12, 17, 16, 12, 13, 18, 17, 13, 14, 19, 18, 15, 16, 21, 20, 16, 17, 22, 21, 17, 18, 23, 22, 18, 19, 24, 23], 'numPolygons': 16, 'uvId': [0, 1, 6, 5, 1, 2, 7, 6, 2, 3, 8, 7, 3, 4, 9, 8, 5, 6, 11, 10, 6, 7, 12, 11, 7, 8, 13, 12, 8, 9, 14, 13, 10, 11, 16, 15, 11, 12, 17, 16, 12, 13, 18, 17, 13, 14, 19, 18, 15, 16, 21, 20, 16, 17, 22, 21, 17, 18, 23, 22, 18, 19, 24, 23], 'type': 'mesh'}
 
 componentCurve = {'knots': [-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0], 'form': 3, 'parent': '', 'controlVertices': [(0.783611624891225, 4.798237340988468e-17, -0.7836116248912238), (-1.2643170607829326e-16, 6.785732323110913e-17, -1.108194187554388), (-0.7836116248912243, 4.798237340988471e-17, -0.7836116248912243), (-1.108194187554388, 1.966335461618786e-32, -3.21126950723723e-16), (-0.7836116248912245, -4.7982373409884694e-17, 0.783611624891224), (-3.3392053635905195e-16, -6.785732323110915e-17, 1.1081941875543881), (0.7836116248912238, -4.798237340988472e-17, 0.7836116248912244), (1.108194187554388, -3.644630067904792e-32, 5.952132599280585e-16), (0.783611624891225, 4.798237340988468e-17, -0.7836116248912238), (-1.2643170607829326e-16, 6.785732323110913e-17, -1.108194187554388), (-0.7836116248912243, 4.798237340988471e-17, -0.7836116248912243)], 'degree': 3, 'type': 'nurbsCurve', 'name': u'nurbsCircle1'}
+
+# Procedural data for creating animation curves for weighting
+CENTER_WEIGHTS = [.6, .3, .3]
+BROW_CENTER_WEIGHTS = [1, .3, .3]
+OUTER_WEIGHTS = [0, .5, .5]
+ANGLES = [50, 0, 0]
+BROW_ANGLES = [30, 0, 0]
+NUDGES = [0, -0.14, -0.14]
+LAST_ANGLES = [50, 60, 60]
+
+BROW_PRIMARY_ANIM_CURVE = {'frame_times': [-10.0, -5.3916673469387755, 0.0, 10.0], 'frame_values': [0.0, 1.0, 1.0, 0.0], 'out_x_tangents': [0.4274819791316986, 0.19141413271427155, 1.25, 0.00624999962747097], 'is_breakdown': [False, False, False, False], 'weights_locked': [False, False, False, False], 'in_y_tangents': [0.0, 0.16701996326446533, 0.0, -0.011490666307508945], 'name': u'C_BROWLPrimary_ACV', 'out_tangents_type': [1, 1, 1, 1], 'is_weighted': [True, True, True, True], 'tangents_locked': [False, False, True, False], 'in_tangents_type': [1, 1, 1, 1], 'in_x_tangents': [0.00624999962747097, 0.5463576316833496, 0.32950258255004883, 0.004017422441393137], 'out_y_tangents': [-0.003316592425107956, 0.008687854744493961, 0.0, 0.0]}
+
+
+UPPER_LID_SLIDE_FALLOFF_DICT = {'frame_times': [-10.0, -9.0, -2.0, 10.0], 'frame_values': [1.0, 1.0, 0.0, 0.0], 'out_x_tangents': [0.13267286121845245, 0.0, 0.16761493682861328, 0.5280331373214722], 'is_breakdown': [False, False, False, False], 'weights_locked': [False, False, False, False], 'in_y_tangents': [-0.003344482509419322, -0.000635795178823173, -0.10825707018375397, 6.984919309616089e-10], 'name': u'LIDUpperFalloff_ACV', 'out_tangents_type': [1, 1, 1, 1], 'is_weighted': [True, True, True, True], 'tangents_locked': [False, False, False, False], 'in_tangents_type': [1, 1, 1, 1], 'in_x_tangents': [0.16063115000724792, 0.12536820769309998, 0.10382512956857681, 0.13752873241901398], 'out_y_tangents': [0.0012085397029295564, -0.771893322467804, -0.002041370142251253, 0.5836120247840881]}
+
+LOWER_LID_SLIDE_FALLOFF_DICT = {'frame_times': [-11.0, -1.0, 10.0], 'frame_values': [0.0, 1.0, 1.0], 'out_x_tangents': [0.5280331373214722, 0.5, 1.0], 'is_breakdown': [False, False, False], 'weights_locked': [False, False, False], 'in_y_tangents': [0.0, -0.003344482509419322, 0.0], 'name': u'LIDLowerFalloff_ACV', 'out_tangents_type': [1, 1, 2], 'is_weighted': [True, True, True], 'tangents_locked': [False, False, False], 'in_tangents_type': [1, 1, 2], 'in_x_tangents': [1.0, 0.16063115000724792, 0.4583333432674408], 'out_y_tangents': [0.5836120247840881, 0.0, 0.0]}
+
+UPPER_LID_MATDEF_FALLOFF_DICT = {'frame_times': [-10.0, -9.0, -2.0, 10.0], 'frame_values': [1.0, 1.0, 0.0, 0.0], 'out_x_tangents': [0.13267286121845245, 0.0, 0.16761493682861328, 0.5280331373214722], 'is_breakdown': [False, False, False, False], 'weights_locked': [False, False, False, False], 'in_y_tangents': [-0.003344482509419322, -0.000635795178823173, -0.10825707018375397, 6.984919309616089e-10], 'name': u'LIDUpperFalloff_ACV', 'out_tangents_type': [1, 1, 1, 1], 'is_weighted': [True, True, True, True], 'tangents_locked': [False, False, False, False], 'in_tangents_type': [1, 1, 1, 1], 'in_x_tangents': [0.16063115000724792, 0.12536820769309998, 0.10382512956857681, 0.13752873241901398], 'out_y_tangents': [0.0012085397029295564, -0.771893322467804, -0.002041370142251253, 0.5836120247840881]}
+
+LOWER_LID_MATDEF_FALLOFF_DICT = {'frame_times': [-11.0, -1.0, 10.0], 'frame_values': [0.0, 1.0, 1.0], 'out_x_tangents': [0.5280331373214722, 0.5, 1.0], 'is_breakdown': [False, False, False], 'weights_locked': [False, False, False], 'in_y_tangents': [0.0, -0.003344482509419322, 0.0], 'name': u'LIDLowerFalloff_ACV', 'out_tangents_type': [1, 1, 2], 'is_weighted': [True, True, True], 'tangents_locked': [False, False, False], 'in_tangents_type': [1, 1, 2], 'in_x_tangents': [1.0, 0.16063115000724792, 0.4583333432674408], 'out_y_tangents': [0.5836120247840881, 0.0, 0.0]}
+
+
+L_BROW_SLIDE_FALLOFF = {'frame_times': [-11.0, -7.0, -1.0, 10.0], 'frame_values': [0.0, 0.32570523643744953, 0.6550919173047409, 0.0], 'out_x_tangents': [0.16795280575752258, 0.34458470344543457, 0.5, 1.0], 'is_breakdown': [False, False, False, False], 'weights_locked': [False, False, False, False], 'in_y_tangents': [0.0, 0.4200933873653412, -0.002280694665387273, -0.6550919413566589], 'name': u'BROWLFalloff_ACV', 'out_tangents_type': [1, 1, 1, 2], 'is_weighted': [True, True, True, True], 'tangents_locked': [False, True, False, False], 'in_tangents_type': [1, 1, 1, 2], 'in_x_tangents': [1.0, 0.1607251614332199, 0.10953880101442337, 0.4583333432674408], 'out_y_tangents': [0.1856309175491333, 0.9006539583206177, 0.0, 0.0]}
+
+R_BROW_SLIDE_FALLOFF = {'frame_times': [-11.0, -7.0, -1.0, 10.0], 'frame_values': [0.0, 0.32570523643744953, 0.6550919173047409, 0.0], 'out_x_tangents': [0.16795280575752258, 0.34458470344543457, 0.5, 1.0], 'is_breakdown': [False, False, False, False], 'weights_locked': [False, False, False, False], 'in_y_tangents': [0.0, 0.4200933873653412, -0.002280694665387273, -0.6550919413566589], 'name': u'BROWLFalloff_ACV', 'out_tangents_type': [1, 1, 1, 2], 'is_weighted': [True, True, True, True], 'tangents_locked': [False, True, False, False], 'in_tangents_type': [1, 1, 1, 2], 'in_x_tangents': [1.0, 0.1607251614332199, 0.10953880101442337, 0.4583333432674408], 'out_y_tangents': [0.1856309175491333, 0.9006539583206177, 0.0, 0.0]}
+
+
+# AUTO_CREATE_TIMERANGE = 20.0
+# OFFSET=0
+# CENTER_WEIGHT = .6
+# OUTER_WEIGHT = .0
+# ANGLE = 50
+# NUDGE = -0.0
+# INTERMEDIATE_VAL = 0
+# INTERMEDIATE_ANGLE=0
+
+# LAST_ANGLE = 50
+# LAST_INTERMEDIATE_VAL=.8
+# LAST_INTERMEDIATE_ANGLE=30

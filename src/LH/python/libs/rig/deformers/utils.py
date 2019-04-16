@@ -1066,3 +1066,48 @@ def rebuildSlideWeightOverrides(weightDict):
             # set the weights
             cmds.setAttr(weightAttr, weightValues, type="doubleArray")
             cmds.connectAttr(weightAttr, weightPlug, f=True)
+
+            
+
+def getAllAnimCurveWeightNodeCurves():
+    # need to write a filter so you can only save out anim curve weights per component if you so choose...
+    nodes = cmds.ls(type="LHCurveWeightNode")
+    animCurves = []
+    for node in nodes:
+        elemLength = cmds.getAttr(node + ".inputs", s=True)
+        for elemIdx in range(elemLength):
+            animCurveU = cmds.listConnections(node + ".inputs[{0}].animCurveU".format(elemIdx))
+            if animCurveU:
+                animCurves.append(animCurveU[0])
+            animCurveV = cmds.listConnections(node + ".inputs[{0}].animCurveV".format(elemIdx))
+            if animCurveV:
+                animCurves.append(animCurveV[0])
+    return animCurves
+
+
+def getAnimCurveWeightsDict():
+    # get all animCurveWeightsNodes
+    animCurves = getAllAnimCurveWeightNodeCurves()
+    # put all animCurves in a dict
+    for animCurve in animCurves:
+        print animCurve
+
+def rebuildAnimCurveWeightsCurves():
+    pass
+
+
+
+
+def cacheOutAllSlideDeformers(cache=True):
+    # need to write a filter so you can only save out anim curve weights per component if you so choose...
+    nodes = cmds.ls(type="LHSlideSimple")
+    animCurves = []
+    for node in nodes:
+        cmds.setAttr(node + ".cacheBind", cache)
+
+
+def removeAllCurveWeightsNodes():
+    nodes = cmds.ls(type="LHCurveWeightNode")
+    animCurves = []
+    for node in nodes:
+        cmds.delete(node)

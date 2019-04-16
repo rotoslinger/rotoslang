@@ -91,10 +91,10 @@ MStatus LHCurveWeightNode::initialize()
     tAttr.setUsesArrayDataBuilder(true);
     addAttribute(aMembershipWeights);
 
-    aAnimCurveU = nAttr.create("AnimCurveU", "acu", MFnNumericData::kFloat);
+    aAnimCurveU = nAttr.create("animCurveU", "AnimCurveU", MFnNumericData::kFloat);
     nAttr.setKeyable(true);
 
-    aAnimCurveV = nAttr.create("AnimCurveV", "acv", MFnNumericData::kFloat);
+    aAnimCurveV = nAttr.create("animCurveV", "AnimCurveV", MFnNumericData::kFloat);
     nAttr.setKeyable(true);
 
     aFalloffU = nAttr.create("falloffU", "falloffu", MFnNumericData::kFloat);

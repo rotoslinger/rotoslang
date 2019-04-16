@@ -90,11 +90,7 @@ def test():
                  matDefScales = elements.JAW_MOUTH_MATDEF_SCALES,
                  matDefHandWeightsDictionary = elements.JAW_MOUTH_MATDEF_WEIGHT_DICT,
                  slideHandWeightsDictionary = elements.JAW_MOUTH_SLIDE_WEIGHT_DICT,
-                
-
     )
-
-
     MouthJawClass.create() 
     MouthJawClass.setPositions() 
-    MouthJawClass.setHandWeights() 
+    MouthJawClass.setHandWeights()

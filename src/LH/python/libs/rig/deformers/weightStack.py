@@ -101,13 +101,23 @@ class AnimCurveWeight(Node):
                  createSingleFalloff = True,
                  uKeyframesAllOnes = False,
                  falloffCurveDict = None,
+                 curveOverrideDict = None,
                  falloffDefaults=(-10, -9, 9, 10),
                  falloffItts=["linear","linear","linear","linear"],
                  falloffOtts=["linear","linear","linear","linear"],
                  singleFalloffName = "",  # if you are not auto creating you need to give the single falloff name
                  addFalloff = True,
                  startElem = 0,
-                 offset=.15, centerWeight = .35, outerWeight = .3, angle = 30, nudge = 1.0, intermediateVal = .2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=30, lastIntermediateAngle=0,
+                 offset=0,
+                 centerWeight = .6,
+                 outerWeight = 0,
+                 angle = 50,
+                 nudge = 0,
+                 intermediateVal = 0,
+                 lastAngle=50,
+                 lastIntermediateVal=.8,
+                 intermediateAngle=0,
+                 lastIntermediateAngle=30,
                  inputWeightCurvesDict=[],
                  inputWeightCurvesFalloffDict=[],
                  autoPositionThreshhold = .9,
@@ -222,6 +232,7 @@ class AnimCurveWeight(Node):
                                                                                       otts=self.falloffOtts,
                                                                                       falloffCurveDict=self.falloffCurveDict,
                                                                                       )
+            self.overrideWeightCurves()
             return
 
         self.weightCurves = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
@@ -244,6 +255,15 @@ class AnimCurveWeight(Node):
                                     itts=self.falloffItts,
                                     otts=self.falloffOtts
                                     )
+        self.overrideWeightCurves()
+
+    def overrideWeightCurves(self):
+        if not self.curveOverrideDict:
+            return
+        for curve in self.weightCurves:
+            deformerUtils.setAnimCurveShape(curve, self.curveOverrideDict)
+
+
 
     def inputConnections(self):
         cmds.connectAttr(self.membershipWeights, "{0}.membershipWeights".format(self.node), f=True)
@@ -526,12 +546,13 @@ class WeightStack(Node):
             for node in [self.node, self.node_LR]:
                 if not node:
                     continue
-                cmds.addAttr(node, ln = "weightedMesh", at = "message")
+                if not cmds.objExists(node + ".weightedMesh"):
+                    cmds.addAttr(node, ln = "weightedMesh", at = "message")
                 geo = self.geoToWeight
                 if type(self.geoToWeight) == list:
                     geo = geo[0]
                 shape = misc.getShape(geo)
-                cmds.connectAttr(shape + ".message", node + ".weightedMesh")
+                cmds.connectAttr(shape + ".message", node + ".weightedMesh", f=True)
 
 
         self.weightMapAttrs = []

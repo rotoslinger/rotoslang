@@ -131,6 +131,10 @@ class Component(base.Component):
                                                 name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=False,
                                                 scale=False, offsetBuffer = self.buffer2, maintainOffsetT=True, 
                                                 maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=self.normalConstraintPatch)
+        # self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
+        #                                         name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=True,
+        #                                         scale=True, offsetBuffer = self.buffer2, maintainOffsetT=True, 
+        #                                         maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None)
 
         # make the geo constraint much easier to find on the guide
         cmds.addAttr(self.buffer2, ln = "geoConstraint", at = "message")
