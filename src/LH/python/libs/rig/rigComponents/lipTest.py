@@ -61,7 +61,7 @@ def test():
     fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
     tierCount1 = 1
     tierCount2 = 3
-    tierCount3 = 
+    tierCount3 = 5
 
     slideCtrlSize1=1
     slideCtrlSize2=.7
