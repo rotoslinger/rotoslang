@@ -29,6 +29,12 @@ def decompose_matrix(name, matrix_attr, suffix = "_DCM"):
     cmds.connectAttr(matrix_attr, ret_decompose_matrix + ".inputMatrix")
     return ret_decompose_matrix
 
+def mult_matrix(name, matrix_attrs, suffix = "_MTM"):
+    ret_mult_matrix = get_node_agnostic("multMatrix", name = name + suffix)
+    for idx, attr in enumerate(matrix_attrs):
+        cmds.connectAttr(attr, ret_mult_matrix + ".matrixIn[{0}]".format(idx))
+    return ret_mult_matrix
+
 
 class Buffer(object):
     def __init__(self,

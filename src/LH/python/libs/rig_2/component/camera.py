@@ -22,7 +22,7 @@ class Component(component_base.Builder):
         self.godnode.create()
         self.camera = Camera(parent_component_class=self)
         self.camera.create()
-        self.technocrane = Technocrane(parent_component_class=self, parent = self.godnode.outputs["body"])
+        self.technocrane = Technocrane(parent_component_class=self, parent = self.godnode.outputs["body"], godnode_class=self.godnode)
         self.technocrane.create()
         
 
@@ -73,7 +73,6 @@ class Technocrane(component_base.Subcomponent):
                  **kw):
         super(Technocrane, self).__init__(**kw)
         self.name="technocrane"
-
         # vars
         self.master_ctrl_class = None
         self.body_ctrl_class = None
@@ -91,27 +90,27 @@ class Technocrane(component_base.Subcomponent):
 
     def get_nodes(self):
         # Traj
-        self.traj_sub = Traj(parent_component_class=self, parent = self.parent)
+        self.traj_sub = Traj(parent_component_class=self, parent = self.parent, godnode_class=self.godnode_class)
         self.traj_sub.create()
         self.traj_ctrl = self.traj_sub.ctrl
 
         # Pan
-        self.pan_sub = Pan(parent_component_class=self, parent = self.traj_sub.outputs["traj"])
+        self.pan_sub = Pan(parent_component_class=self, parent = self.traj_sub.outputs["head_grp"], godnode_class=self.godnode_class)
         self.pan_sub.create()
         self.pan_ctrl = self.pan_sub.ctrl
 
         # Tilt
-        self.tilt_sub = Tilt(parent_component_class=self, parent = self.pan_sub.outputs["pan"])
+        self.tilt_sub = Tilt(parent_component_class=self, parent = self.pan_sub.outputs["pan"], godnode_class=self.godnode_class)
         self.tilt_sub.create()
         self.tilt_ctrl = self.tilt_sub.ctrl
 
         # Roll
-        self.roll_sub = Roll(parent_component_class=self, parent = self.tilt_sub.outputs["tilt"])
+        self.roll_sub = Roll(parent_component_class=self, parent = self.tilt_sub.outputs["tilt"], godnode_class=self.godnode_class)
         self.roll_sub.create()
         self.roll_ctrl = self.roll_sub.ctrl
 
         # Offset
-        self.offset_sub = Offset(parent_component_class=self, parent = self.traj_sub.outputs["traj"])
+        self.offset_sub = Offset(parent_component_class=self, parent = self.traj_sub.outputs["traj"], godnode_class=self.godnode_class)
         self.offset_sub.create()
         self.offset_ctrl = self.offset_sub.ctrl
 
@@ -123,16 +122,20 @@ class Technocrane(component_base.Subcomponent):
                               ]
 
         # headGuide
-        self.head_guide_sub = Head_Guide(parent_component_class=self, parent = self.traj_sub.outputs["guide_root_parent"])
+        self.head_guide_sub = Head_Guide(parent_component_class=self, parent = self.traj_sub.outputs["guide_root_parent"], godnode_class=self.godnode_class)
         self.head_guide_sub.create()
 
         # Technocrane Aim
-        self.aim_sub = Technocrane_Aim(parent_component_class=self)
+        self.aim_sub = Technocrane_Aim(parent_component_class=self, godnode_class=self.godnode_class,
+                                       offset_class = self.offset_sub,
+                                       traj_class = self.traj_sub,
+                                       pan_class = self.tilt_sub,
+                                       tilt_class = self.roll_sub,
+                                       roll_class = self.offset_sub,
+                                       
+                                       )
         self.aim_sub.create()
         self.aim_ctrl = self.aim_sub.ctrl
-
-
-
 
     def connect_nodes(self):
         self.basic_crane_ctrl_connections()
@@ -216,6 +219,191 @@ class Technocrane(component_base.Subcomponent):
         cmds.connectAttr(self.offset_sub.outputs["offset"] + ".translate", negate_offset + ".input1", f=True)
         cmds.connectAttr(negate_offset + ".output", self.offset_sub.inputs["offset_negate"] + ".translate", f=True)
 
+class Technocrane_Aim(component_base.Subcomponent):
+    def __init__(self,
+                 offset_class,
+                 traj_class,
+                 pan_class,
+                 tilt_class,
+                 roll_class,
+                 offset_ctrl = None,
+                 traj_ctrl = None,
+                 **kw):
+        super(Technocrane_Aim, self).__init__(**kw)
+
+        # These are temp for ease, eventually we will want to give specific arguments for the specific ctrls
+        self.offset_class=offset_class
+        self.traj_class=traj_class
+        self.pan_class=pan_class
+        self.tilt_class=tilt_class
+        self.roll_class=roll_class
+
+
+        self.offset_ctrl=offset_ctrl
+        self.traj_ctrl=traj_ctrl
+
+
+        self.name="tCrn"
+
+        # vars
+        self.ctrl_class = None
+        
+        self.ctrl = None
+
+    def get_nodes(self):
+        # self.control_root = node_utils.get_node_agnostic("transform", name = "{0}_{1}ControlRoot_Grp".format(self.side, self.name), parent=self.control)
+        # Master
+        self.ctrl_class = manip_control.Ctrl(name="craneAim",
+                                                    shape_dict=manip_elements.technocrane_aim,
+                                                    num_buffer = 3,
+                                                    parent = self.control,
+                                                    color_side             = False,
+                                                    outliner_color         = True,
+                                                    gimbal                 = False,
+                                                    num_secondary          = 0,
+                                                    show_rot_order         = False,
+                                                    lock_attrs             = ["rx", "ry", "rz", "sx", "sy", "sz"]
+                                                    )
+        self.ctrl_class.create()
+        self.ctrl = self.ctrl_class.ctrl
+
+        self.aim_grp = node_utils.get_node_agnostic("transform",
+                                                            name = "{0}_{1}_NULL".format(self.side, self.name),
+                                                            parent=self.rig)
+
+        # self.aim_driver = node_utils.get_locator(name = "{0}_{1}AimDrive_LOC".format(self.side, self.name),
+        #                                            parent=self.aim_grp)
+
+
+        # The idea is that these groups aim at each other without causing a cycle
+        ######################### Aim To Head ############################################
+        self.aim_to_head = node_utils.get_locator(
+                                                         name = "{0}_{1}AimToHead_LOC".format(self.side, self.name),
+                                                         parent=self.aim_grp)
+        self.aim_to_head_x = node_utils.get_locator(
+                                                           name = "{0}_{1}AimToHeadX_LOC".format(self.side, self.name),
+                                                           parent=self.aim_to_head)
+        self.aim_to_head_offset_x = node_utils.get_locator(
+                                                              name = "{0}_{1}AimToHeadOffsetX_LOC".format(self.side, self.name),
+                                                              parent=self.aim_to_head_x)
+
+
+        ######################### Head To Aim ############################################
+        # self.head_to_aim_grp = node_utils.get_node_agnostic("transform",
+        #                                                      name = "{0}_{1}HeadToAim_NULL".format(self.side, self.name),
+        #                                                      parent=self.aim_grp)
+        self.head2aim_traj_align = node_utils.get_node_agnostic("transform",
+                                                           name = "{0}_{1}HeadToAimTrajAlign_NULL".format(self.side, self.name),
+                                                           parent=self.aim_grp)
+        self.head2aim = node_utils.get_locator(
+                                                         name = "{0}_{1}HeadToAim_LOC".format(self.side, self.name),
+                                                         parent=self.head2aim_traj_align)
+        self.head2aim_offset_x= node_utils.get_locator(
+                                                         name = "{0}_{1}HeadToAimOffsetX_LOC".format(self.side, self.name),
+                                                         parent=self.head2aim)
+        self.head2aim_x_pan= node_utils.get_locator(
+                                                      name = "{0}_{1}HeadToAimXPan_LOC".format(self.side, self.name),
+                                                      parent=self.head2aim_offset_x)
+        self.head2aim_x_tilt = node_utils.get_locator(
+                                                       name = "{0}_{1}HeadToAimXTilt_LOC".format(self.side, self.name),
+                                                       parent=self.head2aim_x_pan)
+        self.head2aim_x_traj = node_utils.get_locator(
+                                                       name = "{0}_{1}HeadToAimXTraj_LOC".format(self.side, self.name),
+                                                       parent=self.head2aim_x_tilt)
+
+    def set_defaults(self):
+        cmds.setAttr(self.ctrl + ".tz", 30)
+
+
+    def create_inputs(self):
+        super(Technocrane_Aim, self).create_inputs()
+        # self.inputs["aim_driver"] = self.aim_driver
+
+    def create_outputs(self):
+        super(Technocrane_Aim, self).create_outputs()
+        self.outputs["ctrl_matrix"] = self.ctrl + ".worldMatrix"
+
+    def connect_nodes(self):
+
+        # Root functionality
+        matrix_to_mult = [self.aim_grp + ".worldInverseMatrix", self.traj_class.ctrl + ".worldMatrix"]
+        mult_ctrl_aim = node_utils.mult_matrix(name="{0}_{1}ParInv".format(self.side, self.name), matrix_attrs = matrix_to_mult)
+        decompose_parent = node_utils.decompose_matrix(name="{0}_{1}ParInv".format(self.side, self.name),
+                                                        matrix_attr = mult_ctrl_aim + ".matrixSum")
+        cmds.connectAttr(decompose_parent + ".outputTranslate", self.head2aim_traj_align + ".translate")
+        cmds.connectAttr(decompose_parent + ".outputRotate", self.head2aim_traj_align + ".rotate")
+
+        # Aim To Head
+        decompose_ctrl = node_utils.decompose_matrix(name="{0}_{1}Ctrl".format(self.side, self.name),
+                                                        matrix_attr = self.outputs["ctrl_matrix"])
+
+        cmds.connectAttr(decompose_ctrl + ".outputTranslate", self.aim_to_head + ".translate")
+
+        cmds.aimConstraint(self.head2aim,
+                           self.aim_to_head,
+                           aimVector = (0, 0, -1),
+                           upVector = (0, 1, 0),
+                           worldUpType = "objectrotation",
+                           worldUpVector = (0, 1, 0),
+                           worldUpObject = self.godnode_class.outputs["body"])
+
+        cmds.connectAttr(self.offset_class.ctrl + ".ty", self.head2aim + ".ty")
+
+        cmds.aimConstraint(self.head2aim_offset_x,
+                           self.aim_to_head_x,
+                           aimVector = (0, 0, -1),
+                           upVector = (0, 1, 0),
+                           worldUpType = "objectrotation",
+                           worldUpVector = (0, 1, 0),
+                           worldUpObject = self.godnode_class.outputs["body"])
+
+
+        cmds.connectAttr(self.offset_class.ctrl + ".tx", self.head2aim_offset_x + ".tx")
+
+        cmds.connectAttr(self.offset_class.ctrl + ".tx", self.aim_to_head_offset_x + ".tx")
+
+
+
+        # Head To Aim
+
+
+        cmds.aimConstraint(self.aim_to_head,
+                           self.head2aim,
+                           aimVector = (0, 0, -1),
+                           upVector = (0, 1, 0),
+                           worldUpType = "objectrotation",
+                           worldUpVector = (0, 1, 0),
+                           worldUpObject = self.godnode_class.outputs["body"])
+
+        cmds.aimConstraint(self.aim_to_head_offset_x,
+                           self.head2aim_x_pan,
+                           aimVector = (0, 0, -1),
+                           upVector = (0, 1, 0),
+                           worldUpType = "objectrotation",
+                           worldUpVector = (0, 1, 0),
+                           worldUpObject = self.godnode_class.outputs["body"])
+
+        cmds.connectAttr(self.offset_class.ctrl + ".tx", self.head2aim_x_traj + ".tx")
+
+        cmds.connectAttr(self.offset_class.ctrl + ".ty", self.head2aim_x_traj + ".ty")
+
+
+    # def set_defaults(self):
+    #     super(Technocrane_Aim, self).set_defaults()
+    #     shape = misc_utils.get_shape(self.ctrl)
+    #     cmds.setAttr(shape[0], "vis")
+    #     self.main_shape = shape[-1]
+
+    # def create_inputs(self):
+    #     super(Offset, self).create_inputs()
+    #     self.inputs["aim_to_head"] = self.buffers[0]
+    #     self.inputs["offset_world"] = self.buffers[1]
+    #     self.inputs["offset_negate"] = self.buffers[2]
+
+
+
+
+
 
 class Crane_Ctrl_Subcomponent(component_base.Subcomponent):
     def __init__(self,
@@ -256,6 +444,10 @@ class Traj(Crane_Ctrl_Subcomponent):
         super(Traj, self).get_nodes()
         self.traj_guide_sub = Traj_Guide(parent_component_class=self, parent = self.parent)
         self.traj_guide_sub.create()
+        self.head_grp = node_utils.get_node_agnostic("transform",
+                                                     name = "{0}_head_GRP".format(self.side),
+                                                     parent=self.ctrl)
+
         self.add_node_to_lock(self.traj_guide_sub.ctrl)
 
     def create_inputs(self):
@@ -263,6 +455,7 @@ class Traj(Crane_Ctrl_Subcomponent):
         self.inputs["noise"] = self.buffers[0]
         self.inputs["noise_offset"] = self.buffers[1]
         self.inputs["noise_negate"] = self.buffers[2]
+        self.inputs["head_grp"] = self.head_grp
 
     def create_outputs(self):
         super(Traj, self).create_outputs()
@@ -270,6 +463,7 @@ class Traj(Crane_Ctrl_Subcomponent):
         self.outputs["noise_offset"] = self.buffers[1]
         self.outputs["noise_negate"] = self.buffers[2]
         self.outputs["guide_root_parent"] = self.traj_guide_sub.outputs["root_parent"]
+        self.outputs["head_grp"] = self.head_grp
 
     def connect_nodes(self):
         # need to add together the matrix from the control and the noise
@@ -434,81 +628,4 @@ class Offset(Crane_Ctrl_Subcomponent):
         self.inputs["offset_grp"] = self.buffers[0]
         self.inputs["offset_world"] = self.buffers[1]
         self.inputs["offset_negate"] = self.buffers[2]
-
-
-class Technocrane_Aim(component_base.Subcomponent):
-    def __init__(self,
-                 **kw):
-        super(Technocrane_Aim, self).__init__(**kw)
-        self.name="technocraneAim"
-
-        # vars
-        self.ctrl_class = None
-        
-        self.ctrl = None
-
-    def get_nodes(self):
-        # self.control_root = node_utils.get_node_agnostic("transform", name = "{0}_{1}ControlRoot_Grp".format(self.side, self.name), parent=self.control)
-        # Master
-        self.ctrl_class = manip_control.Ctrl(name="technocraneAim",
-                                                    shape_dict=manip_elements.technocrane_aim,
-                                                    num_buffer = 3,
-                                                    parent = self.control,
-                                                    color_side             = False,
-                                                    outliner_color         = True,
-                                                    gimbal                 = False,
-                                                    num_secondary          = 0,
-                                                    show_rot_order         = False,
-                                                    lock_attrs             = ["rx", "ry", "rz", "sx", "sy", "sz"]
-                                                    )
-        self.ctrl_class.create()
-        self.ctrl = self.ctrl_class.ctrl
-
-        # The idea is that these groups aim at each other without causing a cycle
-        ######################### Aim To Head ############################################
-        self.aim_to_head_grp = node_utils.get_node_agnostic("transform",
-                                                            name = "{0}_{1}ToHead_NULL".format(self.side, self.name),
-                                                            parent=self.rig)
-        self.aim_head_grp = node_utils.get_node_agnostic("transform",
-                                                         name = "{0}_{1}Head_NULL".format(self.side, self.name),
-                                                         parent=self.aim_to_head_grp)
-        self.aim_head_x_grp = node_utils.get_node_agnostic("transform",
-                                                           name = "{0}_{1}HeadX_NULL".format(self.side, self.name),
-                                                           parent=self.aim_head_grp)
-        self.head_offset_x_grp = node_utils.get_node_agnostic("transform",
-                                                              name = "{0}_{1}HeadOffsetX_NULL".format(self.side, self.name),
-                                                              parent=self.aim_head_x_grp)
-
-
-        ######################### Head To Aim ############################################
-        self.head_to_aim_grp = node_utils.get_node_agnostic("transform",
-                                                             name = "{0}_{1}HeadToAim_NULL".format(self.side, self.name),
-                                                             parent=self.rig)
-        self.traj_align_grp = node_utils.get_node_agnostic("transform",
-                                                           name = "{0}_{1}TrajAlign_NULL".format(self.side, self.name),
-                                                           parent=self.head_to_aim_grp)
-        self.head_aim_grp = node_utils.get_node_agnostic("transform",
-                                                         name = "{0}_{1}HeadAim_NULL".format(self.side, self.name),
-                                                         parent=self.traj_align_grp)
-        self.offset_x_grp = node_utils.get_node_agnostic("transform",
-                                                         name = "{0}_{1}OffsetX_NULL".format(self.side, self.name),
-                                                         parent=self.head_aim_grp)
-        self.x_pan_grp = node_utils.get_node_agnostic("transform",
-                                                      name = "{0}_{1}XPan_NULL".format(self.side, self.name),
-                                                      parent=self.offset_x_grp)
-        self.x_tilt_grp = node_utils.get_node_agnostic("transform",
-                                                       name = "{0}_{1}XTilt_NULL".format(self.side, self.name),
-                                                       parent=self.x_pan_grp)
-        self.x_traj_grp = node_utils.get_node_agnostic("transform",
-                                                       name = "{0}_{1}XTraj_NULL".format(self.side, self.name),
-                                                       parent=self.x_tilt_grp)
-    # def set_defaults(self):
-    #     super(Technocrane_Aim, self).set_defaults()
-    #     shape = misc_utils.get_shape(self.ctrl)
-    #     cmds.setAttr(shape[0], "vis")
-    #     self.main_shape = shape[-1]
-
-
-
-
 

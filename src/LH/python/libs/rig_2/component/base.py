@@ -87,36 +87,10 @@ class Component(object):
         self.get_outputs()
         self.connect_subcomponents()
 
-class Builder(Subcomponent):
-    def __init__(self,
-                 **kw):
-        super(Builder, self).__init__(self, **kw)
-
-    def initialize(self):
-        
-        """ Check for a root, create if none """
-        self.hierarchy_class = rig_hierarchy.base()
-        self.hierarchy_class.initialize()
-
-        if not cmds.objExists(self.hierarchy_class.root):
-            self.hierarchy_class.create()
-
-        self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
-
-        """
-        Create component Hierarchy within the asset hierarchy. 
-        These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
-        """
-
-        self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
-                                                                                              name=self.name,
-                                                                                              suffix=self.suffix,
-                                                                                              hierarchy_class=self.hierarchy_class)
-        node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
-
 class Subcomponent(object):
     def __init__(self,
                  parent_component_class,
+                 godnode_class=None,
                  side="C",
                  name="subcomponent",
                  suffix = "SUBCPT",
@@ -129,6 +103,7 @@ class Subcomponent(object):
                  create_subcomponent_grp=False,
                  ):
         self.parent_component_class = parent_component_class
+        self.godnode_class = godnode_class
         self.side = side
         self.name = name
         self.suffix = suffix
@@ -265,6 +240,35 @@ class Subcomponent(object):
     def add_node_to_lock(self, node_to_add):
         if node_to_add not in self.nodes_to_lock:
             self.nodes_to_lock.append(node_to_add)
+
+class Builder(Subcomponent):
+    def __init__(self,
+                 **kw):
+        super(Builder, self).__init__(self, **kw)
+
+    def initialize(self):
+        
+        """ Check for a root, create if none """
+        self.hierarchy_class = rig_hierarchy.base()
+        self.hierarchy_class.initialize()
+
+        if not cmds.objExists(self.hierarchy_class.root):
+            self.hierarchy_class.create()
+
+        self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
+
+        """
+        Create component Hierarchy within the asset hierarchy. 
+        These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
+        """
+
+        self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
+                                                                                              name=self.name,
+                                                                                              suffix=self.suffix,
+                                                                                              hierarchy_class=self.hierarchy_class)
+        node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
+
+
 
 
 
