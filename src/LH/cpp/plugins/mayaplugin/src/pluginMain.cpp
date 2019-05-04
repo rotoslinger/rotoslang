@@ -34,6 +34,7 @@
 #include "LHCurveDeformer.h"
 #include "LHVectorDeformerSimple.h"
 #include "LHCurveRollSimple.h"
+#include "LHCurveTransform.h"
 
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
@@ -113,6 +114,11 @@ MStatus initializePlugin(MObject obj) {
   identityGPUDeformer::pluginLoadPath = plugin.loadPath();
 
 
+  status = plugin.registerNode("LHCurveTransform",
+                               LHCurveTransform::id,
+                               LHCurveTransform::creator,
+                               LHCurveTransform::initialize);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
   status = plugin.registerNode("LHWeightNodeFloat",
@@ -303,6 +309,8 @@ MStatus uninitializePlugin(MObject obj) {
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.deregisterNode(nullTransform::id);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+  status = plugin.deregisterNode(LHCurveTransform::id);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.deregisterNode(nullMatrixTransform::id);

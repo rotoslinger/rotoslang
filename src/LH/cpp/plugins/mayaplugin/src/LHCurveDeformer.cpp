@@ -1,4 +1,3 @@
-#include <maya/MCppCompat.h>
 
 #include "LHCurveDeformer.h"
 

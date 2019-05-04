@@ -38,7 +38,7 @@ void LHNakedLocator::draw(M3dView &view, const MDagPath &path,
     MObject thisMObj = thisMObject();
 
     int cachePlugs = MPlug( thisMObj, aCachePlugs ).asInt();
-    if (faceIds.length() == 0 or cachePlugs == 0)
+    if (faceIds.length() == 0 || cachePlugs == 0)
         {
         r = MPlug( thisMObj, aColorR ).asFloat();
         g = MPlug( thisMObj, aColorG ).asFloat();

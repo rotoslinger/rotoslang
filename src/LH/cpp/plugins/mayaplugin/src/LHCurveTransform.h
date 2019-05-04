@@ -10,9 +10,11 @@
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
-#include <maya/MFnNurbsSurface.h>
+#include <maya/MFnNurbsCurve.h>
 #include <maya/MArrayDataHandle.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
+
 #include <maya/MMatrix.h>
 #include <maya/MVector.h>
 #include <maya/MGlobal.h>
@@ -25,10 +27,14 @@
 #include <math.h>
 
 
-class LHTemplateNode : public MPxNode {
+class LHCurveTransform : public MPxNode {
  public:
-  LHTemplateNode() {};
+  LHCurveTransform() {};
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
+  virtual MStatus computeMatricies(const MPlug& plug, MDataBlock& data, MFnNurbsCurve *fnCurve );
+    virtual MStatus setDependentsDirty(MPlug const & inPlug,
+                                            MPlugArray  & affectedPlugs);
+
   static void* creator();
   static MStatus initialize();
 
@@ -36,11 +42,26 @@ class LHTemplateNode : public MPxNode {
 
   static MObject aBiasIn;
   static MObject aBiasOut;
+  
+  static MObject aCurve;
+
+  static MObject aMatrixInput;
+  static MObject aInputs;
+
+  static MObject aMatrixOutput;
+  static MObject aOutputs;
+
+  // Floating point representation of the current index
+  float currentIndex;
+  float outputCount;
+  float currentParameter;
+  MMatrix composedMatrix;
+  MFnNurbsCurve *fnCurve;
 
     inline MString FormatError( const MString &msg, const MString
                                   &sourceFile, const int &sourceLine )
     {
-        MString txt( "[LHTemplateNode] " );
+        MString txt( "[LHCurveTransform] " );
         txt += msg ;
         txt += ", File: ";
         txt += sourceFile;
@@ -48,6 +69,8 @@ class LHTemplateNode : public MPxNode {
         txt += sourceLine;
         return txt;
     }
+
 };
 
 ///////////////////////////////////////////////////////////
+

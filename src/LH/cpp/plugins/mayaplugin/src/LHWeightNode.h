@@ -1,9 +1,7 @@
 #pragma once
-#if defined _WIN32  || defined _WIN64
-#define NOMINMAX
-#endif
-#include "formatErrorMacros.h"
 
+#include "windowsMinMax.h"
+#include "formatErrorMacros.h"
 #include <string.h>
 #include <maya/MIOStream.h>
 #include <math.h>
@@ -30,6 +28,7 @@
 #include <maya/MFloatArray.h>
 #include <math.h>
 #include <algorithm>
+#include <vector>
 
 class LHWeightNode : public MPxNode
 {

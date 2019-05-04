@@ -60,16 +60,16 @@ void* LHBlendshapeSimple::creator() { return new LHBlendshapeSimple; }
 
 MStatus LHBlendshapeSimple::deform(MDataBlock& data, MItGeometry& itGeo,
                           const MMatrix &localToWorldMatrix, unsigned int mIndex) {
-    MStatus status;
+    // MStatus status;
     float env = data.inputValue(envelope).asFloat();
 
     // Only ever want 1 target
-    if (mIndex > 0 or env==0)
+    if (mIndex > 0 || env==0)
     {
       return MS::kSuccess;
     }
 
-    float amount = data.inputValue(aAmount).asFloat();
+    amount = data.inputValue(aAmount).asFloat();
     env = env * amount;
 
     // Geo target geometry

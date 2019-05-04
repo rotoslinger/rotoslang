@@ -213,7 +213,6 @@ MStatus LHSlideSimple::deform(MDataBlock &data, MItGeometry &itGeo,
       double unclampedUValue = slideUBasePointParam + uWeights[currentVertID];
       // double unclampedUValue = slideUBasePointParam + uWeights[currentVertID]* vAmount;
       double clampedUValue = std::max(uMinParam, std::min(unclampedUValue, uMaxParam));
-
       // double unclampedVValue = slideVBasePointParam + vWeights[currentVertID] * uAmount;
       double unclampedVValue = slideVBasePointParam + vWeights[currentVertID];
       double clampedVValue = std::max(vMinParam, std::min(unclampedVValue, vMaxParam));

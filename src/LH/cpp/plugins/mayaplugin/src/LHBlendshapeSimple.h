@@ -32,7 +32,8 @@ class LHBlendshapeSimple : public MPxDeformerNode {
   static MObject aTargetGeo;
   static MObject aTargetWeights;
   static MObject aMembershipWeights;
-
+  MStatus status;
+  float amount;
   inline MString FormatError( const MString &msg, const MString
                                 &sourceFile, const int &sourceLine )
   {

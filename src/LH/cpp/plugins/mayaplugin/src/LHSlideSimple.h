@@ -1,7 +1,5 @@
 #pragma once
-#if defined _WIN32  || defined _WIN64
-#define NOMINMAX
-#endif
+#include "windowsMinMax.h"
 
 #include "formatErrorMacros.h"
 #include <maya/MDataBlock.h>
@@ -25,7 +23,7 @@
 
 #include <maya/MPxDeformerNode.h>
 #include <vector>
-
+#include <algorithm>
 class LHSlideSimple : public MPxDeformerNode {
  public:
   LHSlideSimple() {};

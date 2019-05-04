@@ -230,7 +230,7 @@ MThreadRetVal ParallelDeformationCalc(void *data)
         task_data->finalPointArray.append(task_data->allPoints[ptIdx]);
     	task_data->finalIndexArray.append(ptIdx);
     }
-
+    return 0;
 }
 
 
@@ -344,7 +344,7 @@ MStatus LHMatrixDeformer::deform(MDataBlock& data, MItGeometry& itGeo,
     int multiThread = data.inputValue(aMultiThread).asInt();
     int reverseOrder = data.inputValue(aReverseDeformOrder).asInt();
     
-    if (multiThread and numTasks==0)
+    if (multiThread && numTasks==0)
     {
         return MS::kFailure;
 
