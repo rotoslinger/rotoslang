@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from PySide2 import QtWidgets, QtCore, QtGui
 from maya import OpenMayaUI as OpenMayaUI
 from shiboken2 import wrapInstance
@@ -33,7 +33,10 @@ class Scratch_Panel(QtWidgets.QWidget):
     def __init__(self, parent=None, winTitle = "Scratch Panel", winName = None):
         super(Scratch_Panel, self).__init__(parent)
         #main widget setting
+        
         self.setWindowFlags(QtCore.Qt.Window)
+        self.settings_path = os.path.join(os.getenv('HOME'), "scratchSettings.ini")
+
         self.setWindowTitle(winTitle)
         self.setObjectName(winName)
         self.setAcceptDrops(True) # Very important
@@ -42,8 +45,17 @@ class Scratch_Panel(QtWidgets.QWidget):
         self.create_connections()
 
     def create_layout(self):
+        
+        if os.path.exists(self.settings_path):
+            settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
+            self.restoreGeometry(settings_obj.value("windowGeometry"))
+            # self.restoreState(settings_obj.value("windowState", ""))
+        for i in dir(self):
+            if "save" in i or "restore" in i:
+                print i
+
         # left list
-        self.list_widget_l = QtWidgets.QListWidget(self)
+        self.list_widget_l = LListWidget(self)
         self.list_widget_l.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.list_widget_l.setAcceptDrops(True)
         # Allow drag and drop reorder
@@ -165,6 +177,11 @@ class Scratch_Panel(QtWidgets.QWidget):
             x.append(str(items[i].text()))
         cmds.select(x)
 
+    def closeEvent(self, event):
+        # Save window's geometry
+        settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
+        settings_obj.setValue("windowGeometry", self.saveGeometry())
+        # settings_obj.setValue("windowState", self.saveState())
 
 
     winWidth = 800
@@ -188,5 +205,21 @@ class Scratch_Panel(QtWidgets.QWidget):
         return globals()[winName]
 
 
+class LListWidget(QtWidgets.QListWidget):    
+    def __init__(self, parent):
+        super(LListWidget, self).__init__(parent)
+        self.setAcceptDrops(True)
+
+    def mimeTypes(self):
+        mimetypes = super(LListWidget, self).mimeTypes()
+        mimetypes.append('text/plain')
+        return mimetypes
+
+    def dropMimeData(self, index, data, action):
+        if data.hasText():
+            self.addItem(data.text())
+            return True
+        else:
+            return super(LListWidget, self).dropMimeData(index, data, action)
 
 
