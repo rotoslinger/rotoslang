@@ -10,12 +10,14 @@
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
+#include <maya/MFnMatrixArrayData.h>
 #include <maya/MFnNurbsCurve.h>
 #include <maya/MArrayDataHandle.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
 
 #include <maya/MMatrix.h>
+#include <maya/MMatrixArray.h>
 #include <maya/MVector.h>
 #include <maya/MGlobal.h>
 #include <maya/MString.h>
@@ -32,8 +34,8 @@ class LHCurveTransform : public MPxNode {
   LHCurveTransform() {};
   virtual MStatus compute( const MPlug& plug, MDataBlock& data );
   virtual MStatus computeMatricies(const MPlug& plug, MDataBlock& data, MFnNurbsCurve *fnCurve );
-    virtual MStatus setDependentsDirty(MPlug const & inPlug,
-                                            MPlugArray  & affectedPlugs);
+    // virtual MStatus setDependentsDirty(MPlug const & inPlug,
+    //                                         MPlugArray  & affectedPlugs);
 
   static void* creator();
   static MStatus initialize();
@@ -50,6 +52,9 @@ class LHCurveTransform : public MPxNode {
 
   static MObject aMatrixOutput;
   static MObject aOutputs;
+  static MObject aInMat;
+  static MObject aOutMat;
+//   static MObject aOutMatrixArray;
 
   // Floating point representation of the current index
   float currentIndex;

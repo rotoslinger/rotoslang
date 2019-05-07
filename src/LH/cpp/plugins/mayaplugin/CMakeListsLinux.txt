@@ -81,6 +81,8 @@ set(source_files
 	"src/LHCurveDeformer.cpp"
 	"src/LHVectorDeformerSimple.cpp"
 	"src/LHCurveRollSimple.cpp"
+	"src/LHCurveTransform.cpp"
+
 )
 #message("SOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" ${COLLISION_PLUGINS})
 #message(${COLLISION_PLUGINS})

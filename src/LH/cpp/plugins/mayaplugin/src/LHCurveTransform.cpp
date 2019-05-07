@@ -18,6 +18,9 @@ MObject LHCurveTransform::aInputs;
 
 MObject LHCurveTransform::aMatrixOutput;
 MObject LHCurveTransform::aOutputs;
+MObject LHCurveTransform::aInMat;
+MObject LHCurveTransform::aOutMat;
+// MObject LHCurveTransform::aOutMatrixArray;
 
 
 MStatus LHCurveTransform::initialize() {
@@ -36,6 +39,7 @@ MStatus LHCurveTransform::initialize() {
     addAttribute( aBiasIn );
 
 
+
 	aBiasOut = nAttr.create( "biasOut", "boutput", MFnNumericData::kFloat);
 	/////////////////// KEYABLE MUST BE FALSE for attributeAffects to work on an output
     nAttr.setKeyable(false);
@@ -47,6 +51,28 @@ MStatus LHCurveTransform::initialize() {
 	addAttribute( aBiasOut );
 
 
+  // Inputs
+  aInMat = mAttr.create("matIn", "matin");
+  mAttr.setWritable(true);
+  mAttr.setStorable(true);
+    mAttr.setKeyable(true);
+
+  addAttribute( aInMat );
+
+  aOutMat = mAttr.create("matOut", "matOut");
+  mAttr.setWritable(true);
+  mAttr.setStorable(true);
+    mAttr.setKeyable(false);
+
+  addAttribute( aOutMat );
+
+
+
+    // aOutMatrixArray = tAttr.create("outMatricies", "outmatricies", MFnNumericData::kMatrixArray);
+    // tAttr.setKeyable(false);
+    // tAttr.setArray(false);
+    // tAttr.setUsesArrayDataBuilder(true);
+    // addAttribute(aOutMatrixArray);
 
     // aNumOutputs = nAttr.create( "numOutputs", "numoutputs", MFnNumericData::kInt);
     // nAttr.setKeyable(false);
@@ -64,7 +90,8 @@ MStatus LHCurveTransform::initialize() {
   aMatrixInput = mAttr.create("matrixIn", "matrixin");
   mAttr.setWritable(true);
   mAttr.setStorable(true);
-  
+    mAttr.setKeyable(true);
+
   addAttribute( aMatrixInput );
 
   aInputs = cAttr.create("inputs", "inputs");
@@ -79,11 +106,7 @@ MStatus LHCurveTransform::initialize() {
 
   // Outputs
   aMatrixOutput = mAttr.create("matrixOut", "matrixout");
-  mAttr.setWritable(true);
-  mAttr.setStorable(true);
-  mAttr.setKeyable(false);
-
-  addAttribute( aMatrixOutput );
+   addAttribute( aMatrixOutput );
 
   aOutputs = cAttr.create("outputs", "outputs");
   cAttr.setKeyable(false);
@@ -102,6 +125,7 @@ MStatus LHCurveTransform::initialize() {
 	attributeAffects( aCurve, aOutputs);
 	attributeAffects( aMatrixInput, aOutputs);
 	attributeAffects( aMatrixInput, aMatrixOutput);
+	attributeAffects( aInMat, aOutMat);
 
 
 
@@ -117,7 +141,8 @@ MStatus LHCurveTransform::compute( const MPlug& plug, MDataBlock& data )
 {
 
     MStatus status;
-    if ( plug == aBiasOut ||  plug == aOutputs)
+    // if ( plug == aBiasOut ||  plug == aOutputs || plug == aMatrixOutput || plug == aOutMat)
+    if ( plug == aMatrixOutput || plug == aOutMat)
     {
 
 
@@ -128,18 +153,75 @@ MStatus LHCurveTransform::compute( const MPlug& plug, MDataBlock& data )
             return MS::kFailure;
         }
         fnCurve = new MFnNurbsCurve(oCurve);
-        LHCurveTransform::computeMatricies(plug, data, fnCurve);
 
+        MMatrix mInMat = data.inputValue(aInMat).asMatrix();
 
+            // MDataHandle testHandle = data.outputValue(aOutMat).asMatrix();
 
+            // testHandle.set(temp);
+            // testHandle.setClean();
+            // data.setClean(plug);
 
-    	MDataHandle hBiasIn = data.inputValue(aBiasIn, &status);
-        float inVal = hBiasIn.asFloat();
-        MDataHandle hBiasOut = data.outputValue(aBiasOut);
-        hBiasOut.setFloat(inVal);
+        MDataHandle outMatrixHandle = data.outputValue(aOutMat);
+        outMatrixHandle.set(mInMat);
+        outMatrixHandle.setClean();
+        data.setClean(plug);
 
-		MGlobal::displayInfo(MString("DEBUG:  UPDATING output value is ") + inVal);
-	    data.setClean(plug);
+        ////////////////////////////////////////////////////////////////////////////////
+        MArrayDataHandle outputsArrayHandle(data.inputArrayValue( aOutputs, &status));
+        MArrayDataHandle inputsArrayHandle(data.inputArrayValue( aInputs, &status));
+
+        CheckStatusReturn( status, "Unable to get inputs" );
+        unsigned int elemCount = inputsArrayHandle.elementCount(&status);
+
+        // If not input, there will be no output
+        if (!elemCount)
+        {
+            CheckStatusReturn( MS::kFailure, "No Inputs, add at least one matrix to the input matrix array" );
+            return MS::kFailure;
+        }
+        outputCount = (float) elemCount;
+        MMatrixArray finalMatrixArray;
+        for (int i=0;i < elemCount;i++)
+        {
+            
+            status = inputsArrayHandle.jumpToElement(i);
+            CheckStatusReturn( status, "Unable to jump to input element" );
+            MDataHandle tempHandle(inputsArrayHandle.inputValue(&status) );
+            CheckStatusReturn( status, "Couldn't get array handle" );
+            MMatrix temp = tempHandle.child( aMatrixInput ).asMatrix();
+
+            finalMatrixArray.append(tempHandle.child( aMatrixInput ).asMatrix());
+
+            status = outputsArrayHandle.jumpToElement(i);
+            CheckStatusReturn( status, "Unable to jump to output element" );
+            currentIndex = (float)i;
+
+            if (i == 0)
+            {
+                currentParameter = 0;
+            }
+            else if (i ==elemCount-1)
+            {
+                currentParameter = 1;
+            }
+            else 
+            {
+                currentParameter = (1.0 / outputCount) * currentIndex;
+            }
+
+            
+            MGlobal::displayInfo (MString("PARAM") + " " + currentParameter + " OutputCount " +outputCount+ " CurrentIndex " +currentIndex );
+            // composedMatrix = MMatrix::identity;
+
+            MDataHandle handle = outputsArrayHandle.outputValue().child(aMatrixOutput);
+            handle.set(temp);
+            handle.setClean();
+            data.setClean(plug);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////
+
     }
     else
     {
@@ -156,9 +238,17 @@ MStatus LHCurveTransform::computeMatricies(const MPlug& plug, MDataBlock& data, 
     MArrayDataHandle inputsArrayHandle(data.inputArrayValue( aInputs, &status));
 
     CheckStatusReturn( status, "Unable to get inputs" );
-    unsigned int elemCount = outputsArrayHandle.elementCount(&status);
-    outputCount = (float) elemCount;
+    unsigned int elemCount = inputsArrayHandle.elementCount(&status);
 
+    // If not input, there will be no output
+    if (!elemCount)
+    {
+        CheckStatusReturn( MS::kFailure, "No Inputs, add at least one matrix to the input matrix array" );
+        return MS::kFailure;
+    }
+
+    outputCount = (float) elemCount;
+    MMatrixArray finalMatrixArray;
     for (int i=0;i < elemCount;i++)
     {
         
@@ -166,8 +256,9 @@ MStatus LHCurveTransform::computeMatricies(const MPlug& plug, MDataBlock& data, 
         CheckStatusReturn( status, "Unable to jump to input element" );
         MDataHandle tempHandle(inputsArrayHandle.inputValue(&status) );
         CheckStatusReturn( status, "Couldn't get array handle" );
-        
         MMatrix temp = tempHandle.child( aMatrixInput ).asMatrix();
+
+        finalMatrixArray.append(tempHandle.child( aMatrixInput ).asMatrix());
 
         status = outputsArrayHandle.jumpToElement(i);
         CheckStatusReturn( status, "Unable to jump to output element" );
@@ -186,7 +277,7 @@ MStatus LHCurveTransform::computeMatricies(const MPlug& plug, MDataBlock& data, 
             currentParameter = (1.0 / outputCount) * currentIndex;
         }
 
-
+        
         MGlobal::displayInfo (MString("PARAM") + " " + currentParameter + " OutputCount " +outputCount+ " CurrentIndex " +currentIndex );
         composedMatrix = MMatrix::identity;
 
@@ -197,49 +288,55 @@ MStatus LHCurveTransform::computeMatricies(const MPlug& plug, MDataBlock& data, 
         data.setClean(plug);
 
     }
-    data.setClean(LHCurveTransform::aOutputs);
+    ////////Set the final weights
+    // MFnMatrixArrayData outputMatrixArrayFn;
+    // MObject oOutputArray = outputMatrixArrayFn.create(finalMatrixArray);
+    // MDataHandle handle = data.outputValue(aOutMatrixArray);
+    // handle.setMObject(oOutputArray);
+
+    // data.setClean(LHCurveTransform::aOutputs);
     return MS::kSuccess;
 }
 
-MStatus LHCurveTransform::setDependentsDirty( MPlug const & inPlug,
-                                            MPlugArray  & affectedPlugs)
-    {
-        if ( (inPlug.attribute() != aInputs)
-        & (inPlug.attribute() != aCurve)
-        & (inPlug.attribute() != aBiasIn)
-        // & (inPlug.attribute() != aBiasOut)
-        & (inPlug.attribute() != aMatrixInput))
-        // & (inPlug.attribute() != aMatrixOutput))
-        {
-            return MS::kSuccess;
-        }
+// MStatus LHCurveTransform::setDependentsDirty( MPlug const & inPlug,
+//                                             MPlugArray  & affectedPlugs)
+//     {
+//         if ( (inPlug.attribute() != aInputs)
+//         & (inPlug.attribute() != aCurve)
+//         & (inPlug.attribute() != aBiasIn)
+//         // & (inPlug.attribute() != aBiasOut)
+//         & (inPlug.attribute() != aMatrixInput))
+//         // & (inPlug.attribute() != aMatrixOutput))
+//         {
+//             return MS::kSuccess;
+//         }
         
-        MPlug outArrayPlug(thisMObject(), aOutputs);
-        if (inPlug.isElement()) {
-            // First dirty the output output element first.
-            // Of course, dirty output element itself
-            MPlug elemPlug = outArrayPlug.elementByLogicalIndex(
-                                                inPlug.logicalIndex());
-            affectedPlugs.append(elemPlug);
+//         MPlug outArrayPlug(thisMObject(), aOutputs);
+//         if (inPlug.isElement()) {
+//             // First dirty the output output element first.
+//             // Of course, dirty output element itself
+//             MPlug elemPlug = outArrayPlug.elementByLogicalIndex(
+//                                                 inPlug.logicalIndex());
+//             affectedPlugs.append(elemPlug);
 
-            // We also need to dirty the parent.
-            //
-            affectedPlugs.append(outArrayPlug);
-        } else {
-            // Mark the parent output plug as dirty.
-            //
-            affectedPlugs.append(outArrayPlug);
+//             // We also need to dirty the parent.
+//             //
+//             affectedPlugs.append(outArrayPlug);
+//         } else {
+//             // Mark the parent output plug as dirty.
+//             //
+//             affectedPlugs.append(outArrayPlug);
 
-            // Also visit each element.
-            //
-            unsigned int i,n = outArrayPlug.numElements();
-            for (i = 0; i < n; i++) {
-                MPlug elemPlug = outArrayPlug.elementByPhysicalIndex(i);
-                affectedPlugs.append(elemPlug);
-            }
-        }
-        return MS::kSuccess;
-    }
+//             // Also visit each element.
+//             //
+//             unsigned int i,n = outArrayPlug.numElements();
+//             for (i = 0; i < n; i++) {
+//                 MPlug elemPlug = outArrayPlug.elementByPhysicalIndex(i);
+//                 affectedPlugs.append(elemPlug);
+//             }
+//         }
+//         return MS::kSuccess;
+//     }
 
 // MMatrix ComposeMatrix(MVector rowX, MVector rowY, MVector rowZ, MPoint translation)
 // {

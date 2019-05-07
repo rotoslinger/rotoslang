@@ -1,130 +1,102 @@
+cmake_minimum_required(VERSION 2.8)
 
-# WINDOWS cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
-# Windows build cmake --build . --config Debug
+include(RezBuild)
+include(AL_CMakeLib)
+include ( ExternalProject )
 
-# OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
-cmake_minimum_required(VERSION 3.1.3)
+SET(CMAKE_CXX_FLAGS "-std=c++11")
 
+# must put find_package before rez_find_packages or will not work......
+find_package(OpenGL REQUIRED)
+if (OPENGL_FOUND)
+	include_directories(${OPENGL_INCLUDE_DIR})
+	link_libraries(${OPENGL_LIBRARIES})
 
-
-if(UNIX AND NOT APPLE)
-    set(LINUX TRUE)
 endif()
 
-if(LINUX)
-    cmake_minimum_required(VERSION 2.8)
+rez_find_packages(PREFIX pkgs AUTO)
 
-    include(RezBuild)
-    include(AL_CMakeLib)
-    include ( ExternalProject )
+include_directories(src)
 
-    SET(CMAKE_CXX_FLAGS "-std=c++11")
+set(source_files
+	"src/pluginMain.cpp"
+#	"LHRepulsorDeformer.cpp"
+#	"LHRepulsorDeformer.h"
+#	"LHGetDeformPoints.cpp"
+#	"LHGetDeformPoints.h"
+#	"LHTemplateNode.cpp"
+#	"LHTemplateNode.h"
+#	"LHTemplateDeformer.cpp"
+#	"LHTemplateDeformer.h"
+	"src/LHWeightNode.cpp"
+	"src/LHWeightNode.h"
+#	"LHMultiCluster.cpp"
+#	"LHMultiCluster.h"
+#	"LHComputeDeformer.cpp"
+#	"LHComputeDeformer.h"
+#	"splatDeformer.cpp"
+#	"splatDeformer.h"
+#	"sseDeformer.cpp"
+#	"sseDeformer.h"
+#	"LHMultiClusterThreaded.cpp"
+#	"LHMultiClusterThreaded.h"
+	"src/LHCollisionDeformer.cpp"
+	"src/LHCollisionDeformer.h"
+	"src/LHLocator.cpp"
+	"src/LHLocator.h"
+	"src/threading.cpp"
+	"src/LHCollisionLocator.cpp"
+	"src/LHCollisionLocator.h"
+	"src/nullTransform.cpp"
+	"src/nullTransform.h"
+	"src/nullMatrixTransform.cpp"
+	"src/nullMatrixTransform.h"
+	"src/LHGeometryConstraint.cpp"
+	"src/LHGeometryConstraint.h"
+	"src/LHSlideDeformer.cpp"
+	"src/LHSlideDeformer.h"
+	"src/LHVectorDeformer.cpp"
+	"src/LHVectorDeformer.h"
+	"src/LHCurveRollDeformer.cpp"
+	"src/LHCurveRollDeformer.h"
+	"src/LHCurveWeightNode.cpp"
+	"src/LHCurveWeightNode.h"
+	"src/LHKDoubleArrayToKFloatArray.cpp"
+#	"src/LHKDoubleArrayToKFloatArray.h"
+	"src/LHWeightNodeFloat.cpp"
+#	"src/LHWeightNodeFloat.h"
+	"src/LHTemplateGPUDeformer.cpp"
+#	"src/LHTemplateGPUDeformer.h"
+	"src/LHTemplateGPUDeformer.cl"
+	"src/LHMultiWrap.cpp"
+	"src/LHMultiWrap.h"
+	"src/LHSlideSimple.cpp"
+	"src/LHSlideSimple.h"
+	"src/LHNakedLocator.cpp"
+	"src/LHNakedLocator.h"
+	"src/LHMatrixDeformer.cpp"
+	"src/LHMatrixDeformer.h"
+	"src/LHBlendshapeSimple.cpp"
+	"src/LHBlendshapeSimple.h"
+	"src/LHCurveDeformer.cpp"
+	"src/LHVectorDeformerSimple.cpp"
+	"src/LHCurveRollSimple.cpp"
+	"src/LHCurveTransform.cpp"
 
-    # must put find_package before rez_find_packages or will not work......
-    find_package(OpenGL REQUIRED)
-    if (OPENGL_FOUND)
-        include_directories(${OPENGL_INCLUDE_DIR})
-        link_libraries(${OPENGL_LIBRARIES})
+)
+#message("SOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" ${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
+#message(${COLLISION_PLUGINS})
+add_library(collision SHARED ${source_files})
+set_target_properties(collision PROPERTIES PREFIX "")
 
-    endif()
+link_directories(${stdlib_ROOT}/lib64)
+find_package(OpenMP)
 
-    rez_find_packages(PREFIX pkgs AUTO)
+target_link_libraries(collision tbb clew cuda cudart ${maya_LIBRARIES} Foundation OpenMaya)
 
+install(TARGETS collision DESTINATION plugins)
 
-    set(source_files
-        "src/pluginMain.cpp"
-    #	"LHRepulsorDeformer.cpp"
-    #	"LHRepulsorDeformer.h"
-    #	"LHGetDeformPoints.cpp"
-    #	"LHGetDeformPoints.h"
-    #	"LHTemplateNode.cpp"
-    #	"LHTemplateNode.h"
-    #	"LHTemplateDeformer.cpp"
-    #	"LHTemplateDeformer.h"
-        "src/LHWeightNode.cpp"
-        "src/LHWeightNode.h"
-    #	"LHMultiCluster.cpp"
-    #	"LHMultiCluster.h"
-    #	"LHComputeDeformer.cpp"
-    #	"LHComputeDeformer.h"
-    #	"splatDeformer.cpp"
-    #	"splatDeformer.h"
-    #	"sseDeformer.cpp"
-    #	"sseDeformer.h"
-    #	"LHMultiClusterThreaded.cpp"
-    #	"LHMultiClusterThreaded.h"
-        "src/LHCollisionDeformer.cpp"
-        "src/LHCollisionDeformer.h"
-        "src/LHLocator.cpp"
-        "src/LHLocator.h"
-        "src/threading.cpp"
-        "src/LHCollisionLocator.cpp"
-        "src/LHCollisionLocator.h"
-        "src/nullTransform.cpp"
-        "src/nullTransform.h"
-        "src/nullMatrixTransform.cpp"
-        "src/nullMatrixTransform.h"
-        "src/LHGeometryConstraint.cpp"
-        "src/LHGeometryConstraint.h"
-        "src/LHSlideDeformer.cpp"
-        "src/LHSlideDeformer.h"
-        "src/LHVectorDeformer.cpp"
-        "src/LHVectorDeformer.h"
-        "src/LHCurveRollDeformer.cpp"
-        "src/LHCurveRollDeformer.h"
-        "src/LHCurveWeightNode.cpp"
-        "src/LHCurveWeightNode.h"
-        "src/LHKDoubleArrayToKFloatArray.cpp"
-        "src/LHKDoubleArrayToKFloatArray.h"
-        "src/LHWeightNodeFloat.cpp"
-        "src/LHWeightNodeFloat.h"
-        "src/LHTemplateGPUDeformer.cpp"
-        "src/LHTemplateGPUDeformer.h"
-        "src/LHTemplateGPUDeformer.cl"
-        "src/LHMultiWrap.h"
-        "src/LHMultiWrap.cpp"
-        "src/LHBlendshapeSimple.cpp"
-
-    )
-
-    add_library(collision SHARED ${source_files})
-    set_target_properties(collision PROPERTIES PREFIX "")
-
-    link_directories(${stdlib_ROOT}/lib64)
-    find_package(OpenMP)
-
-    target_link_libraries(collision tbb clew cuda cudart ${maya_LIBRARIES} Foundation OpenMaya)
-
-    install(TARGETS collision DESTINATION plugins)
-
-else()
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-    message("message to display" )
-
-    # WINDOWS cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
-    # Windows build cmake --build . --config Debug
-
-    # OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
-    cmake_minimum_required(VERSION 3.1.3)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)  # not necessary, but encouraged
-
-
-    project(LHDeformerNodes)
-
-    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
-
-
-    add_subdirectory(src)
-endif()
 
