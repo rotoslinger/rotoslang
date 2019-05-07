@@ -6,117 +6,92 @@ reload(node_utils)
 from rig_2.misc import utils as misc_utils
 reload(misc_utils)
 
-class Component(object):
-    def __init__(self,
-                 side="C",
-                 name="component",
-                 suffix = "CPT",
-                 asset_name = "asset",
-                 root_parent = "C_asset_GRP",
-                 control_parent="C_control_GRP",
-                 rig_parent="C_rig_GRP",
-                 debug = False
-                 ):
-        # args
-        self.side = side
-        self.name = name
-        self.suffix = suffix
-        self.asset_name = asset_name
-        self.control_parent = control_parent
-        self.rig_parent = rig_parent
-        self.debug = debug
+# class Component(object):
+#     def __init__(self,
+#                  side="C",
+#                  name="component",
+#                  suffix = "CPT",
+#                  asset_name = "asset",
+#                  root_parent = "C_asset_GRP",
+#                  control_parent="C_control_GRP",
+#                  rig_parent="C_rig_GRP",
+#                  debug = False
+#                  ):
+#         # args
+#         self.side = side
+#         self.name = name
+#         self.suffix = suffix
+#         self.asset_name = asset_name
+#         self.control_parent = control_parent
+#         self.rig_parent = rig_parent
+#         self.debug = debug
 
-        # vars
-        self.geo = None
-        self.skeleton = None
-        self.rig = None
-        self.control = None
-        self.subcomponents = []
-        self.inputs = {}
-        self.outputs = {}
+#         # vars
+#         self.geo = None
+#         self.skeleton = None
+#         self.rig = None
+#         self.control = None
+#         self.subcomponents = []
+#         self.inputs = {}
+#         self.outputs = {}
 
-    def initialize(self):
-        """ Check for a root, create if none """
-        self.hierarchy_class = rig_hierarchy.base()
-        self.hierarchy_class.initialize()
+#     def initialize(self):
+#         """ Check for a root, create if none """
+#         self.hierarchy_class = rig_hierarchy.base()
+#         self.hierarchy_class.initialize()
 
-        if not cmds.objExists(self.hierarchy_class.root):
-            self.hierarchy_class.create()
+#         if not cmds.objExists(self.hierarchy_class.root):
+#             self.hierarchy_class.create()
 
-        self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
+#         self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
 
-        """
-        Create component Hierarchy within the asset hierarchy. 
-        These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
-        """
+#         """
+#         Create component Hierarchy within the asset hierarchy. 
+#         These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
+#         """
 
-        self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
-                                                                                              name=self.name,
-                                                                                              suffix=self.suffix,
-                                                                                              hierarchy_class=self.hierarchy_class)
-        node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
+#         self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
+#                                                                                               name=self.name,
+#                                                                                               suffix=self.suffix,
+#                                                                                               hierarchy_class=self.hierarchy_class)
+#         node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
 
-    def get_subcomponents(self):
-        return
+#     def get_subcomponents(self):
+#         return
 
-    def get_inputs(self):
-        self.inputs = []
-        for subcomponent in self.subcomponents:
-            for input in subcomponent.inputs:
-                old_key = input.keys()[0]
-                input[subcomponent.aggr_name + "." + old_key] = input.pop(old_key)
-                self.inputs.append(input)
-        self.input_names = [x.keys()[0] for x in self.inputs]
+#     def get_inputs(self):
+#         self.inputs = []
+#         for subcomponent in self.subcomponents:
+#             for input in subcomponent.inputs:
+#                 old_key = input.keys()[0]
+#                 input[subcomponent.aggr_name + "." + old_key] = input.pop(old_key)
+#                 self.inputs.append(input)
+#         self.input_names = [x.keys()[0] for x in self.inputs]
 
-    def get_outputs(self):
-        self.outputs = []
-        for subcomponent in self.subcomponents:
-            for output in subcomponent.outputs:
-                old_key = output.keys()[0]
-                output[subcomponent.aggr_name + "." + old_key] = output.pop(old_key)
-                self.outputs.append(output)
-        self.output_names = [x.keys()[0] for x in self.outputs]
+#     def get_outputs(self):
+#         self.outputs = []
+#         for subcomponent in self.subcomponents:
+#             for output in subcomponent.outputs:
+#                 old_key = output.keys()[0]
+#                 output[subcomponent.aggr_name + "." + old_key] = output.pop(old_key)
+#                 self.outputs.append(output)
+#         self.output_names = [x.keys()[0] for x in self.outputs]
 
-    def connect_subcomponents(self):
-        return
+#     def connect_subcomponents(self):
+#         return
 
-    def create(self):
-        self.initialize()
-        self.get_subcomponents()
-        self.get_inputs()
-        self.get_outputs()
-        self.connect_subcomponents()
-
-class Builder(Subcomponent):
-    def __init__(self,
-                 **kw):
-        super(Builder, self).__init__(self, **kw)
-
-    def initialize(self):
-        
-        """ Check for a root, create if none """
-        self.hierarchy_class = rig_hierarchy.base()
-        self.hierarchy_class.initialize()
-
-        if not cmds.objExists(self.hierarchy_class.root):
-            self.hierarchy_class.create()
-
-        self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
-
-        """
-        Create component Hierarchy within the asset hierarchy. 
-        These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
-        """
-
-        self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
-                                                                                              name=self.name,
-                                                                                              suffix=self.suffix,
-                                                                                              hierarchy_class=self.hierarchy_class)
-        node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
+#     def create(self):
+#         self.initialize()
+#         self.get_subcomponents()
+#         self.get_inputs()
+#         self.get_outputs()
+#         self.connect_subcomponents()
 
 class Subcomponent(object):
     def __init__(self,
                  parent_component_class,
+                 godnode_class=None,
+                 container="",
                  side="C",
                  name="subcomponent",
                  suffix = "SUBCPT",
@@ -129,6 +104,7 @@ class Subcomponent(object):
                  create_subcomponent_grp=False,
                  ):
         self.parent_component_class = parent_component_class
+        self.godnode_class = godnode_class
         self.side = side
         self.name = name
         self.suffix = suffix
@@ -139,7 +115,7 @@ class Subcomponent(object):
         self.create_rig_grp = create_rig_grp
         self.create_control_grp = create_control_grp
         self.create_subcomponent_grp = create_subcomponent_grp
-        
+        self.container = container
         # vars
         self.geo = None
         self.skeleton = None
@@ -147,15 +123,22 @@ class Subcomponent(object):
         self.control = None
         self.nodes_to_lock = []
         self.nodes_to_hide = []
+        self.nodes_to_cleanup = []
         self.inputs = {}
         self.outputs = {}
         self.input_names = []
         self.output_names = []
         self.subcomponents = []
+        self.container_attrs = []
+        self.container_nodes = []
 
         # if parent is a dictionary get the value of the first key
         if type(self.parent) == dict:
             self.parent = self.parent[self.parent.keys()[0]]
+
+        # these need to happen when the class is initialized
+        self.initialize()
+        self.get_container()
 
 
     def initialize(self):
@@ -179,9 +162,11 @@ class Subcomponent(object):
         
         node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
 
-    # def get_hier(self):
-    #     if self.create_rig_
-    #     self.rig = node_utils.get_node_agnostic("transform", name = "{0}_{1}_{2}".format(self.side, self.name, self.suffix), parent=self.parent_component_class.rig)
+    def get_container(self):
+        if not self.container:
+            return
+        if not cmds.objExists(self.container):
+            self.container = cmds.container(n=self.container)
 
     def get_ctrls(self):
         """ If controls don't exist yet, create them, otherwise just instantiate """
@@ -190,7 +175,7 @@ class Subcomponent(object):
     def get_nodes(self):
         return
 
-    def create_attrs(self):
+    def get_attrs(self):
         return
 
     def set_defaults(self):
@@ -228,6 +213,11 @@ class Subcomponent(object):
     def connect_nodes(self):
         return
 
+    def organize_container(self):
+        return
+
+
+    ############ Cleanup type finalize things start here #############
     def hide_nodes(self):
         if not self.nodes_to_hide or self.debug:
             return
@@ -239,13 +229,28 @@ class Subcomponent(object):
             return
         lock_nodes(self.nodes_to_lock)
 
+    def cleanup_nodes(self):
+        if not self.nodes_to_cleanup or self.debug:
+            return
+        cleanup_nodes(self.nodes_to_cleanup)
 
+    def add_container_attrs(self):
+        if not self.container_attrs or not self.container:
+            return
+        add_attrs_to_container(self.container, self.container_attrs)
+
+    def add_container_nodes(self):
+        if not self.container_nodes or not self.container:
+            return
+        add_nodes_to_container(self.container, self.container_nodes)
+
+    def post_create(self):
+        return
 
     def create(self):
-        self.initialize()
         self.get_ctrls()
         self.get_nodes()
-        self.create_attrs()
+        self.get_attrs()
         self.set_defaults()
         self.create_inputs()
         self.create_outputs()
@@ -254,17 +259,77 @@ class Subcomponent(object):
         self.finalize_input_output()
         self.set_up_message_network()
         self.connect_nodes()
+        self.organize_container()
         self.hide_nodes()
         self.lock_nodes()
+        self.cleanup_nodes()
+        self.add_container_attrs()
+        self.add_container_nodes()
+        self.post_create()
 
     # misc methods
+
+    def safe_append(self, node_to_add, list_to_append):
+        if type(node_to_add) != list:
+            node_to_add = [node_to_add]
+
+        for node in node_to_add:
+            if node in list_to_append:
+                continue
+            list_to_append.append(node)
+
     def add_node_to_hide(self, node_to_add):
-        if node_to_add not in self.nodes_to_hide:
-            self.nodes_to_hide.append(node_to_add)
+        self.safe_append(node_to_add=node_to_add,
+                         list_to_append=self.nodes_to_hide)
+
             
     def add_node_to_lock(self, node_to_add):
-        if node_to_add not in self.nodes_to_lock:
-            self.nodes_to_lock.append(node_to_add)
+        self.safe_append(node_to_add=node_to_add,
+                         list_to_append=self.nodes_to_lock)
+
+    def add_node_to_cleanup(self, node_to_add):
+        self.safe_append(node_to_add=node_to_add,
+                         list_to_append=self.nodes_to_cleanup)
+
+    def add_to_container_attrs(self, attr_to_add):
+        self.safe_append(node_to_add=attr_to_add,
+                         list_to_append=self.container_attrs)
+
+    def add_to_container_nodes(self, node_to_add):
+        self.safe_append(node_to_add=node_to_add,
+                         list_to_append=self.container_nodes)
+
+
+
+
+class Builder(Subcomponent):
+    def __init__(self,
+                 **kw):
+        super(Builder, self).__init__(self, **kw)
+
+    def initialize(self):
+        
+        """ Check for a root, create if none """
+        self.hierarchy_class = rig_hierarchy.base()
+        self.hierarchy_class.initialize()
+
+        if not cmds.objExists(self.hierarchy_class.root):
+            self.hierarchy_class.create()
+
+        self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
+
+        """
+        Create component Hierarchy within the asset hierarchy. 
+        These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
+        """
+
+        self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
+                                                                                              name=self.name,
+                                                                                              suffix=self.suffix,
+                                                                                              hierarchy_class=self.hierarchy_class)
+        node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
+
+
 
 
 
@@ -296,3 +361,29 @@ def lock_nodes(nodes_to_lock):
                         channelBox = True,
                         )
         cmds.setAttr(node + ".ihi", 0)
+
+def cleanup_nodes(nodes_to_cleanup):
+    for node in nodes_to_cleanup:
+        cmds.setAttr(node + ".ihi", 1)
+
+def add_nodes_to_container(container, nodes):
+    for node in nodes:
+        node_list = cmds.container(container, q=True, nodeList=True)
+        if not node_list or node_list and node not in node_list:
+            cmds.container(container, e=True, addNode=node)
+
+def add_attrs_to_container(container, attrs):
+    for attr in attrs:
+        # make sure the node is in the container
+        node = attr.split(".")[0]
+        attr_name = attr.split(".")[1]
+        node_list = cmds.container(container, q=True, nodeList=True)
+        if not node_list or node_list and node not in node_list:
+            cmds.container(container, e=True, addNode=node)
+        
+        # TODO need to add a check here to make sure the publish name is unique....
+
+        cmds.container(container, e=True, publishName=attr_name)
+        cmds.container(container, e=True, bindAttr=[attr, attr_name])
+        
+

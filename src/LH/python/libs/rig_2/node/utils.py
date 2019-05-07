@@ -24,10 +24,56 @@ def get_locator(name, parent=None, return_transform=True, return_shape=False):
     if return_shape:
         return shape
 
-def decompose_matrix(name, matrix_attr, suffix = "_DCM"):
+def decompose_matrix(name, matrix_attr, suffix = "_DCM", rotate_order_transform = ""):
     ret_decompose_matrix = get_node_agnostic("decomposeMatrix", name = name + suffix)
     cmds.connectAttr(matrix_attr, ret_decompose_matrix + ".inputMatrix")
+    if rotate_order_transform:
+        cmds.connectAttr(rotate_order_transform + ".rotateOrder", ret_decompose_matrix + ".inputRotateOrder")
     return ret_decompose_matrix
+
+def mult_matrix(name, matrix_attrs, suffix = "_MTM"):
+    ret_mult_matrix = get_node_agnostic("multMatrix", name = name + suffix)
+    for idx, attr in enumerate(matrix_attrs):
+        cmds.connectAttr(attr, ret_mult_matrix + ".matrixIn[{0}]".format(idx))
+    return ret_mult_matrix
+
+def condition(name,
+              first_term = 0.0,
+              second_term = 0.0,
+              operation = 0.0,
+              color_if_true_attrs = ["","",""],
+              color_if_false_attrs = ["","",""],
+              suffix = "_CON"):
+
+    ret_cond_matrix = get_node_agnostic("condition", name = name + suffix)
+    
+    # If it is a value set it
+    if  type(first_term) == float or type(first_term) == int:
+        cmds.setAttr(ret_cond_matrix + ".firstTerm", first_term)
+    if  type(second_term) == float or type(second_term) == int:
+        cmds.setAttr(ret_cond_matrix + ".secondTerm", second_term)
+
+    # If it is an attribute connect it
+    if  type(first_term) == unicode:
+        cmds.connectAttr(first_term, ret_cond_matrix + ".firstTerm")
+    if  type(second_term) == unicode:
+        cmds.connectAttr(second_term, ret_cond_matrix + ".secondTerm")
+
+    for idx, color in enumerate(["R", "G", "B"]):
+        # If it is a value set it
+        if type(color_if_true_attrs[idx]) == float:
+            cmds.setAttr(ret_cond_matrix + ".colorIfTrue{0}".format(color), color_if_true_attrs[idx])
+        if type(color_if_false_attrs[idx]) == float:
+            cmds.setAttr(ret_cond_matrix + ".colorIfFalse{0}".format(color), color_if_false_attrs[idx])
+
+        # If it is an attribute connect it
+        if color_if_true_attrs[idx] and type(color_if_true_attrs[idx]) == unicode:
+            cmds.connectAttr(color_if_true_attrs[idx], ret_cond_matrix + ".colorIfTrue{0}".format(color))
+        if color_if_false_attrs[idx] and type(color_if_false_attrs[idx]) == unicode:
+            cmds.connectAttr(color_if_false_attrs[idx], ret_cond_matrix + ".colorIfFalse{0}".format(color))
+            
+
+    return ret_cond_matrix
 
 
 class Buffer(object):

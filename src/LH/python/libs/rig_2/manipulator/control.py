@@ -344,6 +344,8 @@ class Ctrl(object):
                             outliner_color = self.outliner_color)
         self.ctrl_shape.create()     
         self.ctrl = self.ctrl_shape.ctrl
+        self.ctrl_shapes = misc_utils.get_shape(self.ctrl)
+        self.ctrl_shape = self.ctrl_shapes[0]
 
         if self.null_transform:
             name = self.ctrl
@@ -562,12 +564,15 @@ class Offset_Ctrl(Ctrl):
                                        "dollyOffset": ".tz"
                                       }
 
-class Head_Guide_Ctrl(Ctrl):
+class Camera_Guide_Ctrl_Base(Ctrl):
     def __init__(self,
                  **kw):
-        super(Head_Guide_Ctrl, self).__init__(**kw)
-        self.name = "headGuide"
-        self.shape_dict = elements.camera_head_guide
+        """
+        These guides will not be used to fit the rig, they are helpers for visualizing different parts of the camera
+        Also, they will not be selectable
+        """
+        super(Camera_Guide_Ctrl_Base, self).__init__(**kw)
+        self.name = "base"
         self.color_side             = False
         self.outliner_color         = True
         self.gimbal                 = False
@@ -580,20 +585,24 @@ class Head_Guide_Ctrl(Ctrl):
         shape = misc_utils.get_shape(self.ctrl)
         self.main_shape = shape[0]
 
-class Traj_Guide_Ctrl(Ctrl):
+class Head_Guide_Ctrl(Camera_Guide_Ctrl_Base):
+    def __init__(self,
+                 **kw):
+        super(Head_Guide_Ctrl, self).__init__(**kw)
+        self.name = "headGuide"
+        self.shape_dict = elements.camera_head_guide
+
+class Traj_Guide_Ctrl(Camera_Guide_Ctrl_Base):
     def __init__(self,
                  **kw):
         super(Traj_Guide_Ctrl, self).__init__(**kw)
         self.name = "trajGuide"
         self.shape_dict = elements.camera_traj_guide
-        self.color_side             = False
-        self.outliner_color         = True
-        self.gimbal                 = False
-        self.num_secondary          = 0
-        self.show_rot_order         = False
-        self.lock_attrs             = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz", "v"]
         self.num_buffer             = 2
 
-    def post_create(self):
-        shape = misc_utils.get_shape(self.ctrl)
-        self.main_shape = shape[0]
+class Aim_Guide_Ctrl(Camera_Guide_Ctrl_Base):
+    def __init__(self,
+                 **kw):
+        super(Aim_Guide_Ctrl, self).__init__(**kw)
+        self.name = "aimGuide"
+        self.shape_dict = elements.camera_aim_line

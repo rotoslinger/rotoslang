@@ -188,7 +188,7 @@ def test():
         slideCtrlSize1=.1
         slideCtrlSize2=.07
         slideCtrlSize3=.04
-        ctrlAutoPositionThreshold = 0.9
+        ctrlAutoPositionThreshold = 0.8
 
         slideCtrlShapeOffset1=[0,0.0,.07]
         slideCtrlShapeOffset2=[0,0.0,.07]
@@ -251,6 +251,9 @@ def test():
         controlAutoOrientMesh = "supermanLips_lipModelPackage_slide"
         rollCurveNameUpper = "supermanLips_upperLipCurveRollOuter"
 
+        lowerRemovePointIndicies=[]
+        upperRemovePointIndicies=[]
+
     cmds.file( fileName, i=True, f=True )
 
     # delete history
@@ -258,8 +261,15 @@ def test():
                 lowerCurveAim, deformMeshLower, baseLower, projectionMeshUpper,
                 deformMeshUpperCurve, baseUpperCurve, upperCurve, upperCurveAim,
                 deformMeshUpper, baseUpper, slidePatch, slidePatchBase, controlAutoOrientMesh]:
-        cmds.select(i, r=True)
-        cmds.DeleteHistory(i)
+        if not type(i) == list and cmds.objExists(i):
+            cmds.select(i, r=True)
+            cmds.DeleteHistory(i)
+        elif type(i) == list:
+            for x in i:
+                if cmds.objExists(x):
+                    cmds.select(x, r=True)
+                    cmds.DeleteHistory(i)
+
     # for i in [deformMeshLower,
     #             deformMeshUpper]:
     #     cmds.select(i, r=True)
@@ -377,7 +387,7 @@ def test():
 
 
     lip.lipCurveDeformSplit(name="C_LowerLipWire",
-                            curveDeformerAlgorithm=1,
+                            # curveDeformerAlgorithm=1,
                             curve=lowerCurve,
                             curveAim=lowerCurveAim,
                             deformedGeometry=deformMeshLower,
@@ -390,7 +400,7 @@ def test():
                             reorderInFrontOfDeformer=lowerLipSlide,
                             removePointIndicies=lowerRemovePointIndicies,
                             falloffDefaults = "")
-
+    
 
 
     # falloffDefaultsUpper=(10, -1, -7, -10.0)
