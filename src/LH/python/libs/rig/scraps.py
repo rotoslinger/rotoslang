@@ -1,0 +1,914 @@
+#######################################################################
+########################## CALAMARI #####################################
+########################################################################
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+
+from rig.utils import faceWeights, lhDeformerExport, exportUtils
+reload(faceWeights)
+reload(lhDeformerExport)
+reload(exportUtils)
+
+from rig.deformers import utils
+reload(utils)
+#cmds.getAttr("cluster1.weightList[0].weights")
+#print cmds.attributeQuery("weights", node="cluster1", multi=True)
+
+#utils.facesFromWeightmap(weightAttribute="cluster1.weightList[0].weights",geo="C_body_HI")
+#exportUtils.lhDeformerWeightTransfer(srcMesh="C_body_HINew", srcDeformer = "C_testFace_SLD_SRC", destMesh = "C_body_HI", destDeformer="C_testFace_SLD")
+utils.calimari("kryptoDMU_002_2Dogs3:kryptoDMU_001_linked:skinCluster17", "kryptoDMU_002_2Dogs3:kryptoDMU_001_linked:dog01", .0)
+#print cmds.skinPercent( 'skinCluster1', transform='joint1', query=True )
+
+
+#cmds.select(["C_body_HI.f[531]","C_body_HI.f[528]", "C_body_HI.f[505]"])
+
+#######################################################################
+########################## WEIGHTING TOOLS #####################################
+########################################################################
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+from utils import weightingUtils
+reload(weightingUtils)
+if cmds.draggerContext("measureVectorCtx", exists=True):
+    print "TRUE"
+    cmds.deleteUI("measureVectorCtx")
+
+
+#weightingUtils.dragSomething().clickAndMoveCommand()
+#weightingUtils.weightAverage()
+#print cmds.ls(orderedSelection=True, fl=True)
+
+#print weightingUtils.gradientWeightsBetween2Points()
+#print weightingUtils.gradientWeightsBetween2Points()
+
+
+#wu = weightingUtils.weightValueDragger()
+#wu.weightAttr = "LHWeightDeformer.C_testFace_SLD.lSideWeight"
+#print wu.weightAttr
+#weightingUtils.weightValueDragger().clickAndMoveCommand()
+weightingUtils.gradientBetweenPoints()
+
+#######################################################################
+########################## CREATING AND PAINTING #####################################
+########################################################################
+ 
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+from rig.utils import weightMapUtils
+from rig.utils import misc
+from rig.deformers import base
+from rig.deformers import weightStack
+from rig.deformers import matrixDeformer 
+from rig.deformers import utils 
+from rig.rigComponents import lip 
+from rig.rigComponents import line 
+from rig.rigComponents import lineTest 
+from rig.rigComponents import meshRivetCtrl 
+reload(line)
+reload(lineTest)
+reload(meshRivetCtrl)
+reload(misc)
+reload(weightMapUtils)
+reload(lip)
+reload(utils)
+reload(matrixDeformer)
+reload(weightStack)
+reload(base)
+
+#lipTest.test()
+lineTest.test()
+cmds.refresh()
+utils.cacheOutAllSlideDeformers()
+cmds.refresh()
+utils.removeAllCurveWeightsNodes()
+'''
+cmds.file( new=True, f=True )
+
+cmds.unloadPlugin("collision")
+
+cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+
+
+fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/faceLipCurveDefromTest.ma"
+cmds.file( fileName, i=True, f=True )
+'''
+
+'''
+
+#utils.getPointPositionBySelectedVerts()
+
+#lattice = misc.getOMItergeo("ffd1Lattice")
+#print lattice.count()
+#weightMapUtils.createWeightMapOnSingleObject("lipCurveBase", "wireMembership", addAttr=True, geoType="nurbsCurve")
+#weightMapUtils.createWeightMapOnSingleObject("pSphere1", "targetWeights", addAttr=True, geoType="mesh")
+
+
+
+
+#print cmds.getAttr("lipCurveBase.wireMembership")
+#print len(cmds.getAttr("ffd1Lattice.wireMembership"))
+
+
+
+
+#cmds.createNode("LHWeightNode")
+#weightStack.createNormalizedAnimWeights(name="Lip", num=5, timeRange=20.0, offset=.3)
+
+cmds.file( new=True, f=True )
+
+cmds.unloadPlugin("collision")
+
+cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+
+#matrixDeformer.createTestMatrixDeformer()
+#test2.faceTest()
+#test3.faceTest()
+#test4.faceTest()
+dog=False
+
+
+
+fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/humanLipTest.ma"
+tierCount1 = 1
+tierCount2 = 3
+tierCount3 = 5
+
+ctrlSize1=.5
+ctrlSize2=.3
+ctrlSize3=.1
+controlSpeedDefaults = [.1,.1,.1]
+
+ctrlAutoPositionThreshold = 0.9
+
+
+ctrlShapeOffset1=[0,0.0,2]
+ctrlShapeOffset2=[0,0.0,2]
+ctrlShapeOffset3=[0,0.0,2]
+
+ctrlPosOffset1=[0, 0.0, 0]
+ctrlPosOffset2=[0, 0.0, 0]
+ctrlPosOffset3=[0, 0.0, 0]
+
+
+falloffDefaults=(-10, -9.9, -3, 10.0)
+lowerRemovePointIndicies=[10, 11, 23, 35, 47, 48, 71, 73, 85, 97, 98, 121, 133, 145, 146, 158, 170, 193, 205, 206, 229, 239, 240, 251, 262, 273, 274, 295, 297, 308, 319, 320, 341, 352, 363, 364, 375, 386, 407, 418, 419, 440]
+upperRemovePointIndicies=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 34, 46, 58, 59, 160, 172, 217, 218, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 262, 273, 284, 285, 377, 388, 429, 430]
+
+if dog:
+    fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/dogLipTest.ma"
+    tierCount1 = 1
+    tierCount2 = 5
+    tierCount3 = 9
+
+    ctrlSize1=1
+    ctrlSize2=.65
+    ctrlSize3=.35
+    ctrlAutoPositionThreshold = 0.9
+
+    ctrlShapeOffset1=[0,0.0,2]
+    ctrlShapeOffset2=[0,0.0,2]
+    ctrlShapeOffset3=[0,0.0,2]
+    
+    falloffDefaults=(-10, -9.9, -4, 10.0)
+    
+    ctrlPosOffset1=[0, 0.0, 3]
+    ctrlPosOffset2=[0, 0.0, 0]
+    ctrlPosOffset3=[0, 0.0, 0]
+    
+    controlSpeedDefaults = [.025,.05,.05]
+    lowerRemovePointIndicies=[]
+    upperRemovePointIndicies=[]
+
+
+
+
+
+lowerLipSlide = lip.Lip(name="lowerLip",
+             tierCount1=tierCount1,
+             tierCount2=tierCount2,
+             tierCount3=tierCount3,
+
+             ctrlSize1=ctrlSize1,
+             ctrlSize2=ctrlSize2,
+             ctrlSize3=ctrlSize3,
+
+             ctrlShapeOffset1=ctrlShapeOffset1,
+             ctrlShapeOffset2=ctrlShapeOffset2,
+             ctrlShapeOffset3=ctrlShapeOffset3,
+             
+             ctrlPosOffset1=ctrlPosOffset1,
+             ctrlPosOffset2=ctrlPosOffset2,
+             ctrlPosOffset3=ctrlPosOffset3,
+             
+             controlSpeedDefaults=controlSpeedDefaults,
+             
+             ctrlAutoPositionThreshold = ctrlAutoPositionThreshold,
+
+             falloffDefaults=falloffDefaults,
+             fileName=fileName,
+             deformMesh="humanLipsLower",
+             base="humanLipsLowerBase",
+             projectionMesh="lowLipProjection",
+             slidePatch="slide",
+             slidePatchBase="slideBase")
+
+lip.Lip(name="lowerLipCurve",
+        ctrlName = "lowerLip",
+        #fileName=fileName,
+        controlRivetMesh = "humanLipsLower",
+                multiSlideForBaseCurve=False,
+
+             tierCount1=tierCount1,
+             tierCount2=tierCount2,
+             tierCount3=tierCount3,
+
+             ctrlSize1=ctrlSize1,
+             ctrlSize2=ctrlSize2,
+             ctrlSize3=ctrlSize3,
+
+             ctrlShapeOffset1=ctrlShapeOffset1,
+             ctrlShapeOffset2=ctrlShapeOffset2,
+             ctrlShapeOffset3=ctrlShapeOffset3,
+             
+             ctrlPosOffset1=ctrlPosOffset1,
+             ctrlPosOffset2=ctrlPosOffset2,
+             ctrlPosOffset3=ctrlPosOffset3,
+             
+             controlSpeedDefaults=controlSpeedDefaults,
+             
+             ctrlAutoPositionThreshold = .01,
+
+             falloffDefaults=falloffDefaults,
+             fileName=None,
+             deformMesh="lowerLipCurve",
+             base="lowerLipCurveBase",
+             projectionMesh="lowLipProjection",
+             slidePatch="slide",
+             slidePatchBase="slideBase")
+
+lip.lipCurveDeformSplit(name="C_LowerLipWire",
+                        curve="lowerLipCurve",
+                        curveAim="lowerLipCurveAim",
+                        deformedGeometry="humanLipsLower",
+                        projectionPatch="lowLipProjection",
+                        deformedGeometryBase="humanLipsLowerBase",
+                        addWeightStack=["lowerLipWeightStack_LR", "lowerLipWeightStack_UD"],
+                        addAtIndex=tierCount1+tierCount2+tierCount3,
+                        handPaint=False,
+                        upperLip=False,
+                        reorderInFrontOfDeformer=lowerLipSlide,
+                        removePointIndicies=lowerRemovePointIndicies,
+                        falloffDefaults = "")
+
+
+
+falloffDefaults=(10, -1, -7, -10.0)
+
+
+upperLipSlide = lip.Lip(name="upperLip",
+             tierCount1=tierCount1,
+             tierCount2=tierCount2,
+             tierCount3=tierCount3,
+
+             ctrlSize1=ctrlSize1,
+             ctrlSize2=ctrlSize2,
+             ctrlSize3=ctrlSize3,
+
+             ctrlShapeOffset1=ctrlShapeOffset1,
+             ctrlShapeOffset2=ctrlShapeOffset2,
+             ctrlShapeOffset3=ctrlShapeOffset3,
+             
+             ctrlPosOffset1=ctrlPosOffset1,
+             ctrlPosOffset2=ctrlPosOffset2,
+             ctrlPosOffset3=ctrlPosOffset3,
+             
+             controlSpeedDefaults=controlSpeedDefaults,
+             
+             ctrlAutoPositionThreshold = ctrlAutoPositionThreshold,
+
+             falloffDefaults=falloffDefaults,
+             fileName=None,
+             deformMesh="humanLipsUpper",
+             base="humanLipsUpperBase",
+             projectionMesh="upLipProjection",
+             slidePatch="slide",
+             slidePatchBase="slideBase")
+
+
+
+lip.Lip(name="upperLipCurve",
+        ctrlName = "upperLip",
+        #fileName=fileName,
+        controlRivetMesh = "humanLipsUpper",
+                multiSlideForBaseCurve=False,
+
+             tierCount1=tierCount1,
+             tierCount2=tierCount2,
+             tierCount3=tierCount3,
+
+             ctrlSize1=ctrlSize1,
+             ctrlSize2=ctrlSize2,
+             ctrlSize3=ctrlSize3,
+
+             ctrlShapeOffset1=ctrlShapeOffset1,
+             ctrlShapeOffset2=ctrlShapeOffset2,
+             ctrlShapeOffset3=ctrlShapeOffset3,
+             
+             ctrlPosOffset1=ctrlPosOffset1,
+             ctrlPosOffset2=ctrlPosOffset2,
+             ctrlPosOffset3=ctrlPosOffset3,
+             
+             controlSpeedDefaults=controlSpeedDefaults,
+             
+             ctrlAutoPositionThreshold = .01,
+
+             falloffDefaults=falloffDefaults,
+             fileName=None,
+             deformMesh="upperLipCurve",
+             base="upperLipCurveBase",
+             projectionMesh="upLipProjection",
+             slidePatch="slide",
+             slidePatchBase="slideBase")
+
+lip.lipCurveDeformSplit(name="C_UpperLipWire",
+                        curve="upperLipCurve",
+                        curveAim="upperLipCurveAim",
+                        deformedGeometry="humanLipsUpper",
+                        projectionPatch="upLipProjection",
+                        deformedGeometryBase="humanLipsUpperBase",
+                        addWeightStack=["upperLipWeightStack_LR", "upperLipWeightStack_UD"],
+                        addAtIndex=tierCount1+tierCount2+tierCount3,
+                        handPaint=False,
+                        upperLip=True,
+                        removePointIndicies=upperRemovePointIndicies,
+                        reorderInFrontOfDeformer=upperLipSlide,
+                        falloffDefaults = "")
+
+'''
+
+#######################################################################
+########################## Add Naked COTROLS #####################################
+########################################################################
+
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+
+from utils import exportUtils, misc
+reload(exportUtils)
+
+from utils import misc
+reload(misc)
+from utils import elements
+reload(elements)
+
+from utils import exportUtils, misc, exportUtils
+from rigComponents import base
+reload(base)
+from rigComponents import slidingCtrl
+reload(slidingCtrl)
+
+
+
+#print misc.getGeoData()
+
+#slidingCtrl.component(name="Corner", side="R", helperGeo = "manipSurf", uOutConnectionAttr = "C_testFace_SLD.C_BLipLR", vOutConnectionAttr = "C_testFace_SLD.C_BLipUD")
+#slidingCtrl.component(name="Corner", side="R", helperGeo = "C_manipSurf_EX", uOutConnectionAttr = "C_testFace_SLD.rSide", vOutConnectionAttr = "C_testFace_SLD.rMouthUD")
+#cmds.connectAttr("C_LCorner_CTL.outU", "C_testFace_SLD.lSide")
+#cmds.connectAttr("C_LCorner_CTL.outV", "C_testFace_SLD.lMouthUD")
+#slidingCtrl.normalizeSlidingCtrls()
+#slidingCtrl.mirrorSlidingCtrls()
+#slidingCtrl.copyWeightsFromSlideCtrls()
+#misc.pushCurveShape()
+#misc.updateGeoConstraint()
+misc.addNakedLocatorToControl()
+cmds.parent("C_body_HI1Shape", "L_corner_CTL", s=True, r=True)
+#print cmds.ls(sl=True)[1:]
+#for i in cmds.ls(sl=True):
+#    cmds.setAttr(i + ".visibilityMode", 0)
+
+
+#######################################################################
+##########################  CREATE CONTROL SHAPES #####################################
+########################################################################
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+
+from rig.utils import misc
+reload(misc)
+
+from rig.utils import exportUtils
+reload(exportUtils)
+
+
+from rig.rigComponents import elements
+
+from rig.deformers import utils
+reload(utils)
+#animCurve = cmds.ls(sl=True)[0]
+#animCurvedict = utils.getAnimCurve(animCurve)
+#print animCurvedict
+#upperLip = {'frame_times': [-10.0, -9.848346598639456, -8.41049030612245, -1.0, 10.0], 'frame_values': [0.0, 0.0, 1.0, 0.0, 0.0], 'out_x_tangents': [1.0, 0.9999736547470093, 0.1614564061164856, 1.0, 1.0], 'is_breakdown': [False, False, False, False, False], 'weights_locked': [False, False, False, False, False], 'in_y_tangents': [0.0, 0.0, 0.9978874325752258, -0.0362398624420166, 0.0], 'name': u'upperLipLIPTHICKFalloff_ACV', 'out_tangents_type': [2, 1, 1, 1, 2], 'is_weighted': [False, False, False, False, False], 'tangents_locked': [True, False, False, False, True], 'in_tangents_type': [2, 1, 1, 1, 2], 'in_x_tangents': [1.0, 1.0, 0.0649663507938385, 0.9993430972099304, 1.0], 'out_y_tangents': [0.0, 0.007255702279508114, -0.986879825592041, 0.0, 0.0]}
+
+#animCurvedict = {'frame_times': [-10.0, -5.0, -2.0, -1.0, 10.0], 'frame_values': [0.0, 0.0, 0.5936454849498327, 0.0, 0.0], 'out_x_tangents': [0.2083333283662796, 0.125, 0.0416666679084301, 0.4583333432674408, 1.0], 'is_breakdown': [False, False, False, False, False], 'weights_locked': [False, False, False, False, False], 'in_y_tangents': [0.0, 0.0, 0.7882182598114014, -0.5936455130577087, 0.0], 'name': u'lowerLipLIPTHICKFalloff_ACV', 'out_tangents_type': [2, 2, 1, 2, 2], 'is_weighted': [True, True, True, True, True], 'tangents_locked': [True, True, False, True, True], 'in_tangents_type': [2, 2, 1, 2, 2], 'in_x_tangents': [0.0, 0.2083333283662796, 0.22398191690444946, 0.0416666679084301, 0.4583333432674408], 'out_y_tangents': [0.0, 0.5936455130577087, -0.5936455130577087, 0.0, 0.0]}
+#lowerLip ={'frame_times': [-10.0, -5.0, -2.0, -1.0, 10.0], 'frame_values': [0.0, 0.0, 0.5936454849498327, 0.0, 0.0], 'out_x_tangents': [0.2083333283662796, 0.125, 0.0416666679084301, 0.4583333432674408, 1.0], 'is_breakdown': [False, False, False, False, False], 'weights_locked': [False, False, False, False, False], 'in_y_tangents': [0.0, 0.0, 0.7882182598114014, -0.5936455130577087, 0.0], 'name': u'lowerLipLIPTHICKFalloff_ACV', 'out_tangents_type': [2, 2, 1, 2, 2], 'is_weighted': [True, True, True, True, True], 'tangents_locked': [True, True, False, True, True], 'in_tangents_type': [2, 2, 1, 2, 2], 'in_x_tangents': [0.0, 0.2083333283662796, 0.22398191690444946, 0.0416666679084301, 0.4583333432674408], 'out_y_tangents': [0.0, 0.5936455130577087, -0.5936455130577087, 0.0, 0.0]}
+
+
+#utils.setAnimCurveShape(animCurve,lowerLip)
+#print animCurvedict
+#geo = misc.getGeoData()
+print misc.getGeoData()
+#misc.createGeoFromData(elements.blockIcon)
+
+#######################################################################
+##########################  COMPONENT #####################################
+########################################################################
+
+
+ 
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+from rig.utils import weightMapUtils
+from rig.utils import misc
+from rig.deformers import base
+from rig.deformers import weightStack
+from rig.deformers import tests 
+from rig.deformers import test2
+from rig.deformers import test3
+from rig.deformers import test4
+from rig.deformers import matrixDeformer 
+from rig.deformers import utils 
+from rig.rigComponents import lip 
+from rig.rigComponents import simpleton 
+from rig.rigComponents import lipTest 
+reload(lipTest)
+reload(simpleton)
+
+cmds.file( new=True, f=True )
+
+cmds.unloadPlugin("collision")
+
+cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+
+
+component = simpleton.Component(createJoint=False)
+component.create()
+
+#######################################################################
+##########################  ANIM CURVE UTILS #####################################
+########################################################################
+
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+from rig.utils import misc
+reload(misc)
+from rig.utils import exportUtils
+reload(exportUtils)
+from rig.utils import animCurves
+reload(animCurves)
+from rig.rigComponents import elements
+reload(elements)
+from rig.deformers import utils
+reload(utils)
+
+
+#animCurve = cmds.ls(sl=True)[0]
+#utils.setAnimCurveShape(animCurve, elements.MOUTH_LR)
+
+
+# print AnimCurve
+animCurve = cmds.ls(sl=True)[0]
+animCurvedict = utils.getAnimCurve(animCurve)
+print animCurvedict
+
+# Mirror AnimCurve
+#animCurves.mirrorAnimCurve(side="L")
+
+# Copy AnimCurve
+#animCurves.copyAnimCurve()
+
+# Copy Flip AnimCurve
+#animCurves.copyFlipAnimCurve()
+
+
+
+
+utils.getAnimCurveWeightsDict()
+
+#######################################################################
+##########################  Deformer #####################################
+########################################################################
+
+ 
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+from rig.utils import weightMapUtils
+from rig.utils import misc
+from rig.deformers import base
+from rig.deformers import weightStack
+from rig.deformers import matrixDeformer 
+from rig.deformers import vectorDeformerSimple 
+from rig.deformers import curveRollSimple 
+from rig.deformers import multiWrap 
+from rig.deformers import utils 
+from rig.rigComponents import meshRivetCtrl 
+reload(meshRivetCtrl)
+reload(utils)
+reload(vectorDeformerSimple)
+reload(curveRollSimple)
+reload(multiWrap)
+from rig.utils import lhExport
+reload(lhExport)
+
+'''
+cmds.file( new=True, f=True )
+
+cmds.unloadPlugin("collision")
+
+cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/lipRollTest.ma"
+'''
+
+'''
+rotations, translations, scales = utils.getMatrixDeformerPivotLocations()
+print "rotations", rotations
+print "translations", translations
+print "scales", scales
+'''
+print utils.getWeightStackHandWeightsDict()
+#utils.getMatDefWeightsDict()
+#utils.convertAnimCurveWeightsToHandWeights()
+#meshRivetCtrl.mirrorSlidingCtrls(flipAll=True)
+#utils.mirrorSelectedLocatorLToR()
+#multiWrap.createTestMultiWrap()
+#utils.getMatrixDeformerCtrlLocations(debug=True)
+#utils.getMatrixDeformerPivotLocations(debug=True)
+
+
+#dict = lhExport.lh_component_export(type = "meshRivetCtrl",path = "/scratch/levih/dev/rotoslang/src/scenes/deformerFiles/OptimizationTests/rivetComponentsTESTR.cpt")
+#print dict.manipDict
+#utils.getControlShapes()
+#fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/lipIssues.ma"e
+
+#cmds.file( fileName, i=True, f=True )
+
+# CURVEROLLDEFORMER
+#curveRoll = curveRollSimple.CurveRollSimple()
+#curveRoll.create()
+
+# VECTORDEFORMER
+#vectorDeformerSimple.createTestVectorDeformerRaw()
+#vectorDeformerSimple.createTestVectorDeformerClass()
+
+#######################################################################
+##########################  SKIN WEIGHT DRAGGER #####################################
+########################################################################
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/misc_tools'
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+
+
+from ka_rigTools import ka_weightBlender
+reload(ka_weightBlender)   
+
+from rig_2.tools import dragger
+reload(dragger)
+
+drag = dragger.Value_Dragger(range_start = 100,
+                             range_min = 0,
+                             range_max = 200,
+                             start_func = ka_weightBlender.start,
+                             change_func = ka_weightBlender.change,
+                             end_func = ka_weightBlender.finish)
+
+drag.clickAndMoveCommand()
+cmds.setToolTo("selectSuperContext")
+cmds.setToolTo("valueDragger")
+
+
+
+
+
+
+
+
+
+
+
+
+
+#######################################################################
+##########################  Camera UTILS #####################################
+########################################################################
+
+
+
+
+
+
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+package = '/scratch/levih/dev/rotoslang/src/LH/python/libs/decorators'
+#---determine operating system
+if linux not in sys.path:
+    sys.path.append(package)
+    
+from rig_2.manipulator import control
+reload(control)
+
+from rig_2.manipulator import nurbscurve
+reload(nurbscurve)
+#print nurbscurve.get_curve_shape_dict()
+
+
+from rig_2.manipulator import misc
+reload(misc)
+
+from rig_2.manipulator import elements
+reload(elements)
+
+from rig_2.component import camera
+reload(camera)
+from rig_2.node import utils as node_utils
+reload(node_utils)
+
+cmds.file( new=True, f=True )
+
+cam = camera.Component()
+cam.create()
+print cam.camera.input_names
+
+
+
+#######################################################################
+##########################  SCRATCH PANEL #####################################
+########################################################################
+
+
+
+
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if os not in sys.path:
+    sys.path.append(os)
+
+
+from maya import cmds
+import maya.OpenMaya as OpenMaya
+import sys
+package = '/scratch/levih/dev/rotoslang/src/LH/python/libs/decorators'
+#---determine operating system
+if linux not in sys.path:
+    sys.path.append(package)
+    
+from rig.ui import scratch_panel
+reload(scratch_panel)
+scratch_panel.Scratch_Panel.openUI()
+
