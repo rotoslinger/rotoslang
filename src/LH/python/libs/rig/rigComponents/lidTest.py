@@ -54,12 +54,23 @@ reload(lid)
 def test():
     cmds.file( new=True, f=True )
 
-    cmds.unloadPlugin("collision")
+    # Linux
+    # cmds.unloadPlugin("collision")
+    # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+    # fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaks.ma"
+    # fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaksOblongEye.ma"
+   
+    # Windows
+    cmds.unloadPlugin("LHDeformerNodes")
+    cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
+    fileName="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaksOblongEye.ma"
 
-    cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
 
-    fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaks.ma"
-    fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaksOblongEye.ma"
+
+
+
+
+
 
     cmds.file( fileName, i=True, f=True )
 

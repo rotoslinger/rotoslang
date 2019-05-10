@@ -47,15 +47,22 @@ reload(elements)
 
 def test():
     cmds.file( new=True, f=True )
+    # Linux
+    # cmds.unloadPlugin("collision")
+    # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+    # fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
+   
+    # Windows
+    cmds.unloadPlugin("LHDeformerNodes")
+    cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
+    fileName="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/mouthJawPackageTweaks.ma"
 
-    cmds.unloadPlugin("collision")
 
-    cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+
 
     dog=False
     superman=False
 
-    fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/mouthJawPackageTweaks.ma"
 
 
     cmds.file( fileName, i=True, f=True )

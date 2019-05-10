@@ -4,6 +4,7 @@ import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
 
 #---determine operating system
 os = sys.platform
@@ -11,15 +12,15 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win32" in os:
+    os = win
+
 if os not in sys.path:
     sys.path.append(os)
 
-from maya import cmds
-from maya import mel
-import maya.OpenMaya as OpenMaya
-import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs\\rig"
 
 #---determine operating system
 os = sys.platform
@@ -27,6 +28,9 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win32" in os:
+    os = win
+
 if os not in sys.path:
     sys.path.append(os)
 from rig.utils import weightMapUtils
@@ -50,17 +54,23 @@ reload(matrixDeformer)
 reload(weightStack)
 reload(base)
 
-def test():
-    cmds.file( new=True, f=True )
+def test(reloadPlugin = False, loadFile=True):
+    if reloadPlugin:
+        cmds.file( new=True, f=True )
 
-    cmds.unloadPlugin("collision")
-
-    cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
-
+        # Linux
+        # cmds.unloadPlugin("collision")
+        # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+        # fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
+    
+        # Windows
+        cmds.unloadPlugin("LHDeformerNodes")
+        cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
+    fileName="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
     dog=False
     superman=False
+    oldman=True
 
-    fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
     tierCount1 = 1
     tierCount2 = 3
     tierCount3 = 5
@@ -154,6 +164,7 @@ def test():
     rollCurveNameUpper = "faceModelPackage:upperLipCurveRollOuter"
     rollFalloffCurveUpper = elements.UPPER_LIP_ROLL_FALLOFF
 
+    rigGeo = "faceModelPackage:rigGeo"
     if dog:
         fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/dogLipTest.ma"
         tierCount1 = 1
@@ -254,26 +265,44 @@ def test():
         lowerRemovePointIndicies=[]
         upperRemovePointIndicies=[]
 
-    cmds.file( fileName, i=True, f=True )
+    if oldman:
+        fileName = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/oldMan/faceRigPackage/lipsPackage.ma"
 
-    # delete history
-    for i in [projectionMeshLower, deformMeshLowerCurve, baseLowerCurve, lowerCurve,
-                lowerCurveAim, deformMeshLower, baseLower, projectionMeshUpper,
-                deformMeshUpperCurve, baseUpperCurve, upperCurve, upperCurveAim,
-                deformMeshUpper, baseUpper, slidePatch, slidePatchBase, controlAutoOrientMesh]:
-        if not type(i) == list and cmds.objExists(i):
-            cmds.select(i, r=True)
-            cmds.DeleteHistory(i)
-        elif type(i) == list:
-            for x in i:
-                if cmds.objExists(x):
-                    cmds.select(x, r=True)
-                    cmds.DeleteHistory(i)
+        deformMeshLower="FullBody:C_lowerLip"
+        baseLower="FullBody:C_lowerLipBase"
 
-    # for i in [deformMeshLower,
-    #             deformMeshUpper]:
-    #     cmds.select(i, r=True)
-    #     cmds.DeleteHistory(i)
+        deformMeshUpper="FullBody:C_upperLip"
+        baseUpper="FullBody:C_upperLipBase"
+        lowerRemovePointIndicies=[]
+        upperRemovePointIndicies=[]
+
+    if loadFile:
+        cmds.file( new=True, f=True )
+        cmds.file( fileName, i=True, f=True )
+        # rigGeo = "faceModelPackage:rigGeo"
+
+        # delete history
+        for i in [rigGeo, projectionMeshLower, deformMeshLowerCurve, baseLowerCurve, lowerCurve,
+                    lowerCurveAim, deformMeshLower, baseLower, projectionMeshUpper,
+                    deformMeshUpperCurve, baseUpperCurve, upperCurve, upperCurveAim,
+                    deformMeshUpper, baseUpper, slidePatch, slidePatchBase, controlAutoOrientMesh]:
+            if not type(i) == list and cmds.objExists(i):
+                cmds.select(i, r=True)
+                cmds.DeleteHistory(i)
+                cmds.makeIdentity(i, apply=True, t=1, r=1, s=1, n=0, pn=1);
+
+            elif type(i) == list:
+                for x in i:
+                    if cmds.objExists(x):
+                        cmds.select(x, r=True)
+                        cmds.DeleteHistory(i)
+                        cmds.makeIdentity(x, apply=True, t=1, r=1, s=1, n=0, pn=1);
+
+
+        # for i in [deformMeshLower,
+        #             deformMeshUpper]:
+        #     cmds.select(i, r=True)
+        #     cmds.DeleteHistory(i)
 
     # lowerLipSlide, lowerLipThick = line.Line(name="lowerLip",
     lowerLipClass = line.Line(name="lowerLip",
