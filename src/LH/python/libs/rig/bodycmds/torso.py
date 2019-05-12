@@ -12,6 +12,8 @@ if os not in sys.path:
 
 from maya import cmds
 from utils import misc
+from rig.control import base as control_base
+reload(control_base)
 
 reload(misc)
 
@@ -417,7 +419,7 @@ class create_torso():
                         suffix[i] = ""
 
                     name = all_jnts[j].split("_")[1] +suffix[i]
-                    return_ctl.append(misc.create_ctl(side = self.side, 
+                    return_ctl.append(control_base.create_ctl(side = self.side, 
                                                       name = name, 
                                                       parent = self.rig_parent, 
                                                       shape = shape[i],
@@ -441,7 +443,7 @@ class create_torso():
                     loop_buffer[i].append(return_ctl[j].buffers)
                     loop_gimbal[i].append(return_ctl[j].gimbal_ctl)
         #---create switch ctl
-        self.switch_ctl = misc.create_ctl(side = self.side, 
+        self.switch_ctl = control_base.create_ctl(side = self.side, 
                                           name = (self.name 
                                                   + "Switch"), 
                                           parent = self.rig_parent, 

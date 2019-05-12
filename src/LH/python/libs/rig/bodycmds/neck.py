@@ -12,6 +12,8 @@ if os not in sys.path:
 
 from maya import cmds
 from utils import misc
+from rig.control import base as control_base
+reload(control_base)
 
 reload(misc)
 
@@ -146,7 +148,7 @@ class create_neck():
 
     def __create_ctl(self):
         """ create control and snap to neck """
-        tmp_ctl = misc.create_ctl(side = self.side, 
+        tmp_ctl = control_base.create_ctl(side = self.side, 
                                   name = self.name, 
                                   parent = self.rig_parent, 
                                   shape = "circle", 

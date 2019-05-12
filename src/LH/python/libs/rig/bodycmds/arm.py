@@ -14,6 +14,8 @@ if os not in sys.path:
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 from utils import misc
+from rig.control import base as control_base
+reload(control_base)
 reload(misc)
 #===============================================================================
 #CLASS:         arm
@@ -374,7 +376,7 @@ class create_arm():
                 name = "wristFK"
                 lock = ["tx","ty","tz","sx","sy","sz"]
 
-            return_ctl = misc.create_ctl(side = self.side, 
+            return_ctl = control_base.create_ctl(side = self.side, 
                                                 name = name, 
                                                 parent = self.fk_rig_grp, 
                                                 shape = "circle",
@@ -408,7 +410,7 @@ class create_arm():
                 shape = "sphere"
                 snap = self.joints[1]
                 show_order = False
-            return_ctl = misc.create_ctl(side = self.side, 
+            return_ctl = control_base.create_ctl(side = self.side, 
                                                 name = name, 
                                                 parent = self.ik_rig_grp, 
                                                 shape = shape,
@@ -464,7 +466,7 @@ class create_arm():
             scale = [-1,1,1]
             orient = [0,0,0]
 
-        self.ik_fk_switch = misc.create_ctl(   side = self.side, 
+        self.ik_fk_switch = control_base.create_ctl(   side = self.side, 
                                     name = self.name + "IkFkSwitch", 
                                     parent = self.rig_parent, 
                                     shape = "ik/fk",

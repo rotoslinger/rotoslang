@@ -1,6 +1,10 @@
 from maya import cmds
 from rigComponents import base
-from rig.utils.misc import formatName, create_ctl
+
+from rig.control import base as control_base
+from rig.utils.misc import formatName
+from rig.control import base as control_base
+reload(control_base)
 from rig.utils import misc
 from rig.utils import exportUtils
 from rig.utils import faceWeights
@@ -39,17 +43,17 @@ class Component(base.Component):
         self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
                                           parent=self.cmptMasterParent,
                                           shapeVis=False)
-        self.ctrl = misc.create_ctl(side=self.side,
-                                    name=self.name,
-                                    parent=self.locator,
-                                    shape="circle",
-                                    orient=[180, 90, 0],
-                                    offset=[0, 0, 1],
-                                    scale=[1, 1, 1],
-                                    num_buffer=2,
-                                    lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
-                                    gimbal=True,
-                                    size=.5)
+        self.ctrl = control_base.create_ctl(side=self.side,
+                                                name=self.name,
+                                                parent=self.locator,
+                                                shape="circle",
+                                                orient=[180, 90, 0],
+                                                offset=[0, 0, 1],
+                                                scale=[1, 1, 1],
+                                                num_buffer=2,
+                                                lock_attrs=["tz", "rx", "ry", "rz", "sx", "sy", "sz"],
+                                                gimbal=True,
+                                                size=.5)
 
         # self.buffer1 = self.ctrl.buffers[1]
         # self.buffer2 = self.ctrl.buffers[0]

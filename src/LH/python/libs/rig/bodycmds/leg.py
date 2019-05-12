@@ -14,6 +14,9 @@ if os not in sys.path:
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 from utils import misc
+from rig.control import base as control_base
+reload(control_base)
+
 reload(misc)
 #===============================================================================
 #CLASS:         leg
@@ -379,7 +382,7 @@ class create_leg():
                 name = "ankleFK"
                 lock = ["tx","ty","tz","sx","sy","sz"]
 
-            return_ctl = misc.create_ctl(side = self.side, 
+            return_ctl = control_base.create_ctl(side = self.side, 
                                                 name = name, 
                                                 parent = self.fk_rig_grp, 
                                                 shape = "circle",
@@ -417,8 +420,8 @@ class create_leg():
                 show_order = False
                 offset = [0,0,0]
                 scale = [1,1,1]
-            misc.create_ctl
-            return_ctl = misc.create_ctl(side = self.side, 
+            control_base.create_ctl
+            return_ctl = control_base.create_ctl(side = self.side, 
                                                 name = name, 
                                                 parent = self.ik_rig_grp, 
                                                 shape = shape,
@@ -562,7 +565,7 @@ class create_leg():
         if self.side == "R":
             scale = [-1,1,1]
             orient = [0,35,0]
-        self.ik_fk_switch = misc.create_ctl(   side = self.side, 
+        self.ik_fk_switch = control_base.create_ctl(   side = self.side, 
                                     name = self.name + "IkFkSwitch", 
                                     parent = self.rig_parent, 
                                     shape = "ik/fk",

@@ -12,6 +12,8 @@ if os not in sys.path:
 
 from maya import cmds
 from utils import misc
+from rig.control import base as control_base
+reload(control_base)
 
 reload(misc)
 
@@ -98,7 +100,7 @@ class create_global_ctl():
             if i == 1:
                 parent = self.ctl_gimbals[0]
                 lock_attrs = ["sx", "sy", "sz", "v"], 
-            return_ctl = misc.create_ctl(side = self.side, 
+            return_ctl = control_base.create_ctl(side = self.side, 
                                                 name = names[i], 
                                                 parent = parent, 
                                                 shape = "circle",

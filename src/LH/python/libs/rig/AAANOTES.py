@@ -17,6 +17,17 @@ if os not in sys.path:
 '''
 TODO before release
 
+CURRENT TASKS
+- Write guides
+    -Add guide to rivet, should always be created regardless of being visible
+    -Add guide to matrix deformer
+
+    -All guide controls should have a locked attribute called "GUIDE"
+    
+- Write method that gets all guide positions prints into dictionary
+- Write method that gets all anim curve weight nodes, puts into a dictionary
+- write method that gets all weight stacks and finds all hand weights and puts them into a dictionary
+
 FIRST PASS
 - Apply the current rig to a face
 - Finish prototypes for the face

@@ -1,4 +1,6 @@
 from maya import cmds
+
+from rig.control import base as control_base
 from rig.utils import elements, misc
 from rig.utils import exportUtils
 
@@ -115,19 +117,19 @@ class Component(object):
         self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
                                           parent=self.cmptMasterParent,
                                           shapeVis=False)
-        self.ctrl = misc.create_ctl(side=self.side,
-                                    name=self.name,
-                                    parent=self.locator,
-                                    shape=shape,
-                                    customShape=self.curveData,
-                                    orient=self.orient,
-                                    offset=self.offset,
-                                    scale=self.shapeScale,
-                                    num_buffer=self.numBuffer,
-                                    lock_attrs=self.lockAttrs,
-                                    gimbal=self.gimbal,
-                                    size=self.size,
-                                    nullTransform=self.nullTransform)
+        self.ctrl = control_base.create_ctl(side=self.side,
+                                                name=self.name,
+                                                parent=self.locator,
+                                                shape=shape,
+                                                customShape=self.curveData,
+                                                orient=self.orient,
+                                                offset=self.offset,
+                                                scale=self.shapeScale,
+                                                num_buffer=self.numBuffer,
+                                                lock_attrs=self.lockAttrs,
+                                                gimbal=self.gimbal,
+                                                size=self.size,
+                                                nullTransform=self.nullTransform)
         self.buffers = self.ctrl.buffers
         reversedBuffers = self.ctrl.buffers[::-1]
         # create self.buffer in decending order going further away from the control, ascending goes opposite...

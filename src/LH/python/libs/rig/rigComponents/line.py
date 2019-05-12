@@ -39,6 +39,8 @@ from rig.rigComponents import elements
 reload(elements)
 from decorators import initialize
 reload(elements)
+from rig.deformers import utils as deformer_utils
+reload(deformer_utils)
 
 
 
@@ -54,7 +56,7 @@ class Line(object):
                 ctrlName = None,  # this will be used as a way to reuse controls between different components and deformers
                 containerName = "lip_container",
                 multiSlideForBaseCurve=False,
-
+                component_type="LIP",
                 tierCount1=1,
                 tierCount2=3,
                 tierCount3=9,
@@ -143,7 +145,7 @@ class Line(object):
                 slidePatchBase="slideBase"):
                 pass
 
-    def create(self):
+    def create_line(self):
 
         # if you want to share falloffs between all deformers leave the falloff names None, but more self.control is better...
         if not self.ctrlName:
@@ -292,10 +294,10 @@ class Line(object):
 
             # Add controls to the container and connect to visibility
 
-            for ctrl in stack.controls:
-                cmds.container(container, edit=True, addNode=[ctrl])
-                shape = misc.getShape(ctrl)
-                cmds.connectAttr(slideContainerAttrNames[idx], shape + ".visibility", f=True)
+            # for ctrl in stack.controls:
+            #     cmds.container(container, edit=True, addNode=[ctrl])
+            #     shape = misc.getShape(ctrl)
+            #     cmds.connectAttr(slideContainerAttrNames[idx], shape + ".visibility", f=True)
 
 
             ################################## MATRIX DEFORMER #####################################################################
@@ -387,11 +389,11 @@ class Line(object):
             matDef.create()
 
 
-            for ctrl in matDef.controls:
-                cmds.container(container, edit=True, addNode=[ctrl])
-                shape = misc.getShape(ctrl)
+            # for ctrl in matDef.controls:
+            #     cmds.container(container, edit=True, addNode=[ctrl])
+            #     shape = misc.getShape(ctrl)
 
-                cmds.connectAttr(matDefContainerAttrNames[idx], shape + ".visibility", f=True)
+            #     cmds.connectAttr(matDefContainerAttrNames[idx], shape + ".visibility", f=True)
 
             ################################## LIP THICK DEFORMER #####################################################################
             vectorDeformer = None
@@ -560,4 +562,15 @@ class Line(object):
             else:
                 cmds.reorderDeformers(slideUD.deformer, vectorDeformer.deformer, misc.getShape(self.deformMesh))
 
+        self.slide_deformer = slideUD.deformer
+        self.vector_deformer = vecDef
+
         return slideUD.deformer, vecDef
+
+    def post_create(self):
+        cmds.refresh()
+        deformer_utils.cacheOutAllSlideDeformers()
+
+    def create(self):
+        self.create_line()
+        self.post_create()

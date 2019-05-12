@@ -1,7 +1,8 @@
 from maya import cmds
 from rigComponents import base
 reload(base)
-from rig.utils.misc import formatName, create_ctl
+from rig.utils.misc import formatName
+from rig.control.base import create_ctl
 from rig.utils import misc
 from rig.utils import exportUtils
 from rig.utils import faceWeights
@@ -101,8 +102,12 @@ class Component(base.Component):
         self.buffer2 = self.buffers[0]
 
     def createGuide(self):
-        if self.guide:
-            self.guideShape = exportUtils.create_curve_2(elements.sphereSmall, "{0}_{1}_SHP".format(self.side, self.name), self.buffer2)
+        # The guide is really just the buffer above the rivet.  This creates a shape for that buffer for easier selection
+        self.guideShape = exportUtils.create_curve_2(elements.sphereSmall, "{0}_{1}_SHP".format(self.side, self.name), self.buffer2)
+        misc.tag_guide(self.guideShape.fullPathName())
+        # Set the default visibility of the guide
+        if not self.guide:
+            cmds.setAttr(self.guideShape.fullPathName() + ".v", 0)
 
     def createAttrs(self):
         inputAttrs = ["speedTx", "speedTy", "speedTz"]
@@ -116,6 +121,17 @@ class Component(base.Component):
         cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".control")
         cmds.addAttr(self.cmptMasterParent, ln = "transform", at = "message")
         cmds.connectAttr(self.buffer2 + ".message", self.cmptMasterParent + ".transform")
+
+        # Connect guides
+        cmds.addAttr(self.cmptMasterParent, ln = "guide_shape", at = "message")
+        cmds.addAttr(self.ctrl, ln = "guide_shape", at = "message")
+        cmds.connectAttr(self.guideShape.fullPathName() + ".message", self.cmptMasterParent + ".guide_shape")
+        cmds.connectAttr(self.guideShape.fullPathName() + ".message", self.ctrl + ".guide_shape")
+
+        cmds.addAttr(self.cmptMasterParent, ln = "guide", at = "message")
+        cmds.addAttr(self.ctrl, ln = "guide", at = "message")
+        cmds.connectAttr(misc.getParent(self.guideShape.fullPathName()) + ".message", self.cmptMasterParent + ".guide")
+        cmds.connectAttr(misc.getParent(self.guideShape.fullPathName()) + ".message", self.ctrl + ".guide")
 
     # def preConnect(self):
     #     misc.move(self.locator, self.translate, self.rotate, self.scale)

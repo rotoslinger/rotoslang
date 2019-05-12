@@ -2,6 +2,8 @@
 from maya import cmds
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
+from rig.deformers import base
+reload(base)
 
 def createTestMultiWrap(baseMesh="justHead_body_M_skin_geobody_M_hrcGEOBASE", driverMeshes = ["humanLipsUpper", "humanLipsLower"]):
     cmds.file( "/home/users/levih/Desktop/supermanFace/lipsMultiWrapTest.ma", i=True, f=True )
@@ -15,3 +17,62 @@ def createTestMultiWrap(baseMesh="justHead_body_M_skin_geobody_M_hrcGEOBASE", dr
     cmds.refresh()
     cmds.setAttr(multiWrap + ".cacheClosestPoint", 1)
 
+def test():
+    driver = cmds.polyCube(n="driver", h=200, w=200, d=200)[0]
+    driven = []
+    for idx in range(4):
+        driven.append(cmds.polyCube(n="driven{0:02}".format(idx), h=200, w=200, d=200)[0])
+    wrap_class = Multiwrap(geoToDeform=driver, driven_meshes=driven)
+    wrap_class.create()
+
+class Multiwrap(base.Deformer):
+    def __init__(self,
+                    # inherited needed arg
+                    # geoToDeform,
+                    driven_meshes,
+                    driver_mesh_base=None,
+                 **kw):
+        super(Multiwrap, self).__init__(**kw)
+        self.driven_meshes = driven_meshes
+        self.driver_mesh_base = driver_mesh_base
+        self.deformerType="LHMultiWrap"
+        # Deformer base always uses geoToDeform, but to ma
+
+    def check(self):
+        if not type(self.driven_meshes) == list:
+            raise Exception('driven_meshes arg type must be list')
+            quit()
+
+    def get_base_geo(self):
+        
+        # get it if it exists
+        if not self.driver_mesh_base and cmds.objExists(self.geoToDeform + "Base") :
+            self.driver_mesh_base = self.geoToDeform + "Base"
+
+        # duplicate the driver if the base doesnt already exist
+        if not self.driver_mesh_base:
+            self.driver_mesh_base = cmds.duplicate(self.geoToDeform, n = self.geoToDeform + "Base")[0]
+            cmds.setAttr(self.driver_mesh_base + ".vis", 0)
+
+        self.driver_mesh_base_shape = misc.getShape(self.driver_mesh_base)
+
+
+    def getNodes(self):
+        # Get all the shapes
+        self.geoToDeform_shape = misc.getShape(self.geoToDeform)
+
+        self.get_base_geo()
+
+        self.driven_mesh_shapes = []
+        for node in self.driven_meshes:
+            self.driven_mesh_shapes.append(misc.getShape(node))
+
+    def connectDeformer(self):
+        cmds.connectAttr( self.driver_mesh_base_shape + ".worldMesh", self.deformer + ".baseMesh")
+        for idx, mesh_shape in enumerate(self.driven_mesh_shapes):
+            cmds.connectAttr( mesh_shape + ".worldMesh", self.deformer + ".inputGeoArray[{0}].inputGeo".format(idx))
+
+    def post_create(self):
+        cmds.setAttr(self.deformer + ".cacheClosestPoint", 0)
+        cmds.refresh()
+        cmds.setAttr(self.deformer + ".cacheClosestPoint", 1)

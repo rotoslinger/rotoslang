@@ -26,7 +26,7 @@ MStatus LHMultiWrap::initialize() {
   
   aAmount = nAttr.create("bindThreshold", "bindthreshold", MFnNumericData::kFloat);
   nAttr.setMin(0.0);
-  nAttr.setDefault(0.0);
+  nAttr.setDefault(0.0001);
   nAttr.setKeyable(true);
   addAttribute(aAmount);
   attributeAffects(aAmount, outputGeom);
@@ -41,6 +41,8 @@ MStatus LHMultiWrap::initialize() {
   aCacheClosest = nAttr.create("cacheClosestPoint", "cacheclosest", MFnNumericData::kInt);
   nAttr.setKeyable(false);
   nAttr.setMax(1);
+  nAttr.setMin(0);
+
   nAttr.setDefault(1);
   nAttr.setChannelBox(true);
   addAttribute(aCacheClosest);
@@ -201,18 +203,22 @@ MStatus LHMultiWrap::deform(MDataBlock& data, MItGeometry& itGeo,
     }
     for (int inputMeshID = 0; inputMeshID < inputFnMeshArray.size(); inputMeshID++)
     {
+
+
       MIntArray tempVertIdxArray;
       for (int vertID = 0; vertID < vertCount; vertID++)
       {
-        fnBaseMesh->getPoint(vertID, currentPoint);
+        fnBaseMesh->getPoint(vertID, currentPoint, MSpace::kWorld);
         inputFnMeshArray[inputMeshID]->getClosestPoint(currentPoint, closestPointDummy, MSpace::kWorld, &polyID, &mmAccelParams);
         inputFnMeshArray[inputMeshID]->getPolygonVertices(polyID, polyPointIds);
         int closestIdx = -1;
         for (int polyPointID = 0; polyPointID < polyPointIds.length(); polyPointID++)
         {
-          inputFnMeshArray[inputMeshID]->getPoint(polyPointIds[polyPointID], baseCurrentPoint);
+          inputFnMeshArray[inputMeshID]->getPoint(polyPointIds[polyPointID], baseCurrentPoint, MSpace::kWorld);
+          // MGlobal::displayInfo(MString("Distance to ") + currentPoint.distanceTo(baseCurrentPoint));
           if (currentPoint.distanceTo(baseCurrentPoint) <= thresholdAmt)
           {
+            // MGlobal::displayInfo(MString("FOUND IT!! ") + currentPoint.distanceTo(baseCurrentPoint));
             closestIdx = polyPointIds[polyPointID];
             break;
           }
@@ -221,6 +227,34 @@ MStatus LHMultiWrap::deform(MDataBlock& data, MItGeometry& itGeo,
       }
       vertIndexArray.push_back(tempVertIdxArray);
     }
+
+
+    //   for (int vertID = 0; vertID < vertCount; vertID++)
+    //   {
+    //     fnBaseMesh->getPoint(vertID, currentPoint);
+    //     inputFnMeshArray[inputMeshID]->getClosestPoint(currentPoint, closestPointDummy, MSpace::kWorld, &polyID, &mmAccelParams);
+    //     inputFnMeshArray[inputMeshID]->getPolygonVertices(polyID, polyPointIds);
+    //     int closestIdx = -1;
+    //     for (int polyPointID = 0; polyPointID < polyPointIds.length(); polyPointID++)
+    //     {
+    //       inputFnMeshArray[inputMeshID]->getPoint(polyPointIds[polyPointID], baseCurrentPoint);
+    //       // MGlobal::displayInfo(MString("Distance to ") + currentPoint.distanceTo(baseCurrentPoint));
+    //       if (currentPoint.distanceTo(baseCurrentPoint) <= thresholdAmt)
+    //       {
+    //         MGlobal::displayInfo(MString("FOUND IT!! ") + currentPoint.distanceTo(baseCurrentPoint));
+    //         closestIdx = polyPointIds[polyPointID];
+    //         break;
+    //       }
+    //     }
+    //     tempVertIdxArray.append(closestIdx);
+    //   }
+    //   vertIndexArray.push_back(tempVertIdxArray);
+    // }
+
+
+
+
+
     for (int i=0;i < inputCount; i++)
     {
       status = inputsArrayHandle.jumpToElement(i);

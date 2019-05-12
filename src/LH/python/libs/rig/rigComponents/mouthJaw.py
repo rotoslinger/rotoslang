@@ -16,7 +16,7 @@ if os not in sys.path:
 # from rig.deformers import base
 from rig.deformers import weightStack
 reload(weightStack)
-# from rig.deformers import utils as deformerUtils
+# from rig.deformers import utils as deformer_utils
 from rig.deformers import matrixDeformer
 reload(matrixDeformer)
 from rig.deformers import slideSimple
@@ -27,9 +27,9 @@ from rig.deformers import vectorDeformerSimple
 reload(vectorDeformerSimple)
 from rig.deformers import curveRollSimple
 reload(curveRollSimple)
-from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
-# reload(deformerUtils)
+from rig.deformers import utils as deformer_utils
+reload(deformer_utils)
+# reload(deformer_utils)
 # reload(base)
 from rig.utils import weightMapUtils, misc
 reload(misc)
@@ -356,10 +356,16 @@ class MouthJaw(object):
                               
         matDef.create()
 
+    def post_create(self):
+        cmds.refresh()
+        deformer_utils.cacheOutAllSlideDeformers()
+
+
     def create(self):
         self.prepare()
         self.slide()
         self.matDef()
+        self.post_create()
 
     def setPositions(self):
         if self.componentDict:
@@ -367,9 +373,9 @@ class MouthJaw(object):
 
     def setHandWeights(self):
         if self.matDefHandWeightsDictionary:
-            deformerUtils.rebuildMatDefWeightOverrides(self.matDefHandWeightsDictionary)
+            deformer_utils.rebuildMatDefWeightOverrides(self.matDefHandWeightsDictionary)
         if self.slideHandWeightsDictionary:
-            deformerUtils.rebuildSlideWeightOverrides(self.slideHandWeightsDictionary)
+            deformer_utils.rebuildSlideWeightOverrides(self.slideHandWeightsDictionary)
 
 
 

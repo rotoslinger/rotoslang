@@ -69,6 +69,12 @@ class Deformer(object):
         self.matrixNodes = []
         self.matrixBaseNodes = []
 
+
+    # def initialize(self):
+    #     self.check()
+    #     self.getDeformer()
+    #     self.getNodes()
+
     def check(self):
         return
 
@@ -108,6 +114,9 @@ class Deformer(object):
     def cleanup(self):
         return
 
+    def post_create(self):
+        return
+
     def create(self):
         self.check()
         self.getDeformer()
@@ -118,7 +127,8 @@ class Deformer(object):
         self.createCtrls()
         self.connectCtrls()
         self.cleanup()
-
+        self.post_create()
+        
 
 
 

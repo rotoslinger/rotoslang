@@ -50,7 +50,7 @@
         "cstring": "cpp",
         "string": "cpp"
     },
-    "python.pythonPath": "/usr/bin/python",
+    "python.pythonPath": "D:\\Python36_64\\python.exe",
     "python.formatting.provider": "black",
 
 }

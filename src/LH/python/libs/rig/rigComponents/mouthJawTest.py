@@ -62,10 +62,10 @@ def test():
 
     dog=False
     superman=False
+    old_man=True
 
 
 
-    cmds.file( fileName, i=True, f=True )
 
     slidePatch="faceModelPackage:slide"
     slidePatchBase="faceModelPackage:slideBase"
@@ -76,10 +76,18 @@ def test():
     baseMesh="faceModelPackage:humanJawBase"
     baseMeshprojectionMesh="faceModelPackage:mouthProjection"
 
+    if old_man:
+        deformMesh="FullBody:jawMouth"
+        baseMesh="FullBody:jawMouthBase"
+        fileName = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/oldMan/faceRigPackage/lipsPackage.ma"
+
+    cmds.file( fileName, i=True, f=True )
     # delete history
     for i in [slidePatch, slidePatchBase, controlAutoOrientMesh, deformMesh, baseMesh, baseMeshprojectionMesh]:
         cmds.select(i, r=True)
         cmds.DeleteHistory(i)
+        cmds.makeIdentity(i, apply=True, t=1, r=1, s=1, n=0, pn=1);
+
     MouthJawClass = mouthJaw.MouthJaw(
                  nameMouth="mouth",
                  nameJaw="jaw",
@@ -92,12 +100,12 @@ def test():
                  controlParent="C_control_GRP",
                  rigParent="C_rig_GRP",
                  ctrlAutoPositionThreshold=.09,
-                 matDefTranslations = elements.JAW_MOUTH_MATDEF_TRANSLATIONS,
-                 matDefRotations = elements.JAW_MOUTH_MATDEF_ROTATIONS,
-                 matDefScales = elements.JAW_MOUTH_MATDEF_SCALES,
-                 matDefHandWeightsDictionary = elements.JAW_MOUTH_MATDEF_WEIGHT_DICT,
-                 slideHandWeightsDictionary = elements.JAW_MOUTH_SLIDE_WEIGHT_DICT,
+                #  matDefTranslations = elements.JAW_MOUTH_MATDEF_TRANSLATIONS,
+                #  matDefRotations = elements.JAW_MOUTH_MATDEF_ROTATIONS,
+                #  matDefScales = elements.JAW_MOUTH_MATDEF_SCALES,
+                #  matDefHandWeightsDictionary = elements.JAW_MOUTH_MATDEF_WEIGHT_DICT,
+                #  slideHandWeightsDictionary = elements.JAW_MOUTH_SLIDE_WEIGHT_DICT,
     )
     MouthJawClass.create() 
-    MouthJawClass.setPositions() 
-    MouthJawClass.setHandWeights()
+    # MouthJawClass.setPositions() 
+    # MouthJawClass.setHandWeights()

@@ -12,6 +12,8 @@ if os not in sys.path:
 
 from maya import cmds
 from utils import misc
+from rig.control import base as control_base
+reload(control_base)
 
 reload(misc)
 
@@ -170,7 +172,7 @@ class create_eye():
 
 
         for idx, joint in enumerate(self.skel_joints):
-            tmp_ctl = misc.create_ctl(side = self.sides[idx], 
+            tmp_ctl = control_base.create_ctl(side = self.sides[idx], 
                                     name = self.names[idx], 
                                     parent = self.rig_parent, 
                                     shape = "circle", 
@@ -189,7 +191,7 @@ class create_eye():
             cmds.delete(con)
             cmds.move(7, self.ctl_buffers[idx][0], z=True, a=True)
 
-        tmp_ctl = misc.create_ctl(side = self.side, 
+        tmp_ctl = control_base.create_ctl(side = self.side, 
                         name = "eyes", 
                         parent = self.rig_parent, 
                         shape = "circle", 

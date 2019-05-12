@@ -12,6 +12,8 @@ if os not in sys.path:
 
 from maya import cmds
 from utils import misc
+from rig.control import base as control_base
+reload(control_base)
 
 reload(misc)
 
@@ -281,7 +283,7 @@ class create_finger():
                 num_buffer = 1
                 if self.worldAlign:
                     num_buffer = 3
-                return_ctl = misc.create_ctl(side = self.side, 
+                return_ctl = control_base.create_ctl(side = self.side, 
                                              name = name + count, 
                                              parent = self.rig_parents[i], 
                                              shape = "circle",

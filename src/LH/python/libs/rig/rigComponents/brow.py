@@ -16,7 +16,7 @@ if os not in sys.path:
 # from rig.deformers import base
 from rig.deformers import weightStack
 reload(weightStack)
-# from rig.deformers import utils as deformerUtils
+# from rig.deformers import utils as deformer_utils
 from rig.deformers import matrixDeformer
 reload(matrixDeformer)
 from rig.deformers import slideSimple
@@ -27,9 +27,9 @@ from rig.deformers import vectorDeformerSimple
 reload(vectorDeformerSimple)
 from rig.deformers import curveRollSimple
 reload(curveRollSimple)
-from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
-# reload(deformerUtils)
+from rig.deformers import utils as deformer_utils
+reload(deformer_utils)
+# reload(deformer_utils)
 # reload(base)
 from rig.utils import weightMapUtils, misc
 reload(misc)
@@ -309,8 +309,13 @@ class Brow(object):
                     shape = misc.getShape(ctrl)
                     cmds.connectAttr(self.matDefContainerAttrNames[idx], shape + ".visibility", f=True)
 
+    def post_create(self):
+        cmds.refresh()
+        deformer_utils.cacheOutAllSlideDeformers()
+
                 
     def create(self):
         self.prepare()
         self.browSlide()
         self.browMatDef()
+        self.post_create()

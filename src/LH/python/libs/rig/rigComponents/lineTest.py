@@ -69,7 +69,7 @@ def test(reloadPlugin = False, loadFile=True):
     fileName="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
     dog=False
     superman=False
-    oldman=True
+    oldman=False
 
     tierCount1 = 1
     tierCount2 = 3
@@ -273,8 +273,10 @@ def test(reloadPlugin = False, loadFile=True):
 
         deformMeshUpper="FullBody:C_upperLip"
         baseUpper="FullBody:C_upperLipBase"
-        lowerRemovePointIndicies=[]
-        upperRemovePointIndicies=[]
+        lowerRemovePointIndicies=[8, 10, 15, 16, 17, 39, 44, 45, 70, 71, 78, 79, 80, 82, 84, 85, 86, 90, 92, 93, 94, 95, 96, 97, 98, 99, 106, 107, 116, 124, 125, 133, 134, 135, 157, 162, 163, 188, 189, 196, 197, 198, 200, 202, 203, 204, 208, 210, 211, 212, 213, 214, 215, 216, 217, 224, 225, 234, 242, 243]
+
+        upperRemovePointIndicies=[11, 12, 29, 32, 40, 44, 45, 48, 71, 75, 76, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 123, 125, 133, 148, 161, 164, 172, 176, 177, 180, 203, 207, 208, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 255, 257, 265, 280]
+
 
     if loadFile:
         cmds.file( new=True, f=True )
@@ -358,7 +360,8 @@ def test(reloadPlugin = False, loadFile=True):
                 projectionMesh=projectionMeshLower,
                 slidePatch=slidePatch,
                 slidePatchBase=slidePatchBase)
-    lowerLipSlide, lowerLipThick = lowerLipClass.create()
+    lowerLipClass.create()
+    lowerLipSlide, lowerLipThick = lowerLipClass.slide_deformer, lowerLipClass.vector_deformer
 
 
 
@@ -501,7 +504,8 @@ def test(reloadPlugin = False, loadFile=True):
                 slidePatch=slidePatch,
                 slidePatchBase=slidePatchBase)
                 
-    upperLipSlide, upperLipThick = upperLipClass.create()
+    upperLipClass.create()
+    upperLipSlide, upperLipThick = upperLipClass.slide_deformer, upperLipClass.vector_deformer
 
     upperLipCurveClass = line.Line(name="upperLipCurve",
             ctrlName = "upperLip",

@@ -1,7 +1,8 @@
 from maya import cmds
 from rigComponents import base
 reload(base)
-from rig.utils.misc import formatName, create_ctl
+from rig.utils.misc import formatName
+from rig.control import base as control_base
 from rig.utils import misc
 from rig.utils import exportUtils
 from rig.utils import faceWeights

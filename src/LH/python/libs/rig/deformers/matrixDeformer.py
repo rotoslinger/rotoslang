@@ -8,6 +8,10 @@ from rig.rigComponents import simpleton
 reload(simpleton)
 from rig.rigComponents import meshRivetCtrl
 reload(meshRivetCtrl)
+from rig.utils import exportUtils
+reload(exportUtils)
+from rig.rigComponents import elements
+reload(elements)
 
 def createTestMatrixDeformer():
     deformMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=100, sy=100,  n="deformMesh")[0]
@@ -56,6 +60,7 @@ class MatrixDeformer(base.Deformer):
                     controlType = 0,
                     controlAutoOrientMesh="",
                     customControlShapes = [],
+                    guide = False,
                     # inherited args
                     # orderFrontOfChain=True,
                     # orderParallel=False,
@@ -97,6 +102,7 @@ class MatrixDeformer(base.Deformer):
         self.controlType = controlType
         self.controlAutoOrientMesh = controlAutoOrientMesh
         self.customControlShapes = customControlShapes
+        self.guide = guide
 
         if not self.numToAdd and self.manualLocatorNames:
             self.numToAdd = len(self.manualLocatorNames)
@@ -168,6 +174,24 @@ class MatrixDeformer(base.Deformer):
                     cmds.parent(loc, bufferName)
             else:
                 self.matrixBaseNodes.append(matrixBaseNodeName)
+        self.create_guides()
+
+    def create_guides(self):
+        self.guide_shapes = []
+        for buffer in self.matrixBuffers:
+            guide_name = "{0}_SHP".format(buffer)
+            # if it exists get it
+            if cmds.objExists(guide_name):
+                self.guide_shapes.append(guide_name)
+                continue
+            # if it does not exist, create it
+            guideShape = exportUtils.create_curve_2(elements.sphereSmall, guide_name, buffer)
+            self.guide_shapes.append(guide_name)
+            misc.tag_guide(guide_name)
+            # Set the default visibility of the guide
+            if not self.guide:
+                cmds.setAttr(guide_name + ".v", 0)
+
 
     def setDefaults(self):
         for idx in range(len(self.matrixBuffers)):
@@ -282,6 +306,7 @@ class MatrixDeformer(base.Deformer):
                 cmds.connectAttr(ctrl + ".rotate", self.matrixNodes[idx] + ".rotate", f=True)
             if self.connectScale:
                 cmds.connectAttr(ctrl + ".scale", self.matrixNodes[idx] + ".scale", f=True)
+        self.connect_control_guides()
         # Geo constraint
         # if not self.geoToConstrainMesh:
         #     return
@@ -298,6 +323,13 @@ class MatrixDeformer(base.Deformer):
         #                        maintainOffsetT=False,
         #                        maintainOffsetR=False, maintainOffsetS=True)
 
+    def connect_control_guides(self):
+        # Connect guides
+        for idx, guide in enumerate(self.guide_shapes):
+            current_ctrl = self.controls[idx]
+            if not cmds.objExists(current_ctrl + ".guide" ):
+                cmds.addAttr(current_ctrl, ln = "guide", at = "message")
+                cmds.connectAttr(guide + ".message", current_ctrl + ".guide")
 
     def cleanup(self):
         for node in self.matrixNodes + self.matrixBaseNodes:
