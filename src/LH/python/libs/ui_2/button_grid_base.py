@@ -4,7 +4,9 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from maya import OpenMayaUI as OpenMayaUI
 from shiboken2 import wrapInstance
 from maya import cmds
-from ui_2 import ui_utils
+from ui_2 import ui_utils, file_dialog
+from ui_2 import file_dialog as file_dialog_ui
+reload(file_dialog)
 reload(ui_utils)
 import elements
 reload(elements)
@@ -78,7 +80,6 @@ class Base(QtWidgets.QWidget):
 
     def closeEvent(self, event):
         # Save window's geometry
-        print "IS CLOSING", self.settings_path
         settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
         settings_obj.setValue("windowGeometry", self.saveGeometry())
         # settings_obj.setValue("windowState", self.saveState())
@@ -140,35 +141,51 @@ class Base_Test(Base):
         self.save_window_state = True
 
 
-    def first_button_func(self):
-        print "You have just pressed the first button"
+    def first_button_func(self, checkboxes):
+        args = [checkbox.isChecked() for checkbox in checkboxes]
+        print "You have just pressed the first button checkbox1 is {0}, checkbox 2 is {1}".format(args[0], args[1])
 
-    def second_button_func(self):
-        print "You have just pressed the second button"
+    def second_button_func(self, file_dialog):
+        path = file_dialog.contents.text()
+        print "You have just pressed the second button, the path is {0}".format(path)
 
     def create_buttons(self):
         super(Base_Test, self).create_buttons()
-        # Buttons
+
+        ####### FIRST BUTTON ################
+        ### first button has a label and accepts arguments using a QCheckbox by making use of the lamda function
+        self.check_box_grid, self.checkboxes = ui_utils.check_box_list()
+        first_button_func_with_args = lambda checkboxes=self.checkboxes: self.first_button_func(checkboxes)
         self.first_label, self.first_button = ui_utils.label_button(label_text="Documentation for first button",
                                                                     button_text="First Button",
                                                                     color=elements.purple,
-                                                                    button_func=self.first_button_func
+                                                                    button_func=first_button_func_with_args
                                                                     )
+
+
+
+        ####### SECOND BUTTON ################
+        self.file_dialogue = file_dialog_ui.File_Dialog()
+        second_button_func_with_args = lambda file_dialog=self.file_dialogue: self.second_button_func(file_dialog)
         self.second_label, self.second_button = ui_utils.label_button(label_text="Documentation for second button",
                                                                     button_text="Second Button",
                                                                     color=elements.green,
-                                                                    button_func=self.second_button_func
+                                                                    button_func=second_button_func_with_args
                                                                     )
         
+
+
         # Dummy Spacer, probably a better way to format this
         self.space = ui_utils.label("")
 
         self.widgets = [
                         self.first_label, 
                         self.first_button,
+                        self.check_box_grid,
                         self.space,
                         self.second_label, 
-                        self.second_button, 
+                        self.second_button,
+                        self.file_dialogue,
                         self.space,
                         ]
 

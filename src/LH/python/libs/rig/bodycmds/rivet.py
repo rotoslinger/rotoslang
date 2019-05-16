@@ -1,4 +1,7 @@
 import sys
+
+import control.base
+
 linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 #---determine operating system
@@ -158,24 +161,24 @@ class create_rivet_rig():
 
     def __create_rigs(self):
         for i in range(len(self.names)):
-            self.ctls.append(misc.create_rivet_rig(side = self.sides[i],
-                                                   name = self.names[i],
-                                                   translate = self.translates[i],
-                                                   rotate = self.rotates[i],
-                                                   scale = self.scales[i],
-                                                   uv = (0.5,0.5),
-                                                   num_buffer = self.num_buffer,
-                                                   rig_parent = self.rig_parent, 
-                                                   skel_parent = self.skel_parent,
-                                                   shape = "sphere",
-                                                   lock_attrs=self.lock_transform_attrs,
-                                                   size = self.sizes[i],
-                                                   orient = [0,0,0],
-                                                   offset = [0,0,0],
-                                                   gimbal = True,
-                                                   hide = False,
-                                                   global_scale = "",
-                                                   debug = self.debug))
+            self.ctls.append(control.base.create_rivet_rig(side = self.sides[i],
+                                                           name = self.names[i],
+                                                           translate = self.translates[i],
+                                                           rotate = self.rotates[i],
+                                                           scale = self.scales[i],
+                                                           uv = (0.5,0.5),
+                                                           num_buffer = self.num_buffer,
+                                                           rig_parent = self.rig_parent,
+                                                           skel_parent = self.skel_parent,
+                                                           shape = "sphere",
+                                                           lock_attrs=self.lock_transform_attrs,
+                                                           size = self.sizes[i],
+                                                           orient = [0,0,0],
+                                                           offset = [0,0,0],
+                                                           gimbal = True,
+                                                           hide = False,
+                                                           global_scale = "",
+                                                           debug = self.debug))
             self.geo.append(self.ctls[i].poly_plane)
 
     def __global_scale(self):

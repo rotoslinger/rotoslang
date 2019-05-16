@@ -46,7 +46,7 @@ reload(elements)
 from rig.utils import lhExport
 reload(lhExport)
 
-
+from rig_2.manipulator import elements as manipulator_elements
 
 class Brow(object):
     @initialize.initializer
@@ -69,7 +69,7 @@ class Brow(object):
                  rigParent="C_rig_GRP",
                  ctrlAutoPositionThreshold=.09,
                  containerName = "L_lids",
-                 slideIconShapeDict = elements.circle,
+                 slideIconShapeDict = manipulator_elements.circle,
                  slideControlSpeedDefaults = [.1,.1,.1],
                  leftBrowSlideFalloffDict = elements.L_BROW_SLIDE_FALLOFF,
                  rightBrowSlideFalloffDict = elements.R_BROW_SLIDE_FALLOFF,
@@ -226,7 +226,7 @@ class Brow(object):
                                         self.matDefCtrlShapeOffset2,
                                         self.matDefCtrlShapeOffset3]
 
-        self.matDefIconShapeDicts = [elements.primaryPlus, elements.secondaryPlus, elements.tertiaryPlus]
+        self.matDefIconShapeDicts = [manipulator_elements.primary_plus, manipulator_elements.secondary_plus, manipulator_elements.tertiary_plus]
         self.matDefFalloffDicts = [self.leftBrowMatDefFalloffDict, self.rightBrowMatDefFalloffDict]
 
         for posIdx, side in enumerate(["L", "R"]):

@@ -41,6 +41,7 @@ from decorators import initialize
 reload(elements)
 from rig.deformers import utils as deformer_utils
 reload(deformer_utils)
+from rig_2.manipulator import elements as manipulator_elements
 
 
 
@@ -82,7 +83,7 @@ class Line(object):
                 slideFalloffDefaults=(-10, -9.9, -4, 10.0),
                 slideFalloffDefaultCurve = None,
 
-                slideIconShapeDict = elements.circle,
+                slideIconShapeDict = manipulator_elements.circle,
 
                 slideControlSpeedDefaults = [.1,.1,.1],
 
@@ -102,7 +103,9 @@ class Line(object):
                 falloffMatrixDefaults=(-11, -7, -2, 10.0),
                 falloffIttsMatDef=["linear","linear","linear","linear"],
                 falloffOttsMatDef=["linear","spline","linear","linear"],
-                matDefIconShapeDicts = [elements.primaryPlus, elements.secondaryPlus, elements.tertiaryPlus],
+                matDefIconShapeDicts = [manipulator_elements.primary_plus,
+                                        manipulator_elements.secondary_plus,
+                                        manipulator_elements.tertiary_plus],
 
                 ################# ThickDeformers ###############
                 doLipThick = True,
@@ -327,7 +330,7 @@ class Line(object):
 
 
             # Create a single matrix deformer (rotation order issues)
-            matDef = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefTranslate",
+            self.mat_def = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefTranslate",
                                     geoToDeform=self.deformMesh,
                                     ctrlName=self.ctrlName + matDefNames[idx],
                                     centerToParent=True,
@@ -355,9 +358,9 @@ class Line(object):
                                     controlShapeDict=self.matDefIconShapeDicts[idx],
                                     
                                     )
-            matDef.create()
+            self.mat_def.create()
 
-            matDef = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefRotate",
+            self.mat_def = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefRotate",
                                     geoToDeform=self.deformMesh,
                                     ctrlName=self.ctrlName + matDefNames[idx],
                                     centerToParent=True,
@@ -386,8 +389,8 @@ class Line(object):
                                     
                                     
                                     )
-            matDef.create()
-
+            self.mat_def.create()
+            
 
             # for ctrl in matDef.controls:
             #     cmds.container(container, edit=True, addNode=[ctrl])
@@ -431,9 +434,9 @@ class Line(object):
                     cmds.connectAttr(syAttr, PMA + ".input1D[0]")
                     cmds.setAttr(PMA + ".input1D[1]", -1)
                     syAttrs.append(PMA + ".output1D")
-                thickShape = elements.upArrow
+                thickShape = manipulator_elements.up_arrow
                 if not self.upperLip:
-                    thickShape = elements.downArrow
+                    thickShape = manipulator_elements.down_arrow
                 stack = weightStack.WeightStack(name=self.name + "WeightStackThick",
                                                 geoToWeight=self.deformMesh,
                                                 ctrlNode=self.control,
@@ -499,9 +502,9 @@ class Line(object):
                 rxAttrs = []
                 for ctrl in stack.controls:
                     rxAttrs.append(ctrl + ".rx")
-                thickShape = elements.upArrow
+                thickShape = manipulator_elements.up_arrow
                 if not self.upperLip:
-                    thickShape = elements.downArrow
+                    thickShape = manipulator_elements.down_arrow
 
                 stack = weightStack.WeightStack(name=self.name + "WeightStackRoll",
                                                 geoToWeight=self.deformMesh,

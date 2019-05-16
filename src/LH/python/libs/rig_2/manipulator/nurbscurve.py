@@ -1,6 +1,6 @@
 from maya import cmds, mel
 import maya.OpenMaya as OpenMaya
-from rig_2.manipulator import misc as manip_misc
+from rig_2.misc import utils as misc_utils
 from rig_2.node import utils as node_utils
 reload(node_utils)
 
@@ -8,7 +8,7 @@ reload(node_utils)
 def get_curve_shape_dict(mayaObject=None, space= OpenMaya.MSpace.kWorld):
     if not mayaObject: mayaObject = cmds.ls(sl=True)[0]
     shapes = []
-    for shape in manip_misc.get_shape(mayaObject):
+    for shape in misc_utils.get_shape(mayaObject):
         controlVertices = []
         knots = []
         degree = []

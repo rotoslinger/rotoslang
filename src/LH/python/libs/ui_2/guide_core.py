@@ -11,6 +11,10 @@ reload(elements)
 from ui_2 import button_grid_base
 reload(button_grid_base)
 
+from rig.utils import misc
+reload(misc)
+from rig_2.guide import utils as guide_utils
+reload(guide_utils)
 
 '''
 @code
@@ -37,45 +41,37 @@ guide_ui.openUI()
 
 @endcode
 '''
-class Guide_UI(button_grid_base.Base):
+def vis_all_guides(vis=True):
+    if vis:
+        misc.vis_all_guides()
+    else:
+        misc.hide_all_guides()
 
-    def __init__(self,
-                 **kw):
-        super(Guide_UI, self).__init__(**kw)
-        self.win_title = "Guide Utilities"
-        self.setting_filename = "GuideUtilities"
-        self.save_window_state = True
+def select_all_guides():
+    misc.select_all_guides()
 
+def tag_no_export(checkboxes):
+    # guide=True, guide_shape=True, ctrl_shape=True, gimbal_shape=True
+    ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
+    guide_utils.tag_all_no_export(ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
 
-    def first_button_func(self):
-        print "You have just pressed the first button"
+def remove_tag_no_export(checkboxes):
+    ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
+    guide_utils.remove_tag_all_no_export(ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
 
-    def second_button_func(self):
-        print "You have just pressed the second button"
+def update_geo_constraints():
+    misc.update_all_geo_constraints()
 
-    def create_buttons(self):
-        super(Guide_UI, self).create_buttons()
-        # Buttons
-        self.first_label, self.first_button = ui_utils.label_button(label_text="Documentation for first button",
-                                                                    button_text="First Button",
-                                                                    color=elements.purple,
-                                                                    button_func=self.first_button_func
-                                                                    )
-        self.second_label, self.second_button = ui_utils.label_button(label_text="Documentation for second button",
-                                                                    button_text="Second Button",
-                                                                    color=elements.green,
-                                                                    button_func=self.second_button_func
-                                                                    )
-        
-        # Dummy Spacer, probably a better way to format this
-        self.space = ui_utils.label("")
+def export_all(file_path):
+    pass
+    
+def import_all(file_path):
+    pass
 
-        self.widgets = [
-                        self.first_label, 
-                        self.first_button,
-                        self.space,
-                        self.second_label, 
-                        self.second_button, 
-                        self.space,
-                        ]
-
+def get_no_export_checkboxes(checkboxes):
+    export_args = [checkbox.isChecked() for checkbox in checkboxes]
+    ctrl_shape = export_args[0]
+    guide = export_args[1]
+    guide_shape = export_args[2]
+    gimbal_shape = export_args[3]
+    return ctrl_shape, guide, guide_shape, gimbal_shape

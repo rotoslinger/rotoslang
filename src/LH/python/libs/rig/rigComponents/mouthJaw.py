@@ -41,10 +41,13 @@ from rig.rigComponents import elements
 reload(elements)
 
 from decorators import initialize
-reload(elements)
 
 from rig.utils import lhExport
 reload(lhExport)
+
+from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
+
 
 class MouthJaw(object):
     @initialize.initializer
@@ -203,7 +206,7 @@ class MouthJaw(object):
         slideCtrlShapeOffsets=[0,0,7]
         controlRivetMesh = self.deformMesh
         controlAutoOrientMesh = self.slidePatch
-        slideIconShapeDict = elements.circle
+        slideIconShapeDict = manipulator_elements.circle
 
         stack = weightStack.WeightStack(name=self.nameMouth + "WeightStack",
                                         geoToWeight=self.deformMesh,
@@ -285,7 +288,7 @@ class MouthJaw(object):
             matDefCtrlShapeOffsets =  [0,0,0]
             matDefCtrlShapeSizes = 1
 
-        matDef = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefTranslate",
+        self.mat_def_class = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefTranslate",
                                 geoToDeform=self.deformMesh,
                                 ctrlName=self.matDefAttrs,
                                 manualLocatorNames = transLocatorNames,
@@ -315,15 +318,15 @@ class MouthJaw(object):
                                 connectTranslate = True,
                                 connectRotate = False,
                                 connectScale = False,
-                                controlShapeDict=elements.primaryPlus,
+                                controlShapeDict=manipulator_elements.primary_plus,
                                 controlAutoOrientMesh = self.slidePatch,
                                 controlType=1,
-                                customControlShapes = self.matDefCustomControlShapes,
+                                # customControlShapes = self.matDefCustomControlShapes,
 
                                 )
-                              
-        matDef.create()
-        matDef = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefRotate",
+                     
+        self.mat_def_class.create()
+        self.mat_def_class = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefRotate",
                             geoToDeform=self.deformMesh,
                             ctrlName=self.matDefAttrs,
                             manualLocatorNames = rotLocatorNames,
@@ -349,12 +352,12 @@ class MouthJaw(object):
                             connectTranslate = False,
                             connectRotate = True,
                             connectScale = True,
-                            controlShapeDict=elements.primaryPlus,
+                            controlShapeDict=manipulator_elements.primary_plus,
                             controlAutoOrientMesh = self.slidePatch,
                             controlType=1,
                             )
                               
-        matDef.create()
+        self.mat_def_class.create()
 
     def post_create(self):
         cmds.refresh()

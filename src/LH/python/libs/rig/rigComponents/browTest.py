@@ -49,21 +49,19 @@ reload(lhExport)
 from rig.rigComponents import brow
 reload(brow)
 
-def test():
+def test(old_man=True):
     cmds.file( new=True, f=True )
 
     # Linux
     # cmds.unloadPlugin("collision")
     # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
-    # fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
+    # model_package = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
    
     # Windows
     cmds.unloadPlugin("LHDeformerNodes")
     cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
 
-    fileName = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
-
-    cmds.file( fileName, i=True, f=True )
+    model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
 
     slidePatch="browModelPackage:slide"
     slidePatchBase="browModelPackage:slideBase"
@@ -74,12 +72,33 @@ def test():
     rightBrowBaseMesh = "browModelPackage:browBase"
     L_projectionMesh="browModelPackage:L_projectionPatch"
     R_projectionMesh="browModelPackage:R_projectionPatch"
+    
+    if old_man:
+
+        model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/brow.ma"
+        asset="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/oldMan.ma"
+
+        slidePatch="C_browSlide_SURF"
+        slidePatchBase="C_browSlideBase_SURF"
+        controlAutoOrientMesh ="C_browSlide_SURF"
+        leftBrowMesh = "C_brow_GEO"
+        leftBrowBaseMesh = "C_browBase_GEO"
+        rightBrowMesh = "C_brow_GEO"
+        rightBrowBaseMesh = "C_browBase_GEO"
+        L_projectionMesh="L_browProjection_MESH"
+        R_projectionMesh="R_browProjection_MESH"
+        cmds.file( asset, i=True, f=True )
+
+    cmds.file( model_package, i=True, f=True, preserveReferences=True, loadReferenceDepth="none" )
+
+
 
     # delete history
-    for i in [slidePatch, slidePatchBase, controlAutoOrientMesh, leftBrowMesh, leftBrowBaseMesh, rightBrowMesh, rightBrowBaseMesh,
-              L_projectionMesh, R_projectionMesh]:
-        cmds.select(i, r=True)
-        cmds.DeleteHistory(i)
+    if not old_man:
+        for i in [slidePatch, slidePatchBase, controlAutoOrientMesh, leftBrowMesh, leftBrowBaseMesh, rightBrowMesh, rightBrowBaseMesh,
+                L_projectionMesh, R_projectionMesh]:
+            cmds.select(i, r=True)
+            cmds.DeleteHistory(i)
 
     browClass = brow.Brow(
                         tierCounts=[1,3,5],

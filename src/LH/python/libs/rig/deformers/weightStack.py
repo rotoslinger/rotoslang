@@ -15,7 +15,8 @@ reload(elements)
 from decorators import initialize
 reload(elements)
 
-
+from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
 class Node(object):
     def __init__(self,
                  name,
@@ -96,6 +97,11 @@ class AnimCurveWeight(Node):
                  animCurveSuffix = "ACV",
                  autoCreateAnimCurves = False,
                  autoCreateName = "lip",
+                 # name side is when you want to have the ctrls mirrored
+                 # for example you have a left eye and a right eye
+                 # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
+                 # instead they will be named L_leftEye, L_centerEye, L_rightEye and the right controls will be named R_leftEye, R_centerEye, R_rightEye
+                 auto_create_name_side=False,
                  autoCreateNum = 11,
                  autoCreateTimeRange = 20.0,
                  createSingleFalloff = True,
@@ -194,7 +200,7 @@ class AnimCurveWeight(Node):
                                            attrType=None,
                                            weightmap=True)[0]
         if self.autoCreateAnimCurves:
-            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=self.autoCreateNum, name="falloff", suffixSeperator="")
+            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=self.autoCreateNum, name="falloff", suffixSeperator="", side_name=self.auto_create_name_side)
 
             defaultVals = [0.0 for x in range(self.autoCreateNum)]
 
@@ -401,6 +407,11 @@ class WeightStack(Node):
                  operationVals=[],
                  autoCreate = False,
                  autoCreateName = "lip",
+                 # name side is when you want to have the ctrls mirrored
+                 # for example you have a left eye and a right eye
+                 # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
+                 # instead they will be named L_leftEye, L_centerEye, L_rightEye and the right controls will be named R_leftEye, R_centerEye, R_rightEye
+                 auto_create_name_side=False,
                  autoCreateOperationVal = 0,
                  createControl = True,
                  controlSize = 1,
@@ -413,7 +424,7 @@ class WeightStack(Node):
                  controlSxConnectionAttrs=[],
                  controlSyConnectionAttrs=[],
                  controlSzConnectionAttrs=[],
-                 controlShape = elements.slideIcon,
+                 controlShape = manipulator_elements.slide,
                  controlShapeOffset = [0,0,.1],
                  controlShapeOrient = [90, 0, 0],
                  controlShapeScale = [1, 1, 1],
@@ -560,7 +571,7 @@ class WeightStack(Node):
 
         if self.autoCreate:
             self.weightMapAttrs = self.inputWeightAttrs
-            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=len(self.inputWeightAttrs), name=self.autoCreateName, suffixSeperator="")
+            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=len(self.inputWeightAttrs), name=self.autoCreateName, suffixSeperator="", side_name=self.auto_create_name_side)
             self.operationVals = [self.autoCreateOperationVal for x in range(len(self.inputWeightAttrs))]
 
         # If the given weight map already exists in maya

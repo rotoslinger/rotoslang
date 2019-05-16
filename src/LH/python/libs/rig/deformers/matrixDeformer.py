@@ -51,6 +51,11 @@ class MatrixDeformer(base.Deformer):
                     curveWeightsNode="",
                     curveWeightsConnectionIdx=0,
                     autoNameWithSide=True,
+                    # name side is when you want to have the ctrls mirrored
+                    # for example you have a left eye and a right eye
+                    # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
+                    # instead they will be named L_leftEye, L_centerEye, L_rightEye and the right controls will be named R_leftEye, R_centerEye, R_rightEye
+                    auto_create_name_side=False,
                     hide=True,
                     reverseDeformerOrder = False,
                     connectTranslate=True,
@@ -94,6 +99,9 @@ class MatrixDeformer(base.Deformer):
         self.curveWeightsNode = curveWeightsNode
         self.curveWeightsConnectionIdx = curveWeightsConnectionIdx
         self.autoNameWithSide = autoNameWithSide
+        self.auto_create_name_side = auto_create_name_side
+
+
         self.hide = hide
         self.reverseDeformerOrder = reverseDeformerOrder
         self.connectTranslate = connectTranslate
@@ -125,7 +133,7 @@ class MatrixDeformer(base.Deformer):
         self.deformerParent = cmds.createNode("transform", name = self.name + "_DEFORM", parent = self.rigParent)
         self.locatorNames = self.manualLocatorNames
         if not self.manualLocatorNames:
-            self.locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.locatorName, suffixSeperator="")
+            self.locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.locatorName, suffixSeperator="", side_name=self.auto_create_name_side)
         for idx in range(self.numToAdd):
             locatorName = self.locatorNames[idx]
             if not self.autoNameWithSide and not self.manualLocatorNames:
@@ -235,7 +243,7 @@ class MatrixDeformer(base.Deformer):
         locatorNames = self.locatorNames
 
         if self.ctrlName and not self.manualLocatorNames and not type(self.ctrlName) == list:
-            locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.ctrlName, suffixSeperator="")
+            locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.ctrlName, suffixSeperator="", side_name=self.auto_create_name_side)
 
         if type(self.ctrlName) == list:
             locatorNames = self.ctrlName
@@ -324,12 +332,15 @@ class MatrixDeformer(base.Deformer):
         #                        maintainOffsetR=False, maintainOffsetS=True)
 
     def connect_control_guides(self):
-        # Connect guides
-        for idx, guide in enumerate(self.guide_shapes):
-            current_ctrl = self.controls[idx]
-            if not cmds.objExists(current_ctrl + ".guide" ):
-                cmds.addAttr(current_ctrl, ln = "guide", at = "message")
-                cmds.connectAttr(guide + ".message", current_ctrl + ".guide")
+        # Connect guides        
+        for idx, current_ctrl in enumerate(self.controls):
+        # for idx, guide in enumerate(self.guide_shapes):
+            guide_shape = self.guide_shapes[idx]
+            guide = misc.getParent(guide_shape)
+            misc.create_message_attr_setup(current_ctrl, "guide", guide, "ctrl" )
+            misc.create_message_attr_setup(current_ctrl, "guide_shape", guide_shape, "ctrl" )
+            misc.tag_guide(guide)
+
 
     def cleanup(self):
         for node in self.matrixNodes + self.matrixBaseNodes:

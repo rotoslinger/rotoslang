@@ -13,6 +13,8 @@ from rig.utils import exportUtils
 #DATE:          Oct 14th, 2014
 #Version        1.0.0
 #===============================================================================
+
+
 class draw_ctl():
     def __init__(self,
                  side="L",
@@ -658,6 +660,8 @@ class create_ctl():
             cmds.setAttr( gimbalShape + ".v", l = True, cb = False, k = False)
 
     def add_tags(self):
+        for i in range(50):
+            print "CREATING TAGS"
         self.gimbal_shape = misc.getShape(self.gimbal_ctl)
         if self.gimbal == True:
             misc.tag_gimbal(self.gimbal_shape)
@@ -687,3 +691,508 @@ class create_ctl():
     #            gimbal = True,
     #            size = 1)
     ##########################################################
+
+
+class create_spline_ik():
+    # ===============================================================================
+    # CLASS:         create_spline_ik
+    # DESCRIPTION:   creates spline ik along with clusters w/ locator handles
+    # USAGE:         set args and run
+    # RETURN:        align_attr, reverse_node, align_constraint, world_transform
+    # REQUIRES:      maya.cmds
+    # AUTHOR:        Levi Harrison
+    # DATE:          Oct 21st, 2014
+    # Version        1.0.0
+    # ===============================================================================
+    def __init__(self,
+                 side = "C",
+                 name = "torso",
+                 joints = [],
+                 curve_parent = "",
+                 inherit_transform = False,
+                 cluster_parents = [],
+                 ik_handle_parent = "",
+                 hide = True,
+                 ):
+        """
+        @type  side:                string
+        @param side:                C or L or R
+
+        @type  name:                string
+        @param name:                the name of your torso
+
+        @type  joints:              string array
+        @param joints:              the joints that will be in the ik,
+                                    please list in hierarchical order
+
+        @type  curve_parent:        string
+        @param curve_parent:        where you would like to parent the curve
+                                    if blank curve will not be parented
+
+        @type  inherit_transform:   bool
+        @param inherit_transform:   whether or not you want the curve to
+                                    inherit the transform of the group it is
+                                    under. To avoid double movement I would
+                                    recommend setting this to false
+
+        @type  cluster_parents:     string array
+        @param cluster_parents:     where to parent your locator cluster
+                                    handles.  This list should be as long
+                                    as your joints, if left blank, clusters
+                                    will not be parented
+
+        @type  ik_handle_parent:    string array
+        @param ik_handle_parent:    where to parent your ik handle if blank
+                                    ik handle will not be parented
+
+        @type  hide:                bool
+        @param hide:                if true hides the controls that are created
+
+        ##########################################################
+        # #---example
+        # create_spline_ik(
+        #                  side = "C",
+        #                  name = "torso",
+        #                  joints = ['spinea_bind',
+        #                            'spineb_bind',
+        #                            'spinec_bind',
+        #                            'spined_bind',
+        #                             ],
+        #                  curve_parent = "character_grp",
+        #                  inherit_transform = False,
+        #                  cluster_parents = ["character_grp",
+        #                                     "character_grp",
+        #                                     "character_grp",
+        #                                     "character_grp",
+        #                                     ],
+        #                  ik_handle_parent = "character_grp",
+        #                  )
+        ##########################################################
+        """
+        #---args
+        self.side                   = side
+        self.name                   = name
+        self.joints                 = joints
+        self.curve_parent           = curve_parent
+        self.inherit_transform      = inherit_transform
+        self.cluster_parents        = cluster_parents
+        self.ik_handle_parent       = ik_handle_parent
+        self.hide                   = hide
+        #---vars
+        self.ik                     = []
+        self.curve                  = ""
+        self.clusters               = []
+        self.cluster_ctls           = []
+        self.cluster_ctl_buffers    = []
+        self.points                 = []
+
+        self.__create()
+
+    def __check_exists(self):
+        for i in self.joints:
+            if cmds.objExists(i):
+                if cmds.nodeType(i) != "joint":
+                    raise Exception(i + " must be a joint")
+                    quit()
+            else:
+                raise Exception(i + " does not exist")
+                quit()
+
+        if self.cluster_parents:
+            for i in  self.cluster_parents:
+                if not cmds.objExists(i):
+                    raise Exception(i + " does not exist")
+
+        if self.curve_parent:
+                if not cmds.objExists(self.curve_parent):
+                    raise Exception(self.curve_parent + " does not exist")
+
+        if self.ik_handle_parent:
+                if not cmds.objExists(self.ik_handle_parent):
+                    raise Exception(self.ik_handle_parent + " does not exist")
+
+    def __draw_curve(self):
+        knots = []
+        for i in range(len(self.joints)):
+            self.points.append(tuple(cmds.xform(self.joints[i],
+                                     q =True,
+                                     ws=True,
+                                     t=True)))
+            knots.append(i)
+        self.curve = cmds.curve(n = (self.side
+                                     + "_"
+                                     + self.name
+                                     + "SplineIK_CRV"),
+                                d = 1,
+                                p = self.points,
+                                k = knots)
+        if self.inherit_transform == False:
+            cmds.setAttr(self.curve + ".inheritsTransform",0)
+        cmds.parent(self.curve,
+                    self.curve_parent)
+
+    def __create_clusters(self):
+        tmp_cluster_ctls = []
+        for i in range(len(self.joints)):
+
+            tmp_cluster_ctls.append(control_base.create_ctl(side = self.side,
+                                               name = self.name + "Cluster"+str(i),
+                                               parent = self.cluster_parents[i],
+                                               shape = "cube",
+                                               lock_attrs = ["all"],
+                                               num_buffer = 1,
+                                               gimbal = False,
+                                               show_rot_order = False,
+                                               size = .01,
+                                               hide = self.hide))
+            self.cluster_ctls.append(tmp_cluster_ctls[i].ctl)
+            self.cluster_ctl_buffers.append(tmp_cluster_ctls[i].buffers)
+
+            con = cmds.pointConstraint(self.joints[i],
+                                        self.cluster_ctl_buffers[i][0])
+            cmds.delete(con)
+
+            self.clusters.append(cmds.cluster(self.curve
+                                               + ".cv["
+                                               + str(i)
+                                               + "]",
+                                              name = (self.side
+                                                      + "_"
+                                                      + self.name
+                                                      + str(i)
+                                                      + "_CLS"),
+                                              wn = (tmp_cluster_ctls[i].ctl,
+                                                    tmp_cluster_ctls[i].ctl,),
+                                              bindState=True))
+            cmds.rename("clusterHandleShape",
+                        self.side + "_" + self.name + str(i) + "_CLS" + "Shape")
+
+    def __create_ik(self):
+        self.ik = cmds.ikHandle(sj = self.joints[0],
+                                ee = self.joints[len(self.joints)-1],
+                                sol = "ikSplineSolver",
+                                curve = self.curve,
+                                name = (self.side
+                                        + "_"
+                                        + self.name
+                                        + "Ik_IKH"),
+                                ccv = False,
+                                pcv = False)
+        cmds.parent(self.ik[0],self.ik_handle_parent)
+
+    def __setup_advanced_twist(self):
+        cmds.setAttr(self.ik[0] + ".dTwistControlEnable", 1);
+        cmds.setAttr(self.ik[0] + ".dWorldUpType", 4)
+        cmds.setAttr(self.ik[0] + ".dWorldUpVectorY", 0)
+        cmds.setAttr(self.ik[0] + ".dWorldUpVectorEndY", 0)
+        cmds.setAttr(self.ik[0] + ".dWorldUpVectorZ", 1)
+        cmds.setAttr(self.ik[0] + ".dWorldUpVectorEndZ", 1)
+        cmds.setAttr(self.ik[0] + ".dWorldUpAxis", 3)
+        cmds.connectAttr(self.cluster_ctls[0]+ ".worldMatrix[0]",
+                         self.ik[0]+ ".dWorldUpMatrix",
+                         f = True)
+        cmds.connectAttr(self.cluster_ctls[len(self.cluster_ctls)-1]+
+                         ".worldMatrix[0]",
+                         self.ik[0] + ".dWorldUpMatrixEnd",
+                         f = True)
+
+    def __create(self):
+
+        self.__check_exists()
+        self.__draw_curve()
+        self.__create_clusters()
+        self.__create_ik()
+        self.__setup_advanced_twist()
+
+
+class create_rivet_rig():
+    # ===============================================================================
+    # CLASS:         create_rivet_rig
+    # DESCRIPTION:   creates a simple single ctl rig constrained to a poly plane
+    # USAGE:         set args and run
+    # RETURN:        constraint, ctl, ctl, buffers, gimbal, poly_plane
+    # REQUIRES:      maya.cmds
+    # AUTHOR:        Levi Harrison
+    # DATE:          Oct 27th, 2014
+    # Version        1.0.0
+    # ===============================================================================
+    def __init__(self,
+                 side = "C",
+                 name = "rivet001",
+                 translate = (0,0,0),
+                 rotate = (0,0,0),
+                 scale = (1,1,1),
+                 uv = (0.5,0.5),
+                 num_buffer = 2,
+                 rig_parent = "C_rig_GRP",
+                 skel_parent = "C_skeleton_GRP",
+                 shape = "sphere",
+                 lock_attrs=["v"],
+                 gimbal = False,
+                 show_rot_order= True,
+                 size = 1,
+                 orient = [0,0,0],
+                 offset = [0,0,0],
+                 ctl_scale = [1,1,1],
+                 hide = False,
+                 global_scale = "",
+                 debug = False
+                 ):
+        """
+        @type  side:                 string
+        @param side:                 C or L or R
+
+        @type  name:                 string
+        @param name:                 the name of your rivet
+
+        @type  translate:            3 tuple
+        @param translate:            translation of the poly plane (Tx, Ty, Tz
+                                     attributes)
+
+        @type  rotate:               3 tuple
+        @param rotate:               rotation of the poly plane (Rx, Ry, Rz
+                                     attributes)
+
+        @type  scale:            3 tuple
+        @param scale:            scale of the poly plane (Sx, Sy, Sz
+                                     attributes)
+
+        @type  uv:                   2 doubles
+        @param uv:                   this will tell the point on poly constraint
+                                     what u and v parameters you want to
+                                     constrain to
+
+        @type  num_buffer:        unsigned int
+        @param num_buffer:        the amount of buffers you will have above
+                                     your ctl one is mandatory (even if you give
+                                     0) but above that is your choice.
+
+        @type  rig_parent:            string array
+        @param rig_parent:            the group where you parent your skeleton
+
+        @type  skel_parent:           string array
+        @param skel_parent:           the group where you parent your skeleton
+
+        @type  shape:               string
+        @param shape:               ctl arg: shape name, currently supported:
+                                    circle
+                                    sphere
+                                    switch
+                                    cube
+                                    shoulder
+
+        @type  lock_attrs:          string array
+        @param lock_attrs:          ctl arg: the attribute names you want
+                                    locked, unkeyable, and hidden
+
+        @type  gimbal:              bool
+        @param gimbal:              ctl arg: whether or not you want a gimbal
+                                    control not recommended for controls with
+                                    less than all 3 rotation attributes
+
+        @type  show_rot_order:      string array
+        @param show_rot_order:      ctl arg: the attribute names you want
+                                    locked, unkeyable, and hidden
+
+        @type  size:                float
+        @param size:                ctl arg: average size of all points in ctl
+                                    in units
+
+        @type  orient:              float array
+        @param orient:              ctl arg: x,y,z values you want to rotate the
+                                    points by.  These values will not be
+                                    reflected in the transform of the control
+
+        @type  offset:              float array
+        @param offset:              ctl arg: x,y,z values you want to translate
+                                    the points by.  These values will not be
+                                    reflected in the transform of the control
+
+        @type  ctl_scale:           float array
+        @param ctl_scale:           ctl arg: x,y,z values you want to scale the
+                                    points by.  These values will not be
+                                    reflected in the transform of the control
+
+        @type  hide:                bool
+        @param hide:                ctl arg: if True control will be hidden
+
+        @type  global_scale:        string
+        @param global_scale:        what the rig will be attached to
+                                    for scaling usually lowest point in
+                                    hierarchy of global ctl
+        ##########################################################
+        #---example
+        # create_rivet_rig(side = "C",
+        #                  name = "holster01",
+        #                  translate = (0.14,1.506,0.097),
+        #                  rotate = (104.725,36.104,-259.825),
+        #                  scale = (0.099,0.01,0.025),
+        #                  uv = (0.5,0.5),
+        #                  num_buffer = 1,
+        #                  rig_parent = "C_rig_GRP",
+        #                  skel_parent = "C_skeleton_GRP",
+        #                  shape = "sphere",
+        #                  lock_attrs=["v"],
+        #                  show_rot_order= True,
+        #                  size = .03,
+        #                  orient = [0,0,0],
+        #                  offset = [0,0,0],
+        #                  ctl_scale = [1,1,1],
+        #                  gimbal = True,
+        #                  hide = False,
+        #                  global_scale = global_hook,
+        #                  debug = True)
+        #########################################################
+        """
+
+        #---args
+        self.side                    = side
+        self.name                    = name
+        self.translate               = translate
+        self.rotate                  = rotate
+        self.scale                   = scale
+        self.uv                      = uv
+        self.num_buffer              = num_buffer
+        self.rig_parent              = rig_parent
+        self.skel_parent             = skel_parent
+        self.shape                   = shape
+        self.gimbal                  = gimbal
+        self.lock_attrs              = lock_attrs
+        self.show_rot_order          = show_rot_order
+        self.size                    = size
+        self.orient                  = orient
+        self.offset                  = offset
+        self.ctl_scale               = ctl_scale
+        self.global_scale            = global_scale
+        self.hide                    = hide
+        self.debug                   = debug
+        #---vars
+        self.constraint              = []
+        self.ctl                     = ""
+        self.jnt                     = ""
+        self.buffers                 = []
+        self.gimbal                  = ""
+        self.poly_plane              = ""
+
+        self.__create()
+
+    def __create_parents(self):
+        """ create groups for skeleton and rig """
+        self.skel_parent = cmds.createNode("transform",
+                                          n = self.side +"_" +
+                                          self.name + "Skel_GRP",
+                                          p = self.skel_parent)
+
+        self.rig_parent = cmds.createNode("transform",
+                                          n = self.side
+                                          +"_"
+                                          + self.name
+                                          + "Rig_GRP",
+                                          p = self.rig_parent)
+
+    def __create_poly_plane(self):
+        self.poly_plane = cmds.polyPlane(name = (self.side
+                                                 +"_"
+                                                 + self.name
+                                                 + "plane_EX"),
+                                         ch = False,
+                                         cuv = 2,
+                                         sx = 1,
+                                         sy = 1,
+                                         ax = [0,1,0],
+                                         w = 1,
+                                         h = 1,
+                                         )
+        cmds.parent(self.poly_plane,self.skel_parent)
+        cmds.setAttr(self.poly_plane[0] + ".inheritsTransform",0)
+
+    def __create_skel(self):
+        self.jnt = cmds.createNode("joint",
+                                   name = (self.side
+                                           +"_"
+                                           + self.name
+                                           + "_JNT"),
+                                   parent = self.skel_parent)
+        cmds.addAttr(self.jnt,
+                     ln = "SEC_BIND",
+                     at = "bool",)
+        cmds.setAttr(self.jnt+".SEC_BIND",
+                     l = True,
+                     k=False)
+
+    def __create_ctl(self):
+        if self.num_buffer <1:
+            self.num_buffer =1
+        self.ctl = control_base.create_ctl(side = self.side,
+                              name = self.name,
+                              parent = self.rig_parent,
+                              shape = self.shape,
+                              lock_attrs = self.lock_attrs,
+                              num_buffer = self.num_buffer,
+                              gimbal = self.gimbal,
+                              show_rot_order = self.show_rot_order,
+                              size = self.size,
+                              orient = self.orient,
+                              offset = self.offset,
+                              scale = self.ctl_scale,
+                              hide = self.hide)
+        if  self.ctl.gimbal_ctl:
+            self.gimbal = self.ctl.gimbal_ctl
+        else:
+            self.gimbal = self.ctl.ctl
+        self.buffers = self.ctl.buffers
+        self.ctl = self.ctl.ctl
+
+    def __constrain(self):
+        self.constraint = cmds.pointOnPolyConstraint(self.poly_plane,
+                                                     self.buffers[0],
+                                                     name = self.side+
+                                                     self.name+"_PPC")
+        cmds.setAttr(self.constraint[0] + " .u0",self.uv[0])
+        cmds.setAttr(self.constraint[0] + " .v0",self.uv[1])
+        cmds.parentConstraint(self.gimbal,
+                              self.jnt,
+                              name = self.side
+                              +self.name+"_PAC")
+        cmds.parentConstraint(self.gimbal,
+                              self.jnt,
+                              name = self.side
+                              +self.name+"_PAC")
+
+    def __move(self):
+        cmds.move(self.translate[0],
+                  self.translate[1],
+                  self.translate[2],
+                  self.poly_plane,
+                  r=True)
+        cmds.rotate(self.rotate[0],
+                    self.rotate[1],
+                    self.rotate[2],
+                    self.poly_plane,
+                    r=True)
+        cmds.scale(self.scale[0],
+                   self.scale[1],
+                   self.scale[2],
+                   self.poly_plane,
+                   r=True)
+
+    def __global_scale(self):
+        if self.global_scale:
+            cmds.scaleConstraint(self.global_scale, self.rig_parent, mo = True)
+            cmds.scaleConstraint(self.global_scale, self.skel_parent, mo = True)
+
+    def __cleanup(self):
+        if self.debug == False:
+            suffix_constraints()
+            misc.lock_all(hierarchy = self.rig_parent, filter = ["*_CTL", "*_JNT"])
+            misc.lock_all(hierarchy = self.skel_parent, filter = ["*_CTL", "*_JNT","*_EX"])
+
+    def __create(self):
+        self.__create_parents()
+        self.__create_poly_plane()
+        self.__create_skel()
+        self.__create_ctl()
+        self.__constrain()
+        self.__move()
+        self.__global_scale()
+        self.__cleanup()

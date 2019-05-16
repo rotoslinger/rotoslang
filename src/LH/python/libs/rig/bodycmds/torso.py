@@ -1,4 +1,7 @@
 import sys
+
+import control.base
+
 linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 #---determine operating system
@@ -360,30 +363,30 @@ class create_torso():
         self.torso_fwd_joints.reverse()
         fwd_chest = self.torso_fwd_joints[len(self.torso_fwd_joints)-1]
         self.torso_fwd_joints.remove(self.torso_fwd_joints[len(self.torso_fwd_joints)-1])
-        self.fwd_ik = misc.create_spline_ik(side = self.side,
-                                        name = self.name + "fwd",
-                                        joints = self.torso_fwd_joints,
-                                        curve_parent = self.skel_parent,
-                                        inherit_transform = False,
-                                        cluster_parents = cluster_parents,
-                                        ik_handle_parent = self.skel_parent,
-                                        hide = True, 
-                                        )
+        self.fwd_ik = control.base.create_spline_ik(side = self.side,
+                                                    name = self.name + "fwd",
+                                                    joints = self.torso_fwd_joints,
+                                                    curve_parent = self.skel_parent,
+                                                    inherit_transform = False,
+                                                    cluster_parents = cluster_parents,
+                                                    ik_handle_parent = self.skel_parent,
+                                                    hide = True,
+                                                    )
         self.torso_fwd_joints.append(fwd_chest)
         self.torso_fwd_joints.reverse()
         #rev_ik
         rev_chest = self.torso_rev_joints[len(self.torso_rev_joints)-1]
         self.torso_rev_joints.remove(self.torso_rev_joints[len(self.torso_rev_joints)-1])
         self.torso_rev_joints.reverse()
-        self.rev_ik = misc.create_spline_ik(side = self.side,
-                                        name = self.name + "Rev",
-                                        joints = self.torso_rev_joints,
-                                        curve_parent = self.skel_parent,
-                                        inherit_transform = False,
-                                        cluster_parents = cluster_parents,
-                                        ik_handle_parent = self.skel_parent, 
-                                        hide = True, 
-                                        )
+        self.rev_ik = control.base.create_spline_ik(side = self.side,
+                                                    name = self.name + "Rev",
+                                                    joints = self.torso_rev_joints,
+                                                    curve_parent = self.skel_parent,
+                                                    inherit_transform = False,
+                                                    cluster_parents = cluster_parents,
+                                                    ik_handle_parent = self.skel_parent,
+                                                    hide = True,
+                                                    )
         self.torso_rev_joints.append(rev_chest)
         self.torso_rev_joints.reverse()
         #---hide ik handles

@@ -69,7 +69,7 @@ def test(reloadPlugin = False, loadFile=True):
     fileName="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
     dog=False
     superman=False
-    oldman=False
+    oldman=True
 
     tierCount1 = 1
     tierCount2 = 3
@@ -568,6 +568,8 @@ def test(reloadPlugin = False, loadFile=True):
                                         removePointIndicies=upperRemovePointIndicies,
                                         reorderInFrontOfDeformer=upperLipSlide,
                                         falloffDefaults = "")
+    cmds.select(upperLipCurveClass.mat_def.controls)
+    cmds.viewFit()
 
 
 

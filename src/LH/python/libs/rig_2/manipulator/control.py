@@ -12,6 +12,10 @@ reload(node_utils)
 from rig_2.misc import utils as misc_utils
 reload(misc_utils)
 
+
+from rig.utils import misc
+reload(misc)
+
 #===============================================================================
 #CLASS:         Shape
 #DESCRIPTION:   draws controls
@@ -419,7 +423,6 @@ class Ctrl(object):
             cmds.setAttr(gimbal_shape + ".overrideColor", 19)
 
     def make_gimbal_vis(self):
-        ""
         if self.gimbal == True:
             self.gimbal_vis_attr = self.ctrl+".gimbal_vis"
             if cmds.objExists(self.gimbal_vis_attr):
@@ -431,6 +434,17 @@ class Ctrl(object):
             cmds.connectAttr(self.gimbal_vis_attr, gimbalShape + ".v", f=True)
             cmds.setAttr( gimbalShape + ".v", l = True, cb = False, k = False)
 
+    def add_tags(self):
+        if self.gimbal == True:
+            self.gimbal_shape = misc.getShape(self.gimbal_ctrl)
+            misc.tag_gimbal(self.gimbal_ctrl)
+
+        # misc.tag_control_shape(misc.getShape(self.ctrl))
+        misc.tag_control(self.ctrl)
+        misc.create_message_attr_setup(self.ctrl, "gimbal", self.gimbal_ctrl, "ctrl" )
+        # # gimbal shape
+        # cmds.addAttr(self.ctrl, ln = "gimbal", at = "message")
+        # cmds.connectAttr(self.gimbal_shape + ".message", self.ctrl + ".gimbal")
 
     def post_create(self):
         return
@@ -444,6 +458,7 @@ class Ctrl(object):
         self.create_secondary()
         self.create_gimbal()
         self.make_gimbal_vis()
+        self.add_tags()
         self.post_create()
 
 

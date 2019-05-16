@@ -1,8 +1,10 @@
 from maya import cmds
 
-from rig.control import base as control_base
-from rig.utils import elements, misc
+from rig.utils import misc
 from rig.utils import exportUtils
+from rig_2.manipulator import control, elements
+reload(control)
+reload(elements)
 
 class Component(object):
     def __init__(self,
@@ -12,7 +14,7 @@ class Component(object):
                  worldInverseNodes=[],
                  curveData=None,
                  parent=None,
-                 helperGeo=elements.componentNurbs,
+                 helperGeo=elements.circle,
                  numBuffer=2,
                  orient=[0, 0, 0],
                  offset=[0, 0, 0],
@@ -111,17 +113,17 @@ class Component(object):
 
     def createCtrl(self):
         shape="circle"
-        if self.curveData:
-            shape=""
+        # if self.curveData:
+        #     shape=""
 
         self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
                                           parent=self.cmptMasterParent,
                                           shapeVis=False)
-        self.ctrl = control_base.create_ctl(side=self.side,
+        self.ctrl = control.Ctrl(side=self.side,
                                                 name=self.name,
                                                 parent=self.locator,
-                                                shape=shape,
-                                                customShape=self.curveData,
+                                                # shape=shape,
+                                                shape_dict=self.curveData,
                                                 orient=self.orient,
                                                 offset=self.offset,
                                                 scale=self.shapeScale,
@@ -129,7 +131,29 @@ class Component(object):
                                                 lock_attrs=self.lockAttrs,
                                                 gimbal=self.gimbal,
                                                 size=self.size,
-                                                nullTransform=self.nullTransform)
+                                                null_transform=self.nullTransform)
+        self.ctrl.create()
+                #  side="C",
+                #  name="controlTest",
+                #  parent="",
+                #  shape_dict = elements.circle,
+                #  lock_attrs=["v"],
+                #  num_buffer = 3,
+                #  gimbal = True,
+                #  num_secondary = 0,
+                #  show_rot_order = True,
+                #  size = 1,
+                #  orient = [0,0,0],
+                #  offset = [0,0,0],
+                #  scale = [1,1,1],
+                #  hide = False,
+                #  null_transform = False,
+                #  color_side=True,
+                #  outliner_color=False,
+                #  ctrl_alias_attr_remap={}
+
+
+
         self.buffers = self.ctrl.buffers
         reversedBuffers = self.ctrl.buffers[::-1]
         # create self.buffer in decending order going further away from the control, ascending goes opposite...
@@ -141,7 +165,7 @@ class Component(object):
             setattr(self, "buffer{0:02}".format(idx), buff)
         self.buffersAscending = reversedBuffers
         self.buffersDecending = self.ctrl.buffers
-        self.ctrl = self.ctrl.ctl
+        self.ctrl = self.ctrl.ctrl
 
     def createJoints(self):
         if not self.createJoint:

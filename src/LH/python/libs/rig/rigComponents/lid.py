@@ -46,6 +46,8 @@ reload(elements)
 from rig.utils import lhExport
 reload(lhExport)
 
+from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
 
 
 class Lid(object):
@@ -68,7 +70,7 @@ class Lid(object):
                  rigParent="C_rig_GRP",
                  ctrlAutoPositionThreshold=.09,
                  containerName = "L_lids",
-                 slideIconShapeDict = elements.circle,
+                 slideIconShapeDict = manipulator_elements.circle,
                  slideControlSpeedDefaults = [.1,.1,.1],
                  upperLidSlideFalloffDict = elements.UPPER_LID_SLIDE_FALLOFF_DICT,
                  lowerLidSlideFalloffDict = elements.LOWER_LID_SLIDE_FALLOFF_DICT,
@@ -92,6 +94,17 @@ class Lid(object):
 
 
     def prepare(self):
+        # if self.side == "R":
+        #     # normals
+        #                      slideCtrlShapeOffset1=[0,0.0,2],
+        #          slideCtrlShapeOffset2=[0,0.0,2],
+        #          slideCtrlShapeOffset3=[0,0.0,2],
+
+        #          matDefCtrlSizes = [.7, .65, .35],
+        #          matDefCtrlShapeOffset1=[0,-2.0,2],
+        #          matDefCtrlShapeOffset2=[0,-2.0,1],
+        #          matDefCtrlShapeOffset3=[0,-2.0,1],
+
         if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):
             misc.create_rig_hier(char_name=self.characterName)
 
@@ -163,6 +176,7 @@ class Lid(object):
                                                     weightCurveNames=[],
                                                     addNewElem=self.isAddingNewElems[idx],
                                                     autoCreateAnimCurves = True,
+                                                    auto_create_name_side = self.side,
                                                     autoCreateName = self.ctrlName + position + self.tierNames[idx], # Primary, Secondary, Or Tertiatry
                                                     singleFalloffName = self.ctrlName + position,
                                                     autoCreateNum = self.tierCounts[idx],
@@ -187,6 +201,7 @@ class Lid(object):
                                                 outputAttrs = outputAttrs,
                                                 outputAttrs_LR = outputAttrs_LR,
                                                 autoCreate=True,
+                                                auto_create_name_side = self.side,
                                                 controlPositionWeightsThreshold=self.ctrlAutoPositionThreshold,
                                                 controlRivetMesh = self.controlRivetMeshes[posIdx],
                                                 controlAutoOrientMesh=self.controlAutoOrientMesh,
@@ -208,10 +223,10 @@ class Lid(object):
                 self.ctrlRotations[position].append(self.slideWeightStack[position].rotationsFromWeights)
                 # Add controls to the container and connect to visibility
 
-                for ctrl in self.slideWeightStack[position].controls:
-                    cmds.container(self.container, edit=True, addNode=[ctrl])
-                    shape = misc.getShape(ctrl)
-                    cmds.connectAttr(self.slideContainerAttrNames[posIdx], shape + ".visibility", f=True)
+                # for ctrl in self.slideWeightStack[position].controls:
+                #     cmds.container(self.container, edit=True, addNode=[ctrl])
+                #     shape = misc.getShape(ctrl)
+                #     cmds.connectAttr(self.slideContainerAttrNames[posIdx], shape + ".visibility", f=True)
 
     def lidMatDef(self):
         self.matDefCurveWeights = {}
@@ -223,7 +238,7 @@ class Lid(object):
                                         self.matDefCtrlShapeOffset2,
                                         self.matDefCtrlShapeOffset3]
 
-        self.matDefIconShapeDicts = [elements.primaryPlus, elements.secondaryPlus, elements.tertiaryPlus]
+        self.matDefIconShapeDicts = [manipulator_elements.primary_plus, manipulator_elements.secondary_plus, manipulator_elements.tertiary_plus]
         self.matDefFalloffDicts = [self.upperLidMatDefFalloffDict, self.lowerLidMatDefFalloffDict]
 
         for posIdx, position in enumerate(["Upper", "Lower"]):
@@ -237,6 +252,7 @@ class Lid(object):
                                                             weightCurveNames=[],
                                                             addNewElem=self.isAddingNewElems[idx],
                                                             autoCreateAnimCurves = True,
+                                                            auto_create_name_side = self.side,
                                                             autoCreateName = self.ctrlName + position + self.tierNames[idx], # Primary, Secondary, Or Tertiatry
                                                             singleFalloffName = self.ctrlName + position + "MATDEFTEST",
                                                             autoCreateNum = self.tierCounts[idx],
@@ -257,6 +273,7 @@ class Lid(object):
                                         addAtIndex=self.tierAddAtIndex[idx],
                                         numToAdd=self.tierCounts[idx],
                                         reverseDeformerOrder = True,
+                                        auto_create_name_side = self.side,
                                         locatorName=currName + self.tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
                                         curveWeightsNode=self.matDefCurveWeights[position].node,
                                         geoToConstrainMesh=self.deformMeshes[posIdx],
@@ -282,6 +299,7 @@ class Lid(object):
                                         addAtIndex=self.tierAddAtIndex[idx],
                                         numToAdd=self.tierCounts[idx],
                                         reverseDeformerOrder = True,
+                                        auto_create_name_side = self.side,
                                         locatorName=currName + self.tierNames[idx] + "Rot", # Primary, Secondary, Or Tertiatry
                                         curveWeightsNode=self.matDefCurveWeights[position].node,
                                         geoToConstrainMesh=self.deformMeshes[posIdx],
