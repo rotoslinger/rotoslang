@@ -51,11 +51,11 @@ class Guide_UI(button_grid_base.Base):
         self.setting_filename = "GuideUtilities"
         self.save_window_state = True
 
-    def export_func(self, dialog):
-        print "exporting to {0}".format(dialoge.text())
+    def export_func(self, path):
+        print "exporting to {0}".format(path)
 
-    def import_func(self, dialog):
-        print "importing to {0}".format(dialoge.text())
+    def import_func(self, path):
+        print "importing to {0}".format(path)
 
     def create_buttons(self):
         super(Guide_UI, self).create_buttons()
@@ -117,17 +117,17 @@ class Guide_UI(button_grid_base.Base):
 
         ######## Import Guides ###############
         self.import_dialog = file_dialog_ui.File_Dialog()
-        import_func_with_args = lambda file_dialog=self.import_dialog: self.import_func(file_dialog)
-        self.import_label, self.import_button = ui_utils.label_button(label_text="Export guides to the set file path.",
-                                                                    button_text="Export",
+        import_func_with_args = lambda file_dialog=self.import_dialog.contents.text(): guide_core.import_all(file_dialog)
+        self.import_label, self.import_button = ui_utils.label_button(label_text="Import guides to the set file path.",
+                                                                    button_text="Import",
                                                                     color=elements.purple,
                                                                     button_func=import_func_with_args
                                                                     )
         ######## Export Guides ###############
         self.export_dialog = file_dialog_ui.File_Dialog()
-        export_func_with_args = lambda file_dialog=self.export_dialog: self.export_func(file_dialog)
-        self.export_label, self.export_button = ui_utils.label_button(label_text="Import guides to the set file path.",
-                                                                    button_text="Import",
+        export_func_with_args = lambda file_dialog=self.export_dialog.contents.text(): guide_core.export_all(file_dialog)
+        self.export_label, self.export_button = ui_utils.label_button(label_text="Export guides to the set file path.",
+                                                                    button_text="Export",
                                                                     color=elements.purple,
                                                                     button_func=export_func_with_args
                                                                     )

@@ -4,6 +4,9 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from maya import OpenMayaUI as OpenMayaUI
 from shiboken2 import wrapInstance
 from maya import cmds
+
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 from ui_2 import ui_utils
 reload(ui_utils)
 import elements
@@ -43,12 +46,12 @@ guide_ui.openUI()
 '''
 def vis_all_guides(vis=True):
     if vis:
-        misc.vis_all_guides()
+        tag_utils.vis_all_guides()
     else:
-        misc.hide_all_guides()
+        tag_utils.hide_all_guides()
 
 def select_all_guides():
-    misc.select_all_guides()
+    tag_utils.select_all_guides()
 
 def tag_no_export(checkboxes):
     # guide=True, guide_shape=True, ctrl_shape=True, gimbal_shape=True
@@ -63,10 +66,12 @@ def update_geo_constraints():
     misc.update_all_geo_constraints()
 
 def export_all(file_path):
-    pass
-    
+    print file_path
+    tag_utils.create_tag_dict()
+
 def import_all(file_path):
-    pass
+    print file_path
+    tag_utils.set_tags_from_dict()
 
 def get_no_export_checkboxes(checkboxes):
     export_args = [checkbox.isChecked() for checkbox in checkboxes]
