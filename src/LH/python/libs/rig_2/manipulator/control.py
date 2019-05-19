@@ -1,6 +1,9 @@
 import copy
 from maya import cmds
 import maya.OpenMaya as OpenMaya
+
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 from rig_2.manipulator import elements
 reload(elements)
 from rig_2.manipulator import nurbscurve
@@ -437,10 +440,10 @@ class Ctrl(object):
     def add_tags(self):
         if self.gimbal == True:
             self.gimbal_shape = misc.getShape(self.gimbal_ctrl)
-            misc.tag_gimbal(self.gimbal_ctrl)
+            tag_utils.tag_gimbal(self.gimbal_ctrl)
 
         # misc.tag_control_shape(misc.getShape(self.ctrl))
-        misc.tag_control(self.ctrl)
+        tag_utils.tag_control(self.ctrl)
         misc.create_message_attr_setup(self.ctrl, "gimbal", self.gimbal_ctrl, "ctrl" )
         # # gimbal shape
         # cmds.addAttr(self.ctrl, ln = "gimbal", at = "message")

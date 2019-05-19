@@ -1,6 +1,11 @@
 from maya import cmds
+
+from rig_2.tag import utils as tag_utils
 from rig.utils import misc
 from rig.utils import exportUtils
+reload(tag_utils)
+reload(misc)
+reload(exportUtils)
 
 
 #===============================================================================
@@ -664,8 +669,8 @@ class create_ctl():
             print "CREATING TAGS"
         self.gimbal_shape = misc.getShape(self.gimbal_ctl)
         if self.gimbal == True:
-            misc.tag_gimbal(self.gimbal_shape)
-        misc.tag_control(misc.getShape(self.ctl))
+            tag_utils.tag_gimbal(self.gimbal_shape)
+        tag_utils.tag_control(misc.getShape(self.ctl))
         # gimbal shape
         cmds.addAttr(self.ctl, ln = "gimbal", at = "message")
         cmds.connectAttr(self.gimbal_shape + ".message", self.ctl + ".gimbal")

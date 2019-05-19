@@ -1,14 +1,19 @@
 from maya import cmds
-from rigComponents import base
-reload(base)
-from rig.utils.misc import formatName
-from rig.control.base import create_ctl
-from rig.utils import misc
-from rig.utils import exportUtils
-from rig.utils import faceWeights
-from rig_2.manipulator import control
-import elements
 
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+from rig.rigComponents import base
+reload(base)
+from rig.utils import misc
+reload(misc)
+from rig.utils import exportUtils
+reload(exportUtils)
+from rig.utils import faceWeights
+reload(faceWeights)
+import elements
+reload(elements)
+from rig_2.manipulator import nurbscurve
+from rig_2.manipulator import elements as manipulator_elements
 
 class Component(base.Component):
     def __init__(self,
@@ -104,13 +109,27 @@ class Component(base.Component):
 
     def createGuide(self):
         # The guide is really just the buffer above the rivet.  This creates a shape for that buffer for easier selection
-        self.guideShape = exportUtils.create_curve_2(elements.sphereSmall, "{0}_{1}_GUIDE".format(self.side, self.name), self.buffer2)
+        self.guide_transform, self.guideShapes = nurbscurve.create_curve(manipulator_elements.sphere_small,
+                                                  "{0}_{1}_GUIDE".format(self.side, self.name),
+                                                  self.buffer2,
+                                                  transform_suffix=None,
+                                                  check_existing=False,
+                                                  outliner_color = False,
+                                                  color = False,
+                                                  shape_suffix=None,
+                                                  shape_name = "{0}_{1}_GUIDE".format(self.side, self.name)                                                  )
 
-        misc.tag_guide(misc.getParent(self.guideShape.fullPathName()))
+        tag_utils.tag_guide(self.guide_transform)
 
-        # Set the default visibility of the guide
-        if not self.guide:
-            cmds.setAttr(self.guideShape.fullPathName() + ".v", 0)
+
+        for guide_shape in self.guideShapes:
+            print self.guideShapes
+            tag_utils.tag_guide_shape(guide_shape)
+
+            # Set the default visibility of the guide
+            if not self.guide:
+                cmds.setAttr(guide_shape + ".v", 0)
+        self.guideShape = self.guideShapes[0]
 
     def createAttrs(self):
         inputAttrs = ["speedTx", "speedTy", "speedTz"]
@@ -131,16 +150,17 @@ class Component(base.Component):
         # cmds.connectAttr(self.guideShape.fullPathName() + ".message", self.cmptMasterParent + ".guide_shape")
         # cmds.connectAttr(self.guideShape.fullPathName() + ".message", self.ctrl + ".guide_shape")
 
-        guide_shape =self.guideShape.fullPathName()
-        guide_shape_transform =misc.getParent(guide_shape)
+        # guide_shape =self.guideShape.fullPathName()
+        # guide_shape_transform =misc.getParent(guide_shape)
         
 
-        misc.create_message_attr_setup(self.cmptMasterParent, "guide", guide_shape_transform, "master" )
-        misc.create_message_attr_setup(self.ctrl, "guide", guide_shape_transform, "ctrl" )
+        misc.create_message_attr_setup(self.cmptMasterParent, "guide", self.guide_transform, "master" )
+        misc.create_message_attr_setup(self.ctrl, "guide", self.guide_transform, "ctrl" )
         
-        misc.create_message_attr_setup(self.cmptMasterParent, "guide_shape", guide_shape, "master" )
-        misc.create_message_attr_setup(self.ctrl, "guide_shape", guide_shape, "ctrl" )
+        misc.create_message_attr_setup(self.cmptMasterParent, "guide_shape", self.guideShape, "master" )
+        misc.create_message_attr_setup(self.ctrl, "guide_shape", self.guideShape, "ctrl" )
 
+        tag_utils.create_tag(self.guide_transform, "RIVET_GUIDE")
 
 
     # def preConnect(self):

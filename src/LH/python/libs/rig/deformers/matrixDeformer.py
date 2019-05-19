@@ -1,7 +1,13 @@
 from maya import cmds
+
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
+reload(misc)
 from rig.deformers import utils as deformerUtils
+reload(deformerUtils)
 from rig.deformers import base
 reload(base)
 from rig.rigComponents import simpleton
@@ -12,6 +18,10 @@ from rig.utils import exportUtils
 reload(exportUtils)
 from rig.rigComponents import elements
 reload(elements)
+from rig_2.manipulator import nurbscurve
+reload(nurbscurve)
+from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
 
 def createTestMatrixDeformer():
     deformMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=100, sy=100,  n="deformMesh")[0]
@@ -193,12 +203,28 @@ class MatrixDeformer(base.Deformer):
                 self.guide_shapes.append(guide_name)
                 continue
             # if it does not exist, create it
-            guideShape = exportUtils.create_curve_2(elements.sphereSmall, guide_name, buffer)
-            self.guide_shapes.append(guide_name)
-            misc.tag_guide(guide_name)
+            # sphere_medium
+            # guideShape = exportUtils.create_curve_2(elements.sphereSmall, guide_name, buffer)
+            # guideShape = exportUtils.create_curve_2(elements.sphereSmall, guide_name, buffer)
+            guide_transform, guideShape = nurbscurve.create_curve(manipulator_elements.sphere_medium,
+                                                     guide_name,
+                                                     buffer,
+                                                     transform_suffix=None,
+                                                     check_existing=False,
+                                                     outliner_color = False,
+                                                     color = False,
+                                                     shape_suffix=None,
+                                                     shape_name = guide_name )
+
+
+            self.guide_shapes.append(guideShape[0])
+            tag_utils.tag_guide(guide_transform)
+            tag_utils.tag_guide_shape(guideShape[0])
             # Set the default visibility of the guide
             if not self.guide:
-                cmds.setAttr(guide_name + ".v", 0)
+                cmds.setAttr(guideShape[0] + ".v", 0)
+
+
 
 
     def setDefaults(self):
@@ -339,7 +365,15 @@ class MatrixDeformer(base.Deformer):
             guide = misc.getParent(guide_shape)
             misc.create_message_attr_setup(current_ctrl, "guide", guide, "ctrl" )
             misc.create_message_attr_setup(current_ctrl, "guide_shape", guide_shape, "ctrl" )
-            misc.tag_guide(guide)
+            tag_utils.tag_guide(guide)
+            tag_utils.tag_guide_shape(guide_shape)
+            if "Rot" in guide:
+                misc.create_message_attr_setup(current_ctrl, "rotation_guide", guide, "rotation_ctrl" )
+                tag_utils.create_tag(guide, "ROTATION_GUIDE")
+            if "Trans" in guide:
+                misc.create_message_attr_setup(current_ctrl, "translation_guide", guide, "translation_ctrl" )
+                tag_utils.create_tag(guide, "TRANSLATION_GUIDE")
+
 
 
     def cleanup(self):

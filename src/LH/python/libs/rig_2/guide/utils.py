@@ -1,5 +1,9 @@
 from maya import cmds
 import maya.OpenMaya as OpenMaya
+import json, os
+
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 from rig.utils import misc
 reload(misc)
 from rig.utils import exportUtils
@@ -9,67 +13,114 @@ reload(weightMapUtils)
 
 from rig.rigComponents import meshRivetCtrl
 reload(meshRivetCtrl)
-
-def get_gimbal_shapes(no_export_nodes=None):
-    return
-def get_guide_shapes(no_export_nodes=None):
-    return
-def get_control_shapes(no_export_nodes=None):
-    return
-def get_guide_positions(no_export_nodes=None):
-    return
+from rig_2.manipulator import nurbscurve
+reload(nurbscurve)
+from rig_2.mirror import utils as mirror_utils
+reload(nurbscurve)
 
 def get_no_exports():
-    return
+    return tag_utils.get_tag_dict()
 
-def set_gimbal_shapes(no_export_nodes=None):
-    return
-def set_guide_shapes(no_export_nodes=None):
-    return
-def set_control_shapes(no_export_nodes=None):
-    return
-def set_guide_positions(no_export_nodes=None):
+def get_control_shapes(no_export_tag_dict=None):
+    all_controls = tag_utils.get_all_controls()
+    return get_shape_dicts(all_controls, no_export_tag_dict=no_export_tag_dict)
 
+def get_guide_positions(no_export_tag_dict=None):
+    all_guide_transforms = tag_utils.get_all_guides()
+    return get_guide_transforms(all_guide_transforms, no_export_tag_dict)
+
+def get_guide_shapes(no_export_tag_dict=None):
+    all_guide_transforms = tag_utils.get_all_guides()
+    return get_shape_dicts(all_guide_transforms, no_export_tag_dict=no_export_tag_dict)
+
+def get_gimbal_shapes(no_export_tag_dict=None):
+    all_gimbal_transforms = tag_utils.get_all_gimbals()
+    return get_shape_dicts(all_gimbal_transforms, no_export_tag_dict=no_export_tag_dict)
+
+def set_no_exports(tag_dict):
+    tag_utils.set_tags_from_dict(tag_dict)
+
+def set_guide_positions(transform_dict, no_export_tag_dict=None):
+    set_guide_transforms(transform_dict, no_export_tag_dict)
     # Make sure to update all constraints after guides are set
     cmds.refresh()
-    update_geo_constraints()
+    misc.update_all_geo_constraints()
     return
-def set_no_exports():
-    pass
 
-def export_all(filename):
-    pass
+def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
+    export_dict = {}
+    no_export_tag_dict = get_no_exports()
+    export_dict["no_export_tag_dict"] = no_export_tag_dict
+    if ctrl_shape:
+        export_dict["control_shapes"] = get_control_shapes(no_export_tag_dict)
+    if guide:
+        export_dict["guide_positions"] = get_guide_positions(no_export_tag_dict)
+    if guide_shape:
+        export_dict["guide_shapes"] = get_guide_shapes(no_export_tag_dict)
+    if gimbal_shape:
+        export_dict["gimbal_shapes"] = get_gimbal_shapes(no_export_tag_dict)
 
-def import_all(filename):
-    pass
+    # Make sure the path exists
+    path= os.path.dirname(os.path.normpath(filename))
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+    file = open(filename, "wb")
+    json.dump(export_dict, file, sort_keys = False, indent = 2)
+    file.close()
+    return export_dict
+
+def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
+    file = open(filename, "rb")
+    import_dict = json.load(file)
+    file.close()
+
+    no_export_tag_dict = import_dict["no_export_tag_dict"]
+
+    # Set NO_EXPORT tags
+    tag_utils.set_tags_from_dict(no_export_tag_dict)
+    # Control Shapes
+    if ctrl_shape:
+        set_shapes_from_dict(import_dict["control_shapes"], no_export_tag_dict)
+    # guidePositions
+    if guide:
+        set_guide_positions(import_dict["guide_positions"], no_export_tag_dict)
+    # Guide Shapes
+    if guide_shape:
+        set_shapes_from_dict(import_dict["guide_shapes"], no_export_tag_dict)
+    # Gimbal Shapes
+    if gimbal_shape:
+        set_shapes_from_dict(import_dict["gimbal_shapes"], no_export_tag_dict)
 
 
 ###############################################################################
 ############################### TRANSFORMS ####################################
 ###############################################################################
-def getMatrixDeformerPivotLocations(matrixDeformer=None, debug=False):
-    if matrixDeformer == None:
-        matrixDeformer = cmds.ls(sl=True, typ="LHMatrixDeformer")
-        if matrixDeformer:
-            matrixDeformer = matrixDeformer[0]
-    if not matrixDeformer:
-        matrixDeformer = getMatrixDeformerFromControl()
-    elemLength = cmds.getAttr(matrixDeformer + ".inputs", s=True)
-    rotations = []
+def get_guide_transforms(guide_nodes, no_export_tag_dict, debug=False):
+    guide_position_dict = {}
     translations = []
+    rotations = []
     scales = []
-    for idx in range(elemLength):
-        # print cmds.getAttr(matrixDeformer + ".inputs[{0}].matrix".format(idx))
-        locator = cmds.listConnections(matrixDeformer + ".inputs[{0}].matrix".format(idx))[0]
-        translations.append(cmds.xform(locator, q=True, ws=True, t=True))
-        rotations.append(cmds.xform(locator, q=True, ws=True, ro=True))
-        scales.append(cmds.xform(locator, q=True, ws=True, s=True))
+    for node in guide_nodes:
+        if node in no_export_tag_dict.keys():
+            continue
+        if cmds.objectType(node) != "transform":
+            node = misc.getParent(node)
+        guide_position_dict[node] = {}
+        guide_position_dict[node]["translation"] = cmds.xform(node, q=True, ws=True, t=True)
+        guide_position_dict[node]["rotation"] = cmds.xform(node, q=True, ws=True, ro=True)
+        guide_position_dict[node]["scale"] = cmds.xform(node, q=True, ws=True, s=True)
     if debug:
-        print "rotations", rotations
-        print "translations", translations
-        print "scales", scales
+        print guide_position_dict
+    return guide_position_dict
 
-    return rotations, translations, scales
+def set_guide_transforms(guide_position_dict, no_export_tag_dict):
+    for node in guide_position_dict.keys():
+        if node in no_export_tag_dict.keys():
+            continue
+        cmds.xform(node, ws=True, t=guide_position_dict[node]["translation"])
+        cmds.xform(node, ws=True, ro=guide_position_dict[node]["rotation"])
+        cmds.xform(node, ws=True, s=guide_position_dict[node]["scale"])
 
 
 
@@ -77,13 +128,28 @@ def getMatrixDeformerPivotLocations(matrixDeformer=None, debug=False):
 ################################# SHAPES ######################################
 ###############################################################################
 
-def get_shape_dicts(shape_nodes, no_export_nodes=None):
+def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
     shapeDict = {}
-    for shape in shape_nodes:
-        if shape in no_export_nodes:
+    for transform in curve_transforms:
+        if cmds.objectType(transform) != "transform" and cmds.objectType(transform) != "nullTransform":
+            transform = misc.getParent(transform)
+        if no_export_tag_dict and transform in no_export_tag_dict.keys():
             continue
-        shapeDict[shape] = exportUtils.nurbsCurveData(name = shape, space=OpenMaya.MSpace.kObject).nurbsCurve
+        shapeDict[transform] = nurbscurve.get_curve_shape_dict(mayaObject=transform, space=OpenMaya.MSpace.kObject)
     return shapeDict
+
+def set_shapes_from_dict(shape_dict, no_export_tag_dict=None):
+    for transform in shape_dict.keys():
+        if no_export_tag_dict and transform in no_export_tag_dict.keys():
+            continue
+        # print shape_dict
+        nurbscurve.create_curve(shape_dict[transform],
+                                name=shape_dict[transform]["name"],
+                                parent=shape_dict[transform]["parent"],
+                                transform_suffix=None,
+                                check_existing = True
+                                )
+
 
 
 ###############################################################################
@@ -95,14 +161,14 @@ def add_no_export_tag(nodes):
     # this is then exported along with whatever else and recreated on build
     # if it is removed, it will export
     for node in nodes:
-        misc.tag_no_export(node)
+        tag_utils.tag_no_export(node)
 
 def remove_no_export_tag(nodes):
     # if set to be tagged NO_EXPORT attr is added,
     # this is then exported along with whatever else and recreated on build
     # if it is removed, it will export
     for node in nodes:
-        misc.remove_tag_no_export(node)
+        tag_utils.remove_tag_no_export(node)
 
 def no_export_add_remove_selector(nodes, add=True):
     if add:
@@ -145,21 +211,16 @@ def control_tag_no_export(add=True, checkbox_on=False):
         return
     # select controls to be tagged and run
     # Will tag control shapes from being saved out
-    return_shapes = []
+    return_nodes = []
+    # You need to have controls selected for this to work
     nodes = control_from_selected()
     for sel in nodes:
-        # You need to have controls selected for this to work
-        shape = misc.getShape(sel)
-        if shape and cmds.objectType(shape) == "nurbsCurve":
-            return_shapes.append(shape)
-    no_export_add_remove_selector(return_shapes, add)
-    return return_shapes
+        return_nodes.append(sel)
+    no_export_add_remove_selector(return_nodes, add)
+    return return_nodes
 
 def control_from_selected():
     return [control for control in cmds.ls(sl=True) if cmds.objExists(control + ".CONTROL")]
-
-# def tag_all(guide=True, guide_shape=True, ctrl_shape=True, gimbal_shape=True):
-#     return gimbal_tag_no_export(gimbal_shape) + guide_tag_no_export(guide) + control_tag_no_export(ctrl_shape) + guide_shape_tag_no_export(guide_shape)
 
 def tag_all_no_export(ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
     control_tag_no_export(checkbox_on=ctrl_shape)
@@ -172,3 +233,37 @@ def remove_tag_all_no_export(ctrl_shape=True, guide=True, guide_shape=True, gimb
     guide_tag_no_export(add=False, checkbox_on=guide)
     guide_shape_tag_no_export(add=False, checkbox_on=guide_shape)
     gimbal_tag_no_export(add=False, checkbox_on=gimbal_shape)
+
+###########################################################################
+###################### MIRRORING UTILS ####################################
+###########################################################################
+
+def mirror_all_shapes():
+    control_nodes = control_from_selected()
+    gimbal_nodes = misc.get_nodes_from_message(control_nodes, "gimbal")
+    guide_nodes = misc.get_nodes_from_message(control_nodes, "guide")
+    nodes_to_mirror = control_nodes + gimbal_nodes + guide_nodes
+    for source_nodes in nodes_to_mirror:
+        if type(source_nodes) is not list:
+            source_nodes = [source_nodes]
+        for source_node in source_nodes:
+            target_node = mirror_utils.get_opposite_side(source_node)
+            if not target_node or not cmds.objExists(target_node):
+                continue
+            nurbscurve.mirror_shape(source_node, target_node)
+
+def mirror_selected_shape_transforms():
+    # control_nodes = control_from_selected()
+    # gimbal_nodes = misc.get_nodes_from_message(control_nodes, "gimbal")
+    # guide_nodes = misc.get_nodes_from_message(control_nodes, "guide")
+    # nodes_to_mirror = control_nodes + gimbal_nodes + guide_nodes
+    nodes_to_mirror = cmds.ls(sl=True)
+    for source_nodes in nodes_to_mirror:
+        if type(source_nodes) is not list:
+            source_nodes = [source_nodes]
+        for source_node in source_nodes:
+            target_node = mirror_utils.get_opposite_side(source_node)
+            if not target_node or not cmds.objExists(target_node):
+                continue
+            nurbscurve.mirror_shape(source_node, target_node)
+

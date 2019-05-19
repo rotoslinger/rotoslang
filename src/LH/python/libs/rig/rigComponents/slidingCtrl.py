@@ -1,5 +1,5 @@
 from maya import cmds
-from rigComponents import base
+from rig.rigComponents import base
 
 from rig.control import base as control_base
 from rig.utils.misc import formatName

@@ -1,5 +1,5 @@
 from maya import cmds
-import base
+from rig.deformers import base
 reload(base)
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)

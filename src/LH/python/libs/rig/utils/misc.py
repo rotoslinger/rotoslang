@@ -1480,114 +1480,9 @@ def printPointIndicies():
     return indicies
 
 
-def create_tag(node_to_tag, tag_name="TAG"):
-    if cmds.objExists(node_to_tag + "." + tag_name):
-        return
-    cmds.addAttr(node_to_tag, ln = tag_name,
-                    at = "bool",)
-    cmds.setAttr(node_to_tag +"." + tag_name,
-                    l = True,
-                    k=False)
-
-def remove_tag(tagged_node, tag_name="TAG"):
-    attr_full_name = tagged_node + "." + tag_name
-    if not cmds.objExists(attr_full_name):
-        return
-    cmds.setAttr(tagged_node + "." + tag_name,
-                l = False)
-    cmds.deleteAttr(attr_full_name)
-
-def tag_no_export(node_to_tag):
-    if not node_to_tag:
-        return
-    if type(node_to_tag) != list:
-        node_to_tag = [node_to_tag]
-    for node in node_to_tag:
-        create_tag(node, "NO_EXPORT")
-
-def remove_tag_no_export(tagged_node):
-    if not tagged_node:
-        return
-    if type(tagged_node) != list:
-        tagged_node = [tagged_node]
-    for node in tagged_node:
-        remove_tag(node, "NO_EXPORT")
-
-
-def tag_gimbal(node_to_tag):
-    create_tag(node_to_tag, "GIMBAL")
-
-def tag_control(node_to_tag):
-    create_tag(node_to_tag, "CONTROL")
-
-def tag_guide(node_to_tag):
-    create_tag(node_to_tag, "GUIDE")
-
 # def tag_guide_shape(node_to_tag):
 #     create_tag(node_to_tag, "GUIDE_SHAPE")
 
-def tag_bind_joint(node_to_tag):
-    create_tag(node_to_tag, "BIND")
-
-def tag_weight_curve(node_to_tag):
-    create_tag(node_to_tag, "WEIGHT_CURVE")
-
-def get_all_with_tag(tag):
-    return [x for x in cmds.ls() if cmds.objExists(x + "." + tag)]
-
-def get_all_shape_with_tag(tag):
-    return [x for x in cmds.ls(shapes=True) if cmds.objExists(x + "." + tag)]
-
-def vis_all_with_tag(tag, vis=True):
-    nodes = get_all_with_tag(tag)
-    for node in nodes:
-        cmds.setAttr(node + ".v", vis)
-
-def vis_all_shape_with_tag(tag, vis=True):
-    nodes = get_all_shape_with_tag(tag)
-    for node in nodes:
-        cmds.setAttr(node + ".v", vis)
-
-def get_all_gimbals():
-    get_all_with_tag("GIMBAL")
-
-def get_all_guides():
-    get_all_with_tag("GUIDE")
-
-def get_all_controls():
-    get_all_with_tag("CONTROL")
-
-
-def select_all_with_tag(tag):
-    cmds.select(get_all_with_tag(tag))
-
-def get_transform_all_with_tag(tag):
-    ret_transforms = []
-    nodes = get_all_with_tag(tag)
-    for node in nodes:
-        # if the object's world location, rotation, scale can be queried, add it to the transforms
-        if cmds.objectType(node) == "transform" or cmds.objectType(node) == "joint":
-            ret_transforms.append(node)
-            continue
-        # If not it probably is a shape, so find the parent and add that 
-        ret_transforms.append(getParent(node))
-
-def select_all_guides():
-    select_all_with_tag("GUIDE")
-
-def vis_all_guides():
-    vis_all_shape_with_tag("GUIDE", True)
-
-def hide_all_guides():
-    vis_all_shape_with_tag("GUIDE", False)
-
-def select_guide_from_selected():
-    guides = []
-    for sel in cmds.ls(sl=True):
-        if not cmds.objExists(sel + ".guide"):
-            continue
-        guides.append(cmds.listConnections(sel + ".guide")[0])
-    cmds.select(guides)
 
 def create_message_attr_setup(out_node, out_message_attr_name, in_node, in_message_attr_name ):
     # adds a message attr to out_node, adds message attr to in_node connects out message attr to the in message attr
@@ -1630,10 +1525,10 @@ def get_node_from_message_out(full_attr_name, get_single=True):
 def get_node_from_message_in(full_attr_name, get_single=True):
     return get_node_from_message(full_attr_name, from_output = False, get_single=get_single)
 
-def update_all_geo_constraints():
+def update_all_geo_constraints(maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
     all_constraints = cmds.ls(typ="LHGeometryConstraint")
     for constraint in all_constraints:
-        updateGeoConstraint(geoConstraint=constraint)
+        updateGeoConstraint(geoConstraint=constraint, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True)
 
 
 

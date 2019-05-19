@@ -45,7 +45,22 @@ def button_row(names_funcs=[["testBox1", test_func], ["textBox2", test_func]]):
         buttons.append(button)
     return layout, buttons 
 
-def check_box_list(checkbox_names_defaults=[["testBox1", True], ["textBox2", False]], row=True):
+def radio_button_row(checkbox_names_defaults=[["testBox1", "tooltip1"], ["textBox2", "tooltip2"]], default_true_idx=0):
+    grid_layout=QtWidgets.QGridLayout()
+    buttons = []
+    layout = QtWidgets.QWidget()
+    layout.setLayout(grid_layout)
+    for idx, checkbox in enumerate(checkbox_names_defaults):
+        button = QtWidgets.QRadioButton(checkbox[0])
+        grid_layout.addWidget(button, 0, idx)
+        if idx == default_true_idx:
+            button.setChecked(True)
+        if len(checkbox) > 1 and checkbox[1]:
+            button.setToolTip(checkbox[1])
+        buttons.append(button)
+    return layout, buttons 
+
+def check_box_list(checkbox_names_defaults=[["testBox1", True], ["textBox2", False]], row=True,):
     ### names defaults [(name1, True), (name2, False)]
     grid_layout=QtWidgets.QGridLayout()
     checkboxes = []
@@ -60,7 +75,68 @@ def check_box_list(checkbox_names_defaults=[["testBox1", True], ["textBox2", Fal
         temp_checkbox.setChecked(checkbox[1])
         grid_layout.addWidget(temp_checkbox, row_or_column[0], row_or_column[1])
         checkboxes.append(temp_checkbox)
+    
     return layout, checkboxes 
+
+def test(string_name):
+    print string_name
+
+class checkbox_list_with_limits(QtWidgets.QWidget):
+    def __init__(self,
+                 checkbox_names_defaults=[["testBox1", True, ""],
+                 ["textBox2", False, "tooltip"]],
+                 row=True,
+                 limit_checkbox_default_index=0
+                 ):
+        self.limit_checkbox_default_index=limit_checkbox_default_index
+        grid_layout=QtWidgets.QGridLayout()
+        self.checkboxes = []
+        self.layout = QtWidgets.QWidget()
+        self.layout.setLayout(grid_layout)
+        for idx, checkbox in enumerate(checkbox_names_defaults):
+            row_or_column = [0, idx]
+            if not row:
+                row_or_column = [idx, 0]
+            temp_checkbox = QtWidgets.QCheckBox(checkbox[0])
+            temp_checkbox.setChecked(checkbox[1])
+            if len(checkbox) > 2 and checkbox[2]:
+                print "setting tooltip"
+                temp_checkbox.setToolTip(checkbox[2])
+            grid_layout.addWidget(temp_checkbox, row_or_column[0], row_or_column[1])
+            self.checkboxes.append(temp_checkbox)
+        self.limit()
+
+    def limit(self):
+        for idx in range(len(self.checkboxes)):
+            self.checkboxes[idx].clicked.connect(lambda idx_arg=idx: self.check_box_list_limit(idx_arg))
+        self.check_box_list_limit(self.limit_checkbox_default_index)
+
+    def check_box_list_limit(self, idx):
+        current_checkbox=self.checkboxes[idx]
+        for checkbox in self.checkboxes:
+            if current_checkbox == checkbox.text():
+                continue
+            if not checkbox.checkState():
+                continue
+            checkbox.setChecked(False)
+            current_checkbox.setChecked(True)
+
+
+
+
+
+
+
+def check_box_list_limit(current_checkbox, check_box_list):
+    print current_checkbox.text()
+    for checkbox in check_box_list:
+        if current_checkbox.text() == checkbox.text():
+            # print "SAME!!!", checkbox.text(), current_checkbox.text()
+            continue
+        if not checkbox.checkState():
+            continue
+        checkbox.setChecked(False)
+    # current_checkbox.setChecked(True)
 
 def separator():
     separator_line = QtWidgets.QFrame()
@@ -89,3 +165,25 @@ def label_button(label_text="Test label",
     button.clicked.connect(button_func)
     return label, button
 
+def text_box(default_text="baseAsset", text_changed_func=test_func):
+    text_field = QtWidgets.QLineEdit()
+    text_field.setText(default_text)
+    text_field.textChanged.connect(text_changed_func)
+    return text_field
+
+class Text_Box(QtWidgets.QWidget):
+    def __init__(self,
+                 parent = None,
+                 default_text="baseAsset",
+                 text_changed_func=None
+                 ):
+        self.default_text = default_text
+        self.text_changed_func = text_changed_func
+        super(Text_Box, self).__init__(parent)
+        layout = QtWidgets.QGridLayout()
+
+        self.contents = QtWidgets.QLineEdit()
+        self.contents.setText(self.default_text)
+        layout.addWidget(self.contents,0,0)
+        self.setLayout(layout)
+        self.contents.textChanged.connect(text_changed_func)

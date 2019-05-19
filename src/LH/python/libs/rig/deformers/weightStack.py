@@ -1,6 +1,6 @@
 from maya import cmds
 from rig.utils import weightMapUtils, misc
-from deformers import utils as deformerUtils
+from rig.deformers import utils as deformerUtils
 
 reload(deformerUtils)
 reload(weightMapUtils)

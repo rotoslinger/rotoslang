@@ -14,9 +14,9 @@ if os not in sys.path:
     sys.path.append(os)
 from rig.deformers import base
 
-from deformers import utils as deformerUtils
+from rig.deformers import utils as deformerUtils
 reload(deformerUtils)
-from deformers import utils as deformerUtils
+from rig.deformers import utils as deformerUtils
 reload(deformerUtils)
 from rig.utils import weightMapUtils, misc
 reload(misc)

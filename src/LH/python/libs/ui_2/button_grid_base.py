@@ -32,13 +32,26 @@ class Base(QtWidgets.QWidget):
         self.save_window_state = save_window_state
         # vars
         self.widgets = []
+        self.settings_path = os.path.join(os.getenv('HOME'), self.setting_filename + ".ini")
+        # self.restore_window_state()
+        self.view = QtWidgets.QTreeView(self)
+        self.view.setMouseTracking(True)
+        self.view.entered.connect(self.handleItemEntered)
 
+    def handleItemEntered(self, index):
+        if index.isValid():
+            QtGui.QToolTip.showText(
+                QtGui.QCursor.pos(),
+                index.data(),
+                self.view.viewport(),
+                self.view.visualRect(index)
+                )
 
     def initialize_main_window(self):
         self.setWindowFlags(QtCore.Qt.Window)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
         # If you would like to save preferences on close
-        self.settings_path = os.path.join(os.getenv('HOME'), self.setting_filename + ".ini")
 
         self.setWindowTitle(self.win_title)
         self.setObjectName(self.win_name)
@@ -51,25 +64,33 @@ class Base(QtWidgets.QWidget):
         return
 
     def restore_window_state(self):
-        print "OPENING", self.save_window_state
+        # print "OPENING", self.save_window_state
+        if os.path.exists(self.settings_path):
+            self.settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
         if not self.save_window_state:
             return
         # If you would like to load preferences on on open
-        if os.path.exists(self.settings_path):
-            settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
-            self.restoreGeometry(settings_obj.value("windowGeometry"))
+        self.restoreGeometry(self.settings_obj.value("windowGeometry"))
             # self.restoreState(settings_obj.value("windowState", ""))
 
     def create_layout(self):
         self.create_buttons()
         self.resize(self.height, self.width)
+        self.scrollArea  = QtWidgets.QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+
         # Layout
-        self.gridLayout=QtWidgets.QGridLayout()
+        self.gridLayout=QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        # self.layout.addWidget(self.scrollArea)
+
         # VBox
         self.main_layout= QtWidgets.QVBoxLayout()
         self.main_layout.setContentsMargins(20, 20, 20, 20)
         self.main_layout.setSpacing(5)
-        self.main_layout.addLayout(self.gridLayout, 0) # stretch factor > 0
+        self.main_layout.addWidget(self.scrollArea, 1) # stretch factor > 0
         self.main_layout.addStretch(0) # 0 is full stretch
         # Add
         for index, widget in enumerate(self.widgets):
@@ -80,8 +101,8 @@ class Base(QtWidgets.QWidget):
 
     def closeEvent(self, event):
         # Save window's geometry
-        settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
-        settings_obj.setValue("windowGeometry", self.saveGeometry())
+        self.settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
+        self.settings_obj.setValue("windowGeometry", self.saveGeometry())
         # settings_obj.setValue("windowState", self.saveState())
 
 
