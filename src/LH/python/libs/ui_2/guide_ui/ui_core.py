@@ -1,19 +1,10 @@
 import sys, os
 
-from PySide2 import QtWidgets, QtCore, QtGui
-from maya import OpenMayaUI as OpenMayaUI
-from shiboken2 import wrapInstance
 from maya import cmds
 from rig_2.mirror import utils as mirror_utils
 reload(mirror_utils)
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
-from ui_2 import ui_utils
-reload(ui_utils)
-from ui_2 import elements
-reload(elements)
-from ui_2 import button_grid_base
-reload(button_grid_base)
 
 from rig.utils import misc
 reload(misc)
@@ -47,33 +38,47 @@ guide_ui.openUI()
 @endcode
 '''
 def vis_all_guides(vis=True):
+    cmds.undoInfo(state=True, openChunk=True)
     if vis:
         tag_utils.vis_all_guides()
     else:
         tag_utils.hide_all_guides()
+    cmds.undoInfo(state=True, closeChunk=True)
 
 def select_all_guides():
+    cmds.undoInfo(state=True, openChunk=True)
     tag_utils.select_all_guides()
+    cmds.undoInfo(state=True, closeChunk=True)
 
 def tag_no_export(checkboxes):
+    cmds.undoInfo(state=True, openChunk=True)
     # guide=True, guide_shape=True, ctrl_shape=True, gimbal_shape=True
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
     guide_utils.tag_all_no_export(ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    cmds.undoInfo(state=True, closeChunk=True)
 
 def remove_tag_no_export(checkboxes):
+    cmds.undoInfo(state=True, openChunk=True)
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
     guide_utils.remove_tag_all_no_export(ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    cmds.undoInfo(state=True, closeChunk=True)
 
 def update_geo_constraints():
+    cmds.undoInfo(state=True, openChunk=True)
     misc.update_all_geo_constraints()
+    cmds.undoInfo(state=True, closeChunk=True)
 
 def export_all(file_dialog, checkboxes):
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
     export_dict = guide_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
     # print export_dict
 def import_all(file_dialog, checkboxes):
+    # cmds.undoInfo(state=False)
+    cmds.undoInfo(stateWithoutFlush = False)
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
     guide_utils.import_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    cmds.undoInfo(stateWithoutFlush = True)
+    # cmds.flushUndo()
 
 def get_no_export_checkboxes(checkboxes):
     export_args = [checkbox.isChecked() for checkbox in checkboxes]
@@ -84,9 +89,12 @@ def get_no_export_checkboxes(checkboxes):
     return ctrl_shape, guide, guide_shape, gimbal_shape
 
 def mirror_selected_controls():
+    cmds.undoInfo(state=True, openChunk=True)
     guide_utils.mirror_selected_shape_transforms()
+    cmds.undoInfo(state=True, closeChunk=True)
 
 def mirror_selected_transforms(mirror_axes_checkboxes, mirror_type_checkboxes, mirror_plane_checkboxes):
+    cmds.undoInfo(state=True, openChunk=True)
     # selected = cmds.ls(sl=True)
     mirror_axes_checkboxes = [checkbox.isChecked() for checkbox in mirror_axes_checkboxes]
     mirror_type_checkboxes = [checkbox.isChecked() for checkbox in mirror_type_checkboxes]
@@ -119,7 +127,10 @@ def mirror_selected_transforms(mirror_axes_checkboxes, mirror_type_checkboxes, m
                                             mirrorXZ=mirrorXZ,
                                             )
     # cmds.select(selected)
+    cmds.undoInfo(state=True, closeChunk=True)
 
 
 def copy_shape(checkbox):
+    cmds.undoInfo(state=True, openChunk=True)
     nurbscurve.copy_shape(checkbox[0].isChecked())
+    cmds.undoInfo(state=True, closeChunk=True)

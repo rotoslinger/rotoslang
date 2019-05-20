@@ -163,10 +163,8 @@ def create_curve(curve_dict,
             cmds.refresh()
 
         # Color overrides 
-        print "CURVENAME", curve_name,
 
         if color and "override_enabled" in shape.keys():
-            print  shape["override_color"]
             cmds.setAttr(curve_name + ".overrideRGBColors", shape["override_color"])
             cmds.setAttr(curve_name + ".overrideEnabled", shape["override_enabled"])
             cmds.setAttr(curve_name + ".overrideColor", shape["color"])

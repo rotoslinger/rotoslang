@@ -94,8 +94,21 @@ def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
 
 
 ###############################################################################
-############################### TRANSFORMS ####################################
+############################### Guide Data ####################################
 ###############################################################################
+def get_guide_custom_attrs(guide_nodes, no_export_tag_dict, specified_attrs):
+    # This will export all user defined attributes on a guide node
+    custom_attribute_dict = {}
+    user_defined_attrs = []
+
+    for node in guide_nodes:
+        if node in no_export_tag_dict.keys():
+            continue
+        custom_attribute_dict[node]["user_defined_attrs"] = cmds.listAttr( node, cb=True)
+
+        
+
+
 def get_guide_transforms(guide_nodes, no_export_tag_dict, debug=False):
     guide_position_dict = {}
     translations = []

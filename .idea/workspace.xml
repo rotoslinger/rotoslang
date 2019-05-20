@@ -2,24 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="84d539d8-cdd9-467a-ac62-46df048f5a56" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/guide_ui/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/control/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/control/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/blendshapeSimple.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/blendshapeSimple.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/slideSimple.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/slideSimple.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/weightStack.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/weightStack.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/simpleton.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/simpleton.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/slidingCtrl.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/slidingCtrl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/guides.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/guides.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/guide/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/guide/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/control.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/control.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/elements.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/elements.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/nurbscurve.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/nurbscurve.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/mirror/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/mirror/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/file_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/file_dialog.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/guide_ui/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/guide_ui/ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/guide_ui/ui_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/guide_ui/ui_core.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" afterDir="false" />
@@ -36,7 +23,7 @@
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/guide/utils.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="531">
-              <caret line="233" column="65" selection-start-line="233" selection-start-column="65" selection-end-line="233" selection-end-column="65" />
+              <caret line="246" column="65" selection-start-line="246" selection-start-column="65" selection-end-line="246" selection-end-column="65" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -441,7 +428,7 @@
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/guide/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="531">
-          <caret line="233" column="65" selection-start-line="233" selection-start-column="65" selection-end-line="233" selection-end-column="65" />
+          <caret line="246" column="65" selection-start-line="246" selection-start-column="65" selection-end-line="246" selection-end-column="65" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>

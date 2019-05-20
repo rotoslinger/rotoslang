@@ -1,7 +1,5 @@
 import sys, os
 from PySide2 import QtWidgets, QtCore, QtGui
-from maya import OpenMayaUI as OpenMayaUI
-from shiboken2 import wrapInstance
 from maya import cmds
 
 OPERATING_SYSTEM = sys.platform

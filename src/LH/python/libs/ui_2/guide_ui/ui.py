@@ -52,6 +52,9 @@ class Guide_UI(button_grid_base.Base):
         self.default_file_name = "guides.py"
         self.default_import_path = None
         self.default_export_path = None
+        self.do_import_export_widgets=True
+        self.do_asset_name_widgets=True
+        self.auto_order_asset_import_export_widgets=True
 
         self.restore_window_state()
         
@@ -74,8 +77,8 @@ class Guide_UI(button_grid_base.Base):
         # Save window's geometry
         self.settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
         self.settings_obj.setValue("windowGeometry", self.saveGeometry())
-        self.asset_name = self.asset_name_text_box.text()
-        self.settings_obj.setValue("assetName", self.asset_name)
+        # self.asset_name = self.asset_name_text_box.text()
+        # self.settings_obj.setValue("assetName", self.asset_name)
 
         # self.settings_obj.setValue("importPath", self.import_dialog.contents.text())
         # self.settings_obj.setValue("exportPath", self.export_dialog.contents.text())
@@ -94,17 +97,17 @@ class Guide_UI(button_grid_base.Base):
         self.export_dialog.default_path=None
 
 
-    def create_buttons(self):
-        super(Guide_UI, self).create_buttons()
+    def create_widgets(self):
+        super(Guide_UI, self).create_widgets()
         # Buttons
-        self.asset_name_label = ui_utils.label("Set Your Asset Name",
-                                                                    color=elements.blue,
-                                                                    )
-        self.asset_name_text_box = ui_utils.text_box(default_text=self.asset_name, text_changed_func=self.asset_name_text_changed)
+        # self.asset_name_label = ui_utils.label("Set Your Asset Name",
+        #                                                             color=elements.blue,
+        #                                                             )
+        # self.asset_name_text_box = ui_utils.text_box(default_text=self.asset_name, text_changed_func=self.asset_name_text_changed)
 
-        self.live_update_layout, self.live_update_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Live Update Path", True],
-                                                                                                                   ])
+        # self.live_update_layout, self.live_update_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[
+        #                                                                                                            ["Live Update Path", True],
+        #                                                                                                            ])
         ######## MIRROR CURVES ###################
         self.mirror_curves_label, self.mirror_curves_button = ui_utils.label_button(label_text="Select a Curve on the right or left side and run to mirror the shape(s).",
                                                                     button_text="Mirror Curves",
@@ -209,53 +212,51 @@ class Guide_UI(button_grid_base.Base):
                                                                     button_func=remove_no_export_button_func_with_args
                                                                     )
 
-        ######## Import Guides ###############
-        self.import_checkboxes_grid, self.import_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ])
+        # ######## Import Guides ###############
+        # self.import_checkboxes_grid, self.import_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
+        #                                                                                                            ["Control Shapes", True],
+        #                                                                                                            ["Guide Positions", True],                                                                                                                   
+        #                                                                                                            ["Guide Shapes", True],                                                                                                                   
+        #                                                                                                            ["Gimbal Shapes", True],
+        #                                                                                                            ])
 
-        self.import_dialog = file_dialog_ui.File_Dialog(asset_name=self.asset_name,
-                                                        default_filename = self.default_file_name,
-                                                        default_path=self.default_import_path,
-                                                        # contents_changed_func = self.contents_changed
-                                                        )
-        import_func_with_args = lambda file_dialog=self.import_dialog, checkboxes = self.import_checkboxes: ui_core.import_all(file_dialog, checkboxes)
-        self.import_label, self.import_button = ui_utils.label_button(label_text="Import guides to the set file path.",
-                                                                    button_text="Import",
-                                                                    color=elements.purple,
-                                                                    button_func=import_func_with_args,
-                                                                    )
-        ######## Export Guides ###############
-        self.export_checkboxes_grid, self.export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ],
-                                                                                                                   )
-        self.export_dialog = file_dialog_ui.File_Dialog(asset_name=self.asset_name,
-                                                        default_filename = self.default_file_name,
-                                                        default_path=self.default_export_path)
-        export_func_with_args = lambda file_dialog=self.export_dialog, checkboxes=self.export_checkboxes: ui_core.export_all(file_dialog, checkboxes)
-        self.export_label, self.export_button = ui_utils.label_button(label_text="Export guides to the set file path.",
-                                                                    button_text="Export",
-                                                                    color=elements.purple,
-                                                                    button_func=export_func_with_args
-                                                                    )
+        # self.import_dialog = file_dialog_ui.File_Dialog(asset_name=self.asset_name,
+        #                                                 default_filename = self.default_file_name,
+        #                                                 default_path=self.default_import_path,
+        #                                                 # contents_changed_func = self.contents_changed
+        #                                                 )
+        # import_func_with_args = lambda file_dialog=self.import_dialog, checkboxes = self.import_checkboxes: ui_core.import_all(file_dialog, checkboxes)
+        # self.import_label, self.import_button = ui_utils.label_button(label_text="Import guides to the set file path.",
+        #                                                             button_text="Import",
+        #                                                             color=elements.purple,
+        #                                                             button_func=import_func_with_args,
+        #                                                             )
+        # ######## Export Guides ###############
+        # self.export_checkboxes_grid, self.export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
+        #                                                                                                            ["Control Shapes", True],
+        #                                                                                                            ["Guide Positions", True],                                                                                                                   
+        #                                                                                                            ["Guide Shapes", True],                                                                                                                   
+        #                                                                                                            ["Gimbal Shapes", True],
+        #                                                                                                            ],
+        #                                                                                                            )
+        # self.export_dialog = file_dialog_ui.File_Dialog(asset_name=self.asset_name,
+        #                                                 default_filename = self.default_file_name,
+        #                                                 default_path=self.default_export_path)
+        # export_func_with_args = lambda file_dialog=self.export_dialog, checkboxes=self.export_checkboxes: ui_core.export_all(file_dialog, checkboxes)
+        # self.export_label, self.export_button = ui_utils.label_button(label_text="Export guides to the set file path.",
+        #                                                             button_text="Export",
+        #                                                             color=elements.purple,
+        #                                                             button_func=export_func_with_args
+        #                                                             )
 
-        # Dummy Spacer, probably a better way to format this
-        self.space = ui_utils.label("")
 
-        self.widgets = [
-                        self.asset_name_label, 
-                        self.asset_name_text_box,
-                        self.live_update_layout,
+        self.main_widgets = [
+                        # self.asset_name_label, 
+                        # self.asset_name_text_box,
+                        # self.live_update_layout,
+                        # # self.space,
+                        # ui_utils.separator(),
                         # self.space,
-                        ui_utils.separator(),
-                        self.space,
 
                         self.mirror_transforms_label, 
                         self.mirror_transforms_button,
@@ -313,19 +314,19 @@ class Guide_UI(button_grid_base.Base):
                         ui_utils.separator(),
                         self.space,
 
-                        self.import_label, 
-                        self.import_button,
-                        self.import_dialog,
-                        self.import_checkboxes_grid,
-                        ui_utils.separator(),
-                        self.space,
+                        # self.import_label, 
+                        # self.import_button,
+                        # self.import_dialog,
+                        # self.import_checkboxes_grid,
+                        # ui_utils.separator(),
+                        # self.space,
 
-                        self.export_label, 
-                        self.export_button,
-                        self.export_dialog,
-                        self.export_checkboxes_grid,
-                        ui_utils.separator(),
-                        self.space,
+                        # self.export_label, 
+                        # self.export_button,
+                        # self.export_dialog,
+                        # self.export_checkboxes_grid,
+                        # ui_utils.separator(),
+                        # self.space,
 
                         ]
 
