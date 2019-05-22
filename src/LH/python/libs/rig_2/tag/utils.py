@@ -1,5 +1,10 @@
 from rig.utils import misc
 from maya import cmds
+from rig_2.message import utils as message_utils
+reload(message_utils)
+
+def get_no_exports():
+    return get_tag_dict(tag_filter=["NO_EXPORT"])
 
 def get_tag_dict(tag_filter=["NO_EXPORT"]):
     tag_dict = {}
@@ -19,7 +24,7 @@ def set_tags_from_dict(tag_dict = TAG_DICT):
         for tag in tag_dict[node]:
             create_tag(node, tag)
 
-def create_tag(node_to_tag, tag_name="TAG", warn=True):
+def create_tag(node_to_tag, tag_name="TAG", warn=False):
     if cmds.objExists(node_to_tag + "." + tag_name):
         if warn:
             cmds.warning( "The node {0} already has the tag {1}, not adding tag.".format(node_to_tag, tag_name) )
@@ -115,6 +120,11 @@ def get_all_guides():
 def get_all_controls():
     return get_all_with_tag("CONTROL")
 
+def get_weight_curves():
+    return get_all_with_tag("WEIGHT_CURVE")
+
+def get_falloff_weight_curves():
+    return get_all_with_tag("FALLOFF_WEIGHT_CURVE")
 
 def select_all_with_tag(tag):
     cmds.select(get_all_with_tag(tag))
@@ -153,3 +163,45 @@ def select_guide_from_selected():
             continue
         guides.append(cmds.listConnections(sel + ".guide")[0])
     cmds.select(guides)
+
+
+def add_no_export_tag(nodes):
+    # if set to be tagged NO_EXPORT attr is added,
+    # this is then exported along with whatever else and recreated on build
+    # if it is removed, it will export
+    for node in nodes:
+        tag_no_export(node)
+
+
+def remove_no_export_tag(nodes):
+    # if set to be tagged NO_EXPORT attr is added,
+    # this is then exported along with whatever else and recreated on build
+    # if it is removed, it will export
+    for node in nodes:
+        remove_tag_no_export(node)
+
+
+def no_export_add_remove_selector(nodes, add=True):
+    if add:
+        add_no_export_tag(nodes)
+    else:
+        remove_no_export_tag(nodes)
+
+def control_from_selected():
+    return [control for control in cmds.ls(sl=True) if cmds.objExists(control + ".CONTROL")]
+
+def tag_no_export_from_control_message(message_name, add=True, checkbox_on=False):
+    # Finds a node from the specified control by the specified message name, tags it NO_EXPORT, or removes that tag
+    if not checkbox_on:
+        return
+    sorted_nodes = control_from_selected()
+    nodes =  message_utils.get_nodes_from_message(sorted_nodes, message_name)
+    no_export_add_remove_selector(nodes, add)
+    return nodes
+
+def remove_nodes_with_tags_from_list(tag_name, node_list):
+    for idx, curve in enumerate(node_list):
+        if cmds.objExists(curve + "." + tag_name):
+            node_list.pop(idx)
+    return node_list
+

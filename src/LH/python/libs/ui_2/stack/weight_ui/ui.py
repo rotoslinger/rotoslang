@@ -10,7 +10,7 @@ from ui_2 import button_grid_base
 reload(button_grid_base)
 from ui_2 import file_dialog as file_dialog_ui
 reload(file_dialog_ui)
-from ui_2.weight_ui import ui_core
+from ui_2.stack.weight_ui import ui_core
 reload(ui_core)
 
 
@@ -55,6 +55,15 @@ class Weight_UI(button_grid_base.Base):
         self.do_import_export_widgets=True
         self.do_asset_name_widgets=True
         self.auto_order_asset_import_export_widgets=True
+        self.import_export_checklist_options=[
+                                              ["Weight Curves", True],
+                                              ["Falloff Weight Curves", True],                                                                                                                   
+                                              ["Hand Painted Weights", True],                                                                                                                   
+                                             ]
+        self.no_export_tag_options=[
+                                    ["Weight Curves", True],
+                                    ["Falloff Weight Curves", True],                                                                                                                   
+                                   ]
 
         self.restore_window_state()
         
@@ -62,51 +71,24 @@ class Weight_UI(button_grid_base.Base):
         # self.asset_name_text_box = ui_utils.Text_Box(default_text=self.asset_name, text_changed_func=self.asset_name_text_changed)
         # self.initialize_main_window()
 
+    def export_func(self):
+        file_dialog=self.export_dialog                                                 
+        checkboxes=self.export_checkboxes
+        backup_checkbox=self.backup_checkbox
+        backup_filename = self.export_dialog.get_filename()
+        backup_path = self.export_dialog.default_backup_path
+        ui_core.export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path)
 
-    def restore_window_state(self):
-        super(Weight_UI, self).restore_window_state()
-        if self.settings_obj.value("assetName"):
-            self.asset_name = self.settings_obj.value("assetName")
+    def import_func(self):
+        ui_core.import_all(self.import_dialog, self.import_checkboxes)
 
-        # if self.settings_obj.value("importPath"):
-        #     self.default_import_path = self.settings_obj.value("importPath")
-        # if self.settings_obj.value("exportPath"):
-        #     self.default_export_path = self.settings_obj.value("exportPath")
-
-    def closeEvent(self, event):
-        # Save window's geometry
-        self.settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
-        self.settings_obj.setValue("windowGeometry", self.saveGeometry())
-        # self.asset_name = self.asset_name_text_box.text()
-        # self.settings_obj.setValue("assetName", self.asset_name)
-
-        # self.settings_obj.setValue("importPath", self.import_dialog.contents.text())
-        # self.settings_obj.setValue("exportPath", self.export_dialog.contents.text())
-
-    def asset_name_text_changed(self):
-        self.asset_name = self.asset_name_text_box.text()
-        if not self.live_update_checkbox[0].isChecked():
-            return
-
-        self.import_dialog.asset_name = self.asset_name
-        self.import_dialog.get_default_path()
-        self.import_dialog.default_path=None
-
-        self.export_dialog.asset_name = self.asset_name
-        self.export_dialog.get_default_path()
-        self.export_dialog.default_path=None
 
 
     def create_widgets(self):
         super(Weight_UI, self).create_widgets()
 
         ############ ADD NO EXPORT ########################
-        self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ])
+        self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options)
         no_export_button_func_with_args = lambda: ui_core.tag_no_export(self.no_export_checkboxes)
         self.no_export_label, self.no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to tag NO_EXPORT",
                                                                     button_text="Tag NO_EXPORT",
@@ -115,12 +97,7 @@ class Weight_UI(button_grid_base.Base):
                                                                     )
 
         ############ REMOVE NO EXPORT ########################
-        self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ])
+        self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options)
         remove_no_export_button_func_with_args = lambda checkboxes=self.remove_no_export_checkboxes: ui_core.remove_tag_no_export(checkboxes)
         self.remove_no_export_label, self.remove_no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to Remove NO_EXPORT",
                                                                     button_text="Remove NO_EXPORT tag",

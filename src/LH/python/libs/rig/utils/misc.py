@@ -1,5 +1,9 @@
 import sys
 
+from rig_2.message import utils as message_utils
+reload(message_utils)
+
+
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
@@ -1323,16 +1327,16 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     if offsetBuffer:
         getSetMaintainOffset(offsetBuffer, offsetTransform)
 
-    create_message_attr_setup(constraint, "offsetBuffer", offsetBuffer, "geoConstraint" )
+    message_utils.create_message_attr_setup(constraint, "offsetBuffer", offsetBuffer, "geoConstraint")
 
     return constraint
 
 
 def updateGeoConstraint(offsetBuffer=False, geoConstraint=False, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
     if geoConstraint and not offsetBuffer:
-        offsetBuffer = get_node_from_message_out(geoConstraint + ".offsetBuffer")
+        offsetBuffer = message_utils.get_node_from_message_out(geoConstraint + ".offsetBuffer")
     if offsetBuffer and not geoConstraint:
-        geoConstraint = get_node_from_message_in(offsetBuffer + ".geoConstraint")
+        geoConstraint = message_utils.get_node_from_message_in(offsetBuffer + ".geoConstraint")
 
     if not offsetBuffer:
         offsetBuffer = cmds.ls(sl=True)[0]
@@ -1483,47 +1487,6 @@ def printPointIndicies():
 # def tag_guide_shape(node_to_tag):
 #     create_tag(node_to_tag, "GUIDE_SHAPE")
 
-
-def create_message_attr_setup(out_node, out_message_attr_name, in_node, in_message_attr_name ):
-    # adds a message attr to out_node, adds message attr to in_node connects out message attr to the in message attr
-    out_attr_fullname = out_node + "." + out_message_attr_name
-    in_attr_fullname = in_node + "." + in_message_attr_name
-    if not cmds.objExists(out_attr_fullname):
-        cmds.addAttr(out_node, ln=out_message_attr_name, attributeType="message")
-    if not cmds.objExists(in_attr_fullname):
-        cmds.addAttr(in_node, ln=in_message_attr_name, attributeType="message")
-    cmds.connectAttr(out_attr_fullname, in_attr_fullname, f=True)
-    return out_attr_fullname, in_attr_fullname
-
-def get_node_from_message(full_attr_name, from_output = True, get_single=True):
-    source = False
-    destination = True
-    if not from_output:
-        source = True
-        destination = False
-    if not cmds.objExists(full_attr_name):
-        return
-    connections = cmds.listConnections(full_attr_name, shapes=True, source=source, destination=destination)
-    if not connections:
-        return
-    if get_single:
-        return connections[0]
-    return connections
-
-def get_nodes_from_message(nodes, attr_name, from_output = True, get_single=False):
-    return_nodes = []
-    for node in nodes:
-        full_attr_name = node + "." + attr_name
-        if not cmds.objExists(full_attr_name):
-            continue
-        return_nodes.append(get_node_from_message(full_attr_name, from_output = from_output, get_single=get_single))
-    return return_nodes
-
-def get_node_from_message_out(full_attr_name, get_single=True):
-    return get_node_from_message(full_attr_name, from_output = True, get_single=get_single)
-
-def get_node_from_message_in(full_attr_name, get_single=True):
-    return get_node_from_message(full_attr_name, from_output = False, get_single=get_single)
 
 def update_all_geo_constraints(maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
     all_constraints = cmds.ls(typ="LHGeometryConstraint")

@@ -1,5 +1,7 @@
 from maya import cmds
 
+from rig_2.message import utils as message_utils
+reload(message_utils)
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 from rig.rigComponents import base
@@ -154,11 +156,11 @@ class Component(base.Component):
         # guide_shape_transform =misc.getParent(guide_shape)
         
 
-        misc.create_message_attr_setup(self.cmptMasterParent, "guide", self.guide_transform, "master" )
-        misc.create_message_attr_setup(self.ctrl, "guide", self.guide_transform, "ctrl" )
+        message_utils.create_message_attr_setup(self.cmptMasterParent, "guide", self.guide_transform, "master")
+        message_utils.create_message_attr_setup(self.ctrl, "guide", self.guide_transform, "ctrl")
         
-        misc.create_message_attr_setup(self.cmptMasterParent, "guide_shape", self.guideShape, "master" )
-        misc.create_message_attr_setup(self.ctrl, "guide_shape", self.guideShape, "ctrl" )
+        message_utils.create_message_attr_setup(self.cmptMasterParent, "guide_shape", self.guideShape, "master")
+        message_utils.create_message_attr_setup(self.ctrl, "guide_shape", self.guideShape, "ctrl")
 
         tag_utils.create_tag(self.guide_transform, "RIVET_GUIDE")
 

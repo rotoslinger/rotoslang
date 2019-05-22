@@ -10,8 +10,8 @@ reload(file_dialog)
 reload(ui_utils)
 import elements
 reload(elements)
-from ui_2.guide_ui import ui_core
-reload(ui_core)
+from ui_2 import button_grid_base_core as core
+reload(core)
 
 class Base(QtWidgets.QWidget):
 
@@ -27,6 +27,7 @@ class Base(QtWidgets.QWidget):
                  auto_order_asset_import_export_widgets = False,
                  default_file_name = "default",
                  save_window_state = False,
+                 import_export_checklist_options=[[]]
                  ):
         super(Base, self).__init__(parent)
         # args
@@ -42,6 +43,7 @@ class Base(QtWidgets.QWidget):
         self.default_file_name = default_file_name
 
         self.save_window_state = save_window_state
+        self.import_export_checklist_options = import_export_checklist_options
         # vars
         # Dummy Spacer
         self.space = ui_utils.label("")
@@ -100,8 +102,8 @@ class Base(QtWidgets.QWidget):
 
         # VBox
         self.main_layout= QtWidgets.QVBoxLayout()
-        self.main_layout.setContentsMargins(20, 20, 20, 20)
-        self.main_layout.setSpacing(5)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
         self.main_layout.addWidget(self.scrollArea, 1) # stretch factor > 0
         self.main_layout.addStretch(0) # 0 is full stretch
         # Add
@@ -117,12 +119,12 @@ class Base(QtWidgets.QWidget):
             return
 
         self.import_dialog.asset_name = self.asset_name
-        self.import_dialog.get_default_path()
         self.import_dialog.default_path=None
+        self.import_dialog.get_default_path()
 
         self.export_dialog.asset_name = self.asset_name
-        self.export_dialog.get_default_path()
         self.export_dialog.default_path=None
+        self.export_dialog.get_default_path()
 
 
     def create_widgets(self):
@@ -143,45 +145,50 @@ class Base(QtWidgets.QWidget):
                         self.asset_name_text_box,
                         self.live_update_layout
                         ]
-                        
+
+    def export_func(self):
+        return
+
+    def import_func(self):
+        return
+
     def create_import_export_widgets(self):
-        print "creating"
                 ######## Import Guides ###############
-        self.import_checkboxes_grid, self.import_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ])
+        self.import_checkboxes_grid, self.import_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.import_export_checklist_options)
 
         self.import_dialog = file_dialog_ui.File_Dialog(asset_name=self.asset_name,
                                                         default_filename = self.default_file_name,
                                                         default_path=self.default_import_path,
                                                         # contents_changed_func = self.contents_changed
                                                         )
-        import_func_with_args = lambda file_dialog=self.import_dialog, checkboxes = self.import_checkboxes: ui_core.import_all(file_dialog, checkboxes)
+        # import_func_with_args = lambda file_dialog=self.import_dialog, checkboxes = self.import_checkboxes: core.import_all(file_dialog, checkboxes)
         self.import_label, self.import_button = ui_utils.label_button(label_text="Import guides to the set file path.",
                                                                     button_text="Import",
                                                                     color=elements.purple,
-                                                                    button_func=import_func_with_args,
+                                                                    button_func=self.import_func,
                                                                     )
         ######## Export Guides ###############
-        self.export_checkboxes_grid, self.export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ],
-                                                                                                                   )
+        self.backup_layout, self.backup_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[
+                                                                                                                   ["Save Backup", True],
+                                                                                                                   ])
+        self.export_checkboxes_grid, self.export_checkboxes = ui_utils.check_box_list(self.import_export_checklist_options)
+                                                                                                                   
         self.export_dialog = file_dialog_ui.File_Dialog(asset_name=self.asset_name,
                                                         default_filename = self.default_file_name,
                                                         default_path=self.default_export_path)
-        export_func_with_args = lambda file_dialog=self.export_dialog, checkboxes=self.export_checkboxes: ui_core.export_all(file_dialog, checkboxes)
+        # Export Args
+        # file_dialog=self.export_dialog                                                 
+        # checkboxes=self.export_checkboxes
+        # backup_checkbox=self.backup_checkbox
+        # backup_filename = self.export_dialog.get_filename()
+        # backup_path = self.export_dialog.default_backup_path
+        # export_func_with_args = lambda: core.export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path)
         self.export_label, self.export_button = ui_utils.label_button(label_text="Export guides to the set file path.",
                                                                     button_text="Export",
                                                                     color=elements.purple,
-                                                                    button_func=export_func_with_args
+                                                                    button_func=self.export_func
                                                                     )
+                                                                    
         self.import_export_widgets = [
                                         self.import_label, 
                                         self.import_button,
@@ -194,6 +201,7 @@ class Base(QtWidgets.QWidget):
                                         self.export_button,
                                         self.export_dialog,
                                         self.export_checkboxes_grid,
+                                        self.backup_layout,
                                         ui_utils.separator(),
                                         self.space
                                    ]
@@ -208,7 +216,13 @@ class Base(QtWidgets.QWidget):
             return
         # If you would like to load preferences on on open
         self.restoreGeometry(self.settings_obj.value("windowGeometry"))
-            # self.restoreState(settings_obj.value("windowState", ""))
+        if self.settings_obj.value("assetName"):
+            self.asset_name = self.settings_obj.value("assetName")
+        # If save import/export path....
+        # if self.settings_obj.value("importPath"):
+        #     self.default_import_path = self.settings_obj.value("importPath")
+        # if self.settings_obj.value("exportPath"):
+        #     self.default_export_path = self.settings_obj.value("exportPath")
 
 
 
@@ -219,8 +233,9 @@ class Base(QtWidgets.QWidget):
         if hasattr(self, "asset_name"):
             self.asset_name = self.asset_name_text_box.text()
             self.settings_obj.setValue("assetName", self.asset_name)
-
-        # settings_obj.setValue("windowState", self.saveState())
+        # If save import/export path....
+        # self.settings_obj.setValue("importPath", self.import_dialog.contents.text())
+        # self.settings_obj.setValue("exportPath", self.export_dialog.contents.text())
 
 
     def openUI(self):

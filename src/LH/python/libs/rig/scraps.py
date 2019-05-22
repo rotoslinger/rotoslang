@@ -2,6 +2,10 @@
 ########################## CALAMARI #####################################
 ########################################################################
 import sys
+
+import animcurve.utils
+import weights.utils
+
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -132,7 +136,7 @@ lineTest.test()
 cmds.refresh()
 utils.cacheOutAllSlideDeformers()
 cmds.refresh()
-utils.removeAllCurveWeightsNodes()
+weights.utils.removeAllCurveWeightsNodes()
 #weightMapUtils.createWeightMapOnSingleObject("lipCurveBase", "wireMembership", addAttr=True, geoType="nurbsCurve")
 #weightMapUtils.createWeightMapOnSingleObject("pSphere1", "targetWeights", addAttr=True, geoType="mesh")
 
@@ -346,7 +350,7 @@ reload(utils)
 
 # print AnimCurve
 animCurve = cmds.ls(sl=True)[0]
-animCurvedict = utils.getAnimCurve(animCurve)
+animCurvedict = animcurve.utils.getAnimCurve(animCurve)
 print animCurvedict
 
 # Mirror AnimCurve
@@ -361,7 +365,7 @@ print animCurvedict
 
 
 
-utils.getAnimCurveWeightsDict()
+weights.utils.getAnimCurveWeightsDict()
 
 #######################################################################
 ##########################  Deformer #####################################
@@ -430,7 +434,7 @@ print "rotations", rotations
 print "translations", translations
 print "scales", scales
 '''
-print utils.getWeightStackHandWeightsDict()
+print weights.utils.getWeightStackHandWeightsDict()
 #utils.getMatDefWeightsDict()
 #utils.convertAnimCurveWeightsToHandWeights()
 #meshRivetCtrl.mirrorSlidingCtrls(flipAll=True)

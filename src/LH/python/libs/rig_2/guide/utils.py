@@ -2,6 +2,9 @@ from maya import cmds
 import maya.OpenMaya as OpenMaya
 import json, os
 
+from rig_2.message import utils as message_utils
+reload(message_utils)
+
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 from rig.utils import misc
@@ -17,9 +20,6 @@ from rig_2.manipulator import nurbscurve
 reload(nurbscurve)
 from rig_2.mirror import utils as mirror_utils
 reload(nurbscurve)
-
-def get_no_exports():
-    return tag_utils.get_tag_dict()
 
 def get_control_shapes(no_export_tag_dict=None):
     all_controls = tag_utils.get_all_controls()
@@ -49,7 +49,7 @@ def set_guide_positions(transform_dict, no_export_tag_dict=None):
 
 def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
     export_dict = {}
-    no_export_tag_dict = get_no_exports()
+    no_export_tag_dict = tag_utils.get_no_exports()
     export_dict["no_export_tag_dict"] = no_export_tag_dict
     if ctrl_shape:
         export_dict["control_shapes"] = get_control_shapes(no_export_tag_dict)
@@ -155,7 +155,6 @@ def set_shapes_from_dict(shape_dict, no_export_tag_dict=None):
     for transform in shape_dict.keys():
         if no_export_tag_dict and transform in no_export_tag_dict.keys():
             continue
-        # print shape_dict
         nurbscurve.create_curve(shape_dict[transform],
                                 name=shape_dict[transform]["name"],
                                 parent=shape_dict[transform]["parent"],
@@ -169,55 +168,14 @@ def set_shapes_from_dict(shape_dict, no_export_tag_dict=None):
 ################################# TAGGING #####################################
 ###############################################################################
 
-def add_no_export_tag(nodes):
-    # if set to be tagged NO_EXPORT attr is added,
-    # this is then exported along with whatever else and recreated on build
-    # if it is removed, it will export
-    for node in nodes:
-        tag_utils.tag_no_export(node)
-
-def remove_no_export_tag(nodes):
-    # if set to be tagged NO_EXPORT attr is added,
-    # this is then exported along with whatever else and recreated on build
-    # if it is removed, it will export
-    for node in nodes:
-        tag_utils.remove_tag_no_export(node)
-
-def no_export_add_remove_selector(nodes, add=True):
-    if add:
-        add_no_export_tag(nodes)
-    else:
-        remove_no_export_tag(nodes)
-
 def gimbal_tag_no_export(add=True, checkbox_on=False):
-    if not checkbox_on:
-        return
-    # select controls to be tagged and run
-    # Will tag gimbal shapes from being saved out
-    sorted_nodes = control_from_selected()
-    nodes = misc.get_nodes_from_message(sorted_nodes, "gimbal")
-    no_export_add_remove_selector(nodes, add)
-    return nodes
+    return tag_utils.tag_no_export_from_control_message("gimbal", add, checkbox_on)
 
 def guide_tag_no_export(add=True, checkbox_on=False):
-    if not checkbox_on:
-        return
-    # select controls to be tagged and run
-    # Will tag guide positions from being saved out
-    sorted_nodes = control_from_selected()
-    nodes =  misc.get_nodes_from_message(sorted_nodes, "guide")
-    no_export_add_remove_selector(nodes, add)
-    return nodes
+    return tag_utils.tag_no_export_from_control_message("guide", add, checkbox_on)
 
 def guide_shape_tag_no_export(add=True, checkbox_on=False):
-    if not checkbox_on:
-        return
-    # select controls to be tagged and run
-    # Will tag guide positions from being saved out
-    sorted_nodes = control_from_selected()
-    nodes =  misc.get_nodes_from_message(sorted_nodes, "guide_shape")
-    no_export_add_remove_selector(nodes, add)
-    return nodes
+    return tag_utils.tag_no_export_from_control_message("guide_shape", add, checkbox_on)
 
 def control_tag_no_export(add=True, checkbox_on=False):
     if not checkbox_on:
@@ -229,7 +187,7 @@ def control_tag_no_export(add=True, checkbox_on=False):
     nodes = control_from_selected()
     for sel in nodes:
         return_nodes.append(sel)
-    no_export_add_remove_selector(return_nodes, add)
+    tag_utils.no_export_add_remove_selector(return_nodes, add)
     return return_nodes
 
 def control_from_selected():
@@ -253,8 +211,8 @@ def remove_tag_all_no_export(ctrl_shape=True, guide=True, guide_shape=True, gimb
 
 def mirror_all_shapes():
     control_nodes = control_from_selected()
-    gimbal_nodes = misc.get_nodes_from_message(control_nodes, "gimbal")
-    guide_nodes = misc.get_nodes_from_message(control_nodes, "guide")
+    gimbal_nodes = message_utils.get_nodes_from_message(control_nodes, "gimbal")
+    guide_nodes = message_utils.get_nodes_from_message(control_nodes, "guide")
     nodes_to_mirror = control_nodes + gimbal_nodes + guide_nodes
     for source_nodes in nodes_to_mirror:
         if type(source_nodes) is not list:

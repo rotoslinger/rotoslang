@@ -1,5 +1,7 @@
 from maya import cmds
 
+from rig_2.message import utils as message_utils
+reload(message_utils)
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 
@@ -363,15 +365,15 @@ class MatrixDeformer(base.Deformer):
         # for idx, guide in enumerate(self.guide_shapes):
             guide_shape = self.guide_shapes[idx]
             guide = misc.getParent(guide_shape)
-            misc.create_message_attr_setup(current_ctrl, "guide", guide, "ctrl" )
-            misc.create_message_attr_setup(current_ctrl, "guide_shape", guide_shape, "ctrl" )
+            message_utils.create_message_attr_setup(current_ctrl, "guide", guide, "ctrl")
+            message_utils.create_message_attr_setup(current_ctrl, "guide_shape", guide_shape, "ctrl")
             tag_utils.tag_guide(guide)
             tag_utils.tag_guide_shape(guide_shape)
             if "Rot" in guide:
-                misc.create_message_attr_setup(current_ctrl, "rotation_guide", guide, "rotation_ctrl" )
+                message_utils.create_message_attr_setup(current_ctrl, "rotation_guide", guide, "rotation_ctrl")
                 tag_utils.create_tag(guide, "ROTATION_GUIDE")
             if "Trans" in guide:
-                misc.create_message_attr_setup(current_ctrl, "translation_guide", guide, "translation_ctrl" )
+                message_utils.create_message_attr_setup(current_ctrl, "translation_guide", guide, "translation_ctrl")
                 tag_utils.create_tag(guide, "TRANSLATION_GUIDE")
 
 

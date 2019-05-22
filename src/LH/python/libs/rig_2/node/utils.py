@@ -1,16 +1,22 @@
 import copy
 from maya import cmds
 from rig_2.misc import utils as misc_utils
+reload(misc_utils)
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 
-def get_node_agnostic(nodeType, name, parent=None):
-    if cmds.objExists(name):
-        return name
-    return cmds.createNode(nodeType, n=name, p=parent)
+def get_node_agnostic(nodeType, name, parent=None, tag_name=""):
+    node = name
+    if not cmds.objExists(node):
+        node =  cmds.createNode(nodeType, n=name, p=parent)
+    if tag_name and not cmds.objExists(node + "." + tag_name):
+        tag_utils.create_tag(node, tag_name=tag_name, warn=False)
+    return node
 
-def get_node_agnostic_multiple(names=[], nodeType=None,  parent=None):
+def get_node_agnostic_multiple(names=[], nodeType=None,  parent=None, tag_name=""):
     retNodes = []
     for name in names:
-        retNodes.append(get_node_agnostic(name=name, nodeType=nodeType, parent=parent))
+        retNodes.append(get_node_agnostic(name=name, nodeType=nodeType, parent=parent, tag_name=tag_name))
     return retNodes
 
 def get_locator(name, parent=None, return_transform=True, return_shape=False):

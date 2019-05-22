@@ -1,6 +1,10 @@
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 import sys
+
+from rig_2.weights import utils as weights_utils
+reload(weights_utils)
+
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -378,7 +382,7 @@ class MouthJaw(object):
         if self.matDefHandWeightsDictionary:
             deformer_utils.rebuildMatDefWeightOverrides(self.matDefHandWeightsDictionary)
         if self.slideHandWeightsDictionary:
-            deformer_utils.rebuildSlideWeightOverrides(self.slideHandWeightsDictionary)
+            weights_utils.rebuildSlideWeightOverrides(self.slideHandWeightsDictionary)
 
 
 

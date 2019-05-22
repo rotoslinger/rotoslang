@@ -2,6 +2,10 @@ import copy
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 
+
+from rig_2.message import utils as message_utils
+reload(message_utils)
+
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 from rig_2.manipulator import elements
@@ -444,7 +448,7 @@ class Ctrl(object):
 
         # misc.tag_control_shape(misc.getShape(self.ctrl))
         tag_utils.tag_control(self.ctrl)
-        misc.create_message_attr_setup(self.ctrl, "gimbal", self.gimbal_ctrl, "ctrl" )
+        message_utils.create_message_attr_setup(self.ctrl, "gimbal", self.gimbal_ctrl, "ctrl")
         # # gimbal shape
         # cmds.addAttr(self.ctrl, ln = "gimbal", at = "message")
         # cmds.connectAttr(self.gimbal_shape + ".message", self.ctrl + ".gimbal")

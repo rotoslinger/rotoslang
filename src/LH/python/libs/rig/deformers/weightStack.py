@@ -1,4 +1,12 @@
 from maya import cmds
+
+from rig_2.weights import utils as weights_utils
+reload(weights_utils)
+from rig_2.animcurve import utils as animcurve_utils
+reload(animcurve_utils)
+from rig_2.node import utils as node_utils
+reload(node_utils)
+
 from rig.utils import weightMapUtils, misc
 from rig.deformers import utils as deformerUtils
 
@@ -10,7 +18,8 @@ from rig.rigComponents import meshRivetCtrl
 reload(meshRivetCtrl)
 from rig.rigComponents import elements
 reload(elements)
-
+from rig_2.message import utils as message_utils
+reload(message_utils)
 
 from decorators import initialize
 reload(elements)
@@ -215,59 +224,59 @@ class AnimCurveWeight(Node):
         self.baseMesh = misc.getShape(self.baseGeo)
 
         if self.inputWeightCurvesDict and self.inputWeightCurvesFalloffDict:
-            self.weightCurves = deformerUtils.create_set_anim_curves(self.inputWeightCurvesDict)
-            self.weightCurvesFalloff = deformerUtils.create_set_anim_curves(self.inputWeightCurvesFalloffDict)
+            self.weightCurves = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesDict)
+            self.weightCurvesFalloff = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesFalloffDict)
             return
 
         if self.autoCreateAnimCurves:
-            self.weightCurves, self.weightCurvesFalloff = deformerUtils.createNormalizedAnimWeights(name=self.autoCreateName, num=self.autoCreateNum,
-                                                                                      timeRange=self.autoCreateTimeRange, suffix=self.animCurveSuffix,
-                                                                                      offset=self.offset, centerWeight =self.centerWeight, outerWeight = self.outerWeight,
-                                                                                      angle = self.angle, nudge=self.nudge, intermediateVal=self.intermediateVal,
-                                                                                      lastAngle=self.lastAngle,
-                                                                                      lastIntermediateVal=self.lastIntermediateVal,
-                                                                                      intermediateAngle=self.intermediateAngle,
-                                                                                      lastIntermediateAngle=self.lastIntermediateAngle,
-                                                                                      createSingleFalloff=self.createSingleFalloff,
-                                                                                      singleFalloffName = self.singleFalloffName,
-                                                                                      falloffStart=self.falloffDefaults[0],
-                                                                                      falloffStartInner=self.falloffDefaults[1],
-                                                                                      falloffEndInner=self.falloffDefaults[2],
-                                                                                      falloffEnd=self.falloffDefaults[3],
-                                                                                      itts=self.falloffItts,
-                                                                                      otts=self.falloffOtts,
-                                                                                      falloffCurveDict=self.falloffCurveDict,
-                                                                                      )
+            self.weightCurves, self.weightCurvesFalloff = weights_utils.createNormalizedAnimWeights(name=self.autoCreateName, num=self.autoCreateNum,
+                                                                                                    timeRange=self.autoCreateTimeRange, suffix=self.animCurveSuffix,
+                                                                                                    offset=self.offset, centerWeight =self.centerWeight, outerWeight = self.outerWeight,
+                                                                                                    angle = self.angle, nudge=self.nudge, intermediateVal=self.intermediateVal,
+                                                                                                    lastAngle=self.lastAngle,
+                                                                                                    lastIntermediateVal=self.lastIntermediateVal,
+                                                                                                    intermediateAngle=self.intermediateAngle,
+                                                                                                    lastIntermediateAngle=self.lastIntermediateAngle,
+                                                                                                    createSingleFalloff=self.createSingleFalloff,
+                                                                                                    singleFalloffName = self.singleFalloffName,
+                                                                                                    falloffStart=self.falloffDefaults[0],
+                                                                                                    falloffStartInner=self.falloffDefaults[1],
+                                                                                                    falloffEndInner=self.falloffDefaults[2],
+                                                                                                    falloffEnd=self.falloffDefaults[3],
+                                                                                                    itts=self.falloffItts,
+                                                                                                    otts=self.falloffOtts,
+                                                                                                    falloffCurveDict=self.falloffCurveDict,
+                                                                                                    )
             self.overrideWeightCurves()
             return
 
-        self.weightCurves = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNames, parent=None)
+        self.weightCurves = node_utils.get_node_agnostic_multiple(nodeType="animCurveTU", names=self.weightNames, parent=None, tag_name="WEIGHT_CURVE")
 
         if self.createSingleFalloff and self.singleFalloffName:
             self.weightNamesFalloff = [self.singleFalloffName + "_ACV" for x in range(self.weightNamesFalloff)]
 
-        self.weightCurvesFalloff = deformerUtils.getNodeAgnosticMultiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None)
+        self.weightCurvesFalloff = node_utils.get_node_agnostic_multiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None, tag_name="FALLOFF_WEIGHT_CURVE")
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
         if self.uKeyframesAllOnes:
-            deformerUtils.initUKeyframeAllOnes(self.weightCurves)
+            animcurve_utils.initUKeyframeAllOnes(self.weightCurves)
         else:
-            deformerUtils.initUKeyframes(self.weightCurves)
-        deformerUtils.initVFalloff(self.weightCurvesFalloff,
-                                    falloffCurveDict=self.falloffCurveDict,
-                                    falloffStart=self.falloffDefaults[0],
-                                    falloffStartInner=self.falloffDefaults[1],
-                                    falloffEndInner=self.falloffDefaults[2],
-                                    falloffEnd=self.falloffDefaults[3],
-                                    itts=self.falloffItts,
-                                    otts=self.falloffOtts
-                                    )
+            animcurve_utils.initUKeyframes(self.weightCurves)
+        animcurve_utils.initVFalloff(self.weightCurvesFalloff,
+                                     falloffCurveDict=self.falloffCurveDict,
+                                     falloffStart=self.falloffDefaults[0],
+                                     falloffStartInner=self.falloffDefaults[1],
+                                     falloffEndInner=self.falloffDefaults[2],
+                                     falloffEnd=self.falloffDefaults[3],
+                                     itts=self.falloffItts,
+                                     otts=self.falloffOtts
+                                     )
         self.overrideWeightCurves()
 
     def overrideWeightCurves(self):
         if not self.curveOverrideDict:
             return
         for curve in self.weightCurves:
-            deformerUtils.setAnimCurveShape(curve, self.curveOverrideDict)
+            animcurve_utils.setAnimCurveShape(curve, self.curveOverrideDict)
 
 
 
@@ -315,7 +324,7 @@ class AnimCurveWeight(Node):
         self.elemCheck("{0}.inputs".format(self.node))
         for idx, attr in enumerate(self.outputAttrs):
             elemIdx = idx + self.startElem
-            attrType = deformerUtils.checkOutputWeightType(attr)
+            attrType = weights_utils.checkOutputWeightType(attr)
             weightAttr = ""
             if attrType:
                 # If True, then this output attribute will get the kDoubleArray Output
@@ -801,196 +810,12 @@ class WeightStack(Node):
 
         
 
+def connect_controls_curves_message(weight_stack_controls, weight_curves, falloff_weight_curves):
+    # Creates a message attr connection between controls and their cooresponding weight curves.
+    for idx, control in enumerate(weight_stack_controls):
+        message_utils.create_message_attr_setup(control, "weight_curve", weight_curves[idx], "control")
+        message_utils.create_message_attr_setup(control, "falloff_weigth_curve", falloff_weight_curves[idx], "control")
 
-
-'''
-EXAMPLE
-
-from maya import cmds
-import maya.OpenMaya as OpenMaya
-import sys
-linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
-mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
-
-#---determine operating system
-os = sys.platform
-if "linux" in os:
-    os = linux
-if "darwin" in os:
-    os = mac
-if os not in sys.path:
-    sys.path.append(os)
-from rig.utils import weightMapUtils
-from rig.deformers import base
-from rig.deformers import weightStack
-reload(weightStack)
-reload(base)
-#weightStack.deformerUtils.createNormalizedAnimWeights(name="Lip", num=5, timeRange=20.0, offset=.3)
-
-cmds.file( new=True, f=True )
-
-cmds.unloadPlugin("collision")
-
-cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
-
-
-
-
-fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/TestCurveWeights.ma"
-cmds.file( fileName, o=True, f=True )
-
-#cmds.file(new=True, f=True)
-control = cmds.circle(n="Control", nr=[0,1,0])[0]
-subdivisions = 30
-deformMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=subdivisions,  n="deformMesh")[0]
-cluster = cmds.cluster(deformMesh)[1]
-cmds.move(1, cluster, y=True)
-base = cmds.polyPlane(ax=[0,0,1], h=2, w=2,sx=subdivisions, n="BASE")[0]
-cmds.setAttr(base + ".v",0)
-projectionMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=3)[0]
-cmds.setAttr(projectionMesh + ".v",0)
-cluster2 = cmds.cluster(deformMesh)[1]
-cmds.move(1, cluster2, x=True)
-
-cmds.move(2, projectionMesh, z=True)
-
-
-autoCreateTimeRange = 20.0
-offset=0
-centerWeight = .6
-outerWeight = .0
-angle = 50
-nudge = -0.0
-intermediateVal = .0
-intermediateAngle=0
-
-lastAngle = 50
-lastIntermediateVal=.8
-lastIntermediateAngle=30
-
-createNum1 = 3
-createNum2 = 9
-createNum3 = 7
-
-curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
-                                    baseGeo=base,
-                                    ctrlNode=control,
-                                    projectionGeo=projectionMesh,
-                                    weightCurveNames=[],
-                                    addNewElem=False,
-                                    autoCreateAnimCurves = True,
-                                    autoCreateName = "lipSingle",
-                                    autoCreateNum = 1,
-                                    autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-
-)
-curveWeights.create()
-
-
-stack = weightStack.WeightStack(name="TestWeights",
-                                geoToWeight=base,
-                                ctrlNode=control,
-                                inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
-                                addNewElem=False,
-                                outputAttrs = ["cluster1.weightList[0]"],
-                                outputAttrs_LR = ["cluster2.weightList[0]"],
-                                autoCreate=True,
-                                controlRivetMesh = deformMesh,
-                                falloffCurveWeightNode="TestCurveWeights",
-                                autoCreateName="lipSingle",
-                                controlSize = .07,
-                                controlShapeOffset = [0,0.0,.1],
-                                )
-stack.create()
-curveWeights.setFalloffDefaults()
-cmds.setAttr("C_lipSingle_CTL.ty", -0.6)
-
-autoCreateTimeRange = 20.0
-offset=0
-centerWeight = .3
-outerWeight = .5
-angle = 0
-nudge = -0.14
-intermediateVal = .0
-intermediateAngle=0
-
-lastAngle = 60
-lastIntermediateVal=.8
-lastIntermediateAngle=30
-
-curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
-                                    baseGeo=base,
-                                    ctrlNode=control,
-                                    projectionGeo=projectionMesh,
-                                    weightCurveNames=[],
-                                    addNewElem=True,
-                                    autoCreateAnimCurves = True,
-                                    autoCreateName = "lipPrime",
-                                    autoCreateNum = createNum1,
-                                    autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                    #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                    startElem = 1,
-
-)
-curveWeights.create()
-
-
-stack = weightStack.WeightStack(name="TestWeights",
-                                geoToWeight=base,
-                                ctrlNode=control,
-                                inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
-                                addNewElem=True,
-                                outputAttrs = ["cluster1.weightList[0]"],
-                                outputAttrs_LR = ["cluster2.weightList[0]"],
-                                autoCreate=True,
-                                controlRivetMesh = deformMesh,
-                                falloffCurveWeightNode="TestCurveWeights",
-                                autoCreateName="lipPrime",
-                                controlSize = .05,
-                                controlShapeOffset = [0,0.1,.1],
-                                falloffElemStart = 1
-                                )
-stack.create()
-curveWeights.setFalloffDefaults()
-
-
-#############################################################################################################################
-
-curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
-                                    baseGeo=base,
-                                    ctrlNode=control,
-                                    projectionGeo=projectionMesh,
-                                    weightCurveNames=[],
-                                    addNewElem=True,
-                                    autoCreateAnimCurves = True,
-                                    autoCreateName = "lipSecondary",
-                                    autoCreateNum = createNum2,
-                                    autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                    #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                    startElem = 4,
-
-)
-curveWeights.create()
-
-
-stack = weightStack.WeightStack(name="TestWeights",
-                                geoToWeight=base,
-                                ctrlNode=control,
-                                inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
-                                addNewElem=True,
-                                outputAttrs = ["cluster1.weightList[0]"],
-                                outputAttrs_LR = ["cluster2.weightList[0]"],
-                                autoCreate=True,
-                                controlRivetMesh = deformMesh,
-                                falloffCurveWeightNode="TestCurveWeights",
-                                autoCreateName="lipSecondary",
-                                controlSize = .03,
-                                controlShapeOffset = [0,0.05,.1],
-                                falloffElemStart = 4
-                                )
-stack.create()
-curveWeights.setFalloffDefaults()
-
-#############################################################################################################################
-
-'''
+def connect_weight_stack_anim_curve(weight_stack_class, anim_curve_weights_class):
+    # As long as the weight stack and anim curves have been created in the proper order this will work
+    connect_controls_curves_message(weight_stack_class.controls, anim_curve_weights_class.weightCurves, anim_curve_weights_class.weightCurvesFalloff)

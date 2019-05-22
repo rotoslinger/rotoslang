@@ -266,7 +266,6 @@ class Line(object):
             )
             curveWeights.create()
 
-
             stack = weightStack.WeightStack(name=self.name + "WeightStack",
                                             geoToWeight=self.base,
                                             ctrlNode=self.control,
@@ -294,7 +293,13 @@ class Line(object):
                                             controlLockAttrs=["ry", "rz", "sx", "sz"],
                                             )
             stack.create()
-
+            
+            # print "THIS IS THE COUNT", " Stack CONTROLS", len(stack.controls), " WEIGHT CURVES", len(curveWeights.weightCurves)
+            # print "THIS IS THE COUNT", " weightCurvesFalloff", len(curveWeights.weightCurvesFalloff)
+            # stack.controls
+            # curveWeights.weightCurves
+            # curveWeights.weightCurvesFalloff
+            weightStack.connect_weight_stack_anim_curve(stack, curveWeights)
             # Add controls to the container and connect to visibility
 
             # for ctrl in stack.controls:
@@ -391,6 +396,7 @@ class Line(object):
                                     )
             self.mat_def.create()
             
+            weightStack.connect_weight_stack_anim_curve(self.mat_def, curveWeights)
 
             # for ctrl in matDef.controls:
             #     cmds.container(container, edit=True, addNode=[ctrl])
@@ -471,7 +477,8 @@ class Line(object):
                 vectorDeformer = vectorDeformerSimple.VectorDeformerSimple(name = self.name + "THICKTEST", geoToDeform=self.deformMesh, weightStackNode=stack.node, toPoint = self.thickToPoint)
                 vectorDeformer.create() 
 
-            
+                weightStack.connect_weight_stack_anim_curve(stack, curveWeights)
+
             ################################## LIP ROLL DEFORMER #####################################################################    
             if self.doLipRoll:
                 curveWeights = weightStack.AnimCurveWeight(name=self.name + "CurveWeightsROLL",
@@ -539,6 +546,7 @@ class Line(object):
                 stack.create()
                 # rollDeformer = vectorDeformerSimple.VectorDeformerSimple(self.name = self.name + "THICKTEST", geoToDeform=self.deformMesh, weightStackNode=stack.node, toPoint = self.thickToPoint)
                 # rollDeformer.create()
+                weightStack.connect_weight_stack_anim_curve(stack, curveWeights)
 
                 curveRoll = curveRollSimple.CurveRollSimple(
                                                             name=self.name + "ROLLTEST",

@@ -193,7 +193,7 @@ def test(reloadPlugin = False, loadFile=True):
     if superman:
         fileName = "/home/users/levih/Desktop/supermanFace/prototype/supermanLips.ma"
         tierCount1 = 1
-        tierCount2 = 3
+        tierCount2 = 9
         tierCount3 = 5
 
         slideCtrlSize1=.1

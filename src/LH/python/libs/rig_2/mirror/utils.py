@@ -1,5 +1,4 @@
 import random
-from rig_2.manipulator import nurbscurve
 from rig.utils import misc
 from maya import cmds
 

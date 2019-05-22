@@ -1,0 +1,67 @@
+import sys, os
+
+from maya import cmds
+from rig_2.mirror import utils as mirror_utils
+reload(mirror_utils)
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+
+from rig.utils import misc
+reload(misc)
+from rig_2.guide import utils as guide_utils
+reload(guide_utils)
+
+from rig_2.manipulator import nurbscurve
+
+from rig_2.backup import utils as backup_utils
+reload(backup_utils)
+
+'''
+@code
+import sys
+linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
+win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
+#---determine operating system
+os = sys.platform
+if "linux" in os:
+    os = linux
+if "darwin" in os:
+    os = mac
+if "win32" in os:
+    os = win
+
+if os not in sys.path:
+    sys.path.append(os)
+
+from ui_2 import guide
+reload(guide)
+guide_ui = guide.Guide_UI()
+guide_ui.openUI()
+
+@endcode
+'''
+
+
+def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
+    backup_arg = backup_checkbox[0].isChecked()
+    ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
+    export_dict = guide_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
+    backup_utils.generate_backup_file(full_backup_name, export_dict)
+
+def import_all(file_dialog, checkboxes):
+    # cmds.undoInfo(state=False)
+    cmds.undoInfo(stateWithoutFlush = False)
+    ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
+    guide_utils.import_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    cmds.undoInfo(stateWithoutFlush = True)
+    # cmds.flushUndo()
+
+def get_no_export_checkboxes(checkboxes):
+    export_args = [checkbox.isChecked() for checkbox in checkboxes]
+    ctrl_shape = export_args[0]
+    guide = export_args[1]
+    guide_shape = export_args[2]
+    gimbal_shape = export_args[3]
+    return ctrl_shape, guide, guide_shape, gimbal_shape

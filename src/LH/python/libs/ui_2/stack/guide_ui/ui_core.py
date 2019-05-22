@@ -12,6 +12,10 @@ from rig_2.guide import utils as guide_utils
 reload(guide_utils)
 
 from rig_2.manipulator import nurbscurve
+reload(nurbscurve)
+
+from rig_2.backup import utils as backup_utils
+
 '''
 @code
 import sys
@@ -68,10 +72,13 @@ def update_geo_constraints():
     misc.update_all_geo_constraints()
     cmds.undoInfo(state=True, closeChunk=True)
 
-def export_all(file_dialog, checkboxes):
+def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
+    backup_arg = backup_checkbox[0].isChecked()
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
     export_dict = guide_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
-    # print export_dict
+    full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
+    backup_utils.generate_backup_file(full_backup_name, export_dict)
+
 def import_all(file_dialog, checkboxes):
     # cmds.undoInfo(state=False)
     cmds.undoInfo(stateWithoutFlush = False)
