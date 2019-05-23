@@ -1,17 +1,24 @@
-import sys, os
+import sys, os, ast
 
 from maya import cmds
+
 from rig_2.mirror import utils as mirror_utils
 reload(mirror_utils)
+
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 
 from rig.utils import misc
 reload(misc)
+
 from rig_2.weights import utils as weight_utils
 reload(weight_utils)
 
 from rig_2.backup import utils as backup_utils
+reload(backup_utils)
+
+from rig_2 import decorator
+reload(decorator)
 '''
 @code
 import sys
@@ -37,24 +44,18 @@ guide_ui.openUI()
 
 @endcode
 '''
-
+@decorator.undo_chunk
 def tag_no_export(checkboxes):
-    cmds.undoInfo(state=True, openChunk=True)
     # guide=True, guide_shape=True, ctrl_shape=True, gimbal_shape=True
-    weight_curves, falloff_weight_curves = get_no_export_checkboxes(checkboxes)
-    weight_utils.tag_all_no_export(weight_curve_checkbox=weight_curves, falloff_weight_curve_checkbox=falloff_weight_curves)
+    weight_curves, falloff_weight_curves, hand_painted_weights = get_import_export_checkboxes(checkboxes)
+    weight_utils.tag_all_no_export(do_weight_curve=weight_curves, do_falloff_weight_curve=falloff_weight_curves, do_hand_painted_weights=hand_painted_weights)
 
-    cmds.undoInfo(state=True, closeChunk=True)
-
+@decorator.undo_chunk
 def remove_tag_no_export(checkboxes):
-    cmds.undoInfo(state=True, openChunk=True)
-    weight_curves, falloff_weight_curves = get_no_export_checkboxes(checkboxes)
-    weight_utils.remove_tag_all_no_export(weight_curve_checkbox=weight_curves, falloff_weight_curve_checkbox=falloff_weight_curves)
-    cmds.undoInfo(state=True, closeChunk=True)
-
+    weight_curves, falloff_weight_curves, hand_painted_weights = get_import_export_checkboxes(checkboxes)
+    weight_utils.remove_tag_all_no_export(do_weight_curve=weight_curves, do_falloff_weight_curve=falloff_weight_curves, do_hand_painted_weights=hand_painted_weights)
 
 def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
-    cmds.undoInfo(state=True, openChunk=True)
     weight_curves, falloff_weight_curves, hand_painted_weights = get_import_export_checkboxes(checkboxes)
     
     export_dict = weight_utils.export_all(file_dialog.contents.text(),
@@ -65,17 +66,14 @@ def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup
     full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
     backup_utils.generate_backup_file(full_backup_name, export_dict)
 
+@decorator.undo_ignore
 def import_all(file_dialog, checkboxes):
-    cmds.undoInfo(stateWithoutFlush = False)
     weight_curves, falloff_weight_curves, hand_painted_weights = get_import_export_checkboxes(checkboxes)
-
     weight_utils.import_all(file_dialog.contents.text(),
                             weight_curves=weight_curves,
                             falloff_weight_curves=falloff_weight_curves,
                             hand_painted_weights=hand_painted_weights)
     
-    cmds.undoInfo(stateWithoutFlush = True)
-
 def get_no_export_checkboxes(checkboxes):
     export_args = [checkbox.isChecked() for checkbox in checkboxes]
     weight_curves = export_args[0]
@@ -89,30 +87,43 @@ def get_import_export_checkboxes(checkboxes):
     hand_painted_weights = export_args[2]
     return weight_curves, falloff_weight_curves, hand_painted_weights
 
-# def get_weight_curves_dict(do_weight_curves=True, do_falloff_weight_curves=True):
-#     # get all animCurveWeightsNodes
-#     weight_curves, falloff_weight_curves = get_all_weight_anim_curves()
-#     # put all animCurves in a dict
-#     weight_curve_dict = {}
-#     falloff_weight_curve_dict = {}
+def print_weight_curves_data():
+    # To retrieve dictionaries stored as strings:
+    # ast.literal_eval("{"DICTIONARY_KEY":["thingA", "thingB"]}")
+    for sel in cmds.ls(sl=True):
+        weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(sel + ".weight_curve_connection_dicts")]
+        falloff_weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(sel + ".falloff_weight_curve_connection_dicts")]        
+        print_control_weightcurve_connection("Weight Curves", weights_string_dict)
+        print_control_weightcurve_connection("Falloff Weight Curves", falloff_weights_string_dict)
 
-#     if do_weight_curves:
-#         for curve in weight_curves:
-#             weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
+@decorator.undo_chunk
+def weight_curves_to_point_weights():
+    weight_utils.convert_selected_curve_to_hand_weights()
 
-#     if do_falloff_weight_curves:
-#         for curve in falloff_weight_curves:
-#             falloff_weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
-    
-#     return weight_curve_dict, falloff_weight_curve_dict
+def print_control_weightcurve_connection(weight_curve_type, weightcurve_dict_list):
+    for curve_dict in weightcurve_dict_list:
+        print "================================ {0} {1} =====================================".format(curve_dict["control_node"], weight_curve_type)
+        print "{0} --> {1} --> {2} --> {3}".format(
+                                                                                             curve_dict["curve_name"],
+                                                                                             curve_dict["curve_weights_node"],
+                                                                                             curve_dict["node"],
+                                                                                             curve_dict["output_idx"],
+                                                                                                )
+        if "hand_weights" in curve_dict.keys():
+            print "Hand Painted Weights Overriding Curves: {0} --> {1}".format(
+                                                                                curve_dict["hand_weights"],
+                                                                                curve_dict["curve_name"],
+                                                                                )
+    print "================================================================================================="
 
-
-# def rebuildAnimCurveWeightsCurves(weight_curve_dict, falloff_weight_curve_dict, weight_curves=True, falloff_weight_curves=True):
-
-#     if do_weight_curves and weight_curve_dict:
-#         for curve in weight_curve_dict.keys:
-#             animcurve_utils.getAnimCurve(weight_curve_dict[curve])
-
-#     if do_falloff_weight_curves and falloff_weight_curve_dict:
-#         for curve in falloff_weight_curve_dict.keys:
-#             animcurve_utils.getAnimCurve(falloff_weight_curve_dict[curve])
+def select_all_weight_curves(options_checkbox):
+    export_args = [checkbox.isChecked() for checkbox in options_checkbox]
+    do_weight_curves=export_args[0]
+    do_falloff_curves=export_args[1]
+    weight_curves=[]
+    falloff_curves=[]
+    if do_weight_curves:
+        weight_curves = tag_utils.get_all_with_tag("WEIGHT_CURVE")
+    if do_falloff_curves:
+        falloff_curves = tag_utils.get_all_with_tag("FALLOFF_WEIGHT_CURVE")
+    cmds.select( weight_curves, falloff_curves, r=True)

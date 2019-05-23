@@ -107,7 +107,7 @@ def test():
                 #  slideHandWeightsDictionary = elements.JAW_MOUTH_SLIDE_WEIGHT_DICT,
     )
     MouthJawClass.create() 
-    cmds.select(MouthJawClass.mat_def_class.controls)
+    cmds.select(MouthJawClass.mat_def_translate.controls)
     cmds.viewFit()
     # MouthJawClass.setPositions() 
     # MouthJawClass.setHandWeights()

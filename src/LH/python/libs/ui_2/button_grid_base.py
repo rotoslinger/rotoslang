@@ -27,7 +27,9 @@ class Base(QtWidgets.QWidget):
                  auto_order_asset_import_export_widgets = False,
                  default_file_name = "default",
                  save_window_state = False,
-                 import_export_checklist_options=[[]]
+                 import_export_checklist_options=[[]],
+                 import_label_text="Import to the set file path.",
+                 export_label_text="Export to the set file path.",
                  ):
         super(Base, self).__init__(parent)
         # args
@@ -44,7 +46,8 @@ class Base(QtWidgets.QWidget):
 
         self.save_window_state = save_window_state
         self.import_export_checklist_options = import_export_checklist_options
-        # vars
+        self.import_label_text = import_label_text
+        self.export_label_text = export_label_text
         # Dummy Spacer
         self.space = ui_utils.label("")
         self.asset_name_widgets = []
@@ -55,6 +58,9 @@ class Base(QtWidgets.QWidget):
         self.view = QtWidgets.QTreeView(self)
         self.view.setMouseTracking(True)
         self.view.entered.connect(self.handleItemEntered)
+
+    def get_settings_path(self):
+        self.settings_path = os.path.join(os.getenv('HOME'), self.setting_filename + ".ini")
 
     def handleItemEntered(self, index):
         if index.isValid():
@@ -162,7 +168,8 @@ class Base(QtWidgets.QWidget):
                                                         # contents_changed_func = self.contents_changed
                                                         )
         # import_func_with_args = lambda file_dialog=self.import_dialog, checkboxes = self.import_checkboxes: core.import_all(file_dialog, checkboxes)
-        self.import_label, self.import_button = ui_utils.label_button(label_text="Import guides to the set file path.",
+
+        self.import_label, self.import_button = ui_utils.label_button(label_text=self.import_label_text,
                                                                     button_text="Import",
                                                                     color=elements.purple,
                                                                     button_func=self.import_func,
@@ -183,7 +190,7 @@ class Base(QtWidgets.QWidget):
         # backup_filename = self.export_dialog.get_filename()
         # backup_path = self.export_dialog.default_backup_path
         # export_func_with_args = lambda: core.export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path)
-        self.export_label, self.export_button = ui_utils.label_button(label_text="Export guides to the set file path.",
+        self.export_label, self.export_button = ui_utils.label_button(label_text=self.export_label_text,
                                                                     button_text="Export",
                                                                     color=elements.purple,
                                                                     button_func=self.export_func
@@ -209,9 +216,10 @@ class Base(QtWidgets.QWidget):
 
 
     def restore_window_state(self):
-        # print "OPENING", self.save_window_state
-        if os.path.exists(self.settings_path):
-            self.settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
+        self.get_settings_path()
+        if not os.path.exists(self.settings_path):
+            return
+        self.settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
         if not self.save_window_state:
             return
         # If you would like to load preferences on on open
@@ -227,6 +235,7 @@ class Base(QtWidgets.QWidget):
 
 
     def closeEvent(self, event):
+        self.get_settings_path()
         # Save window's geometry
         self.settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
         self.settings_obj.setValue("windowGeometry", self.saveGeometry())

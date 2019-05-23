@@ -61,9 +61,10 @@ class Weight_UI(button_grid_base.Base):
                                               ["Hand Painted Weights", True],                                                                                                                   
                                              ]
         self.no_export_tag_options=[
-                                    ["Weight Curves", True],
-                                    ["Falloff Weight Curves", True],                                                                                                                   
-                                   ]
+                                              ["Weight Curves", True],
+                                              ["Falloff Weight Curves", True],                                                                                                                   
+                                              ["Hand Painted Weights", False],                                                                                                                   
+                                             ]
 
         self.restore_window_state()
         
@@ -82,10 +83,31 @@ class Weight_UI(button_grid_base.Base):
     def import_func(self):
         ui_core.import_all(self.import_dialog, self.import_checkboxes)
 
-
+    
 
     def create_widgets(self):
         super(Weight_UI, self).create_widgets()
+
+        self.weight_curves_label = ui_utils.label("Weight Curve utilities.  Select control before running.",
+                                              color=elements.blue,
+                                                                    )
+        self.weight_curve_button_layout, self.weight_curve_button = ui_utils.button_row(
+                                                                     [
+                                                                      ["Print Weight Curve Data", ui_core.print_weight_curves_data],
+                                                                      ["Convert Weight Curve to point weights", ui_core.weight_curves_to_point_weights]
+                                                                     ]
+                                                                    )
+        ############ SELECT WEIGHT CURVES #########################################
+        self.select_weight_curves_options, self.select_weight_curves_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[["Weight Curves", True],["Falloff Weight Curves",True]])
+        select_func = lambda:ui_core.select_all_weight_curves(self.select_weight_curves_checkbox)
+        self.select_curves_layout, self.select_curves_button = ui_utils.label_button(label_text="Selects all anim curves being used for weighting.",
+                                                                    button_text="Select Weight Curves",
+                                                                    color=elements.blue,
+                                                                    button_func=select_func
+                                                                    )
+
+
+        ############ DELETE ALL WEIGHT CURVES #####################################
 
         ############ ADD NO EXPORT ########################
         self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options)
@@ -107,6 +129,18 @@ class Weight_UI(button_grid_base.Base):
 
 
         self.main_widgets = [
+                        self.weight_curves_label, 
+                        self.weight_curve_button_layout,
+                        ui_utils.separator(),
+                        self.space,
+
+                        self.select_curves_layout,
+                        self.select_curves_button,
+                        self.select_weight_curves_options, 
+                        ui_utils.separator(),
+                        self.space,
+
+
 
                         self.no_export_label, 
                         self.no_export_button,

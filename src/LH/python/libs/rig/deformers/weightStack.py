@@ -26,6 +26,9 @@ reload(elements)
 
 from rig_2.manipulator import elements as manipulator_elements
 reload(manipulator_elements)
+
+from rig_2.attr import utils as attr_utils
+reload(attr_utils)
 class Node(object):
     def __init__(self,
                  name,
@@ -225,7 +228,7 @@ class AnimCurveWeight(Node):
 
         if self.inputWeightCurvesDict and self.inputWeightCurvesFalloffDict:
             self.weightCurves = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesDict)
-            self.weightCurvesFalloff = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesFalloffDict)
+            self.weightCurvesFalloff = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesFalloffDict, falloff=True)
             return
 
         if self.autoCreateAnimCurves:
@@ -810,12 +813,40 @@ class WeightStack(Node):
 
         
 
-def connect_controls_curves_message(weight_stack_controls, weight_curves, falloff_weight_curves):
+def connect_controls_curves_message(weight_stack_controls, weight_curves, falloff_weight_curves, stack_node, curve_weights_node):
     # Creates a message attr connection between controls and their cooresponding weight curves.
     for idx, control in enumerate(weight_stack_controls):
         message_utils.create_message_attr_setup(control, "weight_curve", weight_curves[idx], "control")
         message_utils.create_message_attr_setup(control, "falloff_weigth_curve", falloff_weight_curves[idx], "control")
+        create_anim_curve_connection_attr(control, "weight_curve_connection_dicts", weight_curves[idx], idx, stack_node, curve_weights_node)
+        create_anim_curve_connection_attr(control, "falloff_weight_curve_connection_dicts", falloff_weight_curves[idx], idx, stack_node, curve_weights_node)
 
-def connect_weight_stack_anim_curve(weight_stack_class, anim_curve_weights_class):
+def connect_weight_stack_anim_curve(weight_stack_class, anim_curve_weights_class, is_node_LR=False):
     # As long as the weight stack and anim curves have been created in the proper order this will work
-    connect_controls_curves_message(weight_stack_class.controls, anim_curve_weights_class.weightCurves, anim_curve_weights_class.weightCurvesFalloff)
+    node=None
+    if hasattr(weight_stack_class, "node") and not is_node_LR:
+        node = weight_stack_class.node
+    elif hasattr(weight_stack_class, "node") and is_node_LR:
+        node = weight_stack_class.node_LR
+    else: 
+        node = weight_stack_class.deformer
+    connect_controls_curves_message(weight_stack_class.controls,
+                                    anim_curve_weights_class.weightCurves,
+                                    anim_curve_weights_class.weightCurvesFalloff,
+                                    node,
+                                    anim_curve_weights_class.node,
+                                    
+                                    
+                                    )
+
+def create_anim_curve_connection_attr(control_node, attr_name, curve_name, output_idx, stack_node, curve_weights_node):
+    connection_info_dict = {}
+    connection_info_dict["curve_name"] = curve_name
+    connection_info_dict["output_idx"] = output_idx
+    connection_info_dict["control_node"] = control_node
+    connection_info_dict["node"] = stack_node
+    connection_info_dict["curve_weights_node"] = curve_weights_node
+    connection_info_dict["hand_weights"] = None
+    string_array_attr = attr_utils.create_string_array(control_node, attr_name)
+    attr_utils.add_string_to_string_array(string_array_attr, str(connection_info_dict))
+    

@@ -241,6 +241,8 @@ class MouthJaw(object):
                                         inputWeightAttrs_LR=curveWeights_LR.newKDoubleArrayOutputPlugs,
                                         )
         stack.create()
+        weightStack.connect_weight_stack_anim_curve(stack, curveWeights_UD)
+        weightStack.connect_weight_stack_anim_curve(stack, curveWeights_LR, is_node_LR=True)
 
     def matDef(self):
         self.matDefCurveWeights = weightStack.AnimCurveWeight(name=self.nameJaw + "MatDefCurveWeights",
@@ -292,7 +294,7 @@ class MouthJaw(object):
             matDefCtrlShapeOffsets =  [0,0,0]
             matDefCtrlShapeSizes = 1
 
-        self.mat_def_class = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefTranslate",
+        self.mat_def_translate = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefTranslate",
                                 geoToDeform=self.deformMesh,
                                 ctrlName=self.matDefAttrs,
                                 manualLocatorNames = transLocatorNames,
@@ -328,9 +330,9 @@ class MouthJaw(object):
                                 # customControlShapes = self.matDefCustomControlShapes,
 
                                 )
-                     
-        self.mat_def_class.create()
-        self.mat_def_class = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefRotate",
+        self.mat_def_translate.create()
+
+        self.mat_def_rotate = matrixDeformer.MatrixDeformer(name=self.nameJaw + "_MatDefRotate",
                             geoToDeform=self.deformMesh,
                             ctrlName=self.matDefAttrs,
                             manualLocatorNames = rotLocatorNames,
@@ -361,12 +363,13 @@ class MouthJaw(object):
                             controlType=1,
                             )
                               
-        self.mat_def_class.create()
+        self.mat_def_rotate.create()
+        weightStack.connect_weight_stack_anim_curve(self.mat_def_translate, self.matDefCurveWeights)
+        weightStack.connect_weight_stack_anim_curve(self.mat_def_rotate, self.matDefCurveWeights)
 
     def post_create(self):
         cmds.refresh()
         deformer_utils.cacheOutAllSlideDeformers()
-
 
     def create(self):
         self.prepare()

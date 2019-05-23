@@ -1,5 +1,7 @@
-from rig.utils import misc
+import ast
 from maya import cmds
+from rig.utils import misc
+reload(misc)
 from rig_2.message import utils as message_utils
 reload(message_utils)
 
@@ -87,6 +89,9 @@ def tag_bind_joint(node_to_tag):
 
 def tag_weight_curve(node_to_tag):
     create_tag(node_to_tag, "WEIGHT_CURVE")
+
+def tag_falloff_weight_curve(node_to_tag):
+    create_tag(node_to_tag, "FALLOFF_WEIGHT_CURVE")
 
 
 def get_all_with_tag(tag):
@@ -204,4 +209,49 @@ def remove_nodes_with_tags_from_list(tag_name, node_list):
         if cmds.objExists(curve + "." + tag_name):
             node_list.pop(idx)
     return node_list
+
+def tag_no_export_from_control_connection_dict(add=True,
+                                               weight_curves=True,
+                                               falloff_weight_curves=True,
+                                               hand_painted_weights=True
+                                               ):
+    # Finds a node from the specified control by the specified message name, tags it NO_EXPORT, or removes that tag
+    sorted_nodes = control_from_selected()
+    nodes_to_tag = []
+    for ctrl in sorted_nodes:
+        controls, curve_names, curve_weights_nodes, nodes, output_indices, hand_weights = get_connection_weight_data(ctrl,
+                                                                                                                     connection_attr_name="weight_curve_connection_dicts")
+        if weight_curves:
+            nodes_to_tag += curve_names
+        if hand_painted_weights:
+            nodes_to_tag += hand_weights
+        controls, curve_names, curve_weights_nodes, nodes, output_indices, hand_weights = get_connection_weight_data(ctrl,
+                                                                                                                     connection_attr_name="falloff_weight_curve_connection_dicts")
+        if falloff_weight_curves:
+            nodes_to_tag += curve_names
+    no_export_add_remove_selector(nodes_to_tag, add)
+    return nodes_to_tag
+
+def get_connection_weight_data(ctrl, connection_attr_name="weight_curve_connection_dicts"):
+    # attr_name Options are "weight_curve_connection_dicts" OR "falloff_weight_curve_connection_dicts"
+    weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(ctrl + "." + connection_attr_name)]
+    controls, curve_names, curve_weights_nodes, nodes, output_indices, hand_weights = get_data_from_connection_dict(weights_string_dict)
+    return controls, curve_names, curve_weights_nodes, nodes, output_indices, hand_weights
+
+def get_data_from_connection_dict(connection_dict_list):
+    controls = []
+    curve_names = []
+    curve_weights_nodes = []
+    nodes = []
+    output_indices = []
+    hand_weights = []
+    for curve_dict in connection_dict_list:
+        controls.append(curve_dict["control_node"])
+        curve_names.append(curve_dict["curve_name"])
+        curve_weights_nodes.append(curve_dict["curve_weights_node"])
+        nodes.append(curve_dict["node"])
+        output_indices.append(curve_dict["output_idx"])
+        if "hand_weights" in curve_dict.keys():
+            hand_weights.append(curve_dict["hand_weights"])
+    return controls, curve_names, curve_weights_nodes, nodes, output_indices, hand_weights
 

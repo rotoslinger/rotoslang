@@ -210,6 +210,7 @@ class Brow(object):
                 self.ctrlPositions[side].append(self.slideWeightStack[side].positionsFromWeights)
                 self.ctrlRotations[side].append(self.slideWeightStack[side].rotationsFromWeights)
                 # Add controls to the container and connect to visibility
+                weightStack.connect_weight_stack_anim_curve(self.slideWeightStack[side], self.slideCurveWeights[side])
 
                 for ctrl in self.slideWeightStack[side].controls:
                     cmds.container(self.container, edit=True, addNode=[ctrl])
@@ -303,6 +304,8 @@ class Brow(object):
                                         controlShapeDict=self.matDefIconShapeDicts[idx],
                                         )
                 self.matDeformersRotate[side].create()
+                weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate[side], self.matDefCurveWeights[side])
+                weightStack.connect_weight_stack_anim_curve(self.matDeformersTranslate[side], self.matDefCurveWeights[side])
 
                 for ctrl in self.matDeformersTranslate[side].controls:
                     cmds.container(self.container, edit=True, addNode=[ctrl])

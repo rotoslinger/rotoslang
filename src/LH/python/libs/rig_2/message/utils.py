@@ -1,5 +1,5 @@
 from maya import cmds
-
+import ast
 
 def create_message_attr_setup(out_node, out_message_attr_name, in_node, in_message_attr_name ):
     # adds a message attr to out_node, adds message attr to in_node connects out message attr to the in message attr
@@ -45,3 +45,10 @@ def get_node_from_message_out(full_attr_name, get_single=True):
 
 def get_node_from_message_in(full_attr_name, get_single=True):
     return get_node_from_message(full_attr_name, from_output = False, get_single=get_single)
+
+
+# Not necessarily a message attr, but this will contain dictionaries of information about connections
+# To retrieve dictionaries stored as strings:
+# ast.literal_eval("{"DICTIONARY_KEY":["thingA", "thingB"]}")
+def string_array_for():
+    return

@@ -1,4 +1,4 @@
-import os, json
+import os, json, ast
 from maya import cmds, OpenMaya
 
 from rig_2.animcurve import utils as animcurve_utils
@@ -20,12 +20,10 @@ reload(weightMapUtils)
 from rig.rigComponents import meshRivetCtrl
 reload(meshRivetCtrl)
 
+from rig_2.attr import utils as attr_utils
+reload(attr_utils)
 
-def weight_curves_no_export(add=True, checkbox_on=False):
-    return tag_utils.tag_no_export_from_control_message("weight_curve", add, checkbox_on)
 
-def falloff_weight_curves_no_export(add=True, checkbox_on=False):
-    return tag_utils.tag_no_export_from_control_message("falloff_weigth_curve", add, checkbox_on)
 
 def tag_selected_weight_curves_no_export(add, weight_curve_checkbox, falloff_weight_curve_checkbox):
     curve_nodes = []
@@ -36,15 +34,22 @@ def tag_selected_weight_curves_no_export(add, weight_curve_checkbox, falloff_wei
             curve_nodes.append(sel)
     tag_utils.no_export_add_remove_selector(curve_nodes, add)
 
-def tag_all_no_export(weight_curve_checkbox, falloff_weight_curve_checkbox):
-    weight_curves_no_export(True, checkbox_on=weight_curve_checkbox)
-    falloff_weight_curves_no_export(True, checkbox_on=falloff_weight_curve_checkbox)
-    tag_selected_weight_curves_no_export(True, weight_curve_checkbox=weight_curve_checkbox, falloff_weight_curve_checkbox=falloff_weight_curve_checkbox)
+def tag_all_no_export(do_weight_curve, do_falloff_weight_curve, do_hand_painted_weights):
+    tag_utils.tag_no_export_from_control_connection_dict(add=True,
+                                                         weight_curves=do_weight_curve,
+                                                         falloff_weight_curves=do_falloff_weight_curve,
+                                                         hand_painted_weights=do_hand_painted_weights
+                                                        )
+    tag_selected_weight_curves_no_export(True, weight_curve_checkbox=do_weight_curve, falloff_weight_curve_checkbox=do_falloff_weight_curve)
 
-def remove_tag_all_no_export(weight_curve_checkbox, falloff_weight_curve_checkbox):
-    weight_curves_no_export(False, checkbox_on=weight_curve_checkbox)
-    falloff_weight_curves_no_export(False, checkbox_on=falloff_weight_curve_checkbox)
-    tag_selected_weight_curves_no_export(False, weight_curve_checkbox, falloff_weight_curve_checkbox)
+def remove_tag_all_no_export(do_weight_curve, do_falloff_weight_curve, do_hand_painted_weights):
+    tag_utils.tag_no_export_from_control_connection_dict(add=False,
+                                                         weight_curves=do_weight_curve,
+                                                         falloff_weight_curves=do_falloff_weight_curve,
+                                                         hand_painted_weights=do_hand_painted_weights
+                                                        )
+    tag_selected_weight_curves_no_export(False, weight_curve_checkbox=do_weight_curve, falloff_weight_curve_checkbox=do_falloff_weight_curve)
+
 
 def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV", offset=.15, centerWeight = .35, outerWeight = .3, angle = 50, nudge = 0,
                                 intermediateVal=.2, lastAngle=0, lastIntermediateVal=.2, intermediateAngle=0, lastIntermediateAngle=0,
@@ -369,6 +374,7 @@ def getWeightStackElemIndexFromCtrl(ctrl=None, attrConnectionToCheck=".txOut"):
     if not ctrl:
         ctrl = cmds.ls(sl=True, typ="transform")[0]
     connection = cmds.listConnections(ctrl + attrConnectionToCheck, plugs=True)
+    print "CONNETION", connection
     if not connection:
         return
     connection= connection[0]
@@ -433,7 +439,7 @@ def getWeightStackInfoFromCtrl(ctrl=None, attrConnectionToCheck=".txOut"):
 
 
 def convertWeightStackAnimCurveWeightsToHandWeights(ctrl=None, weightStack=True, attrsToCheck = [".txOut", ".tyOut"],
-                                         weightValuesOverride=None, splitUDLR=False, splitSides = ["LR", "UD"]):
+                                         weightValuesOverride=None, splitUDLR=True, splitSides = ["LR", "UD"]):
     if not ctrl:
         ctrl = cmds.ls(sl=True, typ="transform")[0]
 
@@ -567,11 +573,60 @@ def removeAllCurveWeightsNodes():
     for node in nodes:
         cmds.delete(node)
 
+def get_all_hand_painted_weight_attrs(filter_type="mesh"):
+    full_name_attrs = []
+    weighted_meshes = []
+    attrs = []
+    connects = []
+    weight_values=[]
+    
+    for mesh in cmds.ls(type="mesh"):
+        all_attrs = cmds.listAttr(mesh, userDefined=True, a=True)
+        if not all_attrs:
+            continue
+        for attr in all_attrs:
+            full_attr_name = mesh + "." + attr
+            attr_type = cmds.addAttr(full_attr_name, q=True, dt=True)[0]
+            if attr_type != "doubleArray":
+                continue
+            weight_values.append(cmds.getAttr(full_attr_name))
+            connects.append(cmds.listConnections(full_attr_name, p=True, d=True))
+            full_name_attrs.append(full_attr_name)
+            weighted_meshes.append(mesh)
+            attrs.append(attr)
+    return weighted_meshes, attrs, full_name_attrs, connects, weight_values
 
-def get_hand_painted_weights():
-    hand_painted_weights = {}
-    return hand_painted_weights
+def get_hand_painted_weight_dict():
+    hand_painted_weights_dict = {}
+    weighted_meshes, attrs, full_name_attrs, connects, weight_values = get_all_hand_painted_weight_attrs()
+    for idx, full_name_attr in enumerate(full_name_attrs):
+        mesh_dict = {}
+        mesh_dict["node"] = weighted_meshes[idx]
+        mesh_dict["attr"] = attrs[idx]
+        # mesh_dict["full_name_attr"] = full_name_attrs[idx]
+        mesh_dict["connects"] = connects[idx]
+        mesh_dict["weight_values"] = weight_values[idx]
+        hand_painted_weights_dict[full_name_attr] = mesh_dict
+    return hand_painted_weights_dict
 
+def rebuild_hand_painted_weights(weight_dict):
+    print weight_dict
+    for full_name_attr in weight_dict.keys():
+        print full_name_attr
+        mesh_dict = weight_dict[full_name_attr]
+        # full_name_attr=mesh_dict["full_name_attr"]
+        print mesh_dict
+        connections = mesh_dict["connects"]
+        attr_utils.get_attr(node=mesh_dict["node"], attr=mesh_dict["attr"], weightmap=True)
+        # Make sure no incoming connections before setting the weight values
+        if not cmds.listConnections(full_name_attr, s=True, d=False):
+            cmds.setAttr(full_name_attr, mesh_dict["weight_values"], typ="doubleArray")
+        # Have the appropriate connections been made?
+        # if cmds.listConnections(full_name_attr, p=True, d=True) != connections:
+        for connection in connections:
+            cmds.connectAttr(full_name_attr, connection, f=True)
+
+        
 def export_all(filename, weight_curves=True, falloff_weight_curves=True, hand_painted_weights=True):
     export_dict = {}
     no_export_tag_dict = tag_utils.get_no_exports()
@@ -583,7 +638,7 @@ def export_all(filename, weight_curves=True, falloff_weight_curves=True, hand_pa
 
     export_dict["hand_painted_weights"] = {}
     if hand_painted_weights:
-        export_dict["hand_painted_weights"] = get_hand_painted_weights()
+        export_dict["hand_painted_weights"] = get_hand_painted_weight_dict()
 
     # Make sure the path exists
     path = os.path.dirname(os.path.normpath(filename))
@@ -610,7 +665,80 @@ def import_all(filename, weight_curves=True, falloff_weight_curves=True, hand_pa
                                   falloff_weight_curves=falloff_weight_curves)
 
     if hand_painted_weights:
-        import_dict["hand_painted_weights"] = {}
+        rebuild_hand_painted_weights(import_dict["hand_painted_weights"])
+
+def convert_selected_curve_to_hand_weights():
+    sorted_ctrls = tag_utils.control_from_selected()
+    for ctrl in sorted_ctrls:
+        convert_control_to_painted_weights(ctrl)
+
+def convert_control_to_painted_weights(ctrl):
+        controls, curve_names, curve_weights, weight_stacks, output_indices, hand_weights = tag_utils.get_connection_weight_data(ctrl,
+                                                                                                                     connection_attr_name="weight_curve_connection_dicts")
+        convert_curve_data_to_painted_weights(ctrl=ctrl, elemIndicies=output_indices, weight_stacks=weight_stacks, curve_names=curve_names)
+
+def convert_curve_data_to_painted_weights(ctrl, elemIndicies, weight_stacks, curve_names):
+    for idx, curve in enumerate(curve_names):
+        weightValues, weightConObjectType, weightedMesh, weightPlug, weightAttribute = get_weight_data_from_ctrl(ctrl, elemIndicies[idx], weight_stacks[idx])
+        # If the attribute is already connected to a mesh that means it is connected to hand weights and we dont need to do anything
+        if weightConObjectType == "transform" or not weightedMesh:
+            continue
+        weightName = curve.replace("_ACV", "_WEIGHTS")
+        weightAttr = None
+        if not cmds.objExists(weightedMesh + "." + weightName):
+            attr_utils.get_attr(node=weightedMesh, attr=weightName, weightmap=True)
+            # weightMapUtils.createWeightMapOnSingleObject(mayaObject=weightedMesh,
+            #                                             weightName=weightName)
+            # Once the weightmap exists, add it to the connection dicts on the control so they can be tagged if the user specifies
+            attr_utils.add_to_string_array_dict_at_index(ctrl + ".weight_curve_connection_dicts",
+                                                         idx, "hand_weights",
+                                                         weightedMesh + "." + weightName)
+            attr_utils.add_to_string_array_dict_at_index(ctrl + ".falloff_weight_curve_connection_dicts",
+                                                         idx, "hand_weights",
+                                                         weightedMesh + "." + weightName)
+        weightAttr = weightedMesh + "." + weightName
+        # set the weights
+        cmds.setAttr(weightAttr, weightValues, type="doubleArray")
+        cmds.connectAttr(weightAttr, weightPlug, f=True)
+
+def get_weight_data_from_ctrl(ctrl, elemIndex, weight_stack):
+    # Will return
+    # weightValues
+    # weightConnectionObjectType (to check whether or not the connection comes from curve weights)
+    # weightedMesh
+    weightConnection = None
+    weightAttribute = None
+    if cmds.objectType(weight_stack) == "LHWeightNode":
+        plug_name = "inputWeights"
+    elif cmds.objectType(weight_stack) == "LHMatrixDeformer":
+        plug_name = "matrixWeight"
+        # weightConnection = cmds.listConnections(weight_stack + ".inputs[{0}].matrixWeight".format(elemIndex))
+        # weightAttribute = cmds.listConnections(weight_stack + ".inputs[{0}].matrixWeight".format(elemIndex), p=True)
+        # weightValues = cmds.getAttr(weight_stack + ".inputs[{0}].matrixWeight".format(elemIndex))
 
 
+    weightConnection = cmds.listConnections(weight_stack + ".inputs[{0}].{1}".format(elemIndex, plug_name))
+    weightAttribute = cmds.listConnections(weight_stack + ".inputs[{0}].{1}".format(elemIndex, plug_name), p=True)
+    weightValues = cmds.getAttr(weight_stack + ".inputs[{0}].{1}".format(elemIndex, plug_name))
 
+
+    if weightConnection:
+        weightConnection = weightConnection[0]
+        weightAttribute = weightAttribute[0]
+    else:
+        weightConnection = None
+        weightAttribute = None
+
+    weightConnectionObjectType = None
+    if cmds.objectType(weight_stack) == "LHWeightNode":
+        weightedMesh = cmds.listConnections(weight_stack + ".weightedMesh")
+    elif cmds.objectType(weight_stack) == "LHMatrixDeformer":
+        weightedMesh = cmds.deformer(weight_stack, q=True, geometry=True)
+    if weightedMesh:
+        weightedMesh = weightedMesh[0]
+    weightPlug = weight_stack + ".inputs[{0}].{1}".format(elemIndex, plug_name)
+    if weightConnection:
+        # get the weights from the deformer input so you can add a hand weights attribute
+        weightConnection = cmds.listConnections(weight_stack + ".inputs[{0}].{1}".format(elemIndex, plug_name), d=False, s=True)
+        weightConnectionObjectType = cmds.objectType(weightConnection)
+    return weightValues, weightConnectionObjectType, weightedMesh, weightPlug, weightAttribute

@@ -221,6 +221,8 @@ class Lid(object):
                 self.slideWeightStack[position].create()
                 self.ctrlPositions[position].append(self.slideWeightStack[position].positionsFromWeights)
                 self.ctrlRotations[position].append(self.slideWeightStack[position].rotationsFromWeights)
+                weightStack.connect_weight_stack_anim_curve(self.slideWeightStack[position], self.slideCurveWeights[position])
+
                 # Add controls to the container and connect to visibility
 
                 # for ctrl in self.slideWeightStack[position].controls:
@@ -317,6 +319,8 @@ class Lid(object):
                                         controlShapeDict=self.matDefIconShapeDicts[idx],
                                         )
                 self.matDeformersRotate[position].create()
+                weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate[position], self.matDefCurveWeights[position])
+                weightStack.connect_weight_stack_anim_curve(self.matDeformersTranslate[position], self.matDefCurveWeights[position])
 
                 for ctrl in self.matDeformersTranslate[position].controls:
                     cmds.container(self.container, edit=True, addNode=[ctrl])
