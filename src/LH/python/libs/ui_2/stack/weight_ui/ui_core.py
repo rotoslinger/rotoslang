@@ -127,3 +127,27 @@ def select_all_weight_curves(options_checkbox):
     if do_falloff_curves:
         falloff_curves = tag_utils.get_all_with_tag("FALLOFF_WEIGHT_CURVE")
     cmds.select( weight_curves, falloff_curves, r=True)
+
+@decorator.undo_chunk
+def remove_all_weight_curves():
+    weight_utils.removeAllCurveWeightsNodes()
+
+def mirror_weight_curve():
+    print "mirror_weight_curve"
+    
+def copy_weight_curve():
+    print "copy_weight_curve"
+
+def flip_weight_curve():
+    print "flip_weight_curve"
+
+def mirror_weights():
+    print "mirror_weights"
+
+    
+def copy_weights():
+    print "copy_weights"
+
+def flip_weights():
+    print "flip_weights"
+

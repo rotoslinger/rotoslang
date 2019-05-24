@@ -95,9 +95,9 @@ class Guide_UI(button_grid_base.Base):
                                                                                                                    # Don't currently support scale                                                                                                                
                                                                                                                 #    ["Scale", True],                                                                                                                   
                                                                                                                    ])
-        self.mirror_plane_label = ui_utils.label("Mirror Behavior planes.",
-                                              color=elements.blue,
-                                                                    )
+        self.mirror_plane_label = ui_utils.create_label("Mirror Behavior planes.",
+                                                        color=elements.blue,
+                                                        )
         self.mirror_plane_layout, self.mirror_plane_buttons = ui_utils.radio_button_row(checkbox_names_defaults=[
                                                                                                 ["mirrorXY (Front Back)"],
                                                                                                 ["mirrorYZ (Left Right)" ],
@@ -127,9 +127,9 @@ class Guide_UI(button_grid_base.Base):
                                                                     )
 
         ######## GUIDE VIS ###############
-        self.guide_vis_label = ui_utils.label("Guide Visibility.",
-                                              color=elements.blue,
-                                                                    )
+        self.guide_vis_label = ui_utils.create_label("Guide Visibility.",
+                                                     color=elements.blue,
+                                                     )
         self.button_row_layout, self.buttons = ui_utils.button_row(
                                                                      [
                                                                       ["Vis Guides", ui_core.vis_all_guides],
@@ -184,50 +184,42 @@ class Guide_UI(button_grid_base.Base):
 
         self.main_widgets = [
 
+                        ui_utils.create_heading(text="Guide/Shape Mirroring", color=elements.blue),
                         self.mirror_transforms_label, 
                         self.mirror_transforms_button,
                         self.mirror_type_layout,
                         self.mirror_rot_type_layout,
                         self.mirror_plane_label,
                         self.mirror_plane_layout,
-                        # self.space,
                         ui_utils.separator(),
                         self.space,
-
                         self.mirror_curves_label, 
                         self.mirror_curves_button,
-                        # self.space,
                         ui_utils.separator(),
                         self.space,
-
-
                         self.copy_label, 
                         self.copy_button,
                         self.color_layout,
-                        # self.space,
                         ui_utils.separator(),
                         self.space,
 
-
+                        ui_utils.create_heading(text="Misc Utils", color=elements.blue),
                         self.guide_vis_label, 
                         self.button_row_layout,
-                        # self.space,
                         ui_utils.separator(),
                         self.space,
 
                         self.select_guide_label, 
                         self.select_guide_button,
-                        # self.space,
                         ui_utils.separator(),
                         self.space,
-
 
                         self.geo_constraint_label, 
                         self.geo_constraint_button,
-                        # self.space,
                         ui_utils.separator(),
                         self.space,
 
+                        ui_utils.create_heading(text="Tagging", color=elements.blue),
                         self.no_export_label, 
                         self.no_export_button,
                         self.no_export_checkbox_grid,

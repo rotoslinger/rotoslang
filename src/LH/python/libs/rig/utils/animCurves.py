@@ -95,93 +95,19 @@ class mirror_anim_curves():
             oAnimCurve = c_plug.node()
             self.api_anim_curve = OpenMayaAnim.MFnAnimCurve(oAnimCurve)
             self.num_keys = self.api_anim_curve.numKeys()
-
-            #---get all info for anim curve
-
-            # fn_x = OpenMaya.MScriptUtil()
-            # fn_x.createFromDouble(0.0)
-            # x = fn_x.asFloatPtr()
-
-            # fn_y = OpenMaya.MScriptUtil()
-            # fn_y.createFromDouble(0.0)
-            # y = fn_y.asFloatPtr()
-
-
-
-
             if self.num_keys > 1:
                 for i in range(self.num_keys):
                     tmp_x = 0
                     tmp_y = 0
                     tmp_times = self.api_anim_curve.time(i)
                     self.all_frame_times.append(tmp_times.value())
-                    # self.all_frame_values.append(self.api_anim_curve.value(i))
-                    # self.all_frame_idx.append(i) 
-                    # # weights, tangents locked, misc
-                    # self.all_tangents_locked.append(self.api_anim_curve.tangentsLocked(i))
-                    # self.all_weights_locked.append(self.api_anim_curve.weightsLocked(i))
-                    # self.all_is_weighted.append(self.api_anim_curve.isWeighted())
-                    # self.all_is_breakdown.append(self.api_anim_curve.isBreakdown(i))
 
-                    # #get tangent types
-                    # self.all_in_tangents_type.append(self.api_anim_curve.inTangentType(i))
-                    # self.all_out_tangents_type.append(self.api_anim_curve.outTangentType(i))
-                    # # get in tangents
-                    # self.api_anim_curve.getTangent(i,x,y,True)
-                    # self.all_in_x_tangents.append(OpenMaya.MScriptUtil.getFloat(x))
-                    # self.all_in_y_tangents.append(OpenMaya.MScriptUtil.getFloat(y))
-                    # # get out tangents
-                    # self.api_anim_curve.getTangent(i,x,y,False)
-                    # self.all_out_x_tangents.append(OpenMaya.MScriptUtil.getFloat(x))
-                    # self.all_out_y_tangents.append(OpenMaya.MScriptUtil.getFloat(y))
             else:
                 raise Exception( self.api_anim_curve + ''' doesn't have enough keys to mirror ''')
                 quit()        
         else:
             raise Exception( self.api_anim_curve + ''' is not an anim_curve ''')
             quit()
-    # def get_keys_from_side(self):
-    #     """isolate all keyframe information from the side you are interested in"""
-    #     if self.side == "L":
-    #         #---get all info from time greater than center frame
-    #         for i in range(len(self.all_frame_times)):
-    #             if self.all_frame_times[i] > self.center_frame:
-    #                 self.side_frame_values.append(self.all_frame_values[i])
-    #                 self.side_frame_times.append(self.all_frame_times[i])
-
-    #                 self.side_tangents_locked.append(self.all_tangents_locked[i])
-    #                 self.side_weights_locked.append(self.all_weights_locked[i])
-    #                 self.side_is_weighted.append(self.all_is_weighted[i])
-    #                 self.side_is_breakdown.append(self.all_is_breakdown[i])
-
-    #                 self.side_in_x_tangents.append(self.all_in_x_tangents[i])
-    #                 self.side_in_y_tangents.append(self.all_in_y_tangents[i])
-    #                 self.side_out_x_tangents.append(self.all_out_x_tangents[i])
-    #                 self.side_out_y_tangents.append(self.all_out_y_tangents[i])
-    #                 self.side_in_tangents_type.append(self.all_in_tangents_type[i])
-    #                 self.side_out_tangents_type.append(self.all_out_tangents_type[i])
-    #                 self.side_frame_idx.append(self.all_frame_idx[i])
-
-
-    #     elif self.side == "R":
-    #         #---get all info from time greater than center frame
-    #         for i in range(len(self.all_frame_times)):
-    #             if self.all_frame_times[i] < self.center_frame:
-    #                 self.side_frame_values.append(self.all_frame_values[i])
-    #                 self.side_frame_times.append(self.all_frame_times[i])
-
-    #                 self.side_tangents_locked.append(self.all_tangents_locked[i])
-    #                 self.side_weights_locked.append(self.all_weights_locked[i])
-    #                 self.side_is_weighted.append(self.all_is_weighted[i])
-    #                 self.side_is_breakdown.append(self.all_is_breakdown[i])
-
-    #                 self.side_in_x_tangents.append(self.all_in_x_tangents[i])
-    #                 self.side_in_y_tangents.append(self.all_in_y_tangents[i])
-    #                 self.side_out_x_tangents.append(self.all_out_x_tangents[i])
-    #                 self.side_out_y_tangents.append(self.all_out_y_tangents[i])
-    #                 self.side_in_tangents_type.append(self.all_in_tangents_type[i])
-    #                 self.side_out_tangents_type.append(self.all_out_tangents_type[i])
-    #                 self.side_frame_idx.append(self.all_frame_idx[i])
 
     def flatten_opposite(self):
         """zeros out all keys on the opposite side"""
@@ -197,7 +123,6 @@ class mirror_anim_curves():
             for i in range(len(self.all_frame_times)):
                 if self.all_frame_times[i] > self.center_frame:
                     self.remove_keys.append(self.all_frame_times[i])
-
 
         self.center_tolerance = -.00001
         if self.side == "R":
@@ -233,7 +158,6 @@ class mirror_anim_curves():
             if self.side == "R":
                 paste_time = self.all_frame_times[0]
             cmds.pasteKey(self.anim_curve, time = (paste_time, paste_time), option="merge")
-
 
     def __create(self):
         """put everything together"""
@@ -318,20 +242,6 @@ class copy_flip_anim_curves():
                         floatPivot = self.center_frame,
                         valueScale = 1,
                         valuePivot = 0)
-
-
-
-
-
-
-
-
-
-
-            # mirror_anim_curves(anim_curve = self.target, 
-            #                    side = self.side,
-            #                    center_frame = self.center_frame,
-            #                    flip = True)
 
     def __create(self):
         """put everything together"""

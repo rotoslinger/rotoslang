@@ -2,21 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="84d539d8-cdd9-467a-ac62-46df048f5a56" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/weights.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/weights.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/weightStack.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/weightStack.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/brow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/brow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lid.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lid.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJaw.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJaw.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJawTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJawTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/attr/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/attr/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/message/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/message/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/weights/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/weights/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/animCurves.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/animCurves.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/animcurve/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/animcurve/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/elements.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/elements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/guide_ui/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/guide_ui/ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/weight_utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/weight_utilities.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -35,11 +29,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="595">
-              <caret line="227" column="47" selection-start-line="227" selection-start-column="47" selection-end-line="227" selection-end-column="47" />
+            <state relative-caret-position="629">
+              <caret line="229" column="32" selection-start-line="229" selection-start-column="32" selection-end-line="229" selection-end-column="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="488">
+              <caret line="54" column="36" lean-forward="true" selection-start-line="54" selection-start-column="36" selection-end-line="54" selection-end-column="36" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -142,10 +148,11 @@
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/guide/utils.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" />
+        <option value="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="87" />
     <option name="y" value="-14" />
     <option name="width" value="1750" />
@@ -306,7 +313,7 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22550052" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22550052" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -460,8 +467,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="227" column="47" selection-start-line="227" selection-start-column="47" selection-end-line="227" selection-end-column="47" />
+        <state relative-caret-position="629">
+          <caret line="229" column="32" selection-start-line="229" selection-start-column="32" selection-end-line="229" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="488">
+          <caret line="54" column="36" lean-forward="true" selection-start-line="54" selection-start-column="36" selection-end-line="54" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

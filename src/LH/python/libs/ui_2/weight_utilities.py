@@ -58,14 +58,14 @@ class Weight_Utility_UI(QtWidgets.QWidget):
 
         # Buttons
 
-        self.hand_weights_label = ui_utils.label("Select Weight Stack and Press", elements.purple)
-        self.hand_weights_button = ui_utils.button("Print All Handweights", elements.purple)
+        self.hand_weights_label = ui_utils.create_label("Select Weight Stack and Press", elements.purple)
+        self.hand_weights_button = ui_utils.create_button("Print All Handweights", elements.purple)
 
-        self.guide_positions_label = ui_utils.label("Run to get all guides in scene", elements.green)
-        self.guide_positions_button = ui_utils.button("Print All Guide Positions", elements.green)
+        self.guide_positions_label = ui_utils.create_label("Run to get all guides in scene", elements.green)
+        self.guide_positions_button = ui_utils.create_button("Print All Guide Positions", elements.green)
 
 
-        self.space = ui_utils.label("", green)
+        self.space = ui_utils.create_label("", green)
 
         self.widgets = [
                    self.hand_weights_label, 

@@ -88,9 +88,9 @@ class Weight_UI(button_grid_base.Base):
     def create_widgets(self):
         super(Weight_UI, self).create_widgets()
 
-        self.weight_curves_label = ui_utils.label("Weight Curve utilities.  Select control before running.",
-                                              color=elements.blue,
-                                                                    )
+        self.weight_curves_label = ui_utils.create_label("Weight Curve utilities.  Select control before running.",
+                                                         color=elements.blue,
+                                                         )
         self.weight_curve_button_layout, self.weight_curve_button = ui_utils.button_row(
                                                                      [
                                                                       ["Print Weight Curve Data", ui_core.print_weight_curves_data],
@@ -100,14 +100,32 @@ class Weight_UI(button_grid_base.Base):
         ############ SELECT WEIGHT CURVES #########################################
         self.select_weight_curves_options, self.select_weight_curves_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[["Weight Curves", True],["Falloff Weight Curves",True]])
         select_func = lambda:ui_core.select_all_weight_curves(self.select_weight_curves_checkbox)
-        self.select_curves_layout, self.select_curves_button = ui_utils.label_button(label_text="Selects all anim curves being used for weighting.",
+        self.select_curves_label, self.select_curves_button = ui_utils.label_button(label_text="Selects all anim curves being used for weighting.",
                                                                     button_text="Select Weight Curves",
                                                                     color=elements.blue,
                                                                     button_func=select_func
                                                                     )
 
+        ##################### MIRRORING ########################################
+        
+        self.mirror_curves_label= ui_utils.create_label(text="Select Weight Curves to run. Select multiple curves to copy in the driver, driven(s) order.",
+                                                        color=elements.blue)
 
-        ############ DELETE ALL WEIGHT CURVES #####################################
+        self.mirror_curves_layout, self.mirror_curves_buttons = ui_utils.button_row(names_funcs=[
+                                                                      ["Mirror Weight Curve(s)", ui_core.mirror_weight_curve],
+                                                                      ["Copy Weight Curve(s)", ui_core.copy_weight_curve], 
+                                                                      ["Flip Weight Curve(s)", ui_core.flip_weight_curve], 
+                                                                      ])
+
+        self.mirror_weights_label= ui_utils.create_label(text="Select Control(s) to run. Select multiple controls to copy in the driver, driven(s) order.",
+                                                         color=elements.blue)
+
+        self.mirror_weights_layout, self.mirror_weights_buttons = ui_utils.button_row(names_funcs=[
+                                                                      ["Mirror Weight(s)", ui_core.mirror_weights],
+                                                                      ["Copy Weight(s)", ui_core.copy_weights], 
+                                                                      ["Flip Weight(s)", ui_core.flip_weights], 
+                                                                      ])
+
 
         ############ ADD NO EXPORT ########################
         self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options)
@@ -128,20 +146,50 @@ class Weight_UI(button_grid_base.Base):
                                                                     )
 
 
+        ############ DELETE ALL WEIGHT CURVES #####################################
+        self.delete_curves_lebel, self.delete_curves_button = ui_utils.label_button(label_text="WARNING: Deletes all weight curves.  Only Use as finalization, NEVER EXPORT AFTER THIS STEP",
+                                                                    button_text="Delete Weight Curves",
+                                                                    color=elements.red,
+                                                                    button_func=ui_core.remove_all_weight_curves
+                                                                    )
+
+        self.delete_widgets = [
+                                ui_utils.create_heading(text="Finalize", color=elements.red),
+                                self.delete_curves_lebel, 
+                                self.delete_curves_button,
+                                ui_utils.separator(),
+                                self.space
+                                ]
+        self.import_export_widgets += self.delete_widgets
+
+
+
         self.main_widgets = [
+                        [
+                        ui_utils.separator(),
+                        ui_utils.create_heading(text="Weight Utils", color=elements.blue),
+                        self.mirror_weights_label, 
+                        self.mirror_weights_layout,
+                        ui_utils.separator(),
+                        self.space,
+                        ],
+
+                        ui_utils.create_heading(text="Weight Curve Utils", color=elements.blue),
                         self.weight_curves_label, 
                         self.weight_curve_button_layout,
+                        self.mirror_curves_label, 
+                        self.mirror_curves_layout,
                         ui_utils.separator(),
                         self.space,
 
-                        self.select_curves_layout,
+                        self.select_curves_label,
                         self.select_curves_button,
                         self.select_weight_curves_options, 
                         ui_utils.separator(),
                         self.space,
 
 
-
+                        ui_utils.create_heading(text="Tagging", color=elements.blue),
                         self.no_export_label, 
                         self.no_export_button,
                         self.no_export_checkbox_grid,

@@ -49,7 +49,7 @@ class Base(QtWidgets.QWidget):
         self.import_label_text = import_label_text
         self.export_label_text = export_label_text
         # Dummy Spacer
-        self.space = ui_utils.label("")
+        self.space = ui_utils.create_label("")
         self.asset_name_widgets = []
         self.import_export_widgets = []
         self.main_widgets = []
@@ -87,9 +87,9 @@ class Base(QtWidgets.QWidget):
     def create_layout(self):
         if self.do_asset_name_widgets:
             self.create_asset_name_widgets()
-        self.create_widgets()
         if self.do_import_export_widgets:
             self.create_import_export_widgets()
+        self.create_widgets()
         if self.auto_order_asset_import_export_widgets and self.do_asset_name_widgets and self.do_import_export_widgets:
             self.widgets = self.asset_name_widgets + self.main_widgets + self.import_export_widgets
         else:
@@ -114,7 +114,17 @@ class Base(QtWidgets.QWidget):
         self.main_layout.addStretch(0) # 0 is full stretch
         # Add
         for index, widget in enumerate(self.widgets):
+            if type(widget) == list:
+                collapse_box = ui_utils.CollapsibleBox()
+
+                layout = QtWidgets.QVBoxLayout()
+                for w in widget:
+                    layout.addWidget(w)        
+                collapse_box.setContentLayout(layout)
+                self.gridLayout.addWidget(collapse_box, index, 0)
+                continue
             self.gridLayout.addWidget(widget, index, 0)
+
         # add the main layout itself to the primitive ui dialog
         self.setLayout(self.main_layout)
         self.restore_window_state()
@@ -138,15 +148,17 @@ class Base(QtWidgets.QWidget):
         return
 
     def create_asset_name_widgets(self):
-        self.asset_name_label = ui_utils.label("Set Your Asset Name",
-                                                                    color=elements.blue,
-                                                                    )
+        
+        self.asset_name_label = ui_utils.create_label("Set Your Asset Name",
+                                                      color=elements.blue,
+                                                      )
         self.asset_name_text_box = ui_utils.text_box(default_text=self.asset_name, text_changed_func=self.asset_name_text_changed)
 
         self.live_update_layout, self.live_update_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[
                                                                                                                    ["Live Update Path", True],
                                                                                                                    ])
         self.asset_name_widgets = [
+                        ui_utils.create_heading(text="Asset", color=elements.blue),
                         self.asset_name_label,
                         self.asset_name_text_box,
                         self.live_update_layout
@@ -197,6 +209,7 @@ class Base(QtWidgets.QWidget):
                                                                     )
                                                                     
         self.import_export_widgets = [
+                                        ui_utils.create_heading(text="Save Data", color=elements.blue),
                                         self.import_label, 
                                         self.import_button,
                                         self.import_dialog,
@@ -338,7 +351,7 @@ class Base_Test(Base):
 
 
         # Dummy Spacer, probably a better way to format this
-        self.space = ui_utils.label("")
+        self.space = ui_utils.create_label("")
 
         self.main_widgets = [
                         self.first_label, 
