@@ -30,6 +30,10 @@ class Base(QtWidgets.QWidget):
                  import_export_checklist_options=[[]],
                  import_label_text="Import to the set file path.",
                  export_label_text="Export to the set file path.",
+                 do_tag_window=False,
+                 tag_no_export_func=None,
+                 tag_remove_no_export_func=None,
+                 no_export_tag_options=None,
                  ):
         super(Base, self).__init__(parent)
         # args
@@ -48,6 +52,13 @@ class Base(QtWidgets.QWidget):
         self.import_export_checklist_options = import_export_checklist_options
         self.import_label_text = import_label_text
         self.export_label_text = export_label_text
+
+        self.do_tag_window = do_tag_window
+        self.tag_no_export_func = tag_no_export_func
+        self.tag_remove_no_export_func = tag_remove_no_export_func
+        self.no_export_tag_options = no_export_tag_options
+
+
         # Dummy Spacer
         self.space = ui_utils.create_label("")
         self.asset_name_widgets = []
@@ -58,6 +69,9 @@ class Base(QtWidgets.QWidget):
         self.view = QtWidgets.QTreeView(self)
         self.view.setMouseTracking(True)
         self.view.entered.connect(self.handleItemEntered)
+
+        self.no_export_checkboxes = None
+        self.remove_no_export_checkboxes = None
 
     def get_settings_path(self):
         self.settings_path = os.path.join(os.getenv('HOME'), self.setting_filename + ".ini")
@@ -85,13 +99,15 @@ class Base(QtWidgets.QWidget):
         self.create_layout()
 
     def create_layout(self):
+        if self.do_tag_window:
+            self.create_tag_window()
         if self.do_asset_name_widgets:
             self.create_asset_name_widgets()
         if self.do_import_export_widgets:
             self.create_import_export_widgets()
         self.create_widgets()
         if self.auto_order_asset_import_export_widgets and self.do_asset_name_widgets and self.do_import_export_widgets:
-            self.widgets = self.asset_name_widgets + self.main_widgets + self.import_export_widgets
+            self.widgets = self.asset_name_widgets + self.main_widgets + self.tag_window + self.import_export_widgets
         else:
             self.widgets = self.main_widgets
 
@@ -114,15 +130,6 @@ class Base(QtWidgets.QWidget):
         self.main_layout.addStretch(0) # 0 is full stretch
         # Add
         for index, widget in enumerate(self.widgets):
-            if type(widget) == list:
-                collapse_box = ui_utils.CollapsibleBox()
-
-                layout = QtWidgets.QVBoxLayout()
-                for w in widget:
-                    layout.addWidget(w)        
-                collapse_box.setContentLayout(layout)
-                self.gridLayout.addWidget(collapse_box, index, 0)
-                continue
             self.gridLayout.addWidget(widget, index, 0)
 
         # add the main layout itself to the primitive ui dialog
@@ -158,11 +165,14 @@ class Base(QtWidgets.QWidget):
                                                                                                                    ["Live Update Path", True],
                                                                                                                    ])
         self.asset_name_widgets = [
-                        ui_utils.create_heading(text="Asset", color=elements.blue),
-                        self.asset_name_label,
-                        self.asset_name_text_box,
-                        self.live_update_layout
-                        ]
+                                    ui_utils.create_collapsable_dock("Asset",
+                                                                    [
+                                                                    ui_utils.create_heading(text="Asset", color=elements.blue),
+                                                                    self.asset_name_label,
+                                                                    self.asset_name_text_box,
+                                                                    self.live_update_layout
+                                                                    ])
+                                  ]           
 
     def export_func(self):
         return
@@ -185,6 +195,7 @@ class Base(QtWidgets.QWidget):
                                                                     button_text="Import",
                                                                     color=elements.purple,
                                                                     button_func=self.import_func,
+                                                                    bg_color=elements.dark_purple,
                                                                     )
         ######## Export Guides ###############
         self.backup_layout, self.backup_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[
@@ -205,28 +216,69 @@ class Base(QtWidgets.QWidget):
         self.export_label, self.export_button = ui_utils.label_button(label_text=self.export_label_text,
                                                                     button_text="Export",
                                                                     color=elements.purple,
-                                                                    button_func=self.export_func
+                                                                    button_func=self.export_func,
+                                                                    bg_color=elements.dark_purple,
                                                                     )
                                                                     
         self.import_export_widgets = [
-                                        ui_utils.create_heading(text="Save Data", color=elements.blue),
-                                        self.import_label, 
-                                        self.import_button,
-                                        self.import_dialog,
-                                        self.import_checkboxes_grid,
-                                        ui_utils.separator(),
-                                        self.space,
 
-                                        self.export_label, 
-                                        self.export_button,
-                                        self.export_dialog,
-                                        self.export_checkboxes_grid,
-                                        self.backup_layout,
-                                        ui_utils.separator(),
-                                        self.space
+                                        ui_utils.create_collapsable_dock("Save Data",
+                                                                        [
+                                                                        ui_utils.create_heading(text="Save Data", color=elements.purple),
+                                                                        self.import_label, 
+                                                                        self.import_button,
+                                                                        self.import_dialog,
+                                                                        self.import_checkboxes_grid,
+                                                                        ui_utils.separator(),
+                                                                        self.space,
+
+                                                                        self.export_label, 
+                                                                        self.export_button,
+                                                                        self.export_dialog,
+                                                                        self.export_checkboxes_grid,
+                                                                        self.backup_layout,
+                                                                        ui_utils.separator(),
+                                                                        self.space
+                                                                        ],
+                                                                        elements.purple,
+                                                                        elements.very_dark_purple)
                                    ]
 
+    def create_tag_window(self):
+        ############ ADD NO EXPORT ########################
+        self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options, color=elements.green)
+        no_export_button_func_with_args = self.tag_no_export_func
+        self.no_export_label, self.no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to tag NO_EXPORT",
+                                                                    button_text="Tag NO_EXPORT",
+                                                                    color=elements.green,
+                                                                    button_func=no_export_button_func_with_args
+                                                                    )
 
+        ############ REMOVE NO EXPORT ########################
+        self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options, color=elements.green)
+        remove_no_export_button_func_with_args = self.tag_remove_no_export_func
+        self.remove_no_export_label, self.remove_no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to Remove NO_EXPORT",
+                                                                    button_text="Remove NO_EXPORT tag",
+                                                                    color=elements.green,
+                                                                    button_func=remove_no_export_button_func_with_args
+                                                                    )
+
+        self.tag_window = [ui_utils.create_collapsable_dock("Tagging",
+                                            [
+                                                ui_utils.create_heading(text="Tagging", color=elements.green),
+                                                self.no_export_label, 
+                                                self.no_export_button,
+                                                self.no_export_checkbox_grid,
+                                                ui_utils.separator(),
+                                                self.space,
+                                                self.remove_no_export_label, 
+                                                self.remove_no_export_button,
+                                                self.remove_no_export_checkbox_grid,
+                                                ui_utils.separator(),
+                                                self.space,
+                                            ],
+                                            elements.green,
+                                            elements.dark_green)]
 
     def restore_window_state(self):
         self.get_settings_path()

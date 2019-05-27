@@ -696,6 +696,14 @@ def convert_curve_data_to_painted_weights(ctrl, elemIndicies, weight_stacks, cur
             attr_utils.add_to_string_array_dict_at_index(ctrl + ".falloff_weight_curve_connection_dicts",
                                                          idx, "hand_weights",
                                                          weightedMesh + "." + weightName)
+            attr_utils.add_to_string_array_dict_at_index(string_array_attr = ctrl + ".weight_curve_connection_dicts",
+                                                         index=idx,
+                                                         dictionary_key ="geo_shape",
+                                                         dictionary_value= weightedMesh)
+            attr_utils.add_to_string_array_dict_at_index(string_array_attr = ctrl + ".falloff_weight_curve_connection_dicts",
+                                                         index=idx,
+                                                         dictionary_key="geo_shape",
+                                                         dictionary_value=weightedMesh)
         weightAttr = weightedMesh + "." + weightName
         # set the weights
         cmds.setAttr(weightAttr, weightValues, type="doubleArray")

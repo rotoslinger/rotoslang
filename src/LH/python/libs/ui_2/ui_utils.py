@@ -1,7 +1,9 @@
 import sys, os
+from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 from PySide2 import QtWidgets, QtCore, QtGui
 from maya import cmds
 from ui_2 import elements
+reload(elements)
 OPERATING_SYSTEM = sys.platform
 
 def test_func():
@@ -23,6 +25,7 @@ def get_outliner_icon(maya_object):
 
 def create_label(text="test", color="color: rgb(255, 102, 255);", center=False):
     label = QtWidgets.QLabel(text)
+    label.setAlignment(QtCore.Qt.AlignCenter)
     label.setStyleSheet(color)
     if center:
         label.setAlignment(QtCore.Qt.AlignCenter)
@@ -35,8 +38,11 @@ def create_heading(text="test", color="color: rgb(255, 102, 255);"):
     return label
 
 
-def create_button(text="test", color="color: rgb(255, 102, 255);"):
+def create_button(text="test", color=elements.light_grey, bg_color= elements.grey):
     button = QtWidgets.QPushButton(text)
+    if bg_color:
+        bg_color = "background-" + bg_color
+        color = "QPushButton {" + "{0}{1}".format(color, bg_color) + "}"
     button.setStyleSheet(color)
     return button
 
@@ -44,9 +50,10 @@ def label_button(label_text="Test label",
                  button_text="Test button",
                  color="color: rgb(255, 102, 255);",
                  button_func=test_func,
+                 bg_color=elements.grey,
                  ):
     label = create_label(text=label_text, color=color)
-    button = create_button(text=button_text, color=color)
+    button = create_button(text=button_text, color=color, bg_color=bg_color)
     button.clicked.connect(button_func)
     return label, button
 
@@ -56,14 +63,62 @@ def text_box(default_text="baseAsset", text_changed_func=test_func):
     text_field.textChanged.connect(text_changed_func)
     return text_field
 
+def get_QColor_from_style(style_color):
+    "color: rgb(90, 90, 90);"
+    style_color = style_color.split("(")[1].split(")")[0].split(",")
+    # style_color = tuple(style_color)
+    style_color = [int(x) for x in style_color]
+    return QtGui.QColor(*style_color)
 
-def button_row(names_funcs=[["testBox1", test_func], ["textBox2", test_func]], color=elements.white):
+def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey):
+    # if bg_color:
+    #     bg_color = "background-" + bg_color
+    #     color = "QDockWidget {" + "{0}{1}".format(color, bg_color) + "}"
+    dock = QtWidgets.QDockWidget(text)
+    dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
+    dock.setAutoFillBackground(True)
+    dock.setStyleSheet(color)
+    # dock.setObjectName("myParentWidget");
+    dock.setFont(QtGui.QFont("Helvetica", 8, QtGui.QFont.DemiBold))
+    
+    collapse_box = CollapsibleBox()
+    collapse_box.content_area.setBackgroundRole(QtGui.QPalette.Background)
+
+    p = collapse_box.content_area.palette()
+    bg_color = get_QColor_from_style(bg_color)
+    p.setColor(collapse_box.content_area.backgroundRole(), bg_color)
+    collapse_box.content_area.setPalette(p)
+
+    # collapse_box.content_area.setStyleSheet(elements.black)
+
+    # collapse_box.setAutoFillBackground(True)
+    # collapse_box.setStyleSheet(color)
+    # collapse_box.setBackgroundRole(QtGui.QPalette.Window)
+    # p = collapse_box.palette()
+    # p.setColor(collapse_box.backgroundRole(), QtGui.QColor(0, 0, 0))
+    # collapse_box.setPalette(p)
+
+    collapse_box.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)
+    collapse_box.setLineWidth(2)
+    layout = QtWidgets.QVBoxLayout()
+    # dock.setStyleSheet(sheet)
+    for idx, widget in enumerate(widget_list):
+        # widget.setObjectName("myParentWidget" + str(idx))
+        # sheet = "QWidget#{0}".format("myParentWidget" + str(idx)) + "{ background-color: #1d1d1d ; color: #f8f8f8}"
+        # widget.setStyleSheet(sheet)
+        layout.addWidget(widget)
+    dock.setWidget(collapse_box)
+    collapse_box.setContentLayout(layout)
+
+    return dock
+
+def button_row(names_funcs=[["testBox1", test_func], ["textBox2", test_func]], color=elements.blue, bg_color=elements.grey):
     grid_layout=QtWidgets.QGridLayout()
     buttons = []
     layout = QtWidgets.QWidget()
     layout.setLayout(grid_layout)
     for idx, checkbox in enumerate(names_funcs):
-        button = create_button(text=checkbox[0], color=color)
+        button = create_button(text=checkbox[0], color=color, bg_color=bg_color)
         grid_layout.addWidget(button, 0, idx)
         button.clicked.connect(checkbox[1])
         buttons.append(button)
@@ -84,7 +139,7 @@ def radio_button_row(checkbox_names_defaults=[["testBox1", "tooltip1"], ["textBo
         buttons.append(button)
     return layout, buttons 
 
-def check_box_list(checkbox_names_defaults=[["testBox1", True], ["textBox2", False]], row=True,):
+def check_box_list(checkbox_names_defaults=[["testBox1", True], ["textBox2", False]], row=True, color=elements.blue):
     ### names defaults [(name1, True), (name2, False)]
     grid_layout=QtWidgets.QGridLayout()
     checkboxes = []
@@ -96,6 +151,7 @@ def check_box_list(checkbox_names_defaults=[["testBox1", True], ["textBox2", Fal
         if not row:
             row_or_column = [idx, 0]
         temp_checkbox = QtWidgets.QCheckBox(checkbox[0])
+        temp_checkbox.setStyleSheet(color)
         temp_checkbox.setChecked(checkbox[1])
         grid_layout.addWidget(temp_checkbox, row_or_column[0], row_or_column[1])
         checkboxes.append(temp_checkbox)
@@ -187,16 +243,16 @@ class Text_Box(QtWidgets.QWidget):
         self.setLayout(layout)
         self.contents.textChanged.connect(text_changed_func)
 
-class CollapsibleBox(QtWidgets.QDockWidget ):
+class CollapsibleBox(QtWidgets.QFrame ):
     def __init__(self, title="", parent=None, collapsed=False):
         super(CollapsibleBox, self).__init__(parent)
-        self.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-
-        self.toggle_button = QtWidgets.QToolButton(text=title, checkable=True, checked=not collapsed)
+        # self.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+        self.collapsed = collapsed
+        self.toggle_button = QtWidgets.QToolButton(text=title, checkable=True, checked=not self.collapsed)
         self.toggle_button.setStyleSheet("QToolButton { border: none; }")
         self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
-        if collapsed:
+        if self.collapsed:
             self.toggle_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
         self.toggle_button.pressed.connect(self.on_pressed)
 
@@ -216,6 +272,11 @@ class CollapsibleBox(QtWidgets.QDockWidget ):
         self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self, b"maximumHeight"))
         self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self.content_area, b"maximumHeight"))
 
+        if not self.collapsed:
+            self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow )
+            self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward )
+            content_animation  = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
+            self.toggle_animation.start()
     # @QtCore.pyqtSlot()
     @QtCore.Slot()
     def on_pressed(self):
@@ -224,7 +285,7 @@ class CollapsibleBox(QtWidgets.QDockWidget ):
         self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward if not checked else QtCore.QAbstractAnimation.Backward)
         self.toggle_animation.start()
 
-    def setContentLayout(self, layout):
+    def setContentLayout(self, layout, duration=0):
         lay = self.content_area.layout()
         del lay
         self.content_area.setLayout(layout)
@@ -232,11 +293,14 @@ class CollapsibleBox(QtWidgets.QDockWidget ):
         content_height = layout.sizeHint().height()
         for i in range(self.toggle_animation.animationCount()):
             animation = self.toggle_animation.animationAt(i)
-            animation.setDuration(100)
+            animation.setDuration(duration)
             animation.setStartValue(collapsed_height)
             animation.setEndValue(collapsed_height + content_height)
 
         content_animation = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
-        content_animation.setDuration(100)
+        content_animation.setDuration(duration)
+
         content_animation.setStartValue(0)
+        # if self.collapsed:
+        #     content_animation.setStartValue(0)
         content_animation.setEndValue(content_height)

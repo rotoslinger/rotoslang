@@ -33,9 +33,9 @@ if "win32" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-from ui_2 import guide
-reload(guide)
-weight_ui = guide.Weight_UI()
+from ui_2 import weight
+reload(weight)
+weight_ui = weight.Weight_UI()
 weight_ui.openUI()
 
 @endcode
@@ -60,6 +60,9 @@ class Weight_UI(button_grid_base.Base):
                                               ["Falloff Weight Curves", True],                                                                                                                   
                                               ["Hand Painted Weights", True],                                                                                                                   
                                              ]
+        self.do_tag_window=True                                  
+        self.tag_no_export_func = lambda: ui_core.tag_no_export(self.no_export_checkboxes)
+        self.tag_remove_no_export_func = lambda: ui_core.remove_tag_no_export(self.remove_no_export_checkboxes)
         self.no_export_tag_options=[
                                               ["Weight Curves", True],
                                               ["Falloff Weight Curves", True],                                                                                                                   
@@ -91,13 +94,65 @@ class Weight_UI(button_grid_base.Base):
         self.weight_curves_label = ui_utils.create_label("Weight Curve utilities.  Select control before running.",
                                                          color=elements.blue,
                                                          )
+        ##################### HAND WEIGHTS ########################################
+
+        self.establish_symmetry_label, self.establish_symmetry_button = ui_utils.label_button(label_text="Establishes symmetry on all selected mesh transforms.\n"
+                                                                                                        + "This can be used to reset symmetry if geometry changes",
+                                                                    button_text="Establish Symmetry",
+                                                                    color=elements.blue,
+                                                                    button_func=ui_core.establish_symmetry,
+                                                                    )
+
+
+        self.mirror_weights_label= ui_utils.create_label(text="Select Control(s) to run. Select multiple controls to copy in the driver, driven(s) order.\n"
+                                                              + "Select Geometry(s) to run all weights will be mirrored, determine which side to mirror from, L-> R or R-> L with the radio buttons.\n"
+                                                              + "If you select a Center control, determine which side to mirror from, L-> R or R-> L with the radio buttons.\n"
+                                                              + "If you select a Left control and press 'Mirror Weight(s)' weights will be copied and flipped to the opposite control's weights.\n"
+                                                              + "If you check on the 'Symmetric Mirror Side?' L and R side weights will not be copied and flipped, they will be mirrored symmetrically.\n"
+                                                              + "If you are using 'Symmetric Mirror Side?' the L->R radio buttons can be used to determine which side will be mirrored from.",
+                                                         color=elements.blue)
+
+        self.mirror_side_layout, self.mirror_side_buttons = ui_utils.radio_button_row(checkbox_names_defaults=[
+                                                                                                ["L -> R" ],
+                                                                                                ["R -> L"],
+                                                                                                ],default_true_idx=0)
+
+        self.side_symmetric_layout, self.side_symmetric_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[["Symmetric Mirror Side?", False] ])
+
+
+        self.mirror_weights_layout, self.mirror_weights_buttons = ui_utils.button_row(names_funcs=[
+                                                                      ["Mirror Weight(s)", lambda: ui_core.mirror_weights(self.mirror_side_buttons, self.side_symmetric_checkbox)],
+                                                                      ["Copy Weight(s)", ui_core.copy_weights], 
+                                                                      ["Flip Weight(s)", ui_core.flip_weights], 
+                                                                      ])
+
+        ##################### WEIGHT CURVES ########################################
         self.weight_curve_button_layout, self.weight_curve_button = ui_utils.button_row(
                                                                      [
                                                                       ["Print Weight Curve Data", ui_core.print_weight_curves_data],
                                                                       ["Convert Weight Curve to point weights", ui_core.weight_curves_to_point_weights]
                                                                      ]
                                                                     )
-        ############ SELECT WEIGHT CURVES #########################################
+
+        
+        self.mirror_curves_label= ui_utils.create_label(text="Select Weight Curves to run. Select multiple curves to copy in the driver, driven(s) order.\n"
+                                                             +"If you are mirroring a center curve it will always be mirrored from the screen right side.",
+                                                        color=elements.blue)
+
+
+
+        self.mirror_curves_layout, self.mirror_curves_buttons = ui_utils.button_row(names_funcs=[
+                                                                      ["Mirror Weight Curve(s)", ui_core.mirror_weight_curve],
+                                                                      ["Copy Weight Curve(s)", ui_core.copy_weight_curve], 
+                                                                      ["Flip Weight Curve(s)", ui_core.flip_weight_curve], 
+                                                                      ])
+
+
+
+
+
+
+        ############ MISC #########################################
         self.select_weight_curves_options, self.select_weight_curves_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[["Weight Curves", True],["Falloff Weight Curves",True]])
         select_func = lambda:ui_core.select_all_weight_curves(self.select_weight_curves_checkbox)
         self.select_curves_label, self.select_curves_button = ui_utils.label_button(label_text="Selects all anim curves being used for weighting.",
@@ -106,101 +161,63 @@ class Weight_UI(button_grid_base.Base):
                                                                     button_func=select_func
                                                                     )
 
-        ##################### MIRRORING ########################################
-        
-        self.mirror_curves_label= ui_utils.create_label(text="Select Weight Curves to run. Select multiple curves to copy in the driver, driven(s) order.",
-                                                        color=elements.blue)
-
-        self.mirror_curves_layout, self.mirror_curves_buttons = ui_utils.button_row(names_funcs=[
-                                                                      ["Mirror Weight Curve(s)", ui_core.mirror_weight_curve],
-                                                                      ["Copy Weight Curve(s)", ui_core.copy_weight_curve], 
-                                                                      ["Flip Weight Curve(s)", ui_core.flip_weight_curve], 
-                                                                      ])
-
-        self.mirror_weights_label= ui_utils.create_label(text="Select Control(s) to run. Select multiple controls to copy in the driver, driven(s) order.",
-                                                         color=elements.blue)
-
-        self.mirror_weights_layout, self.mirror_weights_buttons = ui_utils.button_row(names_funcs=[
-                                                                      ["Mirror Weight(s)", ui_core.mirror_weights],
-                                                                      ["Copy Weight(s)", ui_core.copy_weights], 
-                                                                      ["Flip Weight(s)", ui_core.flip_weights], 
-                                                                      ])
-
-
-        ############ ADD NO EXPORT ########################
-        self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options)
-        no_export_button_func_with_args = lambda: ui_core.tag_no_export(self.no_export_checkboxes)
-        self.no_export_label, self.no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to tag NO_EXPORT",
-                                                                    button_text="Tag NO_EXPORT",
-                                                                    color=elements.green,
-                                                                    button_func=no_export_button_func_with_args
-                                                                    )
-
-        ############ REMOVE NO EXPORT ########################
-        self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options)
-        remove_no_export_button_func_with_args = lambda checkboxes=self.remove_no_export_checkboxes: ui_core.remove_tag_no_export(checkboxes)
-        self.remove_no_export_label, self.remove_no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to Remove NO_EXPORT",
-                                                                    button_text="Remove NO_EXPORT tag",
-                                                                    color=elements.red,
-                                                                    button_func=remove_no_export_button_func_with_args
-                                                                    )
-
 
         ############ DELETE ALL WEIGHT CURVES #####################################
         self.delete_curves_lebel, self.delete_curves_button = ui_utils.label_button(label_text="WARNING: Deletes all weight curves.  Only Use as finalization, NEVER EXPORT AFTER THIS STEP",
                                                                     button_text="Delete Weight Curves",
                                                                     color=elements.red,
-                                                                    button_func=ui_core.remove_all_weight_curves
+                                                                    button_func=ui_core.remove_all_weight_curves,
+                                                                    bg_color=elements.med_red
                                                                     )
 
-        self.delete_widgets = [
-                                ui_utils.create_heading(text="Finalize", color=elements.red),
-                                self.delete_curves_lebel, 
-                                self.delete_curves_button,
-                                ui_utils.separator(),
-                                self.space
-                                ]
-        self.import_export_widgets += self.delete_widgets
-
+        self.delete_widgets = ui_utils.create_collapsable_dock("Finalize",
+                                                                [
+                                                                ui_utils.create_heading(text="Finalize", color=elements.red),
+                                                                self.delete_curves_lebel, 
+                                                                self.delete_curves_button,
+                                                                ui_utils.separator(),
+                                                                self.space
+                                                                ],
+                                                                elements.red,
+                                                                elements.dark_red
+                                                                )
+        self.import_export_widgets.append(self.delete_widgets)
 
 
         self.main_widgets = [
-                        [
-                        ui_utils.separator(),
-                        ui_utils.create_heading(text="Weight Utils", color=elements.blue),
-                        self.mirror_weights_label, 
-                        self.mirror_weights_layout,
-                        ui_utils.separator(),
-                        self.space,
-                        ],
+                                ui_utils.create_collapsable_dock("Weight Utils",
+                                                                [
+                                                                    ui_utils.create_heading(text="Weight Utils", color=elements.blue),
+                                                                    ui_utils.separator(),
+                                                                    self.establish_symmetry_label,
+                                                                    self.establish_symmetry_button,
+                                                                    self.mirror_weights_label, 
+                                                                    self.mirror_weights_layout,
+                                                                    self.mirror_side_layout,
+                                                                    self.side_symmetric_layout,
+                                                                    ui_utils.separator(),
+                                                                    self.space,
+                                                                ]),
+                                ui_utils.create_collapsable_dock("Weight Curve Utils",
+                                                                [
+                                                                    ui_utils.create_heading(text="Weight Curve Utils", color=elements.blue),
+                                                                    self.weight_curves_label, 
+                                                                    self.weight_curve_button_layout,
+                                                                    self.mirror_curves_label, 
+                                                                    self.mirror_curves_layout,
+                                                                    ui_utils.separator(),
+                                                                    self.space,
+                                                                ]),
 
-                        ui_utils.create_heading(text="Weight Curve Utils", color=elements.blue),
-                        self.weight_curves_label, 
-                        self.weight_curve_button_layout,
-                        self.mirror_curves_label, 
-                        self.mirror_curves_layout,
-                        ui_utils.separator(),
-                        self.space,
-
-                        self.select_curves_label,
-                        self.select_curves_button,
-                        self.select_weight_curves_options, 
-                        ui_utils.separator(),
-                        self.space,
-
-
-                        ui_utils.create_heading(text="Tagging", color=elements.blue),
-                        self.no_export_label, 
-                        self.no_export_button,
-                        self.no_export_checkbox_grid,
-                        ui_utils.separator(),
-                        self.space,
-
-                        self.remove_no_export_label, 
-                        self.remove_no_export_button,
-                        self.remove_no_export_checkbox_grid,
-                        ui_utils.separator(),
-                        self.space,
+                                ui_utils.create_collapsable_dock("Misc Utils",
+                                                                [
+                                                                    ui_utils.create_heading(text="Misc Utils", color=elements.blue),
+                                                                    self.select_curves_label,
+                                                                    self.select_curves_button,
+                                                                    self.select_weight_curves_options, 
+                                                                    ui_utils.separator(),
+                                                                    self.space,
+                                                                ]),
 
                         ]
 

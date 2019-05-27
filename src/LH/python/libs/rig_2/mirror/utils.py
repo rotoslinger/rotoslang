@@ -1,15 +1,17 @@
-import random
-from rig.utils import misc
-from maya import cmds
+import random, ast
 
-def get_opposite_side(maya_object, l_side_name = "L_", r_side_name = "R_"):
-    if not l_side_name and not r_side_name in maya_object:
-        return
-    if l_side_name in maya_object:
-        return maya_object.replace(l_side_name, r_side_name)
-    elif r_side_name in maya_object:
-        return maya_object.replace(r_side_name, l_side_name)
-    return
+from rig.utils import misc
+reload(misc)
+
+from maya import cmds, OpenMaya
+
+from rig_2.animcurve import utils as animcurve_utils
+reload(animcurve_utils)
+from rig_2.attr import utils as attr_utils
+reload(animcurve_utils)
+
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 
 
 def mirrorSelectedLocatorLToR(ctrls=None):
@@ -17,23 +19,6 @@ def mirrorSelectedLocatorLToR(ctrls=None):
         ctrls = cmds.ls(sl=True, typ="transform")
     for ctrl in ctrls:
         mirrorSelectedLocatorLToRSingle(ctrl=ctrl)
-
-
-# def mirrorSelectedLocatorLToRSingle(ctrl=None):
-#     locator = cmds.listConnections(ctrl + ".rotate")
-#     if not locator:
-#         return
-#     lParent = cmds.listRelatives(locator, p=True)[0]
-#     if not "L_" in lParent:
-#         return
-#     rParent = lParent.replace("L_", "R_")
-#     if not cmds.objExists(rParent):
-#         return
-#     lParentTranslate = cmds.xform(lParent, q=True, ws = True, t=True)
-#     rParentTranslate = [lParentTranslate[0] *-1, lParentTranslate[1], lParentTranslate[2] ]
-#     lParentRotate = cmds.xform(lParent, q=True, ws = True, ro=True)
-#     rParentRotate,rParentScale = getMirroredTransform(lParentTranslate, lParentRotate)
-#     cmds.xform(rParent, ws=True, ro=rParentRotate, t=rParentTranslate, s=rParentScale)
 
 def mirror_selected_transforms(translation=True,
                                rotate=True,
@@ -102,7 +87,7 @@ def mirror_transform(maya_object,
         opposite_translate = [maya_object_translate[0] *-1, maya_object_translate[1], maya_object_translate[2] ]
 
     if not mirrorBehavior:
-        opposite_rotate, opposite_scale = standard_mirror_new(maya_object)
+        opposite_rotate, opposite_scale = standard_mirror(maya_object)
     else:
         opposite_rotate, opposite_scale = getMirroredTransform(maya_object_translate,
                                                             maya_object_rotate,
@@ -144,28 +129,7 @@ def mirror_rivet(maya_object):
     misc.update_all_geo_constraints(maintainOffsetT=True)
 
 
-
 def standard_mirror(maya_object):
-    opposite_object = get_opposite_side(maya_object)
-    maya_object_translate = cmds.xform(maya_object, q=True, t=True, ws=True)
-    maya_object_rotate = cmds.xform(maya_object, q=True, ro=True, ws=True)
-    maya_object_scale = cmds.xform(maya_object, q=True, s=True,ws=True)
-
-    dummy_parent = cmds.createNode("transform", n="dummyParent{0:02}".format(random.randint(1,10000001)))
-    dummy = cmds.createNode("transform", n="dummy{0:02}".format(random.randint(1,10000001)), p=dummy_parent)
-    cmds.xform(dummy, ws=True, ro=maya_object_rotate, t=maya_object_translate, s=maya_object_scale)
-    cmds.xform(dummy_parent, ws=True,  s=[-1,0,0])
-
-    opposite_translate = cmds.xform(dummy, q=True, t=True, ws=True)
-    opposite_rotate = cmds.xform(dummy, q=True, ro=True, ws=True)
-    opposite_scale = cmds.xform(dummy, q=True, s=True, ws=True)
-
-    # cmds.xform(opposite_object, ws=True, t=opposite_translate, ro=opposite_rotate)
-    cmds.delete(dummy, dummy_parent)
-    return opposite_rotate, opposite_scale
-
-
-def standard_mirror_new(maya_object):
     opposite_object = get_opposite_side(maya_object)
     maya_object_translate = cmds.xform(maya_object, q=True, t=True, ws=True,a=True)
     maya_object_rotate = cmds.xform(maya_object, q=True, ro=True, ws=True,a=True)
@@ -215,26 +179,6 @@ def standard_mirror_new(maya_object):
     cmds.delete( dummy_origin, dummy_aim_target, dummy_parent, dummy_aim_up_target)
     return opposite_rotate, opposite_scale
 
-
-def mirror_rivet_new(maya_object):
-    opposite_object = get_opposite_side(maya_object)
-    maya_object_translate = cmds.xform(maya_object, q=True, t=True, ws=True)
-    maya_object_rotate = cmds.xform(maya_object, q=True, ro=True, ws=True)
-    maya_object_scale = cmds.xform(maya_object, q=True, s=True,ws=True)
-
-    dummy_parent = cmds.createNode("transform", n="dummyParent{0:02}".format(random.randint(1,10000001)))
-    dummy = cmds.createNode("transform", n="dummy{0:02}".format(random.randint(1,10000001)), p=dummy_parent)
-    cmds.xform(dummy, ws=True, ro=maya_object_rotate, t=maya_object_translate, s=maya_object_scale)
-    cmds.xform(dummy_parent, ws=True,  s=[-1,0,0])
-
-    opposite_translate = cmds.xform(dummy, q=True, t=True, ws=True)
-    opposite_rotate = cmds.xform(dummy, q=True, ro=True, ws=True)
-
-    cmds.xform(opposite_object, ws=True, t=opposite_translate, ro=opposite_rotate)
-    cmds.delete(dummy, dummy_parent)
-    
-
-
 def getMirroredTransform(position,
                          rotation,
                          mirrorBehavior=True,
@@ -257,3 +201,229 @@ def getMirroredTransform(position,
     scale = cmds.xform(tmpFinal, q=True, ws=True, s=True)
     cmds.delete([rootGrp, tmpRootJnt, tmpJnt, tmpFinal])
     return rotate, scale
+
+##################################################################################################################################################
+########################################################## WEIGHTS ###############################################################################
+##################################################################################################################################################
+
+def get_symmetry_dict(maya_object, retrieve_if_exists=True, retrieve_L_dict=False, retrieve_R_dict=False):
+    # Creates a dictionary of the opposite point for every point in a mesh, then sets this dictionary as a string attribute on the transform of the object
+    # If the attribute exists and retrieve_if_exists is True running the function will retrieve the attribute as a dictionary
+    # If the mesh changes you will need to run with retrieve_if_exists false one time
+    # This should only be slow the first time it is run
+    if retrieve_if_exists and cmds.objExists(maya_object + ".symmetry_dict"):
+        if retrieve_L_dict:
+            return ast.literal_eval(str(cmds.getAttr(maya_object + ".left_dict")))
+        if retrieve_R_dict:
+            return ast.literal_eval(str(cmds.getAttr(maya_object + ".right_dict")))
+        return ast.literal_eval(str(cmds.getAttr(maya_object + ".symmetry_dict")))
+    regular_idx = []
+    flipped_idx = []
+    left_ids = []
+    right_ids = []
+    fnMesh = misc.getOMMesh(maya_object)
+    points = OpenMaya.MPointArray()
+    fnMesh.getPoints(points)
+    dummy_point = OpenMaya.MPoint()
+    for i in range(points.length()):
+        l_side = True
+        if points[i].x < 0.0:
+            l_side = False
+        
+        if l_side:
+            left_ids.append(i)
+        else:
+            right_ids.append(i)
+        opposite_point = OpenMaya.MPoint(points[i].x*-1,
+                                            points[i].y,
+                                            points[i].z)
+        util = OpenMaya.MScriptUtil()
+        util.createFromInt(0)
+        face_id = util.asIntPtr()
+        fnMesh.getClosestPoint(opposite_point,
+                                dummy_point,
+                                OpenMaya.MSpace.kObject,
+                                face_id)
+        face_id = OpenMaya.MScriptUtil(face_id).asInt()
+        point_ids = OpenMaya.MIntArray()
+        fnMesh.getPolygonVertices(face_id,point_ids)
+        closest_lengths = []
+        for j in point_ids:
+            fnMesh.getPoint(j,dummy_point)
+            vector_to = OpenMaya.MVector(dummy_point.x,
+                                            dummy_point.y,
+                                            dummy_point.z)
+            vector_from = OpenMaya.MVector(opposite_point.x,
+                                            opposite_point.y,
+                                            opposite_point.z)
+            vector_from = vector_from - vector_to
+            closest_lengths.append(vector_from.length())
+        #make dictionary
+        id_dict = dict(zip(closest_lengths,point_ids))
+        smallest_id = min(closest_lengths)
+        regular_idx.append(i)
+        flipped_idx.append(id_dict.get(smallest_id))
+    symmetry_dict = dict(zip(regular_idx,flipped_idx))
+    left_dict = {i:symmetry_dict[i] for i in left_ids }
+    right_dict = {i:symmetry_dict[i] for i in right_ids }
+    attr_utils.get_attr(maya_object, "symmetry_dict", dataType="string")
+    attr_utils.get_attr(maya_object, "left_dict", dataType="string")
+    attr_utils.get_attr(maya_object, "right_dict", dataType="string")
+    cmds.setAttr(maya_object + ".symmetry_dict", str(symmetry_dict), type="string")
+    cmds.setAttr(maya_object + ".left_dict", str(left_dict), type="string")
+    cmds.setAttr(maya_object + ".right_dict", str(right_dict), type="string")
+    if retrieve_L_dict:
+        return left_dict
+    if retrieve_R_dict:
+        return right_dict
+    return symmetry_dict
+
+def mirror_double_array_attrs_OLD(full_attr_name, geo, side="L"):
+    #----vars
+    weights = cmds.getAttr(full_attr_name)
+    cluster = cmds.cluster(geo, name = "temporaryCluster")
+    cmds.percent( cluster[0], geo, v = 0)
+    cluster_weight_attr = cluster[0] + '.weightList[0].weights'
+    for i in range(len(weights)):
+        cmds.setAttr(cluster_weight_attr+"["+str(i)+"]", 
+                        weights[i],)
+    if side == "L":
+        cmds.copyDeformerWeights( ss=geo, ds=geo, sd=cluster[0], 
+                                    mirrorMode='YZ')
+    if side == "R":
+        cmds.copyDeformerWeights( ss=geo, ds=geo, sd=cluster[0], 
+                                    mirrorMode='YZ', mi = True)
+    mirrored_weights = cmds.getAttr(cluster_weight_attr)[0]
+    cmds.setAttr(full_attr_name, mirrored_weights, typ='doubleArray')
+    cmds.delete(cluster)
+
+
+def mirror_double_array_attrs(full_attr_name, geo, side="L"):
+    #----vars
+    retrieve_side = True, False
+    if side == "R":
+        retrieve_side = False, True
+
+    symmetry_dict = get_symmetry_dict(geo, retrieve_L_dict=retrieve_side[0], retrieve_R_dict=retrieve_side[1])
+    weights = cmds.getAttr(full_attr_name)
+    for key in symmetry_dict.keys():
+        weights[symmetry_dict[key]] = weights[key]
+    cmds.setAttr(full_attr_name,weights, type="doubleArray")
+
+def smart_mirror_anim_curve(maya_object, center_name="C_", left_name="L_", right_name="R_"):
+    if maya_object.startswith(center_name):
+        animcurve_utils.mirror_anim_curves(anim_curve=maya_object,
+                           side="L",
+                           flip=False)
+    elif maya_object.startswith(left_name) or maya_object.startswith(right_name):
+        mirror_flip_curve(maya_object, left_name=left_name, right_name=right_name)
+
+def get_opposite_side(maya_object, left_name = "L_", right_name = "R_"):
+    if left_name in maya_object:
+        return maya_object.replace(left_name, right_name,1)
+    elif right_name in maya_object:
+        return maya_object.replace(right_name, left_name,1)
+
+def mirror_flip_curve(maya_object, left_name="L_", right_name="R_"):
+    side = get_mirror_side_name(maya_object, left_name=left_name, right_name=right_name)
+    if side=="C":
+        return
+    opposite_curve = get_opposite_side(maya_object, left_name = left_name, right_name = right_name)
+    if not opposite_curve:
+        return
+    animcurve_utils.copy_flip_anim_curves(side=side,
+                          source = maya_object,
+                          target = opposite_curve,
+                          flip=True)
+
+def get_opposite_mirror_side(maya_object, center_name="C_", left_name="L_", right_name="R_"):
+    if maya_object.startswith(center_name):
+        return
+    if maya_object.startswith(left_name):
+        return "R"
+    if maya_object.startswith(right_name):
+        return "L"
+
+def get_mirror_side_name(maya_object, center_name="C_", left_name="L_", right_name="R_"):
+    if maya_object.startswith(center_name):
+        return "C"
+    if maya_object.startswith(left_name):
+        return "L"
+    if maya_object.startswith(right_name):
+        return "R"
+
+def copy_double_array_weights(
+                              source_attr,
+                              target_attr,
+                              invert = False,
+                              geo=None,
+                              flip = False):
+        weights = cmds.getAttr(source_attr)
+        if invert == True:
+            for i in range(len(weights)):
+                weights[i] = weights[i] * -1
+        if flip == True:
+            symmetry_dict = get_symmetry_dict(geo)
+            flip_weights = list(weights)
+            if symmetry_dict:
+                for i in range(len(flip_weights)):
+                    try:
+                        flip_weights[i] = weights[symmetry_dict.get(i)]
+                    except:
+                        pass
+                weights =  flip_weights
+        if type(target_attr) != list:
+            target_attr = [target_attr]
+        for i in range(len(target_attr)):
+            cmds.setAttr(target_attr[i], weights, typ='doubleArray')
+
+def smart_mirror_hand_weights(geo, weight_attr, center_mirror_side="L", symmetric_sides=False, center_name="C_", left_name="L_", right_name="R_"):
+    simple_attr_name = weight_attr.split(".")[1]
+    if simple_attr_name.startswith(center_name) or (not simple_attr_name.startswith(left_name) and not simple_attr_name.startswith(right_name)) :
+        mirror_double_array_attrs(weight_attr, geo, side=center_mirror_side)
+
+    elif simple_attr_name.startswith(left_name) or simple_attr_name.startswith(right_name):
+        side = get_mirror_side_name(weight_attr, left_name=left_name, right_name=right_name)
+        if symmetric_sides:
+            mirror_double_array_attrs(weight_attr, geo, side=center_mirror_side)
+
+            return
+        target_attr = get_opposite_side(simple_attr_name)
+        if not target_attr:
+
+            return
+        target_attr = geo + "." + target_attr
+        copy_double_array_weights(source_attr=weight_attr,
+                                  target_attr=target_attr,
+                                  geo=geo,
+                                  flip = True)
+
+def mirror_all_geo_weights(mesh, side_to_mirror="L", center_name="C_", left_name="L_", right_name="R_"):
+    all_attrs = cmds.listAttr(mesh, userDefined=True, a=True)
+    if not all_attrs:
+        return
+    sorted_attrs = []
+    for attr in all_attrs:
+        full_attr_name = mesh + "." + attr
+        attr_type = cmds.addAttr(full_attr_name, q=True, dt=True)[0]
+        if attr_type != "doubleArray":
+            continue
+        smart_mirror_single_attr(mesh=mesh, attr=attr, side_to_mirror=side_to_mirror, center_name=center_name, left_name=left_name, right_name=right_name)
+
+def smart_mirror_single_attr(mesh, attr, side_to_mirror="L", center_name="C_", left_name="L_", right_name="R_"):
+    mesh_transform = misc.getParent(mesh)
+    side = get_mirror_side_name(attr)
+    if side == "C" or not side:
+        mirror_double_array_attrs(mesh_transform + "." + attr, mesh_transform, side=side_to_mirror)
+    if side != side_to_mirror:
+        return
+    side = get_mirror_side_name(attr, left_name=left_name, right_name=right_name)
+    target_attr = get_opposite_side(attr)
+    if not target_attr:
+        return
+    target_attr = mesh_transform + "." + target_attr
+    copy_double_array_weights(source_attr=mesh_transform + "." + attr,
+                            target_attr=target_attr,
+                            geo=mesh_transform,
+                            flip = True)
+

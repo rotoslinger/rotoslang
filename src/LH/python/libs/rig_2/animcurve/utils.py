@@ -585,7 +585,7 @@ def copy_flip_anim_curves(side = "L",
 
 
 @decorator.undo_chunk
-def mirrorAnimCurve(side="L"):
+def mirrorAnimCurve(side="R"):
     curves = cmds.ls(sl=True, typ="animCurveTU")[0]
     mirror_anim_curves(anim_curve=curves,
                        side=side,

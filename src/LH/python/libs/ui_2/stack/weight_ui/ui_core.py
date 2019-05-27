@@ -17,8 +17,14 @@ reload(weight_utils)
 from rig_2.backup import utils as backup_utils
 reload(backup_utils)
 
+from rig_2.animcurve import utils as animcurve_utils
+reload(animcurve_utils)
+
 from rig_2 import decorator
 reload(decorator)
+
+from rig.utils import misc
+reload(misc)
 '''
 @code
 import sys
@@ -114,6 +120,7 @@ def print_control_weightcurve_connection(weight_curve_type, weightcurve_dict_lis
                                                                                 curve_dict["hand_weights"],
                                                                                 curve_dict["curve_name"],
                                                                                 )
+            print "Weighted GEO: --> {0}".format(curve_dict["geo_shape"])
     print "================================================================================================="
 
 def select_all_weight_curves(options_checkbox):
@@ -133,21 +140,86 @@ def remove_all_weight_curves():
     weight_utils.removeAllCurveWeightsNodes()
 
 def mirror_weight_curve():
-    print "mirror_weight_curve"
+    # print "mirror_weight_curve"
+    for sel in cmds.ls(sl=True):
+        mirror_utils.smart_mirror_anim_curve(sel)
     
 def copy_weight_curve():
-    print "copy_weight_curve"
+    # print "copy_weight_curve"
+    animcurve_utils.copyAnimCurve()
 
 def flip_weight_curve():
-    print "flip_weight_curve"
+    for sel in cmds.ls(sl=True):
+        side = mirror_utils.get_mirror_side_name(sel)
+        animcurve_utils.copy_flip_anim_curves(side=side,
+                                              source = sel,
+                                              target = sel,
+                                              flip=True)
 
-def mirror_weights():
-    print "mirror_weights"
+def mirror_weights(mirror_side_checkboxes, side_symmetric_checkbox):
+    mirror_side_checkboxes = [checkbox.isChecked() for checkbox in mirror_side_checkboxes]
+    mirror_side="L"
+    if mirror_side_checkboxes[0] == False:
+        mirror_side = "R"
+    symmetric_sides = side_symmetric_checkbox[0].isChecked()
+    mirror_from_ctrls(center_mirror_side=mirror_side, symmetric_sides=symmetric_sides)
+    mirror_from_geo(center_mirror_side=mirror_side)
+    # sorted_ctrls = tag_utils.control_from_selected()
+    # for ctrl in sorted_ctrls:
+    #     geo, hand_weights = tag_utils.get_geo_weights_from_connection_dict(ctrl)
+    #     if not geo:
+    #         continue
+    #     for weight_attr in hand_weights:
+    #         mirror_utils.smart_mirror_hand_weights(geo=geo, weight_attr=weight_attr, center_mirror_side=mirror_side, symmetric_sides=symmetric_sides)
 
-    
+def mirror_from_geo(center_mirror_side="L"):
+    for sel in cmds.ls(sl=True):
+        shape = misc.getShape(sel)
+        if not cmds.objectType(shape) == "mesh":
+            continue
+        mirror_utils.mirror_all_geo_weights(shape, side_to_mirror=center_mirror_side)
+
+
+def mirror_from_ctrls(center_mirror_side="L", symmetric_sides=False):
+    sorted_ctrls = tag_utils.control_from_selected()
+    for ctrl in sorted_ctrls:
+        geo, hand_weights = tag_utils.get_geo_weights_from_connection_dict(ctrl)
+        if not geo:
+            continue
+        for weight_attr in hand_weights:
+            mirror_utils.smart_mirror_hand_weights(geo=geo, weight_attr=weight_attr, center_mirror_side=center_mirror_side, symmetric_sides=symmetric_sides)
+
 def copy_weights():
-    print "copy_weights"
+    sorted_ctrls = tag_utils.control_from_selected()
+    weights = []
+    for ctrl in sorted_ctrls:
+        geo, hand_weights = tag_utils.get_geo_weights_from_connection_dict(ctrl)
+        weights.append(hand_weights)
 
-def flip_weights():
-    print "flip_weights"
+    source_attrs = weights[0]
+    for weight_attr in weights[1:]:
+        for idx, attr in enumerate(source_attrs):
+            if idx > len(weight_attr)-1:
+                continue
+            source_weights = cmds.getAttr(attr)
+            cmds.setAttr(weight_attr[idx], source_weights, type="doubleArray")
+
+def flip_weights(side="L"):
+    retrieve_side = True, False
+    if side == "R":
+        retrieve_side = False, True
+
+    sorted_ctrls = tag_utils.control_from_selected()
+    for ctrl in sorted_ctrls:
+        geo, hand_weights = tag_utils.get_geo_weights_from_connection_dict(ctrl)
+        symmetry_dict = mirror_utils.get_symmetry_dict(geo)
+        for weight_attr in hand_weights:
+            weights = cmds.getAttr(weight_attr)
+            weights2 = cmds.getAttr(weight_attr)
+            for key in symmetry_dict.keys():
+                weights[symmetry_dict[key]] = weights2[key]
+            cmds.setAttr(weight_attr, weights, type="doubleArray")
+def establish_symmetry():
+    for sel in cmds.ls(sl=True):
+        mirror_utils.get_symmetry_dict(sel, retrieve_if_exists=False)
 

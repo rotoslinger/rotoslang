@@ -62,6 +62,16 @@ class Guide_UI(button_grid_base.Base):
                                               ["Gimbal Shapes", True],
                                              ]
 
+        self.do_tag_window=True                                  
+        self.tag_no_export_func = lambda: ui_core.tag_no_export(self.no_export_checkboxes)
+        self.tag_remove_no_export_func = lambda: ui_core.remove_tag_no_export(self.remove_no_export_checkboxes)
+        self.no_export_tag_options=[
+                                    ["Control Shapes", True],
+                                    ["Guide Positions", True],                                                                                                                   
+                                    ["Guide Shapes", True],                                                                                                                   
+                                    ["Gimbal Shapes", True],
+                                             ]
+
         self.restore_window_state()
         
         # you need to fill the default asset with the last thing the UI had when you close the UI
@@ -153,32 +163,32 @@ class Guide_UI(button_grid_base.Base):
 
 
         ############ ADD NO EXPORT ########################
-        self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ])
-        no_export_button_func_with_args = lambda: ui_core.tag_no_export(self.no_export_checkboxes)
-        self.no_export_label, self.no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to tag NO_EXPORT",
-                                                                    button_text="Tag NO_EXPORT",
-                                                                    color=elements.green,
-                                                                    button_func=no_export_button_func_with_args
-                                                                    )
+        # self.no_export_checkbox_grid, self.no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
+        #                                                                                                            ["Control Shapes", True],
+        #                                                                                                            ["Guide Positions", True],                                                                                                                   
+        #                                                                                                            ["Guide Shapes", True],                                                                                                                   
+        #                                                                                                            ["Gimbal Shapes", True],
+        #                                                                                                            ],color=elements.green)
+        # no_export_button_func_with_args = lambda: ui_core.tag_no_export(self.no_export_checkboxes)
+        # self.no_export_label, self.no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to tag NO_EXPORT",
+        #                                                             button_text="Tag NO_EXPORT",
+        #                                                             color=elements.green,
+        #                                                             button_func=no_export_button_func_with_args
+        #                                                             )
 
-        ############ REMOVE NO EXPORT ########################
-        self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
-                                                                                                                   ["Control Shapes", True],
-                                                                                                                   ["Guide Positions", True],                                                                                                                   
-                                                                                                                   ["Guide Shapes", True],                                                                                                                   
-                                                                                                                   ["Gimbal Shapes", True],
-                                                                                                                   ])
-        remove_no_export_button_func_with_args = lambda checkboxes=self.remove_no_export_checkboxes: ui_core.remove_tag_no_export(checkboxes)
-        self.remove_no_export_label, self.remove_no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to Remove NO_EXPORT",
-                                                                    button_text="Remove NO_EXPORT tag",
-                                                                    color=elements.red,
-                                                                    button_func=remove_no_export_button_func_with_args
-                                                                    )
+        # ############ REMOVE NO EXPORT ########################
+        # self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[
+        #                                                                                                            ["Control Shapes", True],
+        #                                                                                                            ["Guide Positions", True],                                                                                                                   
+        #                                                                                                            ["Guide Shapes", True],                                                                                                                   
+        #                                                                                                            ["Gimbal Shapes", True],
+        #                                                                                                            ],color=elements.light_red)
+        # remove_no_export_button_func_with_args = lambda checkboxes=self.remove_no_export_checkboxes: ui_core.remove_tag_no_export(checkboxes)
+        # self.remove_no_export_label, self.remove_no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to Remove NO_EXPORT",
+        #                                                             button_text="Remove NO_EXPORT tag",
+        #                                                             color=elements.red,
+        #                                                             button_func=remove_no_export_button_func_with_args
+        #                                                             )
 
 
 
@@ -219,18 +229,18 @@ class Guide_UI(button_grid_base.Base):
                         ui_utils.separator(),
                         self.space,
 
-                        ui_utils.create_heading(text="Tagging", color=elements.blue),
-                        self.no_export_label, 
-                        self.no_export_button,
-                        self.no_export_checkbox_grid,
-                        ui_utils.separator(),
-                        self.space,
+                        # ui_utils.create_heading(text="Tagging", color=elements.blue),
+                        # self.no_export_label, 
+                        # self.no_export_button,
+                        # self.no_export_checkbox_grid,
+                        # ui_utils.separator(),
+                        # self.space,
 
-                        self.remove_no_export_label, 
-                        self.remove_no_export_button,
-                        self.remove_no_export_checkbox_grid,
-                        ui_utils.separator(),
-                        self.space,
+                        # self.remove_no_export_label, 
+                        # self.remove_no_export_button,
+                        # self.remove_no_export_checkbox_grid,
+                        # ui_utils.separator(),
+                        # self.space,
 
                         ]
 

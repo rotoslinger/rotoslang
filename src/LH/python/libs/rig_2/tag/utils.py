@@ -255,3 +255,16 @@ def get_data_from_connection_dict(connection_dict_list):
             hand_weights.append(curve_dict["hand_weights"])
     return controls, curve_names, curve_weights_nodes, nodes, output_indices, hand_weights
 
+def get_geo_weights_from_connection_dict(ctrl, connection_attr_name="weight_curve_connection_dicts"):
+    weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(ctrl + "." + connection_attr_name)]
+    geos = []
+    hand_weights = []
+    for curve_dict in weights_string_dict:
+        geos.append(curve_dict["geo_shape"])
+        hand_weights.append(curve_dict["hand_weights"])
+    # Get rid of duplicates
+    geos = list(dict.fromkeys(geos))
+    # Currently multiple geos are not supported
+    geo = geos[0]
+    hand_weights = list(dict.fromkeys(hand_weights))
+    return geo, hand_weights

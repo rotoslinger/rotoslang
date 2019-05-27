@@ -2,15 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="84d539d8-cdd9-467a-ac62-46df048f5a56" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/animCurves.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/animCurves.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/animcurve/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/animcurve/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/elements.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/elements.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/guide_ui/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/guide_ui/ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/weight_ui/ui_core.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/weight_utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/weight_utilities.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

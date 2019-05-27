@@ -847,6 +847,7 @@ def create_anim_curve_connection_attr(control_node, attr_name, curve_name, outpu
     connection_info_dict["node"] = stack_node
     connection_info_dict["curve_weights_node"] = curve_weights_node
     connection_info_dict["hand_weights"] = None
+    connection_info_dict["geo_shape"] = None
     string_array_attr = attr_utils.create_string_array(control_node, attr_name)
     attr_utils.add_string_to_string_array(string_array_attr, str(connection_info_dict))
     
