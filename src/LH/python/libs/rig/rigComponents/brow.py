@@ -85,7 +85,8 @@ class Brow(object):
                  matDefCtrlShapeOffset2=[0,-2.0,1],
                  matDefCtrlShapeOffset3=[0,-2.0,1],
 
-                 tierDefaultVisibility = [True, True, True]
+                 tierDefaultVisibility = [True, True, True],
+                 component_name="brow"
 
 
     ):
@@ -148,7 +149,10 @@ class Brow(object):
                                                 slidePatch=self.slidePatch,
                                                 slidePatchBase=self.slidePatchBase,
                                                 baseGeoToDeform=self.baseGeosToDeform[posIdx],
-                                                rotationAmount=True)
+                                                rotationAmount=True,
+                                                component_name=self.component_name,
+                                                
+                                                )
             self.slideDeformers[side].create()
             
             outputAttrs = [self.slideDeformers[side].deformer + ".weightArrays[0].vWeights"]
@@ -175,6 +179,7 @@ class Brow(object):
                                                     angle = elements.BROW_ANGLES[idx],
                                                     nudge = elements.NUDGES[idx],
                                                     lastAngle=elements.LAST_ANGLES[idx],
+                                                    component_name=self.component_name,
 
                 )
                 self.slideCurveWeights[side].create()
@@ -205,6 +210,7 @@ class Brow(object):
                                                 controlShapeOffset = self.slideCtrlShapeOffsets[idx],
                                                 controlShape = self.slideIconShapeDict,
                                                 controlLockAttrs=["ry", "rz", "sx", "sz"],
+                                                component_name=self.component_name,
                                                 )
                 self.slideWeightStack[side].create()
                 self.ctrlPositions[side].append(self.slideWeightStack[side].positionsFromWeights)
@@ -251,6 +257,7 @@ class Brow(object):
                                                             angle = elements.BROW_ANGLES[idx],
                                                             nudge = elements.NUDGES[idx],
                                                             lastAngle=elements.LAST_ANGLES[idx],
+                                                            component_name=self.component_name,
                 )
                 self.matDefCurveWeights[side].create()
 
@@ -277,6 +284,7 @@ class Brow(object):
                                         connectRotate = False,
                                         connectScale = False,
                                         controlShapeDict=self.matDefIconShapeDicts[idx],
+                                        component_name=self.component_name,
                                         )
                 self.matDeformersTranslate[side].create()
 
@@ -302,6 +310,7 @@ class Brow(object):
                                         connectRotate = True,
                                         connectScale = True,
                                         controlShapeDict=self.matDefIconShapeDicts[idx],
+                                        component_name=self.component_name,
                                         )
                 self.matDeformersRotate[side].create()
                 weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate[side], self.matDefCurveWeights[side])

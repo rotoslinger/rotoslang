@@ -4,7 +4,8 @@ from rig.utils import misc
 reload(misc)
 from rig_2.message import utils as message_utils
 reload(message_utils)
-
+from rig_2.attr import utils as attr_utils
+reload(attr_utils)
 def get_no_exports():
     return get_tag_dict(tag_filter=["NO_EXPORT"])
 
@@ -41,6 +42,34 @@ def create_tag(node_to_tag, tag_name="TAG", warn=False):
                     l = True,
                     k=False)
 
+def create_component_tag(node_to_tag, component_name):
+    if type(node_to_tag) != list:
+        node_to_tag = [node_to_tag]
+    for node in node_to_tag:
+        attr = node + ".COMPONENT_MEMBERSHIP"
+        if cmds.objExists(attr):
+            return attr
+
+        attr_utils.get_attr(node, "COMPONENT_MEMBERSHIP", dataType="string")
+        cmds.setAttr(attr, component_name, type="string")
+        return attr
+
+def get_all_component_tag_vals():
+    component_pieces = get_all_with_tag("COMPONENT_MEMBERSHIP")
+    component_names = [cmds.getAttr(x + ".COMPONENT_MEMBERSHIP") for x in component_pieces]
+    return list(dict.fromkeys(component_names))
+
+def get_nodes_by_component_name(component_name):
+    component_pieces = get_all_with_tag("COMPONENT_MEMBERSHIP")
+    return_nodes = []
+    for node in component_pieces:
+        value = cmds.getAttr(node + ".COMPONENT_MEMBERSHIP")
+        if component_name not in value:
+            continue
+        return_nodes.append(node)
+
+    return return_nodes
+
 def remove_tag(tagged_node, tag_name="TAG"):
     attr_full_name = tagged_node + "." + tag_name
     if not cmds.objExists(attr_full_name):
@@ -66,6 +95,13 @@ def remove_tag_no_export(tagged_node):
         tagged_node = [tagged_node]
     for node in tagged_node:
         remove_tag(node, "NO_EXPORT")
+
+def tag_weighted_mesh(node_to_tag):
+    create_tag(node_to_tag, "WEIGHTED_MESH")
+
+
+def tag_rivet_mesh(node_to_tag):
+    create_tag(node_to_tag, "RIVET_MESH")
 
 
 def tag_gimbal(node_to_tag):
@@ -94,8 +130,10 @@ def tag_falloff_weight_curve(node_to_tag):
     create_tag(node_to_tag, "FALLOFF_WEIGHT_CURVE")
 
 
-def get_all_with_tag(tag):
-    return [x for x in cmds.ls() if cmds.objExists(x + "." + tag)]
+def get_all_with_tag(tag, hint=None):
+    if not hint:
+        hint = cmds.ls()
+    return [x for x in hint if cmds.objExists(x + "." + tag)]
 
 
 def get_all_shape_with_tag(tag):

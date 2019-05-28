@@ -5,6 +5,8 @@ from rig.utils import exportUtils
 from rig_2.manipulator import control, elements
 reload(control)
 reload(elements)
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 
 class Component(object):
     def __init__(self,
@@ -28,8 +30,8 @@ class Component(object):
                  scale = None,
                  selection=False,
                  createJoint=False,
-                 nullTransform = False
-
+                 nullTransform = False,
+                 component_name = "",
                  ):
         """
         @param side:
@@ -40,7 +42,7 @@ class Component(object):
                           To create, give a dictionary created from export utils
                           By default a dictionary will be selected from elements
         """
-
+        self.component_name = component_name
         self.side = side
         self.name = name
         self.suffix = suffix
@@ -166,6 +168,7 @@ class Component(object):
         self.buffersAscending = reversedBuffers
         self.buffersDecending = self.ctrl.buffers
         self.ctrl = self.ctrl.ctrl
+        tag_utils.create_component_tag(self.ctrl, self.component_name)
 
     def createJoints(self):
         if not self.createJoint:

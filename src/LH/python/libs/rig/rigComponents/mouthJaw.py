@@ -146,7 +146,7 @@ class MouthJaw(object):
                                                 elements.C_JAW_SECONDARY_MATDEF_FALLOFF,
                                                ],
                  componentDict = elements.MATDEF_COMPONENT_DICT,
-
+                 component_name ="mouthJaw"
                                 
                  ):
         pass
@@ -167,7 +167,10 @@ class MouthJaw(object):
                                                slidePatch=self.slidePatch,
                                                slidePatchBase=self.slidePatchBase,
                                                baseGeoToDeform=self.baseGeoToDeform,
-                                               rotationAmount=True)
+                                               rotationAmount=True,
+                                               component_name=self.component_name
+                                               
+                                               )
         self.slideUDLR.create()
 
 
@@ -183,6 +186,8 @@ class MouthJaw(object):
                                             autoCreateAnimCurves = False,
                                             inputWeightCurvesDict=self.slideWeightCurves_UD,
                                             inputWeightCurvesFalloffDict=self.slideWeightCurvesFalloff_UD,
+                                            component_name=self.component_name
+
 
         )
         curveWeights_UD.create()
@@ -198,7 +203,7 @@ class MouthJaw(object):
                                             autoCreateAnimCurves = False,
                                             inputWeightCurvesDict=self.slideWeightCurves_LR,
                                             inputWeightCurvesFalloffDict=self.slideWeightCurvesFalloff_LR,
-
+                                            component_name=self.component_name
 
         )
         curveWeights_LR.create()
@@ -239,6 +244,7 @@ class MouthJaw(object):
                                         controlLockAttrs=[],
                                         inputWeightAttrs_UD=curveWeights_UD.newKDoubleArrayOutputPlugs,
                                         inputWeightAttrs_LR=curveWeights_LR.newKDoubleArrayOutputPlugs,
+                                        component_name=self.component_name
                                         )
         stack.create()
         weightStack.connect_weight_stack_anim_curve(stack, curveWeights_UD)
@@ -255,6 +261,7 @@ class MouthJaw(object):
                                                     inputWeightCurvesDict=self.matDefWeightCurves,
                                                     inputWeightCurvesFalloffDict=self.matDefWeightCurvesFalloff,
                                                     controlAutoOrientMesh = self.slidePatch,
+                                                    component_name=self.component_name
 
         )
         self.matDefCurveWeights.create()
@@ -328,7 +335,7 @@ class MouthJaw(object):
                                 controlAutoOrientMesh = self.slidePatch,
                                 controlType=1,
                                 # customControlShapes = self.matDefCustomControlShapes,
-
+                                component_name=self.component_name
                                 )
         self.mat_def_translate.create()
 
@@ -361,6 +368,7 @@ class MouthJaw(object):
                             controlShapeDict=manipulator_elements.primary_plus,
                             controlAutoOrientMesh = self.slidePatch,
                             controlType=1,
+                            component_name=self.component_name
                             )
                               
         self.mat_def_rotate.create()

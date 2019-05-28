@@ -51,7 +51,7 @@
         "string": "cpp"
     },
     "python.pythonPath": "D:\\Python36_64\\python.exe",
-    "python.formatting.provider": "black",
+    "python.formatting.provider": "autopep8",
 
 }
 

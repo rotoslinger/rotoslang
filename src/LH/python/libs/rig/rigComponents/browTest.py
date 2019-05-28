@@ -49,19 +49,18 @@ reload(lhExport)
 from rig.rigComponents import brow
 reload(brow)
 
-def test(old_man=True):
-    cmds.file( new=True, f=True )
+def test(old_man=True, auto_load=True):
+    if auto_load:
+        cmds.file( new=True, f=True )
+        # Linux
+        # cmds.unloadPlugin("collision")
+        # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+        # rig_model_package = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
+        # Windows
+        cmds.unloadPlugin("LHDeformerNodes")
+        cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
 
-    # Linux
-    # cmds.unloadPlugin("collision")
-    # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
-    # model_package = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
-   
-    # Windows
-    cmds.unloadPlugin("LHDeformerNodes")
-    cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
-
-    model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
+    rig_model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/browTweaks.ma"
 
     slidePatch="browModelPackage:slide"
     slidePatchBase="browModelPackage:slideBase"
@@ -75,7 +74,7 @@ def test(old_man=True):
     
     if old_man:
 
-        model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/brow.ma"
+        rig_model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/brow.ma"
         asset="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/oldMan.ma"
 
         slidePatch="C_browSlide_SURF"
@@ -87,9 +86,10 @@ def test(old_man=True):
         rightBrowBaseMesh = "C_browBase_GEO"
         L_projectionMesh="L_browProjection_MESH"
         R_projectionMesh="R_browProjection_MESH"
-        cmds.file( asset, i=True, f=True )
+        if auto_load:
+            cmds.file( asset, i=True, f=True )
 
-    cmds.file( model_package, i=True, f=True, preserveReferences=True, loadReferenceDepth="none" )
+    cmds.file( rig_model_package, i=True, f=True, preserveReferences=True, loadReferenceDepth="none" )
 
 
 
@@ -125,3 +125,6 @@ def test(old_man=True):
                         matDefCtrlShapeOffset3=[0,-2.0, 3.5],
                         )
     browClass.create()
+    cmds.select(browClass.matDeformersTranslate["L"].controls)
+    cmds.viewFit()
+

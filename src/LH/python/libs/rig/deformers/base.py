@@ -3,6 +3,8 @@ from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
 reload(misc)
 import copy
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 
 """
 sld = cmds.ls(typ="LHSlideDeformer")
@@ -42,8 +44,10 @@ class Deformer(object):
                     orderAfter=False,
                     orderSplit=False,
                     orderExclusive=False,
+                    component_name="",
                  **kw):
         # args
+        self.component_name=component_name
         self.name = name
         self.addAtIndex = addAtIndex
         self.deformerType = deformerType
@@ -92,6 +96,9 @@ class Deformer(object):
                                     #   ex = self.orderExclusive,
                                       
                                       )[0]
+        tag_utils.create_component_tag(self.deformer, self.component_name)
+        tag_utils.create_component_tag(self.geoToDeform, self.component_name)
+
 
     def getNodes(self):
         return

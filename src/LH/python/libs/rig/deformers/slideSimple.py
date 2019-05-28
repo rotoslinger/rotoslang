@@ -4,6 +4,8 @@ reload(base)
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
 reload(misc)
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 
 class SlideSimple(base.Deformer):
     def __init__(self,
@@ -59,6 +61,10 @@ class SlideSimple(base.Deformer):
             self.baseGeoToDeform = [self.baseGeoToDeform]
         for idx, geo in enumerate(self.baseGeoToDeform):
             self.baseGeoToDeform[idx] = misc.getShape(geo)
+
+        for node in [self.slidePatch, self.slidePatchBase] + self.baseGeoToDeform:
+            tag_utils.create_component_tag(node, self.component_name)
+
 
     def setDefaults(self):
         if not type(self.geoToDeform) == list:

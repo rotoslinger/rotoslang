@@ -29,6 +29,10 @@ reload(manipulator_elements)
 
 from rig_2.attr import utils as attr_utils
 reload(attr_utils)
+
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+
 class Node(object):
     def __init__(self,
                  name,
@@ -38,7 +42,10 @@ class Node(object):
                  parent = None,
                  outputAttrs=[],
                  startAtElemIdx=-1,
-                 addNewElem=False):
+                 addNewElem=False,
+                 component_name="",
+                 ):
+        self.component_name = component_name
         self.name = name
         self.side = side # WIP
         self.suffix = suffix # WIP
@@ -67,8 +74,7 @@ class Node(object):
         if cmds.objExists(self.name):
             self.node = self.name
             return
-        self.node = cmds.createNode(self.nodeType, n=self.name, p=self.parent)
-
+        self.node = node_utils.get_node_agnostic(self.nodeType, name=self.name, parent=self.parent, component_name=self.component_name)
     def getDriverNodes(self):
         return
 
@@ -249,16 +255,17 @@ class AnimCurveWeight(Node):
                                                                                                     itts=self.falloffItts,
                                                                                                     otts=self.falloffOtts,
                                                                                                     falloffCurveDict=self.falloffCurveDict,
+                                                                                                    component_name=self.component_name
                                                                                                     )
             self.overrideWeightCurves()
             return
 
-        self.weightCurves = node_utils.get_node_agnostic_multiple(nodeType="animCurveTU", names=self.weightNames, parent=None, tag_name="WEIGHT_CURVE")
+        self.weightCurves = node_utils.get_node_agnostic_multiple(nodeType="animCurveTU", names=self.weightNames, parent=None, tag_name="WEIGHT_CURVE", component_name=self.component_name)
 
         if self.createSingleFalloff and self.singleFalloffName:
             self.weightNamesFalloff = [self.singleFalloffName + "_ACV" for x in range(self.weightNamesFalloff)]
 
-        self.weightCurvesFalloff = node_utils.get_node_agnostic_multiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None, tag_name="FALLOFF_WEIGHT_CURVE")
+        self.weightCurvesFalloff = node_utils.get_node_agnostic_multiple(nodeType="animCurveTU", names=self.weightNamesFalloff, parent=None, tag_name="FALLOFF_WEIGHT_CURVE", component_name=self.component_name)
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
         if self.uKeyframesAllOnes:
             animcurve_utils.initUKeyframeAllOnes(self.weightCurves)
@@ -561,7 +568,7 @@ class WeightStack(Node):
         if cmds.objExists(self.name_LR):
             self.node_LR = self.name_LR
             return
-        self.node_LR = cmds.createNode(self.nodeType, n=self.name_LR, p=self.parent)
+        self.node_LR = node_utils.get_node_agnostic(self.nodeType, name=self.name_LR, parent=self.parent, component_name=self.component_name)
 
     def getAttrs(self):
         # We will always need to know what mesh the weight stack is weighting, this message attr does that
@@ -576,6 +583,8 @@ class WeightStack(Node):
                     geo = geo[0]
                 shape = misc.getShape(geo)
                 cmds.connectAttr(shape + ".message", node + ".weightedMesh", f=True)
+                tag_utils.tag_weighted_mesh(geo)
+                tag_utils.create_component_tag(geo, component_name=self.component_name)
 
 
         self.weightMapAttrs = []
@@ -762,7 +771,6 @@ class WeightStack(Node):
                 continue
 
             tyConnect = "{0}.inputs[{1}].factor".format(self.node, elemIdx)
-
             tmpCtrl = meshRivetCtrl.Component(name = name,
                                                 side=side,
                                                 speedTxDefault=self.controlSpeedDefaults[0],
@@ -796,6 +804,7 @@ class WeightStack(Node):
                                                 orient = self.controlShapeOrient,
                                                 shapeScale = self.controlShapeScale,
                                                 lockAttrs = self.controlLockAttrs,
+                                                component_name=self.component_name
                                                                                                 
                                                 
                                                 )

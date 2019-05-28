@@ -86,7 +86,8 @@ class Lid(object):
                  matDefCtrlShapeOffset2=[0,-2.0,1],
                  matDefCtrlShapeOffset3=[0,-2.0,1],
 
-                 tierDefaultVisibility = [True, True, True]
+                 tierDefaultVisibility = [True, True, True],
+                 component_name="",
 
 
     ):
@@ -159,7 +160,8 @@ class Lid(object):
                                                 slidePatch=self.slidePatch,
                                                 slidePatchBase=self.slidePatchBase,
                                                 baseGeoToDeform=self.baseGeosToDeform[posIdx],
-                                                rotationAmount=True)
+                                                rotationAmount=True,
+                                                component_name=self.component_name)
             self.slideDeformers[position].create()
             
             outputAttrs = [self.slideDeformers[position].deformer + ".weightArrays[0].vWeights"]
@@ -186,6 +188,7 @@ class Lid(object):
                                                     angle = elements.ANGLES[idx],
                                                     nudge = elements.NUDGES[idx],
                                                     lastAngle=elements.LAST_ANGLES[idx],
+                                                    component_name=self.component_name,
 
                 )
                 self.slideCurveWeights[position].create()
@@ -217,6 +220,8 @@ class Lid(object):
                                                 controlShapeOffset = self.slideCtrlShapeOffsets[idx],
                                                 controlShape = self.slideIconShapeDict,
                                                 controlLockAttrs=["ry", "rz", "sx", "sz"],
+                                                component_name=self.component_name,
+                                                
                                                 )
                 self.slideWeightStack[position].create()
                 self.ctrlPositions[position].append(self.slideWeightStack[position].positionsFromWeights)
@@ -264,6 +269,7 @@ class Lid(object):
                                                             angle = elements.ANGLES[idx],
                                                             nudge = elements.NUDGES[idx],
                                                             lastAngle=elements.LAST_ANGLES[idx],
+                                                            component_name=self.component_name,
                 )
                 self.matDefCurveWeights[position].create()
 
@@ -291,6 +297,7 @@ class Lid(object):
                                         connectRotate = False,
                                         connectScale = False,
                                         controlShapeDict=self.matDefIconShapeDicts[idx],
+                                        component_name=self.component_name,
                                         )
                 self.matDeformersTranslate[position].create()
 
@@ -317,6 +324,7 @@ class Lid(object):
                                         connectRotate = True,
                                         connectScale = True,
                                         controlShapeDict=self.matDefIconShapeDicts[idx],
+                                        component_name=self.component_name,
                                         )
                 self.matDeformersRotate[position].create()
                 weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate[position], self.matDefCurveWeights[position])

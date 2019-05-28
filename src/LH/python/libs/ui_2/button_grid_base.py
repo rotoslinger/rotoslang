@@ -12,6 +12,8 @@ import elements
 reload(elements)
 from ui_2 import button_grid_base_core as core
 reload(core)
+from ui_2 import filtered_list
+reload(filtered_list)
 
 class Base(QtWidgets.QWidget):
 
@@ -164,13 +166,15 @@ class Base(QtWidgets.QWidget):
         self.live_update_layout, self.live_update_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[
                                                                                                                    ["Live Update Path", True],
                                                                                                                    ])
+        self.component_filter = filtered_list.Filtered_List()
         self.asset_name_widgets = [
                                     ui_utils.create_collapsable_dock("Asset",
                                                                     [
                                                                     ui_utils.create_heading(text="Asset", color=elements.blue),
                                                                     self.asset_name_label,
                                                                     self.asset_name_text_box,
-                                                                    self.live_update_layout
+                                                                    self.live_update_layout,
+                                                                    self.component_filter
                                                                     ])
                                   ]           
 

@@ -91,7 +91,7 @@ def get_curve_shape_dict(mayaObject=None, space= OpenMaya.MSpace.kWorld):
     return nurbs_curve
 
 def create_curve(curve_dict,
-                 name="C_wire",
+                 name=None,
                  parent=None,
                  transform_suffix = "CTL",
                  shape_suffix = "SHP",
@@ -101,7 +101,8 @@ def create_curve(curve_dict,
                  mirror=False,
                 shape_name=None,
 ):
-
+    if not name:
+        name = curve_dict["name"]
     if not parent:
         parent = curve_dict["parent"]
     if parent and not cmds.objExists(parent):
@@ -123,7 +124,10 @@ def create_curve(curve_dict,
     retShapes = []
     for shape in curve_dict["shapes"]:
         # check if it already exists
-        curve_name = "{0}{1}_{2}".format(name, shape["name"], shape_suffix)
+        curve_name = shape["name"]
+        if shape_suffix or shape_name:
+            curve_name = "{0}{1}_{2}".format(name, shape["name"], shape_suffix)
+            
         if check_existing:
             curve_name = shape["name"]
         old_shape=None
@@ -201,120 +205,6 @@ def create_curve(curve_dict,
         # for shape in curve_dict["shapes"]:
 
     return curve_transform, retShapes
-
-# def create_curve(curve_dict,
-#                  name="C_wire",
-#                  parent=None,
-#                  transform_suffix = "CTL",
-#                  shape_suffix = "SHP",
-#                  outliner_color = True,
-#                  color = True,
-#                  check_existing=False,
-#                  mirror=False,
-#                  shape_name=None,
-# ):
-
-#     if not parent:
-#         parent = curve_dict["parent"]
-#     if parent and not cmds.objExists(parent):
-#         parent = None
-
-#     # Prepare transform
-#     transform_name = name
-#     if parent and cmds.objExists(parent):
-#         transform_name = parent
-#     if transform_suffix:
-#         transform_name = "{0}_{1}".format(name, transform_suffix)
-#     # curve_transform = cmds.createNode("transform", name = transform_name, p=parent)
-#     curve_transform = node_utils.get_node_agnostic(nodeType = "transform", name = transform_name, parent=parent)
-#     curve_transformNode = OpenMaya.MSelectionList()
-#     curve_transformNode.add(curve_transform)
-#     curve_transformPath = OpenMaya.MDagPath()
-#     curve_transformNode.getDagPath(0,curve_transformPath)
-#     curve_transformMObject = curve_transformPath.transform()
-#     retShapes = []
-#     for shape in curve_dict["shapes"]:
-#         # check if it already exists
-#         curve_name = "{0}{1}_{2}".format(name, shape["name"], shape_suffix)
-#         if shape_name:
-#             curve_name = shape_name
-#         if check_existing:
-#             curve_name = shape["name"]
-#         old_shape=None
-#         existing_path = None
-#         if cmds.objExists(curve_name):
-#             existing_path = True
-#             # old_shape = cmds.rename(curve_name, "{0}_{1}".format(curve_name, random.randint(1,1000000000)))
-
-#         # Verts
-#         controlVertices = OpenMaya.MPointArray()
-#         [controlVertices.append(OpenMaya.MPoint(i[0],i[1],i[2]))for i in shape.get("controlVertices")]
-
-#         # Knots
-#         uKnots = OpenMaya.MDoubleArray()
-#         [uKnots.append(i) for i in shape.get("knots")]
-
-#         # Create
-#         new_nurbsCurve = OpenMaya.MFnNurbsCurve()
-#         # if existing_path:
-#         #     original_nurbsCurve = misc.getOMNurbsCurve(curve_name)
-#         newShape = new_nurbsCurve.create(controlVertices,
-#                                          uKnots,
-#                                          shape.get("degree"),
-#                                          shape.get("form"),
-#                                          False,
-#                                          False,
-#                                          curve_transformMObject
-#                                          )
-#         # original_nurbsCurve.copy(newShape, curve_transformMObject)
-#         # Name
-#         nurbsCurve_path = OpenMaya.MDagPath()
-#         newShape_path = nurbsCurve_path.getAPathTo(newShape)
-#         # cmds.rename(newShape_path.fullPathName(),curve_name)
-
-#         if existing_path:
-#             cmds.connectAttr(newShape_path.fullPathName() + ".worldSpace", curve_name + ".create", f=True)
-#             cmds.refresh()
-
-#         # Color overrides
-#         print "CURVENAME            ", curve_name, shape["override_color"]
-#         if color and "override_enabled" in shape.keys():
-#             cmds.setAttr(curve_name + ".overrideRGBColors", shape["override_color"])
-#             cmds.setAttr(curve_name + ".overrideEnabled", shape["override_enabled"])
-#             cmds.setAttr(curve_name + ".overrideColor", shape["color"])
-#             cmds.setAttr(curve_name + ".overrideColorR", shape["color_r"])
-#             cmds.setAttr(curve_name + ".overrideColorG", shape["color_g"])
-#             cmds.setAttr(curve_name + ".overrideColorB", shape["color_b"])
-
-#         # if old_shape:
-#         #     cmds.delete(old_shape)
-
-#         retShapes.append(curve_name)
-#         # if mirror:
-#         #     numCV = controlVertices.length()
-#         #     points = newShape_path.fullPathName() + '.cv[0:{0}]'.format(numCV)
-#         #     cmds.scale(-1.0, points, r=True, scaleX=True, scaleY=False, scaleZ=False, )
-
-
-
-#     # Outliner Color
-#     if outliner_color and "outliner_color" in curve_dict.keys() and curve_dict["outliner_color"]:
-#         cmds.setAttr(curve_transform + ".useOutlinerColor" , True)
-#         cmds.setAttr(curve_transform + ".outlinerColor" , *curve_dict["outliner_color"][0])
-#         mel.eval('AEdagNodeCommonRefreshOutliners();')
-
-#     # If one of the shapes under the transform is not in the dictionary, delete it, you may be updating a curve
-#     if check_existing:
-#         names = []
-#         for shape_dict in curve_dict["shapes"]:
-#             names.append(shape_dict["name"])
-
-#         for shape in cmds.listRelatives(curve_transform, s=True):
-#             if shape not in names:
-#                 cmds.delete(shape)
-#         # for shape in curve_dict["shapes"]:
-
-#     return curve_transform, retShapes
 
 def mirror_shape(source_curve_transform, target_curve_transform):
     pushCurveShape(source_curve_transform, target_curve_transform, mirror=True)

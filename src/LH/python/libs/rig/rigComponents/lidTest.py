@@ -51,33 +51,28 @@ reload(line)
 from rig.rigComponents import lid
 reload(lid)
 
-def test(old_man=False ):
-    cmds.file( new=True, f=True)
+def test(old_man=False, auto_load=True):
+    if auto_load:
+        cmds.file( new=True, f=True)
+        # Linux
+        # cmds.unloadPlugin("collision")
+        # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+        # rig_model_package = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaks.ma"
+        # rig_model_package = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaksOblongEye.ma"
+        # Windows
+        cmds.unloadPlugin("LHDeformerNodes")
+        cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
 
-    # Linux
-    # cmds.unloadPlugin("collision")
-    # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
-    # model_package = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaks.ma"
-    # model_package = "/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaksOblongEye.ma"
-   
-    # Windows
-    cmds.unloadPlugin("LHDeformerNodes")
-    cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
-    model_package="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaksOblongEye.ma"
-    model_package="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/eyeLidModelPackage.ma"
+    rig_model_package="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/eyeLidTweaksOblongEye.ma"
+    rig_model_package="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/eyeLidModelPackage.ma"
 
     if old_man==True:
-        model_package="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/eyeLidModelPackage.ma"
+        rig_model_package="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/eyeLidModelPackage.ma"
         asset="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/oldMan.ma"
-        model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/lids.ma"
-
-
-
-
-
-    # cmds.file( model_package, i=True, f=True, )
+        rig_model_package = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/rigFiles/lids.ma"
+    # cmds.file( rig_model_package, i=True, f=True, )
     # This removes the reference from the file
-    cmds.file( model_package, i=True, f=True, preserveReferences=True, loadReferenceDepth="none" )
+    cmds.file( rig_model_package, i=True, f=True, preserveReferences=True, loadReferenceDepth="none" )
 
     L_slidePatch="L_lidSlide"
     L_slidePatchBase="L_lidSlideBase"
@@ -112,8 +107,8 @@ def test(old_man=False ):
         R_lowerLidMesh = "R_lowerLid"
         R_lowerLidBaseMesh = "R_lowerLidBase"
 
-
-        cmds.file( asset, i=True, f=True )
+        if auto_load:
+            cmds.file( asset, i=True, f=True )
 
     left_eye_grp = "L_eyeRigPackage_GRP"
     right_eye_grp = cmds.duplicate(left_eye_grp, n=left_eye_grp.replace("L_", "R_"),rc=True)
@@ -156,6 +151,7 @@ def test(old_man=False ):
                     slideCtrlShapeOffset1=[0,0.0,2],
                     slideCtrlShapeOffset2=[0,0.0,2],
                     slideCtrlShapeOffset3=[0,0.0,2],
+                    component_name="L_lids"
                     )
 
     left_lids.create()
@@ -182,6 +178,7 @@ def test(old_man=False ):
                     slideCtrlShapeOffset1=[0,0.0,2],
                     slideCtrlShapeOffset2=[0,0.0,2],
                     slideCtrlShapeOffset3=[0,0.0,2],
+                    component_name="R_lids"
                     )
     right_lids.create()
 

@@ -4,6 +4,7 @@ import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
 
 #---determine operating system
 os = sys.platform
@@ -11,15 +12,15 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win32" in os:
+    os = win
+
 if os not in sys.path:
     sys.path.append(os)
 
-from maya import cmds
-from maya import mel
-import maya.OpenMaya as OpenMaya
-import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
+win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs\\rig"
 
 #---determine operating system
 os = sys.platform
@@ -27,6 +28,9 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win32" in os:
+    os = win
+
 if os not in sys.path:
     sys.path.append(os)
 from rig.utils import weightMapUtils
@@ -36,8 +40,10 @@ from rig.deformers import weightStack
 from rig.deformers import matrixDeformer 
 from rig.deformers import utils 
 from rig.rigComponents import lip 
+from rig.rigComponents import line 
 from rig.rigComponents import meshRivetCtrl
 from rig.rigComponents import elements 
+reload(line)
 reload(elements)
 reload(meshRivetCtrl)
 reload(misc)
@@ -48,17 +54,24 @@ reload(matrixDeformer)
 reload(weightStack)
 reload(base)
 
-def test():
-    cmds.file( new=True, f=True )
+def test(reloadPlugin = False, auto_load=True):
+    if reloadPlugin:
+        cmds.file( new=True, f=True )
 
-    cmds.unloadPlugin("collision")
-
-    cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+        # Linux
+        # cmds.unloadPlugin("collision")
+        # cmds.loadPlugin("/scratch/levih/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/CentOS-6.6_thru_8/mayaDevKit-2018.0/collision.so")
+        # fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
+    
+        # Windows
+        cmds.unloadPlugin("LHDeformerNodes")
+        cmds.loadPlugin("C:/Users/harri/Desktop/dev/rotoslang/src/LH/cpp/plugins/mayaplugin/build/src/Debug/LHDeformerNodes")
+    fileName="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
 
     dog=False
     superman=False
+    oldman=True
 
-    fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/FaceModelPackage/facePackageTweaks.ma"
     tierCount1 = 1
     tierCount2 = 3
     tierCount3 = 5
@@ -68,7 +81,7 @@ def test():
     slideCtrlSize3=.4
     slideControlSpeedDefaults = [.1,.1,.1]
 
-    ctrlAutoPositionThreshold = 0.9
+    ctrlAutoPositionThreshold = 0.6
 
     thickToPoint = (0, -0.97, 0.244)
 
@@ -152,11 +165,12 @@ def test():
     rollCurveNameUpper = "faceModelPackage:upperLipCurveRollOuter"
     rollFalloffCurveUpper = elements.UPPER_LIP_ROLL_FALLOFF
 
+    rigGeo = "faceModelPackage:rigGeo"
     if dog:
         fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/dogLipTest.ma"
         tierCount1 = 1
         tierCount2 = 5
-        tierCount3 = 7
+        tierCount3 = 11
 
         slideCtrlSize1=2.3
         slideCtrlSize2=1.2
@@ -178,15 +192,15 @@ def test():
         upperRemovePointIndicies=[]
 
     if superman:
-        fileName = "/home/users/levih/Desktop/supermanFace/supermanLips.ma"
+        fileName = "/home/users/levih/Desktop/supermanFace/prototype/supermanLips.ma"
         tierCount1 = 1
-        tierCount2 = 3
+        tierCount2 = 9
         tierCount3 = 5
 
         slideCtrlSize1=.1
         slideCtrlSize2=.07
         slideCtrlSize3=.04
-        ctrlAutoPositionThreshold = 0.9
+        ctrlAutoPositionThreshold = 0.8
 
         slideCtrlShapeOffset1=[0,0.0,.07]
         slideCtrlShapeOffset2=[0,0.0,.07]
@@ -221,50 +235,80 @@ def test():
         matDefCtrlShapeOffset3Upper=[0,.1,.07]
 
 
-        lowerRemovePointIndicies=[94, 95, 96, 98, 99, 100, 101, 102, 133, 135, 137, 153, 181, 238, 239, 240, 242, 243, 266, 288, 290, 292, 307, 322, 323, 324, 326, 327, 328, 329, 330, 332, 333, 334, 335, 337, 338, 339, 343, 367, 388, 389, 390, 527, 577, 588, 589, 590, 591, 593, 605, 606, 607, 608, 609, 732, 786, 787, 788, 789, 790, 791, 793, 795, 796, 797, 798, 799, 800, 826, 848, 849, 850, 987, 1034, 1045, 1046, 1048, 1049, 1050, 1062, 1063, 1064, 1065, 1066, 1185]
+        #lowerRemovePointIndicies=[94, 95, 96, 98, 99, 100, 101, 102, 133, 135, 137, 153, 181, 238, 239, 240, 242, 243, 266, 288, 290, 292, 307, 322, 323, 324, 326, 327, 328, 329, 330, 332, 333, 334, 335, 337, 338, 339, 343, 367, 388, 389, 390, 527, 577, 588, 589, 590, 591, 593, 605, 606, 607, 608, 609, 732, 786, 787, 788, 789, 790, 791, 793, 795, 796, 797, 798, 799, 800, 826, 848, 849, 850, 987, 1034, 1045, 1046, 1048, 1049, 1050, 1062, 1063, 1064, 1065, 1066, 1185]
 
-        upperRemovePointIndicies=[1, 2, 74, 75, 76, 77, 81, 96, 97, 98, 101, 102, 105, 106, 108, 109, 110, 114, 122, 126, 127, 145, 147, 149, 153, 154, 155, 156, 158, 159, 160, 161, 163, 169, 170, 171, 176, 178, 179, 180, 200, 201, 244, 245, 254, 255, 259, 266, 267, 268, 271, 272, 275, 276, 278, 279, 280, 284, 292, 296, 297, 311, 316, 318, 324, 325, 326, 331, 333, 334, 335, 339, 341, 345, 346, 347, 348, 350, 351, 352, 361, 363, 364, 429, 430, 431, 432, 433, 434, 435, 436, 438, 439, 440, 441, 442, 443, 452, 453, 454, 455, 456, 457, 459, 460, 462, 463, 472, 473, 474, 475, 476, 477, 479, 480, 482, 483, 484, 507, 508, 576, 577, 579, 588, 590, 591, 592, 593, 595, 603, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 646, 647, 648, 658, 659, 660, 661, 662, 663, 664, 665, 667, 675, 676, 677, 697, 698, 699, 701, 702, 703, 704, 715, 716, 717, 718, 719, 720, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 752, 753, 754, 756, 757, 763, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 846, 847, 849, 851, 909, 910, 911, 912, 913, 914, 915, 917, 918, 919, 920, 921, 922, 923, 932, 933, 934, 936, 937, 938, 939, 940, 942, 943, 952, 953, 954, 955, 956, 957, 959, 960, 962, 963, 964, 987, 988, 1056, 1057, 1059, 1068, 1069, 1071, 1073, 1074, 1075, 1083, 1113, 1114, 1115, 1116, 1117, 1118, 1119, 1120, 1121, 1122, 1123, 1124, 1125, 1126, 1128, 1138, 1139, 1140, 1141, 1142, 1143, 1144, 1146, 1147, 1155, 1156, 1157, 1178, 1179, 1180, 1181, 1182, 1183, 1184, 1195, 1196, 1197, 1198, 1199, 1200, 1221, 1222, 1223, 1224, 1225, 1226, 1227, 1228, 1229, 1230, 1232, 1233, 1234, 1236, 1237, 1243, 1303, 1304, 1305, 1306, 1307, 1308, 1309, 1310, 1311, 1312, 1325, 1326]
+        #upperRemovePointIndicies=[1, 2, 74, 75, 76, 77, 81, 96, 97, 98, 101, 102, 105, 106, 108, 109, 110, 114, 122, 126, 127, 145, 147, 149, 153, 154, 155, 156, 158, 159, 160, 161, 163, 169, 170, 171, 176, 178, 179, 180, 200, 201, 244, 245, 254, 255, 259, 266, 267, 268, 271, 272, 275, 276, 278, 279, 280, 284, 292, 296, 297, 311, 316, 318, 324, 325, 326, 331, 333, 334, 335, 339, 341, 345, 346, 347, 348, 350, 351, 352, 361, 363, 364, 429, 430, 431, 432, 433, 434, 435, 436, 438, 439, 440, 441, 442, 443, 452, 453, 454, 455, 456, 457, 459, 460, 462, 463, 472, 473, 474, 475, 476, 477, 479, 480, 482, 483, 484, 507, 508, 576, 577, 579, 588, 590, 591, 592, 593, 595, 603, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 646, 647, 648, 658, 659, 660, 661, 662, 663, 664, 665, 667, 675, 676, 677, 697, 698, 699, 701, 702, 703, 704, 715, 716, 717, 718, 719, 720, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 752, 753, 754, 756, 757, 763, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 846, 847, 849, 851, 909, 910, 911, 912, 913, 914, 915, 917, 918, 919, 920, 921, 922, 923, 932, 933, 934, 936, 937, 938, 939, 940, 942, 943, 952, 953, 954, 955, 956, 957, 959, 960, 962, 963, 964, 987, 988, 1056, 1057, 1059, 1068, 1069, 1071, 1073, 1074, 1075, 1083, 1113, 1114, 1115, 1116, 1117, 1118, 1119, 1120, 1121, 1122, 1123, 1124, 1125, 1126, 1128, 1138, 1139, 1140, 1141, 1142, 1143, 1144, 1146, 1147, 1155, 1156, 1157, 1178, 1179, 1180, 1181, 1182, 1183, 1184, 1195, 1196, 1197, 1198, 1199, 1200, 1221, 1222, 1223, 1224, 1225, 1226, 1227, 1228, 1229, 1230, 1232, 1233, 1234, 1236, 1237, 1243, 1303, 1304, 1305, 1306, 1307, 1308, 1309, 1310, 1311, 1312, 1325, 1326]
 
         # Lower Mesh Defaults
-        projectionMeshLower="lipModelPackage_lowLipProjection"
-        deformMeshLowerCurve=["lowerLipCurve", "lowerLipCurveAim"]
-        baseLowerCurve=["lowerLipCurveBase", "lowerLipCurveAimBase"]
-        lowerCurve = "lowerLipCurve"
-        lowerCurveAim = "lowerLipCurveAim"
+        projectionMeshLower="supermanLips_lipModelPackage_lowLipProjection"
+        deformMeshLowerCurve=["supermanLips_lowerLipCurve", "supermanLips_lowerLipCurveAim"]
+        baseLowerCurve=["supermanLips_lowerLipCurveBase", "supermanLips_lowerLipCurveAimBase"]
+        lowerCurve = "supermanLips_lowerLipCurve"
+        lowerCurveAim = "supermanLips_lowerLipCurveAim"
         deformMeshLower="humanLipsLower"
         baseLower="humanLipsLowerBase"
-        rollCurveNameLower = "lowerLipCurveRollOuter"
-
+        rollCurveNameLower = "supermanLips_lowerLipCurveRollOuter"
 
         # Upper Mesh Defaults
-        projectionMeshUpper="lipModelPackage_upLipProjection"
-        deformMeshUpperCurve="upperLipCurve"
-        baseUpperCurve="upperLipCurveBase"
-        upperCurve = "upperLipCurve"
-        upperCurveAim = "upperLipCurveAim"
+        projectionMeshUpper="supermanLips_lipModelPackage_upLipProjection"
+        deformMeshUpperCurve="supermanLips_upperLipCurve"
+        baseUpperCurve="supermanLips_upperLipCurveBase"
+        upperCurve = "supermanLips_upperLipCurve"
+        upperCurveAim = "supermanLips_upperLipCurveAim"
         deformMeshUpper="humanLipsUpper"
         baseUpper="humanLipsUpperBase"
 
-        slidePatch="lipModelPackage_slide"
-        slidePatchBase="lipModelPackage_slideBase"
-        controlAutoOrientMesh = "lipModelPackage_slide"
-        rollCurveNameUpper = "upperLipCurveRollOuter"
+        slidePatch="supermanLips_lipModelPackage_slide"
+        slidePatchBase="supermanLips_lipModelPackage_slideBase"
+        controlAutoOrientMesh = "supermanLips_lipModelPackage_slide"
+        rollCurveNameUpper = "supermanLips_upperLipCurveRollOuter"
 
-    cmds.file( fileName, i=True, f=True )
+        lowerRemovePointIndicies=[]
+        upperRemovePointIndicies=[]
 
-    # delete history
-    for i in [projectionMeshLower, deformMeshLowerCurve, baseLowerCurve, lowerCurve,
-                lowerCurveAim, deformMeshLower, baseLower, projectionMeshUpper,
-                deformMeshUpperCurve, baseUpperCurve, upperCurve, upperCurveAim,
-                deformMeshUpper, baseUpper, slidePatch, slidePatchBase, controlAutoOrientMesh]:
-        cmds.select(i, r=True)
-        cmds.DeleteHistory(i)
-    # for i in [deformMeshLower,
-    #             deformMeshUpper]:
-    #     cmds.select(i, r=True)
-    #     cmds.DeleteHistory(i)
+    if oldman:
+        fileName = "C:/Users/harri/Desktop/dev/rotoslang/src/scenes/oldMan/faceRigPackage/lipsPackage.ma"
 
-    lowerLipSlide, lowerLipThick = lip.Lip(name="lowerLip",
+        deformMeshLower="FullBody:C_lowerLip"
+        baseLower="FullBody:C_lowerLipBase"
+
+        deformMeshUpper="FullBody:C_upperLip"
+        baseUpper="FullBody:C_upperLipBase"
+        lowerRemovePointIndicies=[8, 10, 15, 16, 17, 39, 44, 45, 70, 71, 78, 79, 80, 82, 84, 85, 86, 90, 92, 93, 94, 95, 96, 97, 98, 99, 106, 107, 116, 124, 125, 133, 134, 135, 157, 162, 163, 188, 189, 196, 197, 198, 200, 202, 203, 204, 208, 210, 211, 212, 213, 214, 215, 216, 217, 224, 225, 234, 242, 243]
+
+        upperRemovePointIndicies=[11, 12, 29, 32, 40, 44, 45, 48, 71, 75, 76, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 123, 125, 133, 148, 161, 164, 172, 176, 177, 180, 203, 207, 208, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 255, 257, 265, 280]
+
+
+    if auto_load:
+        cmds.file( new=True, f=True )
+        cmds.file( fileName, i=True, f=True )
+        # rigGeo = "faceModelPackage:rigGeo"
+
+        # delete history
+        for i in [rigGeo, projectionMeshLower, deformMeshLowerCurve, baseLowerCurve, lowerCurve,
+                    lowerCurveAim, deformMeshLower, baseLower, projectionMeshUpper,
+                    deformMeshUpperCurve, baseUpperCurve, upperCurve, upperCurveAim,
+                    deformMeshUpper, baseUpper, slidePatch, slidePatchBase, controlAutoOrientMesh]:
+            if not type(i) == list and cmds.objExists(i):
+                cmds.select(i, r=True)
+                cmds.DeleteHistory(i)
+                cmds.makeIdentity(i, apply=True, t=1, r=1, s=1, n=0, pn=1);
+
+            elif type(i) == list:
+                for x in i:
+                    if cmds.objExists(x):
+                        cmds.select(x, r=True)
+                        cmds.DeleteHistory(i)
+                        cmds.makeIdentity(x, apply=True, t=1, r=1, s=1, n=0, pn=1);
+
+
+        # for i in [deformMeshLower,
+        #             deformMeshUpper]:
+        #     cmds.select(i, r=True)
+        #     cmds.DeleteHistory(i)
+
+    # lowerLipSlide, lowerLipThick = line.Line(name="lowerLip",
+    lowerLipClass = line.Line(name="lowerLip",
                 upperLip=False,
                 tierCount1=tierCount1,
                 tierCount2=tierCount2,
@@ -317,8 +361,12 @@ def test():
                 projectionMesh=projectionMeshLower,
                 slidePatch=slidePatch,
                 slidePatchBase=slidePatchBase)
+    lowerLipClass.create()
+    lowerLipSlide, lowerLipThick = lowerLipClass.slide_deformer, lowerLipClass.vector_deformer
 
-    lip.Lip(name="lowerLipCurve",
+
+
+    lowerLipCurveClass = line.Line(name="lowerLipCurve",
             ctrlName = "lowerLip",
             controlRivetMesh = deformMeshLower,
             doLipThick = False,
@@ -367,12 +415,12 @@ def test():
             slidePatch=slidePatch,
             slidePatchBase=slidePatchBase)
 
-
+    lowerLipCurveClass.create()
     # cmds.reorderDeformers(lowerLipSlide, lowerLipThick, misc.getShape(deformMeshLower))
 
 
     lip.lipCurveDeformSplit(name="C_LowerLipWire",
-                            curveDeformerAlgorithm=1,
+                            # curveDeformerAlgorithm=1,
                             curve=lowerCurve,
                             curveAim=lowerCurveAim,
                             deformedGeometry=deformMeshLower,
@@ -385,7 +433,7 @@ def test():
                             reorderInFrontOfDeformer=lowerLipSlide,
                             removePointIndicies=lowerRemovePointIndicies,
                             falloffDefaults = "")
-
+    
 
 
     # falloffDefaultsUpper=(10, -1, -7, -10.0)
@@ -404,7 +452,8 @@ def test():
 
     # thickFalloffCurveUpper = elements.UPPER_LIP_THICK_FALLOFF
 
-    upperLipSlide, upperLipThick = lip.Lip(name="upperLip",
+    # upperLipSlide, upperLipThick = lip.Lip(name="upperLip",
+    upperLipClass = line.Line(name="upperLip",
                 upperLip=True,
                 tierCount1=tierCount1,
                 tierCount2=tierCount2,
@@ -455,8 +504,11 @@ def test():
                 projectionMesh=projectionMeshUpper,
                 slidePatch=slidePatch,
                 slidePatchBase=slidePatchBase)
+                
+    upperLipClass.create()
+    upperLipSlide, upperLipThick = upperLipClass.slide_deformer, upperLipClass.vector_deformer
 
-    lip.Lip(name="upperLipCurve",
+    upperLipCurveClass = line.Line(name="upperLipCurve",
             ctrlName = "upperLip",
             upperLip=True,
             doLipThick = False,
@@ -501,7 +553,7 @@ def test():
             controlAutoOrientMesh = controlAutoOrientMesh,
             slidePatch=slidePatch,
             slidePatchBase=slidePatchBase)
-
+    upperLipCurveClass.create()
     # cmds.reorderDeformers(upperLipSlide, upperLipThick, misc.getShape(deformMeshUpper))
 
     blendshape = lip.lipCurveDeformSplit(name="C_UpperLipWire",
@@ -517,6 +569,8 @@ def test():
                                         removePointIndicies=upperRemovePointIndicies,
                                         reorderInFrontOfDeformer=upperLipSlide,
                                         falloffDefaults = "")
+    cmds.select(upperLipCurveClass.mat_def.controls)
+    cmds.viewFit()
 
 
 

@@ -305,6 +305,8 @@ class MatrixDeformer(base.Deformer):
                                             offset = self.offset,
                                             size=self.size,
                                             curveData = controlShape,
+                                            component_name=self.component_name
+
                                             )
                 elif self.controlType == 1:
                     ctrl = meshRivetCtrl.Component(name = name+"MatrixDef", 
@@ -325,6 +327,7 @@ class MatrixDeformer(base.Deformer):
                                                         # orient = self.controlShapeOrient,
                                                         # shapeScale = self.controlShapeScale,
                                                         lockAttrs = [],
+                                                        component_name=self.component_name
                                                         )
                 ctrl.create()
                 controlName = ctrl.ctrl
@@ -369,12 +372,15 @@ class MatrixDeformer(base.Deformer):
             message_utils.create_message_attr_setup(current_ctrl, "guide_shape", guide_shape, "ctrl")
             tag_utils.tag_guide(guide)
             tag_utils.tag_guide_shape(guide_shape)
+            if self.component_name:
+                tag_utils.create_component_tag(guide, self.component_name)
             if "Rot" in guide:
                 message_utils.create_message_attr_setup(current_ctrl, "rotation_guide", guide, "rotation_ctrl")
                 tag_utils.create_tag(guide, "ROTATION_GUIDE")
             if "Trans" in guide:
                 message_utils.create_message_attr_setup(current_ctrl, "translation_guide", guide, "translation_ctrl")
                 tag_utils.create_tag(guide, "TRANSLATION_GUIDE")
+                
 
 
 

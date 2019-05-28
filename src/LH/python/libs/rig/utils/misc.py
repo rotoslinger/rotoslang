@@ -1418,15 +1418,16 @@ def addNakedLocatorToControl(control=None, side= None, controlParent=None, geom=
         createNakedLocator( name, side, geom, controlParent, control, faces)
         # locator = cmds.createNode("LHNakedLocator", p=control, n=name)
 
-def getBoundingBox(mesh):
-    fnMesh = getOMMesh(mesh)
-    meshDag = getDag(mesh)
-    allPoints = OpenMaya.MPointArray()
-    fnMesh.getPoints(allPoints)
-    bBox = OpenMaya.MBoundingBox()
-    for point in allPoints:
-        bBox.expand(point)
-    return bBox
+# def getBoundingBox(mesh):
+#     # THIS CRASHES MAYA
+#     fnMesh = getOMMesh(mesh)
+#     meshDag = getDag(mesh)
+#     allPoints = OpenMaya.MPointArray()
+#     fnMesh.getPoints(allPoints)
+#     bBox = OpenMaya.MBoundingBox()
+#     for point in allPoints:
+#         bBox.expand(point)
+#     return bBox
 
 def constrainMeshToClosestJoint(selections=None):
     """

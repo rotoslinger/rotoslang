@@ -4,6 +4,9 @@ reload(base)
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
 reload(misc)
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+
 
 class CurveRollSimple(base.Deformer):
     def __init__(self,
@@ -63,6 +66,8 @@ class CurveRollSimple(base.Deformer):
             self.deformer = self.name
             return
         self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name, par=True)[0]
+        tag_utils.create_component_tag(self.deformer, self.component_name)
+
 
     def getNodes(self):
         if self.duplicateCurve and not cmds.objExists(self.name+"RollCurve"):
@@ -97,6 +102,10 @@ class CurveRollSimple(base.Deformer):
             self.weightMap = weightMapUtils.createWeightMapOnSingleObject(self.geoToDeform[0], self.name + "RollWeights", defaultValue=1.0, addAttr=True)
         else:
             self.weightMap = "{0}.outWeightsDoubleArray".format(self.weightStackNode)
+
+        tag_utils.create_component_tag(self.geoToDeform, self.component_name)
+        tag_utils.create_component_tag(self.baseGeoToDeform, self.component_name)
+        tag_utils.create_component_tag(self.rollCurve, self.component_name)
 
     def setDefaults(self):
         if not type(self.geoToDeform) == list:

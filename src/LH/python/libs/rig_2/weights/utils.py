@@ -61,6 +61,7 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                                 itts=["linear","linear","linear","linear"],
                                 otts=["linear","linear","linear","linear"],
                                 falloffCurveDict=None,
+                                component_name=""
 
 ):
 
@@ -107,7 +108,7 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
             continue
         #################################################################################################################
 
-        weightCurve = node_utils.get_node_agnostic(nodeType="animCurveTU", name=generatedName, parent=None, tag_name="WEIGHT_CURVE")
+        weightCurve = node_utils.get_node_agnostic(nodeType="animCurveTU", name=generatedName, parent=None, tag_name="WEIGHT_CURVE", component_name=component_name)
         try:
             cmds.cutKey(weightCurve, cl=True, option="keys")
         except:
@@ -119,7 +120,7 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
             singleFalloffName = name
         if createSingleFalloff:
             falloffName = "{0}Falloff_{1}".format(singleFalloffName, suffix)
-        falloffKeyframes.append(node_utils.get_node_agnostic(nodeType="animCurveTU", name=falloffName, parent=None, tag_name="FALLOFF_WEIGHT_CURVE"))
+        falloffKeyframes.append(node_utils.get_node_agnostic(nodeType="animCurveTU", name=falloffName, parent=None, tag_name="FALLOFF_WEIGHT_CURVE", component_name=component_name))
         # Make sure there is at least 1 key on the curves.  Will do nothing if keyframes already exist.
         for key in range(3):
             fIdx = float(idx)
@@ -199,7 +200,7 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
         falloffKeyframes = []
         if createSingleFalloff:
             falloffName = "{0}Falloff_{1}".format(singleFalloffName, suffix)
-        falloffKeyframes.append(node_utils.get_node_agnostic(nodeType="animCurveTU", name=falloffName, parent=None, tag_name="FALLOFF_WEIGHT_CURVE"))
+        falloffKeyframes.append(node_utils.get_node_agnostic(nodeType="animCurveTU", name=falloffName, parent=None, tag_name="FALLOFF_WEIGHT_CURVE", component_name=component_name))
         animcurve_utils.initVFalloff(falloffKeyframes,
                      falloffCurveDict=falloffCurveDict,
                      falloffStart=falloffStart,

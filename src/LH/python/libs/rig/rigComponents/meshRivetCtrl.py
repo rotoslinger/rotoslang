@@ -65,8 +65,10 @@ class Component(base.Component):
                  normalConstraintPatch=None,
 
                  mirror=False,
+                 component_name="",
                  **kw):
         super(Component, self).__init__(**kw)
+        self.component_name = component_name
 
         self.speedTxDefault = speedTxDefault
         self.speedTyDefault = speedTyDefault
@@ -122,10 +124,9 @@ class Component(base.Component):
                                                   shape_name = "{0}_{1}_GUIDE".format(self.side, self.name)                                                  )
 
         tag_utils.tag_guide(self.guide_transform)
-
+        tag_utils.create_component_tag(self.guide_transform, self.component_name)
 
         for guide_shape in self.guideShapes:
-            print self.guideShapes
             tag_utils.tag_guide_shape(guide_shape)
 
             # Set the default visibility of the guide
@@ -163,6 +164,7 @@ class Component(base.Component):
         message_utils.create_message_attr_setup(self.ctrl, "guide_shape", self.guideShape, "ctrl")
 
         tag_utils.create_tag(self.guide_transform, "RIVET_GUIDE")
+        tag_utils.tag_rivet_mesh(self.mesh)
 
 
     # def preConnect(self):

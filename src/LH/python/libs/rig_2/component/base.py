@@ -90,6 +90,7 @@ reload(misc_utils)
 class Subcomponent(object):
     def __init__(self,
                  parent_component_class,
+                 component_name="base",
                  godnode_class=None,
                  container="",
                  side="C",

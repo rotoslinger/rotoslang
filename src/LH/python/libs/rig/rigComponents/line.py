@@ -145,7 +145,8 @@ class Line(object):
 
 
                 slidePatch="slide",
-                slidePatchBase="slideBase"):
+                slidePatchBase="slideBase",
+                component_name="lip"):
                 pass
 
     def create_line(self):
@@ -179,7 +180,14 @@ class Line(object):
         self.control = cmds.circle(n= self.name + "Control", nr=[0,1,0])[0]
         cmds.parent(self.control, self.controlParent)
 
-        slideUD = slideSimple.SlideSimple(self.name + "LipSlide", geoToDeform=self.deformMesh, slidePatch=self.slidePatch, slidePatchBase=self.slidePatchBase, baseGeoToDeform=self.base)
+        slideUD = slideSimple.SlideSimple(self.name + "LipSlide",
+                                          geoToDeform=self.deformMesh,
+                                          slidePatch=self.slidePatch,
+                                          slidePatchBase=self.slidePatchBase,
+                                          baseGeoToDeform=self.base,
+                                          component_name=self.component_name
+                                          
+                                          )
         slideUD.create()
 
         outputAttrs = [slideUD.deformer + ".weightArrays[0].vWeights"]
@@ -262,6 +270,8 @@ class Line(object):
                                                 angle = elements.ANGLES[idx],
                                                 nudge = elements.NUDGES[idx],
                                                 lastAngle=elements.LAST_ANGLES[idx],
+                                                component_name=self.component_name,
+
 
             )
             curveWeights.create()
@@ -291,6 +301,7 @@ class Line(object):
                                             controlShape = self.slideIconShapeDict,
                                             repositionRivetCtrls = self.repositionRivetCtrls,
                                             controlLockAttrs=["ry", "rz", "sx", "sz"],
+                                            component_name=self.component_name,
                                             )
             stack.create()
             
@@ -329,6 +340,7 @@ class Line(object):
                                                         angle = elements.ANGLES[idx],
                                                         nudge = elements.NUDGES[idx],
                                                         lastAngle=elements.LAST_ANGLES[idx],
+                                                        component_name=self.component_name,
             )
             curveWeights.create()
             
@@ -361,7 +373,7 @@ class Line(object):
                                     connectRotate = False,
                                     connectScale = False,
                                     controlShapeDict=self.matDefIconShapeDicts[idx],
-                                    
+                                    component_name=self.component_name,
                                     )
             self.mat_def.create()
 
@@ -391,7 +403,8 @@ class Line(object):
                                     connectRotate = True,
                                     connectScale = True,
                                     controlShapeDict=self.matDefIconShapeDicts[idx],
-                                    
+                                    component_name=self.component_name,
+
                                     
                                     )
             self.mat_def.create()
@@ -427,7 +440,7 @@ class Line(object):
                                                 angle = elements.ANGLES[idx],
                                                 nudge = elements.NUDGES[idx],
                                                 lastAngle=elements.LAST_ANGLES[idx],
-
+                                                component_name=self.component_name,
 
                 )
                 curveWeights.create()
@@ -471,6 +484,7 @@ class Line(object):
                                                 controlShapeOrient=[0,0,0],
                                                 # controlLockAttrs=["tx", "tz", "ry", "rz", "sx", "sy", "sz"],
                                                 controlLockAttrs=["tx", "tz", "ry", "rz", "sx", "sz"],
+                                                component_name=self.component_name,
                                                 )
                 stack.create()
 
@@ -501,7 +515,7 @@ class Line(object):
                                                 angle = elements.ANGLES[idx],
                                                 nudge = elements.NUDGES[idx],
                                                 lastAngle=elements.LAST_ANGLES[idx],
-
+                                                component_name=self.component_name,
 
                 )
                 curveWeights.create()
@@ -542,6 +556,7 @@ class Line(object):
                                                 controlSpeedDefaults = [1,1,1],
                                                 controlShapeOrient=[0,0,0],
                                                 controlLockAttrs=["tx", "tz", "ty", "ry", "rz", "sx", "sy", "sz"],
+                                                component_name=self.component_name,
                                                 )
                 stack.create()
                 # rollDeformer = vectorDeformerSimple.VectorDeformerSimple(self.name = self.name + "THICKTEST", geoToDeform=self.deformMesh, weightStackNode=stack.node, toPoint = self.thickToPoint)
@@ -560,6 +575,7 @@ class Line(object):
                                                             simplifyCurve=True,
                                                             cvCount = 6,
                                                             weightStackNode=stack.node,
+                                                            component_name=self.component_name,
 
                 )
                 curveRoll.create()

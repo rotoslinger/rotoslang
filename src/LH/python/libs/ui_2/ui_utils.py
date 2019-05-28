@@ -23,10 +23,13 @@ def get_outliner_icon(maya_object):
         file_dir = ":/default.svg"
     return QtGui.QIcon(file_dir)
 
-def create_label(text="test", color="color: rgb(255, 102, 255);", center=False):
+def create_label(text="test", color="color: rgb(255, 102, 255);", center=True, text_size=None):
+
     label = QtWidgets.QLabel(text)
     label.setAlignment(QtCore.Qt.AlignCenter)
     label.setStyleSheet(color)
+    if text_size:
+        label.setFont(QtGui.QFont("Times", text_size)) 
     if center:
         label.setAlignment(QtCore.Qt.AlignCenter)
     return label
@@ -57,11 +60,58 @@ def label_button(label_text="Test label",
     button.clicked.connect(button_func)
     return label, button
 
-def text_box(default_text="baseAsset", text_changed_func=test_func):
+def text_box(default_text="baseAsset", text_changed_func=None):
     text_field = QtWidgets.QLineEdit()
     text_field.setText(default_text)
-    text_field.textChanged.connect(text_changed_func)
+    if text_changed_func:
+        text_field.textChanged.connect(text_changed_func)
     return text_field
+
+def label_text_box(label_name="Test: ", text_edit_default="", color=elements.blue, column_min_size=50, text_changed_func=None):
+    grid_layout=QtWidgets.QGridLayout()
+    layout = QtWidgets.QWidget()
+    layout.setLayout(grid_layout)
+    label = QtWidgets.QLabel(label_name)
+    line_edit = text_box(text_edit_default, text_changed_func)
+    grid_layout.addWidget(label, 0, 0)
+    grid_layout.addWidget(line_edit, 0, 1)
+    grid_layout.setColumnMinimumWidth(0, column_min_size)
+
+    return layout, line_edit 
+
+def collection_list(color=elements.blue, list_height=None, selection_changed_func=None):
+    selection_list = QtWidgets.QListWidget()
+    selection_list.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+    selection_list.setAcceptDrops(True)
+    selection_list.setDragDropMode(selection_list.InternalMove)
+    if list_height:
+        selection_list.setFixedHeight(list_height)
+    if selection_changed_func:
+        selection_list.selectionModel().selectionChanged.connect(selection_changed_func)
+    return selection_list
+
+
+def label_list(label_name="Test: ", color=elements.blue, list_height=100, selection_changed_func=None):
+    grid_layout=QtWidgets.QGridLayout()
+    layout = QtWidgets.QWidget()
+    layout.setLayout(grid_layout)
+    label = QtWidgets.QLabel(label_name)
+    selection_list = collection_list(color=color, list_height=list_height, selection_changed_func=selection_changed_func)
+    # selection_list.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+    # selection_list.setAcceptDrops(True)
+    # selection_list.setDragDropMode(selection_list.InternalMove)
+
+    grid_layout.addWidget(label, 0, 0)
+    grid_layout.addWidget(selection_list, 0, 1)
+
+
+    # if list_height:
+    #     selection_list.setFixedHeight(list_height)
+    # if selection_changed_func:
+    #     selection_list.selectionModel().selectionChanged.connect(selection_changed_func)
+        
+    return layout, selection_list 
+
 
 def get_QColor_from_style(style_color):
     "color: rgb(90, 90, 90);"
@@ -111,6 +161,7 @@ def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = e
     collapse_box.setContentLayout(layout)
 
     return dock
+
 
 def button_row(names_funcs=[["testBox1", test_func], ["textBox2", test_func]], color=elements.blue, bg_color=elements.grey):
     grid_layout=QtWidgets.QGridLayout()
@@ -304,3 +355,17 @@ class CollapsibleBox(QtWidgets.QFrame ):
         # if self.collapsed:
         #     content_animation.setStartValue(0)
         content_animation.setEndValue(content_height)
+
+def get_outliner_icon(maya_object):
+    if not maya_object:
+        maya_object = cmds.ls(sl=True)[0]
+    maya_object_type = cmds.objectType(maya_object)
+    # If the object is a transform and has a shape, set the type to that of the shape
+    if maya_object_type == "transform" and cmds.listRelatives(s=True):
+        maya_object_type = cmds.objectType(cmds.listRelatives(s=True)[0])
+    file_dir = ":/{0}.svg".format(maya_object_type)
+
+    testfile = QtCore.QFile(file_dir)
+    if not testfile.exists():
+        file_dir = ":/default.svg"
+    return QtGui.QIcon(file_dir)
