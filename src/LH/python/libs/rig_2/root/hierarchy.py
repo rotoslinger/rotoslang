@@ -92,7 +92,6 @@ def init_hierarchy(side,
     class_rig = parent
     class_control = parent
     class_component = parent
-    print hierarchy_class
     if hierarchy_class:
         class_geo = hierarchy_class.geo
         class_skeleton = hierarchy_class.skeleton

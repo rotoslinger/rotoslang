@@ -43,7 +43,6 @@ utils.calimari("kryptoDMU_002_2Dogs3:kryptoDMU_001_linked:skinCluster17", "krypt
 ########################################################################
 
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -80,9 +79,7 @@ weightingUtils.gradientBetweenPoints()
 #######################################################################
 ########################## CREATING AND PAINTING #####################################
 ########################################################################
- 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
+
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -97,7 +94,6 @@ if os not in sys.path:
     sys.path.append(os)
 
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -159,7 +155,8 @@ if os not in sys.path:
     sys.path.append(os)
 
 
-from utils import exportUtils, misc
+from utils import exportUtils
+
 reload(exportUtils)
 
 from utils import misc
@@ -167,7 +164,7 @@ reload(misc)
 from utils import elements
 reload(elements)
 
-from utils import exportUtils, misc, exportUtils
+from utils import misc
 from rigComponents import base
 reload(base)
 from rigComponents import slidingCtrl
@@ -197,8 +194,6 @@ cmds.parent("C_body_HI1Shape", "L_corner_CTL", s=True, r=True)
 ##########################  CREATE CONTROL SHAPES #####################################
 ########################################################################
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -212,9 +207,6 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
-import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -224,9 +216,6 @@ reload(misc)
 
 from rig.utils import exportUtils
 reload(exportUtils)
-
-
-from rig.rigComponents import elements
 
 from rig.deformers import utils
 reload(utils)
@@ -250,9 +239,6 @@ print misc.getGeoData()
 ########################################################################
 
 
- 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -267,7 +253,6 @@ if os not in sys.path:
     sys.path.append(os)
 
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -280,18 +265,7 @@ if "darwin" in os:
     os = mac
 if os not in sys.path:
     sys.path.append(os)
-from rig.utils import weightMapUtils
-from rig.utils import misc
-from rig.deformers import base
-from rig.deformers import weightStack
-from rig.deformers import tests 
-from rig.deformers import test2
-from rig.deformers import test3
-from rig.deformers import test4
-from rig.deformers import matrixDeformer 
-from rig.deformers import utils 
-from rig.rigComponents import lip 
-from rig.rigComponents import simpleton 
+from rig.rigComponents import simpleton
 from rig.rigComponents import lipTest 
 reload(lipTest)
 reload(simpleton)
@@ -311,8 +285,6 @@ component.create()
 ########################################################################
 
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -327,8 +299,7 @@ if os not in sys.path:
     sys.path.append(os)
 
 from maya import cmds
-import maya.OpenMaya as OpenMaya
-import sys
+
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -371,9 +342,7 @@ weights.utils.getAnimCurveWeightsDict()
 ##########################  Deformer #####################################
 ########################################################################
 
- 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
+
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -387,8 +356,6 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -401,12 +368,7 @@ if "darwin" in os:
     os = mac
 if os not in sys.path:
     sys.path.append(os)
-from rig.utils import weightMapUtils
-from rig.utils import misc
-from rig.deformers import base
-from rig.deformers import weightStack
-from rig.deformers import matrixDeformer 
-from rig.deformers import vectorDeformerSimple 
+from rig.deformers import vectorDeformerSimple
 from rig.deformers import curveRollSimple 
 from rig.deformers import multiWrap 
 from rig.deformers import utils 
@@ -463,8 +425,6 @@ print weights.utils.getWeightStackHandWeightsDict()
 ##########################  SKIN WEIGHT DRAGGER #####################################
 ########################################################################
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 
@@ -477,8 +437,6 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
 #---determine operating system
@@ -491,7 +449,6 @@ if os not in sys.path:
     sys.path.append(os)
 
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/misc_tools'
 #---determine operating system
@@ -539,13 +496,6 @@ cmds.setToolTo("valueDragger")
 ########################################################################
 
 
-
-
-
-
-
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 
@@ -558,8 +508,6 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
 #---determine operating system
@@ -573,7 +521,6 @@ if os not in sys.path:
 
 
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 package = '/scratch/levih/dev/rotoslang/src/LH/python/libs/decorators'
 #---determine operating system
@@ -583,7 +530,8 @@ if linux not in sys.path:
 from rig_2.manipulator import control
 reload(control)
 
-from rig_2.manipulator import nurbscurve
+from rig_2.shape import nurbscurve
+
 reload(nurbscurve)
 #print nurbscurve.get_curve_shape_dict()
 
@@ -612,11 +560,6 @@ print cam.camera.input_names
 ########################################################################
 
 
-
-
-
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 
@@ -629,8 +572,6 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
 #---determine operating system
@@ -642,9 +583,6 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 
-
-from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 package = '/scratch/levih/dev/rotoslang/src/LH/python/libs/decorators'
 #---determine operating system

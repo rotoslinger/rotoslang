@@ -1,6 +1,7 @@
-import sys, os
-
 from maya import cmds
+
+from rig_2.export import utils as export_utils
+reload(export_utils)
 from rig_2.mirror import utils as mirror_utils
 reload(mirror_utils)
 from rig_2.tag import utils as tag_utils
@@ -10,8 +11,6 @@ from rig.utils import misc
 reload(misc)
 from rig_2.guide import utils as guide_utils
 reload(guide_utils)
-
-from rig_2.manipulator import nurbscurve
 
 from rig_2.backup import utils as backup_utils
 reload(backup_utils)
@@ -46,7 +45,7 @@ guide_ui.openUI()
 def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
     backup_arg = backup_checkbox[0].isChecked()
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
-    export_dict = guide_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    export_dict = export_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
     full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
     backup_utils.generate_backup_file(full_backup_name, export_dict)
 
@@ -54,7 +53,7 @@ def import_all(file_dialog, checkboxes):
     # cmds.undoInfo(state=False)
     cmds.undoInfo(stateWithoutFlush = False)
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
-    guide_utils.import_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    export_utils.import_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
     cmds.undoInfo(stateWithoutFlush = True)
     # cmds.flushUndo()
 

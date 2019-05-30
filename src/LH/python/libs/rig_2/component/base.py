@@ -1,3 +1,5 @@
+import inspect
+from collections import OrderedDict
 from maya import cmds
 from rig_2.root import hierarchy as rig_hierarchy
 reload(rig_hierarchy)
@@ -5,91 +7,21 @@ from rig_2.node import utils as node_utils
 reload(node_utils)
 from rig_2.misc import utils as misc_utils
 reload(misc_utils)
+from rig_2.attr import utils as attr_utils
+reload(attr_utils)
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+from rig_2.attr import constants as attr_constants
+reload(attr_constants)
+from rig.utils import misc
+reload(misc)
 
-# class Component(object):
-#     def __init__(self,
-#                  side="C",
-#                  name="component",
-#                  suffix = "CPT",
-#                  asset_name = "asset",
-#                  root_parent = "C_asset_GRP",
-#                  control_parent="C_control_GRP",
-#                  rig_parent="C_rig_GRP",
-#                  debug = False
-#                  ):
-#         # args
-#         self.side = side
-#         self.name = name
-#         self.suffix = suffix
-#         self.asset_name = asset_name
-#         self.control_parent = control_parent
-#         self.rig_parent = rig_parent
-#         self.debug = debug
 
-#         # vars
-#         self.geo = None
-#         self.skeleton = None
-#         self.rig = None
-#         self.control = None
-#         self.subcomponents = []
-#         self.inputs = {}
-#         self.outputs = {}
-
-#     def initialize(self):
-#         """ Check for a root, create if none """
-#         self.hierarchy_class = rig_hierarchy.base()
-#         self.hierarchy_class.initialize()
-
-#         if not cmds.objExists(self.hierarchy_class.root):
-#             self.hierarchy_class.create()
-
-#         self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
-
-#         """
-#         Create component Hierarchy within the asset hierarchy. 
-#         These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
-#         """
-
-#         self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
-#                                                                                               name=self.name,
-#                                                                                               suffix=self.suffix,
-#                                                                                               hierarchy_class=self.hierarchy_class)
-#         node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
-
-#     def get_subcomponents(self):
-#         return
-
-#     def get_inputs(self):
-#         self.inputs = []
-#         for subcomponent in self.subcomponents:
-#             for input in subcomponent.inputs:
-#                 old_key = input.keys()[0]
-#                 input[subcomponent.aggr_name + "." + old_key] = input.pop(old_key)
-#                 self.inputs.append(input)
-#         self.input_names = [x.keys()[0] for x in self.inputs]
-
-#     def get_outputs(self):
-#         self.outputs = []
-#         for subcomponent in self.subcomponents:
-#             for output in subcomponent.outputs:
-#                 old_key = output.keys()[0]
-#                 output[subcomponent.aggr_name + "." + old_key] = output.pop(old_key)
-#                 self.outputs.append(output)
-#         self.output_names = [x.keys()[0] for x in self.outputs]
-
-#     def connect_subcomponents(self):
-#         return
-
-#     def create(self):
-#         self.initialize()
-#         self.get_subcomponents()
-#         self.get_inputs()
-#         self.get_outputs()
-#         self.connect_subcomponents()
 
 class Subcomponent(object):
     def __init__(self,
                  parent_component_class,
+                 class_name=None,
                  component_name="base",
                  godnode_class=None,
                  container="",
@@ -103,8 +35,16 @@ class Subcomponent(object):
                  create_rig_grp=False,
                  create_control_grp=False,
                  create_subcomponent_grp=False,
+                 arg_dict=None,
                  ):
+        # Arg Snapshot
+        class_name = self.get_relative_path()
+        self.ordered_args = OrderedDict()
+        self.frame = inspect.currentframe()
+        self.get_args()
+        # Args
         self.parent_component_class = parent_component_class
+        self.component_name = component_name
         self.godnode_class = godnode_class
         self.side = side
         self.name = name
@@ -116,7 +56,10 @@ class Subcomponent(object):
         self.create_rig_grp = create_rig_grp
         self.create_control_grp = create_control_grp
         self.create_subcomponent_grp = create_subcomponent_grp
+        self.arg_dict = arg_dict
+        
         self.container = container
+        
         # vars
         self.geo = None
         self.skeleton = None
@@ -138,8 +81,23 @@ class Subcomponent(object):
             self.parent = self.parent[self.parent.keys()[0]]
 
         # these need to happen when the class is initialized
+        if self.arg_dict:
+            self.get_arg_attrs_from_dict()
         self.initialize()
         self.get_container()
+
+    def get_relative_path(self):
+        module = self.__class__.__module__
+        if module is None or module == str.__class__.__module__:
+            return self.__class__.__name__  # Avoid reporting __builtin__
+        else:
+            return module + '.' + self.__class__.__name__
+
+
+    def get_args(self):
+        args, dummy, dummy, arg_dict = inspect.getargvalues(self.frame)
+        for key in args:
+            self.ordered_args[key] = arg_dict[key]
 
 
     def initialize(self):
@@ -149,7 +107,8 @@ class Subcomponent(object):
 
         # This is for readability, can be removed maybe...
         self.aggr_name = self.aggr
-
+        # Tag
+        
         #Create component Hierarchy within the parent class hierarchy. 
         self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
                                                                                                     name=self.name,
@@ -162,6 +121,21 @@ class Subcomponent(object):
         self.component = self.parent_component_class.component 
         
         node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
+        misc.lock_attrs(node=self.aggr, attr=["all"])
+        tag_utils.create_component_tag(self.component, self.component_name)
+        tag_utils.tag_arg_node(self.component)
+
+    def get_arg_attrs_from_dict(self):
+        for key, val in self.arg_dict.items():
+            setattr(self, key, val)
+
+    def create_arg_attrs(self):
+        self.arg_attrs = []
+        for key, val in self.ordered_args.items():
+            if type(val) not in attr_constants.SUPPORTED_TYPES:
+                continue
+            attr_type = type(val)
+            self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.aggr, attr_name=key, attr_type=attr_type, attr_default=val))
 
     def get_container(self):
         if not self.container:
@@ -249,6 +223,7 @@ class Subcomponent(object):
         return
 
     def create(self):
+        self.create_arg_attrs()
         self.get_ctrls()
         self.get_nodes()
         self.get_attrs()
@@ -300,14 +275,45 @@ class Subcomponent(object):
         self.safe_append(node_to_add=node_to_add,
                          list_to_append=self.container_nodes)
 
+def get_all_component_args():
+    all_arg_dicts = {}
+    names = tag_utils.get_all_component_names()
+    for name in names:
+        component_dict = get_component_args_from_scene(component_name=name)
+        if not component_dict:
+            continue
+        all_arg_dicts[name] =component_dict
+    return all_arg_dicts
+    # print all_arg_dicts
 
-
-
+def get_component_args_from_scene(component_name):
+    node = tag_utils.get_arg_node_by_component_name(component_name)
+    if not node:
+        return
+    attrs = cmds.listAttr(node, userDefined=True)
+    # Remove tags and message attrs
+    attrs = [x for x in attrs if not x.isupper() and not cmds.addAttr(node + "." + x, q=True, attributeType=True) == "message"]
+    arg_dict = {}
+    for attr in attrs:
+        full_attr_name = node + "." + attr
+        attr_type = cmds.addAttr(node + "." + attr, q=True, attributeType=True)
+        val = cmds.getAttr(full_attr_name)
+        if type(val) == unicode:
+            val = str(val)
+        arg_dict[str(attr)] = val
+    return arg_dict
+    
 class Builder(Subcomponent):
     def __init__(self,
+                 parent_component_class=None,
+                 class_name=None,
                  **kw):
-        super(Builder, self).__init__(self, **kw)
-
+        super(Builder, self).__init__(self, class_name=class_name, **kw)
+        class_name = self.get_relative_path()
+        self.ordered_args = OrderedDict()
+        self.frame = inspect.currentframe()
+        self.get_args()
+        
     def initialize(self):
         
         """ Check for a root, create if none """
@@ -330,7 +336,10 @@ class Builder(Subcomponent):
                                                                                               hierarchy_class=self.hierarchy_class)
         node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
 
-
+        tag_utils.create_component_tag(self.component, self.component_name)
+        tag_utils.tag_arg_node(self.component)
+        
+        misc.lock_attrs(node=self.aggr, attr=["all"])
 
 
 

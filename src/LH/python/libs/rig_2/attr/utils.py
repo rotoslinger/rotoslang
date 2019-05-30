@@ -60,6 +60,20 @@ def get_attrs(node, attrs, attrType=None, dataType=None, enumName=None, k=False,
                                  parent=None))
     return retAttrs
 
+def get_attr_from_arg(node, attr_name, attr_type, attr_default):
+    type_dict = {list:"string", dict:"string", int:"short", float:"float", str:"string", bool:"bool"}
+    if type_dict[attr_type] == "string":
+        dataType = "string"
+        attrType=False
+        defaultVal=None
+    else:
+        attrType = type_dict[attr_type]
+        dataType = False
+        defaultVal=attr_default
+    new_attr = get_attr(node=node, attr=attr_name, dataType=dataType, attrType=attrType, defaultVal=defaultVal,  k=True)
+    if type_dict[attr_type] == "string":
+        cmds.setAttr(node + "." + attr_name, str(attr_default), type="string")
+    return new_attr
 
 def create_string_array(node, attr_name, default_string_list=None):
     full_attr_name = node + "." + attr_name

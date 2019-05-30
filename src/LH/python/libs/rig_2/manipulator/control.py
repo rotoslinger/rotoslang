@@ -1,7 +1,5 @@
 import copy
 from maya import cmds
-import maya.OpenMaya as OpenMaya
-
 
 from rig_2.message import utils as message_utils
 reload(message_utils)
@@ -10,8 +8,10 @@ from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 from rig_2.manipulator import elements
 reload(elements)
-from rig_2.manipulator import nurbscurve
+from rig_2.shape import nurbscurve
 reload(nurbscurve)
+
+
 # from rig_2.manipulator import misc
 # reload(misc)
 from rig_2.node import utils as node_utils
@@ -116,16 +116,19 @@ class Shape(object):
 
     def initialize(self):
         # placeholder until we have naming utils
-        self.full_name = self.side + "_" + self.name
+        if self.side:
+            self.full_name = self.side + "_" + self.name
+        else:
+            self.full_name = self.name
         self.ctrl_name = self.full_name + "_CTL"
         self.ctrl_shape_name = self.full_name + "_CTLShape"
 
     def create_shape(self):
         self.ctrl, self.ctrl_shapes = nurbscurve.create_curve(curve_dict = self.shape_dict,
-                                             name = self.full_name,
-                                             parent = self.parent,
-                                             color = True,
-                                             outliner_color=self.outliner_color)
+                                                              name = self.full_name,
+                                                              parent = self.parent,
+                                                              color = True,
+                                                              outliner_color=self.outliner_color)
 
     def set_shape_transformations(self):
         shapes = misc_utils.get_shape(self.ctrl)
@@ -223,7 +226,8 @@ class Ctrl(object):
                  null_transform = False,
                  color_side=True,
                  outliner_color=False,
-                 ctrl_alias_attr_remap={}
+                 ctrl_alias_attr_remap={},
+                 guide=False
                  ):
 
         """
@@ -302,6 +306,7 @@ class Ctrl(object):
         self.color_side             = color_side
         self.outliner_color         = outliner_color
         self.ctrl_alias_attr_remap  = ctrl_alias_attr_remap
+        self.guide                  = guide
 
         #---vars
         self.ctrl                    = ""
@@ -316,8 +321,10 @@ class Ctrl(object):
 
     def initialize(self):
         # placeholder until we have naming utils
-        self.full_name = self.side + "_" + self.name
-
+        if self.side:
+            self.full_name = self.side + "_" + self.name
+        else:
+            self.full_name = self.name
 
     def create_buffer(self):
         "creates extra transforms to parent the ctls under ascending "
@@ -430,7 +437,7 @@ class Ctrl(object):
             cmds.setAttr(gimbal_shape + ".overrideColor", 19)
 
     def make_gimbal_vis(self):
-        if self.gimbal == True:
+        if self.gimbal:
             self.gimbal_vis_attr = self.ctrl+".gimbal_vis"
             if cmds.objExists(self.gimbal_vis_attr):
                 return
@@ -442,13 +449,16 @@ class Ctrl(object):
             cmds.setAttr( gimbalShape + ".v", l = True, cb = False, k = False)
 
     def add_tags(self):
-        if self.gimbal == True:
+        if self.gimbal:
             self.gimbal_shape = misc.getShape(self.gimbal_ctrl)
             tag_utils.tag_gimbal(self.gimbal_ctrl)
+            message_utils.create_message_attr_setup(self.ctrl, "gimbal", self.gimbal_ctrl, "ctrl")
 
         # misc.tag_control_shape(misc.getShape(self.ctrl))
-        tag_utils.tag_control(self.ctrl)
-        message_utils.create_message_attr_setup(self.ctrl, "gimbal", self.gimbal_ctrl, "ctrl")
+        if not self.guide:
+            tag_utils.tag_control(self.ctrl)
+        else:
+            tag_utils.tag_guide(self.ctrl)
         # # gimbal shape
         # cmds.addAttr(self.ctrl, ln = "gimbal", at = "message")
         # cmds.connectAttr(self.gimbal_shape + ".message", self.ctrl + ".gimbal")

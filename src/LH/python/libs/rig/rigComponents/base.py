@@ -32,6 +32,7 @@ class Component(object):
                  createJoint=False,
                  nullTransform = False,
                  component_name = "",
+                 is_ctrl_guide = False,
                  ):
         """
         @param side:
@@ -62,7 +63,7 @@ class Component(object):
         self.scale = scale
         self.createJoint = createJoint
         self.nullTransform = nullTransform
-
+        self.is_ctrl_guide = is_ctrl_guide
         if not self.translate and not self.rotate and not self.scale and selection:
             sel = cmds.ls(sl=True)[0]
             self.translate = cmds.xform(sel, q=True, t=True, ws=True)
@@ -76,15 +77,6 @@ class Component(object):
         if not self.scale:
             self.scale = [1,1,1]
 
-        # self.createHier()
-        # self.createHelperGeo()
-        # self.createCtrl()
-        # self.setControlShape()
-        # self.createGuide()
-        # self.createAttrs()
-        # self.preConnect()
-        # self.createNodes()
-        # self.postConnect()
 
     def createHier(self):
         self.cmptMasterParent = cmds.createNode("transform",
@@ -114,10 +106,6 @@ class Component(object):
         cmds.setAttr(node + ".componentType", self.componentName, typ = "string", l=True)
 
     def createCtrl(self):
-        shape="circle"
-        # if self.curveData:
-        #     shape=""
-
         self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
                                           parent=self.cmptMasterParent,
                                           shapeVis=False)
@@ -133,7 +121,8 @@ class Component(object):
                                                 lock_attrs=self.lockAttrs,
                                                 gimbal=self.gimbal,
                                                 size=self.size,
-                                                null_transform=self.nullTransform)
+                                                null_transform=self.nullTransform,
+                                                guide=self.is_ctrl_guide)
         self.ctrl.create()
                 #  side="C",
                 #  name="controlTest",

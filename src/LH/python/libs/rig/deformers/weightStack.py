@@ -1,5 +1,7 @@
 from maya import cmds
 
+from rig_2.name import utils as name_utils
+reload(name_utils)
 from rig_2.weights import utils as weights_utils
 reload(weights_utils)
 from rig_2.animcurve import utils as animcurve_utils
@@ -218,7 +220,7 @@ class AnimCurveWeight(Node):
                                            attrType=None,
                                            weightmap=True)[0]
         if self.autoCreateAnimCurves:
-            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=self.autoCreateNum, name="falloff", suffixSeperator="", side_name=self.auto_create_name_side)
+            self.factorAttrNames = name_utils.name_based_on_range(count=self.autoCreateNum, name="falloff", suffixSeperator="", side_name=self.auto_create_name_side)
 
             defaultVals = [0.0 for x in range(self.autoCreateNum)]
 
@@ -592,7 +594,7 @@ class WeightStack(Node):
 
         if self.autoCreate:
             self.weightMapAttrs = self.inputWeightAttrs
-            self.factorAttrNames = deformerUtils.nameBasedOnRange(count=len(self.inputWeightAttrs), name=self.autoCreateName, suffixSeperator="", side_name=self.auto_create_name_side)
+            self.factorAttrNames = name_utils.name_based_on_range(count=len(self.inputWeightAttrs), name=self.autoCreateName, suffixSeperator="", side_name=self.auto_create_name_side)
             self.operationVals = [self.autoCreateOperationVal for x in range(len(self.inputWeightAttrs))]
 
         # If the given weight map already exists in maya

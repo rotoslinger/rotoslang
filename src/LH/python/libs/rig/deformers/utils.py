@@ -119,39 +119,6 @@ def getPointPositionBySelectedVerts():
     # return bBox.height(), bBox.width(), bBox.depth(), bBox.center()
 
 
-def nameBasedOnRange(count, name, suffixSeperator="_", suffix="", side_name=False):
-    retNames = []
-    midpoint = count/2
-    if side_name:
-        name = name.capitalize()
-    specialized_name = name
-    for idx in range(count):
-        current = idx
-        side = "L"
-        if side_name:
-            specialized_name = "inner" + name
-        formatName = "{0}_{1}{2:02}{3}{4}"
-        if idx == midpoint:
-            side = "C"
-            current = ""
-            if side_name:
-                specialized_name = "middle" + name
-            formatName = "{0}_{1}{2}{3}{4}"
-        if idx > midpoint:
-            side = "R"
-            if side_name:
-                specialized_name = "outer" + name
-            current = count -1 - idx
-        if side_name:
-            side = side_name
-        # finalName = formatName.format(side, name, current, suffixSeperator, suffix)
-        # if suffix is "None":
-        #     finalName = finalName.replace("_None", "")
-        # for i in range(100):
-        retNames.append(formatName.format(side, specialized_name, current, suffixSeperator, suffix))
-    return retNames
-
-
 def getNodeAgnostic(name, nodeType, parent):
     if cmds.objExists(name):
         return name

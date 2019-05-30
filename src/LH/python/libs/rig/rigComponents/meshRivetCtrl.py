@@ -14,8 +14,11 @@ from rig.utils import faceWeights
 reload(faceWeights)
 import elements
 reload(elements)
-from rig_2.manipulator import nurbscurve
+from rig_2.shape import nurbscurve
+reload(nurbscurve)
+
 from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
 
 class Component(base.Component):
     def __init__(self,
@@ -75,9 +78,6 @@ class Component(base.Component):
         self.speedTzDefault = speedTzDefault
         self.curveData = curveData
         self.mesh = mesh
-        # self.translate = translate
-        # self.rotate = rotate
-        # self.scale = scale
         self.componentName = "meshRivetCtrl"
         self.guide = guide
 
@@ -94,14 +94,8 @@ class Component(base.Component):
         self.szConnectionAttr = szConnectionAttr
         self.normalConstraintPatch = normalConstraintPatch
         self.mirror = mirror
-        # if not self.translate and not self.rotate and not self.scale and selection:
-        #     sel = cmds.ls(sl=True)[0]
-        #     self.translate = cmds.xform(sel, q=True, t=True, ws=True)
-        #     self.rotate = cmds.xform(sel, q=True, ro=True, ws=True)
-        #     self.scale = cmds.xform(sel, q=True, s=True,ws=True)
 
         self.nullTransform=True
-        #self.suffix="MRC"
 
     def createHelperGeo(self):
         return
@@ -115,13 +109,13 @@ class Component(base.Component):
         # The guide is really just the buffer above the rivet.  This creates a shape for that buffer for easier selection
         self.guide_transform, self.guideShapes = nurbscurve.create_curve(manipulator_elements.sphere_small,
                                                   "{0}_{1}_GUIDE".format(self.side, self.name),
-                                                  self.buffer2,
-                                                  transform_suffix=None,
-                                                  check_existing=False,
-                                                  outliner_color = False,
-                                                  color = False,
-                                                  shape_suffix=None,
-                                                  shape_name = "{0}_{1}_GUIDE".format(self.side, self.name)                                                  )
+                                                                         self.buffer2,
+                                                                         transform_suffix=None,
+                                                                         check_existing=False,
+                                                                         outliner_color = False,
+                                                                         color = False,
+                                                                         shape_suffix=None,
+                                                                         shape_name = "{0}_{1}_GUIDE".format(self.side, self.name))
 
         tag_utils.tag_guide(self.guide_transform)
         tag_utils.create_component_tag(self.guide_transform, self.component_name)
@@ -146,17 +140,7 @@ class Component(base.Component):
         cmds.connectAttr(self.ctrl + ".message", self.cmptMasterParent + ".control")
         cmds.addAttr(self.cmptMasterParent, ln = "transform", at = "message")
         cmds.connectAttr(self.buffer2 + ".message", self.cmptMasterParent + ".transform")
-
-        # Connect guides
-        # cmds.addAttr(self.cmptMasterParent, ln = "guide_shape", at = "message")
-        # cmds.addAttr(self.ctrl, ln = "guide_shape", at = "message")
-        # cmds.connectAttr(self.guideShape.fullPathName() + ".message", self.cmptMasterParent + ".guide_shape")
-        # cmds.connectAttr(self.guideShape.fullPathName() + ".message", self.ctrl + ".guide_shape")
-
-        # guide_shape =self.guideShape.fullPathName()
-        # guide_shape_transform =misc.getParent(guide_shape)
         
-
         message_utils.create_message_attr_setup(self.cmptMasterParent, "guide", self.guide_transform, "master")
         message_utils.create_message_attr_setup(self.ctrl, "guide", self.guide_transform, "ctrl")
         
@@ -167,29 +151,11 @@ class Component(base.Component):
         tag_utils.tag_rivet_mesh(self.mesh)
 
 
-    # def preConnect(self):
-    #     misc.move(self.locator, self.translate, self.rotate, self.scale)
-        # misc.move(self.buffer2, self.translate, self.rotate, self.scale)
-        # if self.mirror:
-        #     cmds.xform(self.cmptMasterParent, ws=True, s=[-1,1,1])
-
-        #     # cmds.setAttr(self.cmptMasterParent + ".sx", -1)
-        #     cmds.refresh()
-
     def createNodes(self):
         self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
                                                 name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=False,
                                                 scale=False, offsetBuffer = self.buffer2, maintainOffsetT=True, 
                                                 maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=self.normalConstraintPatch)
-        # self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
-        #                                         name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=True,
-        #                                         scale=True, offsetBuffer = self.buffer2, maintainOffsetT=True, 
-        #                                         maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None)
-
-        # make the geo constraint much easier to find on the guide
-        # cmds.addAttr(self.buffer2, ln = "geoConstraint", at = "message")
-        # cmds.connectAttr(self.geoConstraint + ".message", self.buffer2 + ".geoConstraint")
-
 
         driverAttributes = ["txOut", "tyOut", "tzOut",
                             "rx", "ry", "rz",

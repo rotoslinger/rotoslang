@@ -54,6 +54,23 @@ def create_component_tag(node_to_tag, component_name):
         cmds.setAttr(attr, component_name, type="string")
         return attr
 
+def get_arg_node_by_component_name(component_name):
+    nodes = get_nodes_by_component_name(component_name)
+    for node in nodes:
+        if not cmds.objExists(node + ".COMPONENT_ARG_NODE"):
+            continue
+        return node
+
+
+def get_all_component_names():
+    component_pieces = get_all_with_tag("COMPONENT_MEMBERSHIP")
+    component_names = [cmds.getAttr(x + ".COMPONENT_MEMBERSHIP") for x in component_pieces]
+    # remove duplicate entries
+    component_names = list(dict.fromkeys(component_names))
+    return component_names
+
+
+
 def get_all_component_tag_vals():
     component_pieces = get_all_with_tag("COMPONENT_MEMBERSHIP")
     component_names = [cmds.getAttr(x + ".COMPONENT_MEMBERSHIP") for x in component_pieces]
@@ -100,6 +117,9 @@ def tag_weighted_mesh(node_to_tag):
     create_tag(node_to_tag, "WEIGHTED_MESH")
 
 
+def tag_arg_node(node_to_tag):
+    create_tag(node_to_tag, "COMPONENT_ARG_NODE")
+    
 def tag_rivet_mesh(node_to_tag):
     create_tag(node_to_tag, "RIVET_MESH")
 
@@ -114,6 +134,9 @@ def tag_control(node_to_tag):
 
 def tag_guide(node_to_tag):
     create_tag(node_to_tag, "GUIDE")
+
+def tag_delete_me(node_to_tag):
+    create_tag(node_to_tag, "DELETE_ME")
 
 def tag_guide_shape(node_to_tag):
     create_tag(node_to_tag, "GUIDE_SHAPE")

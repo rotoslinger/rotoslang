@@ -1,6 +1,5 @@
 from maya import cmds
 import maya.OpenMaya as OpenMaya
-import json, os
 
 from rig_2.message import utils as message_utils
 reload(message_utils)
@@ -16,7 +15,8 @@ reload(weightMapUtils)
 
 from rig.rigComponents import meshRivetCtrl
 reload(meshRivetCtrl)
-from rig_2.manipulator import nurbscurve
+from rig_2.shape import nurbscurve
+
 reload(nurbscurve)
 from rig_2.mirror import utils as mirror_utils
 reload(nurbscurve)
@@ -46,51 +46,6 @@ def set_guide_positions(transform_dict, no_export_tag_dict=None):
     cmds.refresh()
     misc.update_all_geo_constraints()
     return
-
-def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
-    export_dict = {}
-    no_export_tag_dict = tag_utils.get_no_exports()
-    export_dict["no_export_tag_dict"] = no_export_tag_dict
-    if ctrl_shape:
-        export_dict["control_shapes"] = get_control_shapes(no_export_tag_dict)
-    if guide:
-        export_dict["guide_positions"] = get_guide_positions(no_export_tag_dict)
-    if guide_shape:
-        export_dict["guide_shapes"] = get_guide_shapes(no_export_tag_dict)
-    if gimbal_shape:
-        export_dict["gimbal_shapes"] = get_gimbal_shapes(no_export_tag_dict)
-
-    # Make sure the path exists
-    path= os.path.dirname(os.path.normpath(filename))
-    if not os.path.exists(path):
-        os.mkdir(path)
-
-    file = open(filename, "wb")
-    json.dump(export_dict, file, sort_keys = False, indent = 2)
-    file.close()
-    return export_dict
-
-def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
-    file = open(filename, "rb")
-    import_dict = json.load(file)
-    file.close()
-
-    no_export_tag_dict = import_dict["no_export_tag_dict"]
-
-    # Set NO_EXPORT tags
-    tag_utils.set_tags_from_dict(no_export_tag_dict)
-    # Control Shapes
-    if ctrl_shape:
-        set_shapes_from_dict(import_dict["control_shapes"], no_export_tag_dict)
-    # guidePositions
-    if guide:
-        set_guide_positions(import_dict["guide_positions"], no_export_tag_dict)
-    # Guide Shapes
-    if guide_shape:
-        set_shapes_from_dict(import_dict["guide_shapes"], no_export_tag_dict)
-    # Gimbal Shapes
-    if gimbal_shape:
-        set_shapes_from_dict(import_dict["gimbal_shapes"], no_export_tag_dict)
 
 
 ###############################################################################

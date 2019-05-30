@@ -1,5 +1,7 @@
 from maya import cmds
 
+from rig_2.name import utils as name_utils
+reload(name_utils)
 from rig_2.message import utils as message_utils
 reload(message_utils)
 from rig_2.tag import utils as tag_utils
@@ -20,7 +22,8 @@ from rig.utils import exportUtils
 reload(exportUtils)
 from rig.rigComponents import elements
 reload(elements)
-from rig_2.manipulator import nurbscurve
+from rig_2.shape import nurbscurve
+
 reload(nurbscurve)
 from rig_2.manipulator import elements as manipulator_elements
 reload(manipulator_elements)
@@ -145,7 +148,7 @@ class MatrixDeformer(base.Deformer):
         self.deformerParent = cmds.createNode("transform", name = self.name + "_DEFORM", parent = self.rigParent)
         self.locatorNames = self.manualLocatorNames
         if not self.manualLocatorNames:
-            self.locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.locatorName, suffixSeperator="", side_name=self.auto_create_name_side)
+            self.locatorNames = name_utils.name_based_on_range(count=self.numToAdd, name=self.locatorName, suffixSeperator="", side_name=self.auto_create_name_side)
         for idx in range(self.numToAdd):
             locatorName = self.locatorNames[idx]
             if not self.autoNameWithSide and not self.manualLocatorNames:
@@ -209,14 +212,14 @@ class MatrixDeformer(base.Deformer):
             # guideShape = exportUtils.create_curve_2(elements.sphereSmall, guide_name, buffer)
             # guideShape = exportUtils.create_curve_2(elements.sphereSmall, guide_name, buffer)
             guide_transform, guideShape = nurbscurve.create_curve(manipulator_elements.sphere_medium,
-                                                     guide_name,
-                                                     buffer,
-                                                     transform_suffix=None,
-                                                     check_existing=False,
-                                                     outliner_color = False,
-                                                     color = False,
-                                                     shape_suffix=None,
-                                                     shape_name = guide_name )
+                                                                  guide_name,
+                                                                  buffer,
+                                                                  transform_suffix=None,
+                                                                  check_existing=False,
+                                                                  outliner_color = False,
+                                                                  color = False,
+                                                                  shape_suffix=None,
+                                                                  shape_name = guide_name)
 
 
             self.guide_shapes.append(guideShape[0])
@@ -271,7 +274,7 @@ class MatrixDeformer(base.Deformer):
         locatorNames = self.locatorNames
 
         if self.ctrlName and not self.manualLocatorNames and not type(self.ctrlName) == list:
-            locatorNames = deformerUtils.nameBasedOnRange(count=self.numToAdd, name=self.ctrlName, suffixSeperator="", side_name=self.auto_create_name_side)
+            locatorNames = name_utils.name_based_on_range(count=self.numToAdd, name=self.ctrlName, suffixSeperator="", side_name=self.auto_create_name_side)
 
         if type(self.ctrlName) == list:
             locatorNames = self.ctrlName

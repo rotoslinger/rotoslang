@@ -13,6 +13,9 @@ reload(animcurve_utils)
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 
+from rig_2.message import utils as message_utils
+reload(message_utils)
+
 
 def mirrorSelectedLocatorLToR(ctrls=None):
     if not ctrls:
@@ -427,3 +430,69 @@ def smart_mirror_single_attr(mesh, attr, side_to_mirror="L", center_name="C_", l
                             geo=mesh_transform,
                             flip = True)
 
+def add_dynamic_mirror_connection(maya_objects=None, hide_connected=True, translate=True, rotate=True, scale=True):
+    if not maya_objects: maya_objects = cmds.ls(sl=True)
+    for maya_object in maya_objects:
+        dynamic_mirror_connection(maya_object, hide_connected=hide_connected, translate=translate, rotate=rotate, scale=scale)
+        
+
+def dynamic_mirror_connection(maya_object, hide_connected=True, translate=True, rotate=True, scale=True):
+    # Finds the opposite side and makes a mirror connection (IN OBJECT SPACE) should do a global version option...
+    opposite_object = get_opposite_side(maya_object)
+    if not opposite_object:
+        return
+    if hide_connected:
+        cmds.setAttr(opposite_object + ".v", 0)
+    
+    if translate:
+        translate = cmds.createNode("multiplyDivide", n=maya_object+"OppositeTranslate_MTD")
+        cmds.setAttr(translate + ".input2X", -1)
+        cmds.connectAttr(maya_object + ".translate",  translate + ".input1")
+        cmds.connectAttr(translate + ".output",  opposite_object + ".translate")
+        
+    if rotate:
+        rotate = cmds.createNode("multiplyDivide", n=maya_object+"OppositeRotate_MTD")
+        cmds.setAttr(rotate + ".input2Y", -1)
+        cmds.setAttr(rotate + ".input2Z", -1)
+        cmds.connectAttr(maya_object + ".rotate",  rotate + ".input1")
+        cmds.connectAttr(rotate + ".output",  opposite_object + ".rotate")
+
+    if scale:
+        scale = cmds.createNode("multiplyDivide", n=maya_object+"OppositeScale_MTD")
+        cmds.setAttr(scale + ".input2X", -1)
+        cmds.connectAttr(maya_object + ".scale",  scale + ".input1")
+        cmds.connectAttr(scale + ".output",  opposite_object + ".scale")
+
+    # Tag for easy removal
+    for node in [maya_object, opposite_object]:
+        if translate:
+            message_utils.create_message_attr_setup(node, "opposite_translate", translate, "control" )
+        if rotate:
+            message_utils.create_message_attr_setup(node, "opposite_rotate", rotate, "control" )
+        if scale:
+            message_utils.create_message_attr_setup(node, "opposite_scale", scale, "control" )
+
+
+def remove_dynamic_mirror_connection(maya_objects=None, unhide=True):
+    if not maya_objects: maya_objects = cmds.ls(sl=True)
+    for node in maya_objects:
+        opposite_object = get_opposite_side(node)
+        if not opposite_object:
+            continue
+        for side_node in [opposite_object, node]:
+            if cmds.objExists(node + ".opposite_translate"):
+                translate = message_utils.get_node_from_message(side_node + ".opposite_translate", from_output = True, get_single=True)
+                cmds.delete(translate)
+                cmds.deleteAttr(side_node + ".opposite_translate")
+            if cmds.objExists(node + ".opposite_translate"):
+                rotate = message_utils.get_node_from_message(side_node + ".opposite_rotate", from_output = True, get_single=True)
+                cmds.delete(rotate)
+                cmds.deleteAttr(side_node + ".opposite_rotate")
+            if cmds.objExists(node + ".opposite_scale"):
+                scale = message_utils.get_node_from_message(side_node + ".opposite_scale", from_output = True, get_single=True)
+                cmds.delete(scale)
+                cmds.deleteAttr(side_node + ".opposite_scale")
+            if unhide:
+                cmds.setAttr(side_node + ".v", 1)
+
+    
