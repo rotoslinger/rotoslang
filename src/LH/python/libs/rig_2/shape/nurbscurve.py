@@ -90,6 +90,49 @@ def get_curve_shape_dict(mayaObject=None, space= OpenMaya.MSpace.kWorld):
                    }
     return nurbs_curve
 
+def safe_create_curve(curve_dict,
+                        name=None,
+                        parent=None,
+                        transform_suffix="CTL",
+                        shape_suffix="SHP",
+                        outliner_color=True,
+                        color=True,
+                        check_existing=False,
+                        mirror=False,
+                        shape_name=None,
+                        ):
+    if not name:
+        name = curve_dict["name"]
+    if not parent:
+        parent = curve_dict["parent"]
+    if parent and not cmds.objExists(parent):
+        parent = None
+
+    # Prepare transform
+    transform_name = name
+    if parent and cmds.objExists(parent) and shape_name and not shape_suffix:
+        transform_name = parent
+    if transform_suffix:
+        transform_name = "{0}_{1}".format(name, transform_suffix)
+    if not cmds.objExists(transform_name):
+        return create_curve(curve_dict=curve_dict,
+                            name=name,
+                            parent=parent,
+                            transform_suffix=transform_suffix,
+                            shape_suffix=shape_suffix,
+                            outliner_color=outliner_color,
+                            color=color,
+                            check_existing=check_existing,
+                            mirror=mirror,
+                            shape_name=shape_name,
+                            )
+    shapes = cmds.listRelatives(transform_name, s=True)
+    return transform_name, shapes
+
+
+
+
+
 def create_curve(curve_dict,
                  name=None,
                  parent=None,

@@ -4,6 +4,12 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from maya import cmds
 from ui_2 import elements
 reload(elements)
+
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+
+
+
 OPERATING_SYSTEM = sys.platform
 
 def test_func():
@@ -26,7 +32,6 @@ def get_outliner_icon(maya_object):
 def create_label(text="test", color="color: rgb(255, 102, 255);", center=True, text_size=None):
 
     label = QtWidgets.QLabel(text)
-    label.setAlignment(QtCore.Qt.AlignCenter)
     label.setStyleSheet(color)
     if text_size:
         label.setFont(QtGui.QFont("Times", text_size)) 
@@ -41,12 +46,15 @@ def create_heading(text="test", color="color: rgb(255, 102, 255);"):
     return label
 
 
-def create_button(text="test", color=elements.light_grey, bg_color= elements.grey):
+def create_button(text="test", color=elements.light_grey, bg_color= elements.grey, button_pressed_func=None):
     button = QtWidgets.QPushButton(text)
     if bg_color:
         bg_color = "background-" + bg_color
         color = "QPushButton {" + "{0}{1}".format(color, bg_color) + "}"
     button.setStyleSheet(color)
+    if button_pressed_func:
+        button.clicked.connect(button_pressed_func)
+
     return button
 
 def label_button(label_text="Test label",
@@ -90,8 +98,62 @@ def collection_list(color=elements.blue, list_height=None, selection_changed_fun
         selection_list.selectionModel().selectionChanged.connect(selection_changed_func)
     return selection_list
 
+def set_vis_selectability_by_tag(tag_name, vis, selectable):
+    tag_utils.vis_all_with_tag(tag_name, vis=vis)
+    tag_utils.make_selectable_all_with_tag(tag_name, selectable=selectable)
 
-def label_list(label_name="Test: ", color=elements.blue, list_height=100, selection_changed_func=None):
+def tag_button_row(tag_name = "GUIDE", color=elements.blue):
+    grid_layout=QtWidgets.QGridLayout()
+    buttons = []
+    layout = QtWidgets.QWidget()
+    layout.setLayout(grid_layout)
+    label = create_label(tag_name, color)
+    vis_checkbox = QtWidgets.QCheckBox("Visibility")
+    vis_checkbox.setChecked(True)
+    selectable_checkbox = QtWidgets.QCheckBox("Selectable")
+    selectable_checkbox.setChecked(True)
+    func = lambda: set_vis_selectability_by_tag(label.text(), vis_checkbox.checkState(), selectable_checkbox.checkState())
+    
+    vis_checkbox.stateChanged.connect(func)
+    selectable_checkbox.stateChanged.connect(func)
+    grid_layout.addWidget(label, 0, 0)
+    grid_layout.addWidget(vis_checkbox, 0, 1)
+    grid_layout.addWidget(selectable_checkbox, 0, 2)
+    return layout
+    
+def label_scroll_area(label_name="Test: ", color=elements.blue, list_height=200, selection_changed_func=None, parent=None):
+    scroll_area  = QtWidgets.QScrollArea()
+    scroll_area.setWidgetResizable(True)
+    scroll_area.setFixedHeight(list_height)
+    
+    # self.scrollArea  = QtWidgets.QScrollArea(self)
+    # self.scrollArea.setWidgetResizable(True)
+    # self.scrollArea.setFixedHeight(200)
+
+
+    scroll_contents = QtWidgets.QWidget()
+
+
+    contents_grid_layout=QtWidgets.QGridLayout(scroll_contents)
+    contents_grid_layout.setSpacing(10)
+
+    # Layout
+    scroll_area.setWidget(scroll_contents)
+    tag_label = QtWidgets.QLabel(label_name)
+    
+    layout=QtWidgets.QGridLayout(scroll_contents)
+    layout.setSpacing(10)
+    
+    
+    layout.addWidget(tag_label, 0,0)
+    layout.addWidget(scroll_area, 0,1)
+    
+    row_widget = QtWidgets.QWidget()
+    row_widget.setLayout(layout)
+    
+    return row_widget, contents_grid_layout, scroll_area, scroll_contents
+
+def label_list(label_name="Test: ", color=elements.blue, list_height=200, selection_changed_func=None):
     grid_layout=QtWidgets.QGridLayout()
     layout = QtWidgets.QWidget()
     layout.setLayout(grid_layout)
@@ -120,47 +182,316 @@ def get_QColor_from_style(style_color):
     style_color = [int(x) for x in style_color]
     return QtGui.QColor(*style_color)
 
-def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey):
-    # if bg_color:
-    #     bg_color = "background-" + bg_color
-    #     color = "QDockWidget {" + "{0}{1}".format(color, bg_color) + "}"
-    dock = QtWidgets.QDockWidget(text)
-    dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
-    dock.setAutoFillBackground(True)
-    dock.setStyleSheet(color)
-    # dock.setObjectName("myParentWidget");
-    dock.setFont(QtGui.QFont("Helvetica", 8, QtGui.QFont.DemiBold))
+
+
+class DockContents(QtWidgets.QFrame):
+    def __init__(self, name="TEST", parent=None, color=None, bg_color=None):
+        super(DockContents, self).__init__(parent=parent)
+        self.setAutoFillBackground(True)
+        self.setBackgroundRole(QtGui.QPalette.Background)
+        p = self.palette()
+        bg_color = get_QColor_from_style(bg_color)
+        p.setColor(self.backgroundRole(), bg_color)
+        self.setPalette(p)
+
+    # _sizehint = None
+
+    # def setSizeHint(self, width, height):
+    #     self._sizehint = QtCore.QSize(width, height)
+
+    # def sizeHint(self):
+    #     if self._sizehint is not None:
+    #         return self._sizehint
+    #     return super(DockContents, self).sizeHint()
+
+
+def change_in_size():
+    print "AAAAAAAAAAAA"
     
-    collapse_box = CollapsibleBox()
-    collapse_box.content_area.setBackgroundRole(QtGui.QPalette.Background)
+    
+class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
-    p = collapse_box.content_area.palette()
-    bg_color = get_QColor_from_style(bg_color)
-    p.setColor(collapse_box.content_area.backgroundRole(), bg_color)
-    collapse_box.content_area.setPalette(p)
+    def __init__(self, name="TEST", parent=None, widgets=None, color=None, bg_color=None):
+        super(MainWindow, self).__init__(parent=parent)
+        self.widgets = widgets
+        # QtWidgets.QMainWindow.__init__(self)
 
-    # collapse_box.content_area.setStyleSheet(elements.black)
 
-    # collapse_box.setAutoFillBackground(True)
-    # collapse_box.setStyleSheet(color)
-    # collapse_box.setBackgroundRole(QtGui.QPalette.Window)
-    # p = collapse_box.palette()
-    # p.setColor(collapse_box.backgroundRole(), QtGui.QColor(0, 0, 0))
-    # collapse_box.setPalette(p)
+        self.dock = QtWidgets.QDockWidget(name, self)
+        self.dock.setAutoFillBackground(True)
+        self.dock.setStyleSheet(color)
+        self.dock.setFont(QtGui.QFont("Helvetica", 8, QtGui.QFont.DemiBold))
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dock)
+        
+        contents = DockContents(name=name, color=color, bg_color=bg_color)
+        # contents.setSizeHint(400, 100)
+        contents.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)
+        contents.setLineWidth(2)
+        
+        layout = QtWidgets.QVBoxLayout(contents)
+        layout.setContentsMargins(0, 0, 0, 0)
 
-    collapse_box.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)
-    collapse_box.setLineWidth(2)
-    layout = QtWidgets.QVBoxLayout()
-    # dock.setStyleSheet(sheet)
-    for idx, widget in enumerate(widget_list):
-        # widget.setObjectName("myParentWidget" + str(idx))
-        # sheet = "QWidget#{0}".format("myParentWidget" + str(idx)) + "{ background-color: #1d1d1d ; color: #f8f8f8}"
-        # widget.setStyleSheet(sheet)
-        layout.addWidget(widget)
-    dock.setWidget(collapse_box)
-    collapse_box.setContentLayout(layout)
+        # self.scrollArea  = QtWidgets.QScrollArea(self)
+        # self.scrollArea.setWidgetResizable(True)
+
+
+        for index, widget in enumerate(self.widgets):
+            layout.addWidget(widget)
+
+        self.dock.setWidget(contents)
+        
+        
+def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey, parent=None):
+    dock = MainWindow(name=text, parent=parent, widgets=widget_list, color=color, bg_color=bg_color)
+        
+        
+        # self.setCentralWidget(self.dock)
+
+        # self.widgets = widgets
+        
+        
+        
+        # self.dock = QtWidgets.QDockWidget(name, self)
+        # self.scrollArea  = QtWidgets.QScrollArea()
+        # self.scrollArea.setWidgetResizable(True)
+        # self.scrollAreaWidgetContents = QtWidgets.QWidget()
+
+        # # Layout
+        # self.gridLayout=QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+
+        # self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        # # self.layout.addWidget(self.scrollArea)
+
+        # # Add
+        # for index, widget in enumerate(self.widgets):
+        #     self.gridLayout.addWidget(widget, index, 0)
+            
+        # # VBox
+        # self.main_layout= QtWidgets.QVBoxLayout()
+        # self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # self.main_layout.setSpacing(0)
+        # self.main_layout.addWidget(self.scrollArea, 1) # stretch factor > 0
+        # self.main_layout.addStretch(0) # 0 is full stretch
+            
+            
+            
+        # # add the main layout itself to the primitive ui dialog
+        # self.setLayout(self.main_layout)
+
+        # self.setCentralWidget(self.dock)
+        
+        # self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.dock)
+        
+
+
+
+
+    #     print 'Test button was clicked'
+
+# def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey):
+#     dock = QtWidgets.QDockWidget(text)
+#     dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
+#     dock.setAutoFillBackground(True)
+#     dock.setStyleSheet(color)
+#     dock.setFont(QtGui.QFont("Helvetica", 8, QtGui.QFont.DemiBold))
+
+    
+#     scrollArea  = QtWidgets.QScrollArea()
+#     scrollArea.setWidgetResizable(True)
+
+#     scrollAreaWidgetContents = DockContents()
+#     scrollAreaWidgetContents.setSizeHint(400, 100)
+#     scrollAreaWidgetContents.resize(4000,100)
+#     # layout = QtWidgets.QVBoxLayout(dock)
+#     # # layout.setContentsMargins(0, 0, 0, 0)
+#     # # layout.setSpacing(1)
+#     # layout.addStretch(0) # 0 is full stretch
+
+#     # scrollAreaWidgetContents.setLayout(layout)
+
+#     # Layout
+#     gridLayout=QtWidgets.QGridLayout(scrollAreaWidgetContents)
+
+#     scrollArea.setWidget(scrollAreaWidgetContents)
+#     # scrollArea.setFixedSize(500,300)
+#     for i in dir(scrollArea):
+#         if "add" in i or "Add" in i:
+#             print i
+#     scrollArea.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+#     scrollArea.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+    
+                                    
+#     collapse_box = CollapsibleBox()
+#     collapse_box.content_area.setBackgroundRole(QtGui.QPalette.Background)
+#     p = collapse_box.content_area.palette()
+#     bg_color = get_QColor_from_style(bg_color)
+#     p.setColor(collapse_box.content_area.backgroundRole(), bg_color)
+#     collapse_box.content_area.setPalette(p)
+
+
+#     collapse_box.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)
+#     collapse_box.setLineWidth(2)
+#     gridLayout.addWidget(collapse_box, 0, 0)
+    
+    
+#     layout = QtWidgets.QVBoxLayout()
+#     layout.setContentsMargins(0, 0, 0, 0)
+#     layout.setSpacing(0)
+#     layout.addStretch() # 0 is full stretch
+
+#     for idx, widget in enumerate(widget_list):
+#         layout.addWidget(widget,1)
+#     dock.setWidget(scrollArea)
+    
+#     print scrollArea.sizeHint()
+
+#     collapse_box.setContentLayout(layout)
+#     # scrollArea.resize(1000, 300)
+#     # scrollAreaWidgetContents.resize(4000,100)
+
+#     return dock
+
+# def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey):
+#     dock = QtWidgets.QDockWidget(text)
+#     dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
+#     dock.setAutoFillBackground(True)
+#     dock.setStyleSheet(color)
+#     dock.setFont(QtGui.QFont("Helvetica", 8, QtGui.QFont.DemiBold))
+    
+#     scrollArea  = QtWidgets.QScrollArea()
+#     scrollArea.setWidgetResizable(True)
+
+#     scrollAreaWidgetContents = QtWidgets.QWidget()
+
+#     # Layout
+#     gridLayout=QtWidgets.QGridLayout(scrollAreaWidgetContents)
+
+#     scrollArea.setWidget(scrollAreaWidgetContents)
+
+    
+    
+#     for idx, widget in enumerate(widget_list):
+#         gridLayout.addWidget(widget,idx,0)
+#     dock.setWidget(scrollArea)
+    
+
+#     return dock
+# def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey, parent=None):
+#     dock = MainWindow(name=text, parent=parent, widgets=widget_list, color=color, bg_color=bg_color)
+    # dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
+    # dock.setAutoFillBackground(True)
+    # dock.setStyleSheet(color)
+    # dock.setFont(QtGui.QFont("Helvetica", 8, QtGui.QFont.DemiBold))
+    
+    # scrollArea  = QtWidgets.QScrollArea()
+    # scrollArea.setWidgetResizable(True)
+
+    # scrollAreaWidgetContents = QtWidgets.QWidget()
+
+    # # Layout
+    # gridLayout=QtWidgets.QGridLayout(scrollAreaWidgetContents)
+
+    # scrollArea.setWidget(scrollAreaWidgetContents)
+
+    
+    
+    # for idx, widget in enumerate(widget_list):
+    #     gridLayout.addWidget(widget,idx,0)
+    # dock.setWidget(scrollArea)
+    
 
     return dock
+
+        
+class CollapsibleBox(QtWidgets.QFrame ):
+    def __init__(self, title="", parent=None, collapsed=False):
+        super(CollapsibleBox, self).__init__(parent)
+        # self.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+        self.collapsed = collapsed
+        self.toggle_button = QtWidgets.QToolButton(text=title, checkable=True, checked=not self.collapsed)
+        
+        self.toggle_button.setStyleSheet("QToolButton { border: none; }")
+        self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
+        if self.collapsed:
+            self.toggle_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+        self.toggle_button.pressed.connect(self.on_pressed)
+
+        self.toggle_animation = QtCore.QParallelAnimationGroup(self)
+
+        self.content_area = QtWidgets.QScrollArea(maximumHeight=0, minimumHeight=0)
+        self.content_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.content_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        lay = QtWidgets.QVBoxLayout(self)
+        lay.setSpacing(0)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.addWidget(self.toggle_button)
+        lay.addWidget(self.content_area)
+    
+        self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self, b"minimumHeight"))
+        self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self, b"maximumHeight"))
+        self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self.content_area, b"maximumHeight"))
+
+        if not self.collapsed:
+            self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow )
+            self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward )
+            content_animation  = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
+            self.toggle_animation.start()
+    # @QtCore.pyqtSlot()
+    @QtCore.Slot()
+    def on_pressed(self):
+        checked = self.toggle_button.isChecked()
+        self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow if not checked else QtCore.Qt.ArrowType.RightArrow)
+        self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward if not checked else QtCore.QAbstractAnimation.Backward)
+        self.toggle_animation.start()
+
+    def setContentLayout(self, layout, duration=0):
+        lay = self.content_area.layout()
+        del lay
+        self.content_area.setLayout(layout)
+        collapsed_height = self.sizeHint().height() - self.content_area.maximumHeight()
+        content_height = layout.sizeHint().height()
+        for i in range(self.toggle_animation.animationCount()):
+            animation = self.toggle_animation.animationAt(i)
+            animation.setDuration(duration)
+            animation.setStartValue(collapsed_height)
+            animation.setEndValue(collapsed_height + content_height)
+
+        content_animation = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
+        content_animation.setDuration(duration)
+
+        content_animation.setStartValue(0)
+        # if self.collapsed:
+        #     content_animation.setStartValue(0)
+        content_animation.setEndValue(content_height)
+
+    # contents = DockContents()
+    # contents.setSizeHint(400, 100)
+    
+    # layout = QtWidgets.QVBoxLayout(collapse_box)
+    # layout.setContentsMargins(0, 0, 0, 0)
+
+    
+
+    # for idx, widget in enumerate(widget_list):
+    #     layout.addWidget(widget,1)
+        
+    # dock.setWidget(contents)
+    
+
+    # return dock
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def button_row(names_funcs=[["testBox1", test_func], ["textBox2", test_func]], color=elements.blue, bg_color=elements.grey):
@@ -294,67 +625,6 @@ class Text_Box(QtWidgets.QWidget):
         self.setLayout(layout)
         self.contents.textChanged.connect(text_changed_func)
 
-class CollapsibleBox(QtWidgets.QFrame ):
-    def __init__(self, title="", parent=None, collapsed=False):
-        super(CollapsibleBox, self).__init__(parent)
-        # self.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-        self.collapsed = collapsed
-        self.toggle_button = QtWidgets.QToolButton(text=title, checkable=True, checked=not self.collapsed)
-        self.toggle_button.setStyleSheet("QToolButton { border: none; }")
-        self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
-        self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
-        if self.collapsed:
-            self.toggle_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
-        self.toggle_button.pressed.connect(self.on_pressed)
-
-        self.toggle_animation = QtCore.QParallelAnimationGroup(self)
-
-        self.content_area = QtWidgets.QScrollArea(maximumHeight=0, minimumHeight=0)
-        self.content_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.content_area.setFrameShape(QtWidgets.QFrame.NoFrame)
-
-        lay = QtWidgets.QVBoxLayout(self)
-        lay.setSpacing(0)
-        lay.setContentsMargins(0, 0, 0, 0)
-        lay.addWidget(self.toggle_button)
-        lay.addWidget(self.content_area)
-
-        self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self, b"minimumHeight"))
-        self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self, b"maximumHeight"))
-        self.toggle_animation.addAnimation(QtCore.QPropertyAnimation(self.content_area, b"maximumHeight"))
-
-        if not self.collapsed:
-            self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow )
-            self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward )
-            content_animation  = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
-            self.toggle_animation.start()
-    # @QtCore.pyqtSlot()
-    @QtCore.Slot()
-    def on_pressed(self):
-        checked = self.toggle_button.isChecked()
-        self.toggle_button.setArrowType(QtCore.Qt.ArrowType.DownArrow if not checked else QtCore.Qt.ArrowType.RightArrow)
-        self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward if not checked else QtCore.QAbstractAnimation.Backward)
-        self.toggle_animation.start()
-
-    def setContentLayout(self, layout, duration=0):
-        lay = self.content_area.layout()
-        del lay
-        self.content_area.setLayout(layout)
-        collapsed_height = self.sizeHint().height() - self.content_area.maximumHeight()
-        content_height = layout.sizeHint().height()
-        for i in range(self.toggle_animation.animationCount()):
-            animation = self.toggle_animation.animationAt(i)
-            animation.setDuration(duration)
-            animation.setStartValue(collapsed_height)
-            animation.setEndValue(collapsed_height + content_height)
-
-        content_animation = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
-        content_animation.setDuration(duration)
-
-        content_animation.setStartValue(0)
-        # if self.collapsed:
-        #     content_animation.setStartValue(0)
-        content_animation.setEndValue(content_height)
 
 def get_outliner_icon(maya_object):
     if not maya_object:

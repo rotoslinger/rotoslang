@@ -433,6 +433,8 @@ def smart_mirror_single_attr(mesh, attr, side_to_mirror="L", center_name="C_", l
 def add_dynamic_mirror_connection(maya_objects=None, hide_connected=True, translate=True, rotate=True, scale=True):
     if not maya_objects: maya_objects = cmds.ls(sl=True)
     for maya_object in maya_objects:
+        # In case it already exists
+        remove_dynamic_mirror_connection(maya_objects=[maya_object])
         dynamic_mirror_connection(maya_object, hide_connected=hide_connected, translate=translate, rotate=rotate, scale=scale)
         
 

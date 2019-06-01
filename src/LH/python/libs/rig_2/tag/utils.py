@@ -6,6 +6,11 @@ from rig_2.message import utils as message_utils
 reload(message_utils)
 from rig_2.attr import utils as attr_utils
 reload(attr_utils)
+
+from rig_2.tag import constants as tag_constants
+reload(tag_constants)
+
+
 def get_no_exports():
     return get_tag_dict(tag_filter=["NO_EXPORT"])
 
@@ -61,7 +66,21 @@ def get_arg_node_by_component_name(component_name):
             continue
         return node
 
-
+def get_all_tags_in_component(component):
+    nodes = get_nodes_by_component_name(component)
+    all_tag_attrs = []
+    for node in nodes:
+        attrs = cmds.listAttr(node, userDefined=True)
+        if not attrs:
+            continue
+        # Remove tags and message attrs
+        attrs = [x for x in attrs if x.isupper() and not cmds.addAttr(node + "." + x, q=True, attributeType=True) == "message"]
+        all_tag_attrs += attrs
+    
+    all_tag_attrs = list(dict.fromkeys(all_tag_attrs))
+    all_tag_attrs = [str(x) for x in all_tag_attrs if x not in tag_constants.ARG_UI_FILTER]
+    return all_tag_attrs
+    
 def get_all_component_names():
     component_pieces = get_all_with_tag("COMPONENT_MEMBERSHIP")
     component_names = [cmds.getAttr(x + ".COMPONENT_MEMBERSHIP") for x in component_pieces]
@@ -123,6 +142,25 @@ def tag_arg_node(node_to_tag):
 def tag_rivet_mesh(node_to_tag):
     create_tag(node_to_tag, "RIVET_MESH")
 
+# ################# FACE GUIDES ################# #
+def tag_slide_geo(node_to_tag):
+    create_tag(node_to_tag, "SLIDE_GEO")
+
+def tag_base_geo(node_to_tag):
+    create_tag(node_to_tag, "BASE_GEO")
+    
+def tag_lip_volume_curves(node_to_tag):
+    create_tag(node_to_tag, "LIP_VOLUME_CURVES")
+    
+def tag_lip_roll_curves(node_to_tag):
+    create_tag(node_to_tag, "LIP_ROLL_CURVES")
+    
+def tag_projection_mesh(node_to_tag):
+    create_tag(node_to_tag, "PROJECTION_MESH")
+    
+def tag_reference_geo(node_to_tag):
+    create_tag(node_to_tag, "REFERENCE_GEO")
+#################################################
 
 def tag_gimbal(node_to_tag):
     create_tag(node_to_tag, "GIMBAL")
@@ -153,21 +191,51 @@ def tag_falloff_weight_curve(node_to_tag):
     create_tag(node_to_tag, "FALLOFF_WEIGHT_CURVE")
 
 
-def get_all_with_tag(tag, hint=None):
-    if not hint:
-        hint = cmds.ls()
-    return [x for x in hint if cmds.objExists(x + "." + tag)]
+def get_all_with_tag(tag, hint_list=None):
+    if not hint_list:
+        hint_list = cmds.ls()
+    return [x for x in hint_list if cmds.objExists(x + "." + tag)]
 
 
 def get_all_shape_with_tag(tag):
     return [x for x in cmds.ls(shapes=True) if cmds.objExists(x + "." + tag)]
 
 
-def vis_all_with_tag(tag, vis=True):
-    nodes = get_all_with_tag(tag)
+def vis_all_with_tag(tag, vis=True, component=None):
+    hint_list=None
+    if component:
+       hint_list = get_nodes_by_component_name(component)
+    nodes = get_all_with_tag(tag, hint_list)
     for node in nodes:
-        cmds.setAttr(node + ".v", vis)
+        for shape in cmds.listRelatives(node, s=True):
+            if not shape:
+                continue
+            cmds.setAttr(shape + ".v", vis)
+    return tag, vis
+        
+def make_selectable_all_with_tag(tag, selectable=True, component=None):
+    hint_list=None
+    if component:
+       hint_list = get_nodes_by_component_name(component)
+    nodes = get_all_with_tag(tag, hint_list)
+    for node in nodes:
+        for shape in cmds.listRelatives(node, s=True):
+            # try:
+            if not shape:
+                continue
+            try:
+                if selectable:
+                    cmds.setAttr(shape + ".overrideEnabled", 1)
+                    cmds.setAttr(shape + ".overrideDisplayType", 0)
+                else:
+                    cmds.setAttr(shape + ".overrideEnabled", 1)
+                    cmds.setAttr(shape + ".overrideDisplayType", 2)
+            except:
+                continue
+    return tag, selectable
 
+def refresh_all_component_vis_select():
+    return
 
 def vis_all_shape_with_tag(tag, vis=True):
     nodes = get_all_shape_with_tag(tag)

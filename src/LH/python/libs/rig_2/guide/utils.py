@@ -83,12 +83,31 @@ def get_guide_transforms(guide_nodes, no_export_tag_dict, debug=False):
     return guide_position_dict
 
 def set_guide_transforms(guide_position_dict, no_export_tag_dict):
+    position_preservation_nodes = []
+    constraints = []
     for node in guide_position_dict.keys():
+        if not cmds.objExists(node):
+            continue
         if node in no_export_tag_dict.keys():
             continue
-        cmds.xform(node, ws=True, t=guide_position_dict[node]["translation"])
-        cmds.xform(node, ws=True, ro=guide_position_dict[node]["rotation"])
-        cmds.xform(node, ws=True, s=guide_position_dict[node]["scale"])
+        position_preservation_node = cmds.createNode("transform")
+        cmds.xform(position_preservation_node, ws=True, a=True, r=False, p=True, t=guide_position_dict[node]["translation"])
+        cmds.xform(position_preservation_node, ws=True, a=True, r=False, p=True, ro=guide_position_dict[node]["rotation"])
+        cmds.xform(position_preservation_node, ws=True, a=True, r=False, p=True, s=guide_position_dict[node]["scale"])
+        constraints.append(cmds.parentConstraint(position_preservation_node, node, mo=False)[0])
+        constraints.append(cmds.scaleConstraint(position_preservation_node, node, mo=False)[0])
+        position_preservation_nodes.append(position_preservation_node)
+    cmds.refresh()
+    cmds.delete(constraints)
+    cmds.refresh()
+    cmds.delete(position_preservation_nodes)
+        # translate = guide_position_dict[node]["translation"]
+        # rotation = guide_position_dict[node]["rotation"]
+        # scale = guide_position_dict[node]["scale"]
+        # cmds.move(translate[0], translate[1], translate[2],node,  ws=True, a=True, r=False, pcp=True, )
+        # cmds.move(translate[0], translate[1], translate[2],node,  ws=True)
+        # cmds.rotate(rotation[0], rotation[1], rotation[2], node, ws=True, a=True, r=False, pcp=True, )
+        # cmds.scale(scale[0], scale[1], scale[2], node, ws=True, a=True, r=False, pcp=True, )
 
 
 

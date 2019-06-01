@@ -71,9 +71,7 @@ class Guide_UI(button_grid_base.Base):
                                     ["Guide Shapes", True],                                                                                                                   
                                     ["Gimbal Shapes", True],
                                              ]
-
         self.restore_window_state()
-        
         # you need to fill the default asset with the last thing the UI had when you close the UI
         # self.asset_name_text_box = ui_utils.Text_Box(default_text=self.asset_name, text_changed_func=self.asset_name_text_changed)
         # self.initialize_main_window()
@@ -90,6 +88,7 @@ class Guide_UI(button_grid_base.Base):
         ui_core.import_all(self.import_dialog, self.import_checkboxes)
 
     def create_widgets(self):
+        
         super(Guide_UI, self).create_widgets()
         ######## MIRROR CURVES ###################
         self.mirror_curves_label, self.mirror_curves_button = ui_utils.label_button(label_text="Select a Curve on the right or left side and run to mirror the shape(s).",
@@ -193,41 +192,45 @@ class Guide_UI(button_grid_base.Base):
 
 
         self.main_widgets = [
+                        ui_utils.create_collapsable_dock("Guide/Shape Mirroring",
+                                                        [
+                                                            ui_utils.create_heading(text="Guide/Shape Mirroring", color=elements.blue),
+                                                            self.mirror_transforms_label, 
+                                                            self.mirror_transforms_button,
+                                                            self.mirror_type_layout,
+                                                            self.mirror_rot_type_layout,
+                                                            self.mirror_plane_label,
+                                                            self.mirror_plane_layout,
+                                                            ui_utils.separator(),
+                                                            self.space,
+                                                            self.mirror_curves_label, 
+                                                            self.mirror_curves_button,
+                                                            ui_utils.separator(),
+                                                            self.space,
+                                                            self.copy_label, 
+                                                            self.copy_button,
+                                                            self.color_layout,
+                                                            ui_utils.separator(),
+                                                            self.space,
+                                                        ]),
+                        ui_utils.create_collapsable_dock("Misc Utils",
+                                                        [
+                                                        ui_utils.create_heading(text="Misc Utils", color=elements.blue),
+                                                        self.guide_vis_label, 
+                                                        self.button_row_layout,
+                                                        ui_utils.separator(),
+                                                        self.space,
 
-                        ui_utils.create_heading(text="Guide/Shape Mirroring", color=elements.blue),
-                        self.mirror_transforms_label, 
-                        self.mirror_transforms_button,
-                        self.mirror_type_layout,
-                        self.mirror_rot_type_layout,
-                        self.mirror_plane_label,
-                        self.mirror_plane_layout,
-                        ui_utils.separator(),
-                        self.space,
-                        self.mirror_curves_label, 
-                        self.mirror_curves_button,
-                        ui_utils.separator(),
-                        self.space,
-                        self.copy_label, 
-                        self.copy_button,
-                        self.color_layout,
-                        ui_utils.separator(),
-                        self.space,
+                                                        self.select_guide_label, 
+                                                        self.select_guide_button,
+                                                        ui_utils.separator(),
+                                                        self.space,
 
-                        ui_utils.create_heading(text="Misc Utils", color=elements.blue),
-                        self.guide_vis_label, 
-                        self.button_row_layout,
-                        ui_utils.separator(),
-                        self.space,
-
-                        self.select_guide_label, 
-                        self.select_guide_button,
-                        ui_utils.separator(),
-                        self.space,
-
-                        self.geo_constraint_label, 
-                        self.geo_constraint_button,
-                        ui_utils.separator(),
-                        self.space,
+                                                        self.geo_constraint_label, 
+                                                        self.geo_constraint_button,
+                                                        ui_utils.separator(),
+                                                        self.space,
+                                                        ]),
 
                         # ui_utils.create_heading(text="Tagging", color=elements.blue),
                         # self.no_export_label, 

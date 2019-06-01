@@ -36,6 +36,9 @@ class Subcomponent(object):
                  create_control_grp=False,
                  create_subcomponent_grp=False,
                  arg_dict=None,
+                 # This will make the component the base which means you won't need a parent class
+                 # a hierarchy will be created for you (or found if it already exists)
+                 is_root=False,
                  ):
         # Arg Snapshot
         class_name = self.get_relative_path()
@@ -59,7 +62,8 @@ class Subcomponent(object):
         self.arg_dict = arg_dict
         
         self.container = container
-        
+        self.is_root = is_root
+
         # vars
         self.geo = None
         self.skeleton = None
@@ -102,7 +106,17 @@ class Subcomponent(object):
 
     def initialize(self):
         """ Check for a root, create if none """
+        hierarchy_class = self.parent_component_class
+        if self.is_root:
+            self.hierarchy_class = rig_hierarchy.base()
+            self.hierarchy_class.initialize()
 
+            if not cmds.objExists(self.hierarchy_class.root):
+                self.hierarchy_class.create()
+                
+            hierarchy_class = self.hierarchy_class
+            
+            
         self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
 
         # This is for readability, can be removed maybe...
@@ -113,17 +127,22 @@ class Subcomponent(object):
         self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
                                                                                                     name=self.name,
                                                                                                     suffix=self.suffix,
-                                                                                                    hierarchy_class=self.parent_component_class)
-        self.geo = self.parent_component_class.geo 
-        self.skeleton = self.parent_component_class.skeleton 
-        self.rig = self.parent_component_class.rig 
-        self.control = self.parent_component_class.control 
-        self.component = self.parent_component_class.component 
-        
+                                                                                                    hierarchy_class=hierarchy_class)
+        if not self.is_root:
+            # If not base, set the asset structure to be that of the parent class
+            self.geo = self.parent_component_class.geo 
+            self.skeleton = self.parent_component_class.skeleton 
+            self.rig = self.parent_component_class.rig 
+            self.control = self.parent_component_class.control 
+            self.component = self.parent_component_class.component 
+            
+        self.rig_geo = "C_{0}_GRP".format(self.component_name)
+        node_utils.get_node_agnostic("transform", name = self.rig_geo, parent=self.geo)
+
         node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
         misc.lock_attrs(node=self.aggr, attr=["all"])
-        tag_utils.create_component_tag(self.component, self.component_name)
-        tag_utils.tag_arg_node(self.component)
+        tag_utils.create_component_tag(self.aggr, self.component_name)
+        tag_utils.tag_arg_node(self.aggr)
 
     def get_arg_attrs_from_dict(self):
         for key, val in self.arg_dict.items():
@@ -132,6 +151,9 @@ class Subcomponent(object):
     def create_arg_attrs(self):
         self.arg_attrs = []
         for key, val in self.ordered_args.items():
+            # print key,val, type(val)
+            if type(val) == unicode:
+                val=str(val)
             if type(val) not in attr_constants.SUPPORTED_TYPES:
                 continue
             attr_type = type(val)

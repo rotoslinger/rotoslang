@@ -8,7 +8,7 @@ reload(tag_utils)
 def get_node_agnostic(nodeType, name, parent=None, tag_name="", component_name=""):
     node = name
     if not cmds.objExists(node):
-        node =  cmds.createNode(nodeType, n=name, p=parent)
+        node =  cmds.createNode(nodeType, n=name, p=parent, ss=True)
     if tag_name and not cmds.objExists(node + "." + tag_name):
         tag_utils.create_tag(node, tag_name=tag_name, warn=False)
     if component_name and not cmds.objExists(node + ".COMPONENT_MEMBER"):

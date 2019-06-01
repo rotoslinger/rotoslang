@@ -137,6 +137,9 @@ class Base(QtWidgets.QWidget):
         # add the main layout itself to the primitive ui dialog
         self.setLayout(self.main_layout)
         self.restore_window_state()
+        self.scrollArea.scrollContentsBy(100, 100)
+        
+        
 
     def asset_name_text_changed(self):
         self.asset_name = self.asset_name_text_box.text()
@@ -174,8 +177,9 @@ class Base(QtWidgets.QWidget):
                                                                     self.asset_name_label,
                                                                     self.asset_name_text_box,
                                                                     self.live_update_layout,
-                                                                    self.component_filter
-                                                                    ])
+                                                                    self.component_filter,
+                                                                    
+                                                                    ],parent=self)
                                   ]           
 
     def export_func(self):
@@ -295,11 +299,15 @@ class Base(QtWidgets.QWidget):
         self.restoreGeometry(self.settings_obj.value("windowGeometry"))
         if self.settings_obj.value("assetName"):
             self.asset_name = self.settings_obj.value("assetName")
-        # If save import/export path....
-        # if self.settings_obj.value("importPath"):
-        #     self.default_import_path = self.settings_obj.value("importPath")
-        # if self.settings_obj.value("exportPath"):
-        #     self.default_export_path = self.settings_obj.value("exportPath")
+        if  hasattr(self, "scrollArea"):
+            self.scroll_val_y = self.settings_obj.value("scroll_val_y")
+            self.scroll_val_x = self.settings_obj.value("scroll_val_x")
+            
+            # In order to set the scroll you have to connect a range changed....
+            self.scrollArea.verticalScrollBar().rangeChanged.connect(lambda: self.scrollArea.verticalScrollBar().setSliderPosition(self.scroll_val_y) )
+            self.scrollArea.horizontalScrollBar().rangeChanged.connect(lambda: self.scrollArea.horizontalScrollBar().setSliderPosition(self.scroll_val_x) )
+
+            
 
 
 
@@ -311,6 +319,11 @@ class Base(QtWidgets.QWidget):
         if hasattr(self, "asset_name"):
             self.asset_name = self.asset_name_text_box.text()
             self.settings_obj.setValue("assetName", self.asset_name)
+        if hasattr(self, "scrollArea"):
+            scroll_val_y = self.scrollArea.verticalScrollBar().value()
+            self.settings_obj.setValue("scroll_val_y", scroll_val_y)
+            scroll_val_x = self.scrollArea.horizontalScrollBar().value()
+            self.settings_obj.setValue("scroll_val_x", scroll_val_x)
         # If save import/export path....
         # self.settings_obj.setValue("importPath", self.import_dialog.contents.text())
         # self.settings_obj.setValue("exportPath", self.export_dialog.contents.text())
@@ -318,6 +331,7 @@ class Base(QtWidgets.QWidget):
 
     def openUI(self):
         self.initialize_main_window()
+
         if self.win_name == None or self.win_name == "":
             self.win_name = self.win_title.replace(" ", "")
         try:

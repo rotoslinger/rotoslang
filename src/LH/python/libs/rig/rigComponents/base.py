@@ -7,6 +7,8 @@ reload(control)
 reload(elements)
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
+from rig_2.node import utils as node_utils
+reload(node_utils)
 
 class Component(object):
     def __init__(self,
@@ -79,16 +81,22 @@ class Component(object):
 
 
     def createHier(self):
-        self.cmptMasterParent = cmds.createNode("transform",
-                                                n=misc.formatName(self.side,
-                                                             self.name,
-                                                             self.suffix),
-                                                ss=False)
-        if self.parent and cmds.objExists(self.parent):
-            cmds.parent(self.cmptMasterParent, self.parent)
-        elif self.parent and not cmds.objExists(self.parent):
-            self.parent = cmds.createNode("transform", n=self.parent)
-            cmds.parent(self.cmptMasterParent, self.parent)
+        self.cmptMasterParent = node_utils.get_node_agnostic("transform",
+                                                             name=misc.formatName(self.side,
+                                                                                  self.name,
+                                                                                  self.suffix),
+                                                             parent = self.parent
+                                                             )
+        # self.cmptMasterParent = cmds.createNode("transform",
+        #                                         n=misc.formatName(self.side,
+        #                                                      self.name,
+        #                                                      self.suffix),
+        #                                         ss=False)
+        # if self.parent and cmds.objExists(self.parent):
+        #     cmds.parent(self.cmptMasterParent, self.parent)
+        # elif self.parent and not cmds.objExists(self.parent):
+        #     self.parent = cmds.createNode("transform", n=self.parent)
+        #     cmds.parent(self.cmptMasterParent, self.parent)
 
     def createHelperGeo(self):
         if type(self.helperGeo) is unicode:
@@ -106,9 +114,11 @@ class Component(object):
         cmds.setAttr(node + ".componentType", self.componentName, typ = "string", l=True)
 
     def createCtrl(self):
-        self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
-                                          parent=self.cmptMasterParent,
-                                          shapeVis=False)
+        self.locator = misc.formatName(self.side, self.name, "LOC")
+        if not cmds.objExists(self.locator):
+            self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
+                                            parent=self.cmptMasterParent,
+                                            shapeVis=False)
         self.ctrl = control.Ctrl(side=self.side,
                                                 name=self.name,
                                                 parent=self.locator,

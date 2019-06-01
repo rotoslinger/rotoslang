@@ -126,6 +126,13 @@ class meshData(object):
         self.get_UVs()
         self.write_dict()
 
+def safe_create_mesh(mesh_dict, name=None, parent=None):
+    if not name:
+        name= mesh_dict.get("transform_name")
+    if not cmds.objExists(name):
+        return create_mesh(mesh_dict=mesh_dict, name=name, parent=parent)
+    return name
+
 def create_mesh(mesh_dict, name=None, parent=None):
     if not name:
         name= mesh_dict.get("transform_name")

@@ -1,4 +1,4 @@
-import json,os,sys,importlib
+import json,os,sys,importlib, ast
 
 from rig_2.guide import utils as guide_utils
 reload(guide_utils)
@@ -9,9 +9,13 @@ reload(component_base)
 
 from rig_2.tag import utils as tag_utils
 
+from rig_2.attr import constants as attr_constants
+reload(attr_constants)
+
 # this is important for the dynamic builds which will use relative module path names
 import rig_2
-
+reload(rig_2)
+from rig_2 import decorator
 def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, guide_components=True):
     export_dict = {}
     no_export_tag_dict = tag_utils.get_no_exports()
@@ -24,10 +28,10 @@ def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
         export_dict["guide_shapes"] = guide_utils.get_guide_shapes(no_export_tag_dict)
     if gimbal_shape:
         export_dict["gimbal_shapes"] = guide_utils.get_gimbal_shapes(no_export_tag_dict)
-    if guide_components:
-        print component_base.get_all_component_args()
-        export_dict["guide_components"] = component_base.get_all_component_args()
         
+    if guide_components:
+        export_dict["guide_components"] = component_base.get_all_component_args()
+
     # Make sure the path exists
     path= os.path.dirname(os.path.normpath(filename))
     if not os.path.exists(path):
@@ -67,12 +71,55 @@ def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
         guide_utils.set_shapes_from_dict(import_dict["gimbal_shapes"], no_export_tag_dict)
         
         
+def literal_eval(string_attribute):
+    try:
+        return ast.literal_eval(string_attribute)
+    except:
+        # If the string does not evaluate to strings, numbers, tuples, lists, dicts, booleans, or None it will fail silently
+        # Not going to warn because this will happen often, return of false will be enough indication of failure
+        return
+    
+def convert_value_to_literals(dictionary_value):
+    if not type(dictionary_value) == unicode and not type(dictionary_value) == str:
+        return dictionary_value
+    test_val = str(dictionary_value)
+    litteral_val = literal_eval(test_val)
+    if not litteral_val:
+        return dictionary_value
+    for attr_instance in attr_constants.SUPPORTED_TYPES:
+        if not isinstance(litteral_val, attr_instance):
+            continue
+        return litteral_val
+        
+        
+@decorator.undo_chunk
 def create_class_from_dict(components_dict):
     # Dynamically gets the module (and reloads it) from a dictionary
     if not components_dict:
         return
     for component_name in components_dict.keys():
         component_dict = components_dict[component_name]
+        for key in component_dict.keys():
+            component_dict[key] = convert_value_to_literals(component_dict[key])
+            
+            # print type(component_dict[key]), "type of the entry"
+            # if type(component_dict[key]) == unicode or type(component_dict[key]) == str:
+            #     test_val = str(component_dict[key])
+            #     print "THIS IS THE TESTING VALUE", test_val
+            #     print key, component_dict[key]
+            #     litteral_val = literal_eval(test_val)
+            #     if not litteral_val:
+            #         continue
+            #     for attr_instance in attr_constants.SUPPORTED_TYPES:
+            #         if not isinstance(litteral_val, attr_instance):
+            #             continue
+            #         print "THJS IS WORKING", litteral_val, type(litteral_val)
+                    
+            #         component_dict[key] = litteral_val
+                        
+                    
+                    
+                    
         # getattr(component_dict["class_name"], **component_dict)
         class_name = component_dict["class_name"].split(".")[-1]
         module_name = component_dict["class_name"].replace("."+ class_name, "")
