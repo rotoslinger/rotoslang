@@ -6,6 +6,12 @@ reload(misc_utils)
 reload(node_utils)
 
 class base(object):
+    """
+    Creates root groups for an asset.  Most things will go under subcomponents, but there are root groups for general things.
+    The Model will go under geo and if there are any master skeletons, rigs, or controls there are groups for these, but mostly
+    everything will end up under the Components group
+    """
+    
     def __init__(self,
                  asset_name = "asset",
                  ):
@@ -29,18 +35,11 @@ class base(object):
         self.skeleton = "{0}_{1}_{2}".format(self.side, "Skeleton", self.suffix)
         self.rig = "{0}_{1}_{2}".format(self.side, "Rig", self.suffix)
         self.control = "{0}_{1}_{2}".format(self.side, "Control", self.suffix)
-        self.component = "{0}_{1}_{2}".format(self.side, "Component", self.suffix)
+        self.component = "{0}_{1}_{2}".format(self.side, "Components", self.suffix)
 
     def create_nodes(self):
         """ Create and name rig transforms """
         node_utils.get_node_agnostic(name = self.root, nodeType="transform", parent=None)
-        # self.groups = [self.root] + node_utils.get_node_agnostic_multiple(names=[self.geo,
-        #                                                                  self.skeleton,
-        #                                                                  self.rig,
-        #                                                                  self.control,
-        #                                                                  self.component],
-        #                                                           nodeType="transform", 
-        #                                                           parent=self.root)
         init_hierarchy(side=self.side, name="", suffix=self.suffix, hierarchy_class=None, parent=self.root)
         self.groups = [self.root, self.geo, self.skeleton, self.rig, self.component]
 
@@ -76,15 +75,17 @@ def init_hierarchy(side,
                    create_rig_grp=False,
                    create_control_grp=False,
                    create_subcomponent_grp=False,
+                   create_guide_grp=False,
+                   subcomponent_group=None,
                    ):
     """
-    
+    Having a subcomponent group is going to trigger an automatic creation of all subcomponent grps
     """
     geo = "{0}_{1}Geo_{2}".format(side, name, suffix)
     skeleton = "{0}_{1}Skeleton_{2}".format(side, name, suffix)
     rig = "{0}_{1}Rig_{2}".format(side, name, suffix)
     control = "{0}_{1}Control_{2}".format(side, name, suffix)
-    component = "{0}_{1}Component_{2}".format(side, name, suffix)
+    component = "{0}_{1}Components_{2}".format(side, name, suffix)
 
     # Where to parent the new nodes.  If this is the root there will be no parent class
     class_geo = parent
@@ -92,12 +93,29 @@ def init_hierarchy(side,
     class_rig = parent
     class_control = parent
     class_component = parent
+    
     if hierarchy_class:
         class_geo = hierarchy_class.geo
         class_skeleton = hierarchy_class.skeleton
         class_rig = hierarchy_class.rig
         class_control = hierarchy_class.control
         component = hierarchy_class.component
+
+    if subcomponent_group:
+        geo = "{0}_{1}_GEO".format(side, name)
+        skeleton = "{0}_{1}_SKELETON".format(side, name)
+        rig = "{0}_{1}_RIG".format(side, name)
+        control = "{0}_{1}_CONTROL".format(side, name)
+
+        create_geo_grp=True,
+        create_skelton_grp=True,
+        create_rig_grp=True,
+        create_control_grp=True,
+        
+        class_geo = subcomponent_group
+        class_skeleton = subcomponent_group
+        class_rig = subcomponent_group
+        class_control = subcomponent_group
 
     if create_geo_grp or not hierarchy_class:
         node_utils.get_node_agnostic(name = geo, nodeType="transform", parent=class_geo)
@@ -118,6 +136,7 @@ def init_hierarchy(side,
         node_utils.get_node_agnostic(name = control, nodeType="transform", parent=class_control)
     else:
         control = class_control
+        
 
     # only create the component transform if you are creating the root
     if not hierarchy_class:

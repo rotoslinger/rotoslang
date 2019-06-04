@@ -8,6 +8,7 @@ from rig_2.component import base as component_base
 reload(component_base)
 
 from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 
 from rig_2.attr import constants as attr_constants
 reload(attr_constants)
@@ -43,7 +44,7 @@ def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
     return export_dict
 
 
-def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, guide_components=True):
+def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=True):
     file = open(filename, "rb")
     import_dict = json.load(file)
     file.close()
@@ -51,7 +52,7 @@ def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
     no_export_tag_dict = import_dict["no_export_tag_dict"]
 
     # Create your guide components first, so the guide control positions can be set after
-    if guide_components and "guide_components" in import_dict.keys():
+    if build_components and "guide_components" in import_dict.keys():
         create_class_from_dict(import_dict["guide_components"])
 
 
@@ -59,16 +60,16 @@ def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
     tag_utils.set_tags_from_dict(no_export_tag_dict)
     # Control Shapes
     if ctrl_shape:
-        guide_utils.set_shapes_from_dict(import_dict["control_shapes"], no_export_tag_dict)
+        guide_utils.set_shapes_from_dict(import_dict["control_shapes"], no_export_tag_dict, check_if_exists=True)
     # guidePositions
     if guide:
         guide_utils.set_guide_positions(import_dict["guide_positions"], no_export_tag_dict)
     # Guide Shapes
     if guide_shape:
-        guide_utils.set_shapes_from_dict(import_dict["guide_shapes"], no_export_tag_dict)
+        guide_utils.set_shapes_from_dict(import_dict["guide_shapes"], no_export_tag_dict, check_if_exists=True)
     # Gimbal Shapes
     if gimbal_shape:
-        guide_utils.set_shapes_from_dict(import_dict["gimbal_shapes"], no_export_tag_dict)
+        guide_utils.set_shapes_from_dict(import_dict["gimbal_shapes"], no_export_tag_dict, check_if_exists=True)
         
         
 def literal_eval(string_attribute):

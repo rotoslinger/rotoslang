@@ -326,7 +326,7 @@ class MatrixDeformer(base.Deformer):
                                                         selection=False,
                                                         mirror=False,
                                                         size=self.size,
-                                                        # offset = self.offset,
+                                                        offset = self.offset,
                                                         # orient = self.controlShapeOrient,
                                                         # shapeScale = self.controlShapeScale,
                                                         lockAttrs = [],

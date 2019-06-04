@@ -149,6 +149,9 @@ def tag_slide_geo(node_to_tag):
 def tag_base_geo(node_to_tag):
     create_tag(node_to_tag, "BASE_GEO")
     
+def tag_lid_curves(node_to_tag):
+    create_tag(node_to_tag, "LID_CURVES")
+    
 def tag_lip_volume_curves(node_to_tag):
     create_tag(node_to_tag, "LIP_VOLUME_CURVES")
     
@@ -190,6 +193,8 @@ def tag_weight_curve(node_to_tag):
 def tag_falloff_weight_curve(node_to_tag):
     create_tag(node_to_tag, "FALLOFF_WEIGHT_CURVE")
 
+def tag_dynamic_mirrored(node_to_tag):
+    create_tag(node_to_tag, "DYNAMIC_MIRRORED")
 
 def get_all_with_tag(tag, hint_list=None):
     if not hint_list:
@@ -207,8 +212,13 @@ def vis_all_with_tag(tag, vis=True, component=None):
        hint_list = get_nodes_by_component_name(component)
     nodes = get_all_with_tag(tag, hint_list)
     for node in nodes:
-        for shape in cmds.listRelatives(node, s=True):
-            if not shape:
+        if not node:
+            continue
+        shapes = cmds.listRelatives(node, s=True)
+        if not shapes:
+            continue
+        for shape in shapes:
+            if not cmds.objExists(shape + ".visibility"):
                 continue
             cmds.setAttr(shape + ".v", vis)
     return tag, vis
@@ -219,10 +229,12 @@ def make_selectable_all_with_tag(tag, selectable=True, component=None):
        hint_list = get_nodes_by_component_name(component)
     nodes = get_all_with_tag(tag, hint_list)
     for node in nodes:
-        for shape in cmds.listRelatives(node, s=True):
-            # try:
-            if not shape:
-                continue
+        if not node:
+            continue
+        shapes = cmds.listRelatives(node, s=True)
+        if not shapes:
+            continue
+        for shape in shapes:
             try:
                 if selectable:
                     cmds.setAttr(shape + ".overrideEnabled", 1)

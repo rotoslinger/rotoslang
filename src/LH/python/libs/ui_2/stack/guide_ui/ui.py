@@ -189,7 +189,7 @@ class Guide_UI(button_grid_base.Base):
         #                                                             button_func=remove_no_export_button_func_with_args
         #                                                             )
 
-
+        self.create_misc_utils()
 
         self.main_widgets = [
                         ui_utils.create_collapsable_dock("Guide/Shape Mirroring",
@@ -230,7 +230,20 @@ class Guide_UI(button_grid_base.Base):
                                                         self.geo_constraint_button,
                                                         ui_utils.separator(),
                                                         self.space,
+                                                        
+                                                        self.cache_label,
+                                                        self.cache_curve_weights_widget,
+                                                        self.cache_slide_widget,
+                                                        ui_utils.separator(),
+                                                        self.space,
+                                                        
+                                                        self.print_geo_label,
+                                                        self.print_geo_button,
+                                                        ui_utils.separator(),
+                                                        self.space,
+
                                                         ]),
+
 
                         # ui_utils.create_heading(text="Tagging", color=elements.blue),
                         # self.no_export_label, 

@@ -12,10 +12,10 @@ reload(manip_elements)
 from rig_2.component import godnode
 reload(godnode)
 
-class Component(component_base.Builder):
+class Component(component_base.Subcomponent):
     def __init__(self,
                  **kw):
-        super(Component, self).__init__(**kw)
+        super(Component, self).__init__(self, **kw)
         self.name="Camera"
         self.container="asset_camera"
 

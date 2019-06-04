@@ -14,7 +14,8 @@ from ui_2 import button_grid_base_core as core
 reload(core)
 from ui_2 import filtered_list
 reload(filtered_list)
-
+from rig_2.weights import utils as weight_utils
+reload(weight_utils)
 class Base(QtWidgets.QWidget):
 
     def __init__(self,
@@ -308,6 +309,22 @@ class Base(QtWidgets.QWidget):
             self.scrollArea.horizontalScrollBar().rangeChanged.connect(lambda: self.scrollArea.horizontalScrollBar().setSliderPosition(self.scroll_val_x) )
 
             
+    def create_misc_utils(self):
+        self.cache_label = ui_utils.create_label("Uncache Nodes for guide placement.", color=elements.blue)
+        
+        self.cache_slide_widget, dummy = ui_utils.button_row(names_funcs=[["Uncache Slide Deformers", lambda:weight_utils.cache_all_slide_deformers(False)],
+                                                                   ["Cache Slide Deformers", lambda:weight_utils.cache_all_slide_deformers(True)]],
+                                                      color=elements.blue, bg_color=elements.grey)
+        
+        self.cache_curve_weights_widget, dummy = ui_utils.button_row(names_funcs=[["Uncache Curve Weights", lambda:weight_utils.cache_all_curve_weights(False)],
+                                                                           ["Cache Curve Weights", lambda:weight_utils.cache_all_curve_weights(True)]],
+                                                              color=elements.blue, bg_color=elements.grey)
+                 
+        self.print_geo_label, self.print_geo_button = ui_utils.label_button("Select single transform and press button to print Geometry Dictionary.  \n"
+                                                                            + "NurbSurface, Polygon, and nurbsCurve are supported.",
+                                                                             "Print Geometry Dictionary",
+                                                                              button_func =core.print_geo_dict,
+                                                                              color=elements.blue)
 
 
 

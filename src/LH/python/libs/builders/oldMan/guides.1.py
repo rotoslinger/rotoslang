@@ -1,7 +1,7 @@
 {
   "no_export_tag_dict": {}, 
   "guide_positions": {
-    "R_lipsMouthJawShaper03Row02_CTL": {
+    "R_mouthGuideShaper03Row02_CTL": {
       "translation": [
         -3.052560551494028, 
         159.73984655029753, 
@@ -18,7 +18,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper00Row06_CTL": {
+    "L_mouthGuideShaper00Row06_CTL": {
       "translation": [
         4.7556980408797145, 
         165.07071541238432, 
@@ -35,7 +35,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper00Row05_CTL": {
+    "L_mouthGuideShaper00Row05_CTL": {
       "translation": [
         4.7556980408797145, 
         163.7379981968626, 
@@ -52,7 +52,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper02Row04_CTL": {
+    "L_mouthGuideShaper02Row04_CTL": {
       "translation": [
         3.139187722408688, 
         162.4052809813409, 
@@ -69,7 +69,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper00Row08_CTL": {
+    "L_mouthGuideShaper00Row08_CTL": {
       "translation": [
         4.7556980408797145, 
         167.7361498434277, 
@@ -86,7 +86,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper01Row02_CTL": {
+    "L_mouthGuideShaper01Row02_CTL": {
       "translation": [
         4.942554133976785, 
         159.73984655029753, 
@@ -103,7 +103,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row06_CTL": {
+    "L_mouthGuideShaper03Row06_CTL": {
       "translation": [
         3.052560587737566, 
         165.07071541238432, 
@@ -120,7 +120,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper00Row04_CTL": {
+    "L_mouthGuideShaper00Row04_CTL": {
       "translation": [
         4.7556980408797145, 
         162.40528098134095, 
@@ -154,7 +154,7 @@
         -2.4961980398409984e-16
       ]
     }, 
-    "R_lipsMouthJawShaper03Row03_CTL": {
+    "R_mouthGuideShaper03Row03_CTL": {
       "translation": [
         -3.052560551494028, 
         161.07256376581918, 
@@ -205,7 +205,7 @@
         180.89657698531707
       ]
     }, 
-    "C_lipsMouthJawShaperRow01_CTL": {
+    "C_mouthGuideShaperRow01_CTL": {
       "translation": [
         0.0, 
         158.40712933477576, 
@@ -222,7 +222,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper00Row04_CTL": {
+    "R_mouthGuideShaper00Row04_CTL": {
       "translation": [
         -4.755697934571244, 
         162.40528098134095, 
@@ -239,7 +239,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper02Row08_CTL": {
+    "L_mouthGuideShaper02Row08_CTL": {
       "translation": [
         3.139187722408688, 
         167.7361498434277, 
@@ -256,7 +256,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row04_CTL": {
+    "R_mouthGuideShaper01Row04_CTL": {
       "translation": [
         -4.942554147655879, 
         162.4052809813409, 
@@ -307,7 +307,7 @@
         179.86443374862174
       ]
     }, 
-    "R_lipsMouthJawShaper02Row05_CTL": {
+    "R_mouthGuideShaper02Row05_CTL": {
       "translation": [
         -3.1391877507416606, 
         163.73799819686258, 
@@ -341,7 +341,7 @@
         180.02011512993752
       ]
     }, 
-    "R_lipsMouthJawShaper00Row02_CTL": {
+    "R_mouthGuideShaper00Row02_CTL": {
       "translation": [
         -4.755697934571244, 
         159.73984655029753, 
@@ -358,7 +358,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawShaperRow07_CTL": {
+    "C_mouthGuideShaperRow07_CTL": {
       "translation": [
         0.0, 
         166.40343262790603, 
@@ -375,7 +375,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper00Row07_CTL": {
+    "R_mouthGuideShaper00Row07_CTL": {
       "translation": [
         -4.755697934571244, 
         166.40343262790606, 
@@ -392,7 +392,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawShaperRow02_CTL": {
+    "C_mouthGuideShaperRow02_CTL": {
       "translation": [
         0.0, 
         159.73984655029753, 
@@ -409,7 +409,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row05_CTL": {
+    "R_mouthGuideShaper01Row05_CTL": {
       "translation": [
         -4.942554147655879, 
         163.73799819686258, 
@@ -426,7 +426,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper00Row03_CTL": {
+    "L_mouthGuideShaper00Row03_CTL": {
       "translation": [
         4.7556980408797145, 
         161.07256376581918, 
@@ -460,7 +460,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper03Row08_CTL": {
+    "R_mouthGuideShaper03Row08_CTL": {
       "translation": [
         -3.052560551494028, 
         167.7361498434277, 
@@ -494,7 +494,7 @@
         -0.00599371414599592
       ]
     }, 
-    "C_lipsMouthJawShaperRow05_CTL": {
+    "C_mouthGuideShaperRow05_CTL": {
       "translation": [
         0.0, 
         163.73799819686258, 
@@ -511,7 +511,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper00Row00_CTL": {
+    "R_mouthGuideShaper00Row00_CTL": {
       "translation": [
         -4.755697934571244, 
         157.07441211925416, 
@@ -562,7 +562,7 @@
         3.382189116464318e-18
       ]
     }, 
-    "L_lipsMouthJawShaper01Row03_CTL": {
+    "L_mouthGuideShaper01Row03_CTL": {
       "translation": [
         4.942554133976785, 
         161.07256376581918, 
@@ -579,7 +579,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper02Row05_CTL": {
+    "L_mouthGuideShaper02Row05_CTL": {
       "translation": [
         3.139187722408688, 
         163.73799819686258, 
@@ -630,7 +630,7 @@
         -1.8957583197733928e-22
       ]
     }, 
-    "L_lipsMouthJawShaper03Row02_CTL": {
+    "L_mouthGuideShaper03Row02_CTL": {
       "translation": [
         3.052560587737566, 
         159.73984655029753, 
@@ -647,7 +647,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawRoot_CTL": {
+    "C_mouthGuideRoot_CTL": {
       "translation": [
         0.0, 
         162.40528098134092, 
@@ -664,7 +664,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row02_CTL": {
+    "R_mouthGuideShaper01Row02_CTL": {
       "translation": [
         -4.942554147655879, 
         159.73984655029753, 
@@ -681,7 +681,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper01Row04_CTL": {
+    "L_mouthGuideShaper01Row04_CTL": {
       "translation": [
         4.942554133976785, 
         162.4052809813409, 
@@ -698,7 +698,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row02_CTL": {
+    "R_mouthGuideShaper02Row02_CTL": {
       "translation": [
         -3.1391877507416606, 
         159.73984655029753, 
@@ -715,7 +715,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper00Row00_CTL": {
+    "L_mouthGuideShaper00Row00_CTL": {
       "translation": [
         4.7556980408797145, 
         157.07441211925416, 
@@ -800,7 +800,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row01_CTL": {
+    "L_mouthGuideShaper03Row01_CTL": {
       "translation": [
         3.052560587737566, 
         158.40712933477576, 
@@ -817,7 +817,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper03Row04_CTL": {
+    "R_mouthGuideShaper03Row04_CTL": {
       "translation": [
         -3.052560551494028, 
         162.4052809813409, 
@@ -868,7 +868,7 @@
         -1.8957583197733928e-22
       ]
     }, 
-    "R_lipsMouthJawShaper00Row03_CTL": {
+    "R_mouthGuideShaper00Row03_CTL": {
       "translation": [
         -4.755697934571244, 
         161.07256376581918, 
@@ -885,7 +885,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawShaperRow06_CTL": {
+    "C_mouthGuideShaperRow06_CTL": {
       "translation": [
         0.0, 
         165.07071541238432, 
@@ -902,7 +902,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row06_CTL": {
+    "R_mouthGuideShaper02Row06_CTL": {
       "translation": [
         -3.1391877507416606, 
         165.07071541238432, 
@@ -936,7 +936,7 @@
         359.96266464970796
       ]
     }, 
-    "L_lipsMouthJawShaper02Row03_CTL": {
+    "L_mouthGuideShaper02Row03_CTL": {
       "translation": [
         3.139187722408688, 
         161.07256376581918, 
@@ -970,7 +970,7 @@
         -0.20319190607397913
       ]
     }, 
-    "L_lipsMouthJawShaper00Row01_CTL": {
+    "L_mouthGuideShaper00Row01_CTL": {
       "translation": [
         4.7556980408797145, 
         158.40712933477582, 
@@ -987,7 +987,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row08_CTL": {
+    "R_mouthGuideShaper02Row08_CTL": {
       "translation": [
         -3.1391877507416606, 
         167.7361498434277, 
@@ -1021,7 +1021,7 @@
         -3.382189116464318e-18
       ]
     }, 
-    "L_lipsMouthJawShaper02Row02_CTL": {
+    "L_mouthGuideShaper02Row02_CTL": {
       "translation": [
         3.139187722408688, 
         159.73984655029753, 
@@ -1038,7 +1038,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper02Row06_CTL": {
+    "L_mouthGuideShaper02Row06_CTL": {
       "translation": [
         3.139187722408688, 
         165.07071541238432, 
@@ -1055,7 +1055,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawShaperRow04_CTL": {
+    "C_mouthGuideShaperRow04_CTL": {
       "translation": [
         0.0, 
         162.4052809813409, 
@@ -1072,7 +1072,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper00Row01_CTL": {
+    "R_mouthGuideShaper00Row01_CTL": {
       "translation": [
         -4.755697934571244, 
         158.40712933477582, 
@@ -1089,7 +1089,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper03Row01_CTL": {
+    "R_mouthGuideShaper03Row01_CTL": {
       "translation": [
         -3.052560551494028, 
         158.40712933477576, 
@@ -1157,7 +1157,7 @@
         -3.382189116464318e-18
       ]
     }, 
-    "L_lipsMouthJawShaper01Row06_CTL": {
+    "L_mouthGuideShaper01Row06_CTL": {
       "translation": [
         4.942554133976785, 
         165.07071541238432, 
@@ -1174,7 +1174,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row03_CTL": {
+    "L_mouthGuideShaper03Row03_CTL": {
       "translation": [
         3.052560587737566, 
         161.07256376581918, 
@@ -1191,7 +1191,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row07_CTL": {
+    "R_mouthGuideShaper01Row07_CTL": {
       "translation": [
         -4.942554147655879, 
         166.40343262790603, 
@@ -1208,7 +1208,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper00Row07_CTL": {
+    "L_mouthGuideShaper00Row07_CTL": {
       "translation": [
         4.7556980408797145, 
         166.40343262790606, 
@@ -1225,7 +1225,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper01Row01_CTL": {
+    "L_mouthGuideShaper01Row01_CTL": {
       "translation": [
         4.942554133976785, 
         158.40712933477576, 
@@ -1242,7 +1242,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row07_CTL": {
+    "R_mouthGuideShaper02Row07_CTL": {
       "translation": [
         -3.1391877507416606, 
         166.40343262790603, 
@@ -1259,7 +1259,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row05_CTL": {
+    "L_mouthGuideShaper03Row05_CTL": {
       "translation": [
         3.052560587737566, 
         163.73799819686258, 
@@ -1276,7 +1276,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row00_CTL": {
+    "L_mouthGuideShaper03Row00_CTL": {
       "translation": [
         3.052560587737566, 
         157.07441211925416, 
@@ -1327,7 +1327,7 @@
         179.10516054085738
       ]
     }, 
-    "L_lipsMouthJawShaper01Row05_CTL": {
+    "L_mouthGuideShaper01Row05_CTL": {
       "translation": [
         4.942554133976785, 
         163.73799819686258, 
@@ -1344,7 +1344,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row08_CTL": {
+    "R_mouthGuideShaper01Row08_CTL": {
       "translation": [
         -4.942554147655879, 
         167.7361498434277, 
@@ -1378,7 +1378,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row00_CTL": {
+    "R_mouthGuideShaper02Row00_CTL": {
       "translation": [
         -3.1391877507416606, 
         157.07441211925416, 
@@ -1395,7 +1395,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper02Row07_CTL": {
+    "L_mouthGuideShaper02Row07_CTL": {
       "translation": [
         3.139187722408688, 
         166.40343262790603, 
@@ -1412,7 +1412,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper02Row00_CTL": {
+    "L_mouthGuideShaper02Row00_CTL": {
       "translation": [
         3.139187722408688, 
         157.07441211925416, 
@@ -1429,7 +1429,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row07_CTL": {
+    "L_mouthGuideShaper03Row07_CTL": {
       "translation": [
         3.052560587737566, 
         166.40343262790603, 
@@ -1446,7 +1446,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper03Row05_CTL": {
+    "R_mouthGuideShaper03Row05_CTL": {
       "translation": [
         -3.052560551494028, 
         163.73799819686258, 
@@ -1463,7 +1463,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row06_CTL": {
+    "R_mouthGuideShaper01Row06_CTL": {
       "translation": [
         -4.942554147655879, 
         165.07071541238432, 
@@ -1480,7 +1480,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row04_CTL": {
+    "R_mouthGuideShaper02Row04_CTL": {
       "translation": [
         -3.1391877507416606, 
         162.4052809813409, 
@@ -1497,7 +1497,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper03Row06_CTL": {
+    "R_mouthGuideShaper03Row06_CTL": {
       "translation": [
         -3.052560551494028, 
         165.07071541238432, 
@@ -1514,7 +1514,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row01_CTL": {
+    "R_mouthGuideShaper02Row01_CTL": {
       "translation": [
         -3.1391877507416606, 
         158.40712933477576, 
@@ -1531,7 +1531,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper01Row00_CTL": {
+    "L_mouthGuideShaper01Row00_CTL": {
       "translation": [
         4.942554133976785, 
         157.07441211925416, 
@@ -1548,7 +1548,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawShaperRow00_CTL": {
+    "C_mouthGuideShaperRow00_CTL": {
       "translation": [
         0.0, 
         157.07441211925416, 
@@ -1565,7 +1565,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper00Row05_CTL": {
+    "R_mouthGuideShaper00Row05_CTL": {
       "translation": [
         -4.755697934571244, 
         163.7379981968626, 
@@ -1599,7 +1599,7 @@
         2.496198039840986e-16
       ]
     }, 
-    "L_lipsMouthJawShaper00Row02_CTL": {
+    "L_mouthGuideShaper00Row02_CTL": {
       "translation": [
         4.7556980408797145, 
         159.73984655029753, 
@@ -1633,7 +1633,7 @@
         -0.1022861265902601
       ]
     }, 
-    "R_lipsMouthJawShaper03Row07_CTL": {
+    "R_mouthGuideShaper03Row07_CTL": {
       "translation": [
         -3.052560551494028, 
         166.40343262790603, 
@@ -1650,7 +1650,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row08_CTL": {
+    "L_mouthGuideShaper03Row08_CTL": {
       "translation": [
         3.052560587737566, 
         167.7361498434277, 
@@ -1667,7 +1667,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper00Row08_CTL": {
+    "R_mouthGuideShaper00Row08_CTL": {
       "translation": [
         -4.755697934571244, 
         167.7361498434277, 
@@ -1684,7 +1684,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper02Row01_CTL": {
+    "L_mouthGuideShaper02Row01_CTL": {
       "translation": [
         3.139187722408688, 
         158.40712933477576, 
@@ -1701,7 +1701,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper00Row06_CTL": {
+    "R_mouthGuideShaper00Row06_CTL": {
       "translation": [
         -4.755697934571244, 
         165.07071541238432, 
@@ -1718,7 +1718,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row00_CTL": {
+    "R_mouthGuideShaper01Row00_CTL": {
       "translation": [
         -4.942554147655879, 
         157.07441211925416, 
@@ -1735,7 +1735,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawShaperRow03_CTL": {
+    "C_mouthGuideShaperRow03_CTL": {
       "translation": [
         0.0, 
         161.07256376581918, 
@@ -1752,7 +1752,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper02Row03_CTL": {
+    "R_mouthGuideShaper02Row03_CTL": {
       "translation": [
         -3.1391877507416606, 
         161.07256376581918, 
@@ -1769,7 +1769,7 @@
         0.0
       ]
     }, 
-    "C_lipsMouthJawShaperRow08_CTL": {
+    "C_mouthGuideShaperRow08_CTL": {
       "translation": [
         0.0, 
         167.7361498434277, 
@@ -1786,7 +1786,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper01Row08_CTL": {
+    "L_mouthGuideShaper01Row08_CTL": {
       "translation": [
         4.942554133976785, 
         167.7361498434277, 
@@ -1803,7 +1803,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper03Row04_CTL": {
+    "L_mouthGuideShaper03Row04_CTL": {
       "translation": [
         3.052560587737566, 
         162.4052809813409, 
@@ -1820,7 +1820,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row03_CTL": {
+    "R_mouthGuideShaper01Row03_CTL": {
       "translation": [
         -4.942554147655879, 
         161.07256376581918, 
@@ -1837,7 +1837,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper03Row00_CTL": {
+    "R_mouthGuideShaper03Row00_CTL": {
       "translation": [
         -3.052560551494028, 
         157.07441211925416, 
@@ -1854,7 +1854,7 @@
         0.0
       ]
     }, 
-    "R_lipsMouthJawShaper01Row01_CTL": {
+    "R_mouthGuideShaper01Row01_CTL": {
       "translation": [
         -4.942554147655879, 
         158.40712933477576, 
@@ -1871,7 +1871,7 @@
         0.0
       ]
     }, 
-    "L_lipsMouthJawShaper01Row07_CTL": {
+    "L_mouthGuideShaper01Row07_CTL": {
       "translation": [
         4.942554133976785, 
         166.40343262790603, 
@@ -4127,7 +4127,7 @@
       "name": "L_cornerGimbal_CTL", 
       "parent": "L_corner_CTL"
     }, 
-    "C_lipsMouthJawRootGimbal_CTL": {
+    "C_mouthGuideRootGimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -4171,8 +4171,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawRootGimbal_CTL", 
-          "name": "C_lipsMouthJawRootGimbalMain_SHP", 
+          "parent": "C_mouthGuideRootGimbal_CTL", 
+          "name": "C_mouthGuideRootGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -4346,8 +4346,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawRootGimbal_CTL", 
-      "parent": "C_lipsMouthJawRoot_CTL"
+      "name": "C_mouthGuideRootGimbal_CTL", 
+      "parent": "C_mouthGuideRoot_CTL"
     }, 
     "L_cornerTwistMatrixDefGimbal_CTL": {
       "shapes": [
@@ -4795,10 +4795,10 @@
     }
   }, 
   "guide_components": {
-    "lipsMouthJaw": {
+    "mouthGuide": {
       "low_lip_complex": false, 
       "num_local_influence": 9, 
-      "name": "lipsMouthJaw", 
+      "name": "mouthGuide", 
       "class_name": "rig_2.guide.face.Lips_Mouth_Jaw", 
       "slide_patch_y_overshoot": 0, 
       "up_lip_complex": false, 
@@ -4812,7 +4812,7 @@
       "projection_y_subdivisions": 5, 
       "side": "C", 
       "projection_x_subdivisions": 10, 
-      "component_name": "lipsMouthJaw"
+      "component_name": "mouthGuide"
     }
   }, 
   "control_shapes": {
@@ -6012,7 +6012,7 @@
     }
   }, 
   "guide_shapes": {
-    "R_lipsMouthJawShaper03Row02_CTL": {
+    "R_mouthGuideShaper03Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -6056,8 +6056,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row02_CTL", 
-          "name": "R_lipsMouthJawShaper03Row02Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row02_CTL", 
+          "name": "R_mouthGuideShaper03Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -6231,10 +6231,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row02_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0200_BUF"
+      "name": "R_mouthGuideShaper03Row02_CTL", 
+      "parent": "R_mouthGuideShaper03Row0200_BUF"
     }, 
-    "L_lipsMouthJawShaper00Row06_CTL": {
+    "L_mouthGuideShaper00Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -6278,8 +6278,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row06_CTL", 
-          "name": "L_lipsMouthJawShaper00Row06Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row06_CTL", 
+          "name": "L_mouthGuideShaper00Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -6453,10 +6453,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row06_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0600_BUF"
+      "name": "L_mouthGuideShaper00Row06_CTL", 
+      "parent": "L_mouthGuideShaper00Row0600_BUF"
     }, 
-    "L_lipsMouthJawShaper00Row05_CTL": {
+    "L_mouthGuideShaper00Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -6500,8 +6500,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row05_CTL", 
-          "name": "L_lipsMouthJawShaper00Row05Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row05_CTL", 
+          "name": "L_mouthGuideShaper00Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -6675,10 +6675,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row05_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0500_BUF"
+      "name": "L_mouthGuideShaper00Row05_CTL", 
+      "parent": "L_mouthGuideShaper00Row0500_BUF"
     }, 
-    "L_lipsMouthJawShaper02Row04_CTL": {
+    "L_mouthGuideShaper02Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -6722,8 +6722,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row04_CTL", 
-          "name": "L_lipsMouthJawShaper02Row04Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row04_CTL", 
+          "name": "L_mouthGuideShaper02Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -6897,10 +6897,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row04_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0400_BUF"
+      "name": "L_mouthGuideShaper02Row04_CTL", 
+      "parent": "L_mouthGuideShaper02Row0400_BUF"
     }, 
-    "L_lipsMouthJawShaper00Row08_CTL": {
+    "L_mouthGuideShaper00Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -6944,8 +6944,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row08_CTL", 
-          "name": "L_lipsMouthJawShaper00Row08Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row08_CTL", 
+          "name": "L_mouthGuideShaper00Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -7119,10 +7119,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row08_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0800_BUF"
+      "name": "L_mouthGuideShaper00Row08_CTL", 
+      "parent": "L_mouthGuideShaper00Row0800_BUF"
     }, 
-    "L_lipsMouthJawShaper01Row02_CTL": {
+    "L_mouthGuideShaper01Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -7166,8 +7166,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row02_CTL", 
-          "name": "L_lipsMouthJawShaper01Row02Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row02_CTL", 
+          "name": "L_mouthGuideShaper01Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -7341,10 +7341,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row02_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0200_BUF"
+      "name": "L_mouthGuideShaper01Row02_CTL", 
+      "parent": "L_mouthGuideShaper01Row0200_BUF"
     }, 
-    "L_lipsMouthJawShaper03Row06_CTL": {
+    "L_mouthGuideShaper03Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -7388,8 +7388,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row06_CTL", 
-          "name": "L_lipsMouthJawShaper03Row06Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row06_CTL", 
+          "name": "L_mouthGuideShaper03Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -7563,10 +7563,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row06_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0600_BUF"
+      "name": "L_mouthGuideShaper03Row06_CTL", 
+      "parent": "L_mouthGuideShaper03Row0600_BUF"
     }, 
-    "L_lipsMouthJawShaper00Row04_CTL": {
+    "L_mouthGuideShaper00Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -7610,8 +7610,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row04_CTL", 
-          "name": "L_lipsMouthJawShaper00Row04Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row04_CTL", 
+          "name": "L_mouthGuideShaper00Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -7785,8 +7785,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row04_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0400_BUF"
+      "name": "L_mouthGuideShaper00Row04_CTL", 
+      "parent": "L_mouthGuideShaper00Row0400_BUF"
     }, 
     "R_cheekMassTrans_BUF": {
       "shapes": [
@@ -8010,7 +8010,7 @@
       "name": "R_cheekMassTrans_BUF", 
       "parent": "jaw_MatDefTranslate_DEFORM"
     }, 
-    "R_lipsMouthJawShaper03Row03_CTL": {
+    "R_mouthGuideShaper03Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -8054,8 +8054,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row03_CTL", 
-          "name": "R_lipsMouthJawShaper03Row03Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row03_CTL", 
+          "name": "R_mouthGuideShaper03Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -8229,8 +8229,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row03_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0300_BUF"
+      "name": "R_mouthGuideShaper03Row03_CTL", 
+      "parent": "R_mouthGuideShaper03Row0300_BUF"
     }, 
     "L_cheekMassTrans_BUF": {
       "shapes": [
@@ -8676,7 +8676,7 @@
       "name": "R_cornerTwistMatrixDef01_BUF", 
       "parent": "R_cornerTwistMatrixDef_LOC"
     }, 
-    "C_lipsMouthJawShaperRow01_CTL": {
+    "C_mouthGuideShaperRow01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -8720,8 +8720,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow01_CTL", 
-          "name": "C_lipsMouthJawShaperRow01Main_SHP", 
+          "parent": "C_mouthGuideShaperRow01_CTL", 
+          "name": "C_mouthGuideShaperRow01Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -8895,10 +8895,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow01_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0100_BUF"
+      "name": "C_mouthGuideShaperRow01_CTL", 
+      "parent": "C_mouthGuideShaperRow0100_BUF"
     }, 
-    "R_lipsMouthJawShaper00Row04_CTL": {
+    "R_mouthGuideShaper00Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -8942,8 +8942,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row04_CTL", 
-          "name": "R_lipsMouthJawShaper00Row04Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row04_CTL", 
+          "name": "R_mouthGuideShaper00Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -9117,10 +9117,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row04_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0400_BUF"
+      "name": "R_mouthGuideShaper00Row04_CTL", 
+      "parent": "R_mouthGuideShaper00Row0400_BUF"
     }, 
-    "L_lipsMouthJawShaper02Row08_CTL": {
+    "L_mouthGuideShaper02Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -9164,8 +9164,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row08_CTL", 
-          "name": "L_lipsMouthJawShaper02Row08Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row08_CTL", 
+          "name": "L_mouthGuideShaper02Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -9339,10 +9339,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row08_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0800_BUF"
+      "name": "L_mouthGuideShaper02Row08_CTL", 
+      "parent": "L_mouthGuideShaper02Row0800_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row04_CTL": {
+    "R_mouthGuideShaper01Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -9386,8 +9386,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row04_CTL", 
-          "name": "R_lipsMouthJawShaper01Row04Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row04_CTL", 
+          "name": "R_mouthGuideShaper01Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -9561,8 +9561,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row04_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0400_BUF"
+      "name": "R_mouthGuideShaper01Row04_CTL", 
+      "parent": "R_mouthGuideShaper01Row0400_BUF"
     }, 
     "L_cornerRot_BUF": {
       "shapes": [
@@ -10008,7 +10008,7 @@
       "name": "L_corner01_BUF", 
       "parent": "L_corner_LOC"
     }, 
-    "R_lipsMouthJawShaper02Row05_CTL": {
+    "R_mouthGuideShaper02Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -10052,8 +10052,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row05_CTL", 
-          "name": "R_lipsMouthJawShaper02Row05Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row05_CTL", 
+          "name": "R_mouthGuideShaper02Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -10227,8 +10227,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row05_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0500_BUF"
+      "name": "R_mouthGuideShaper02Row05_CTL", 
+      "parent": "R_mouthGuideShaper02Row0500_BUF"
     }, 
     "R_cornerMatrixDef01_BUF": {
       "shapes": [
@@ -10452,7 +10452,7 @@
       "name": "R_cornerMatrixDef01_BUF", 
       "parent": "R_cornerMatrixDef_LOC"
     }, 
-    "R_lipsMouthJawShaper00Row02_CTL": {
+    "R_mouthGuideShaper00Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -10496,8 +10496,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row02_CTL", 
-          "name": "R_lipsMouthJawShaper00Row02Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row02_CTL", 
+          "name": "R_mouthGuideShaper00Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -10671,10 +10671,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row02_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0200_BUF"
+      "name": "R_mouthGuideShaper00Row02_CTL", 
+      "parent": "R_mouthGuideShaper00Row0200_BUF"
     }, 
-    "C_lipsMouthJawShaperRow07_CTL": {
+    "C_mouthGuideShaperRow07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -10718,8 +10718,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow07_CTL", 
-          "name": "C_lipsMouthJawShaperRow07Main_SHP", 
+          "parent": "C_mouthGuideShaperRow07_CTL", 
+          "name": "C_mouthGuideShaperRow07Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -10893,10 +10893,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow07_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0700_BUF"
+      "name": "C_mouthGuideShaperRow07_CTL", 
+      "parent": "C_mouthGuideShaperRow0700_BUF"
     }, 
-    "R_lipsMouthJawShaper00Row07_CTL": {
+    "R_mouthGuideShaper00Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -10940,8 +10940,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row07_CTL", 
-          "name": "R_lipsMouthJawShaper00Row07Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row07_CTL", 
+          "name": "R_mouthGuideShaper00Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -11115,10 +11115,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row07_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0700_BUF"
+      "name": "R_mouthGuideShaper00Row07_CTL", 
+      "parent": "R_mouthGuideShaper00Row0700_BUF"
     }, 
-    "C_lipsMouthJawShaperRow02_CTL": {
+    "C_mouthGuideShaperRow02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -11162,8 +11162,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow02_CTL", 
-          "name": "C_lipsMouthJawShaperRow02Main_SHP", 
+          "parent": "C_mouthGuideShaperRow02_CTL", 
+          "name": "C_mouthGuideShaperRow02Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -11337,10 +11337,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow02_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0200_BUF"
+      "name": "C_mouthGuideShaperRow02_CTL", 
+      "parent": "C_mouthGuideShaperRow0200_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row05_CTL": {
+    "R_mouthGuideShaper01Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -11384,8 +11384,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row05_CTL", 
-          "name": "R_lipsMouthJawShaper01Row05Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row05_CTL", 
+          "name": "R_mouthGuideShaper01Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -11559,10 +11559,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row05_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0500_BUF"
+      "name": "R_mouthGuideShaper01Row05_CTL", 
+      "parent": "R_mouthGuideShaper01Row0500_BUF"
     }, 
-    "L_lipsMouthJawShaper00Row03_CTL": {
+    "L_mouthGuideShaper00Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -11606,8 +11606,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row03_CTL", 
-          "name": "L_lipsMouthJawShaper00Row03Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row03_CTL", 
+          "name": "L_mouthGuideShaper00Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -11781,8 +11781,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row03_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0300_BUF"
+      "name": "L_mouthGuideShaper00Row03_CTL", 
+      "parent": "L_mouthGuideShaper00Row0300_BUF"
     }, 
     "C_mouthRot_BUF": {
       "shapes": [
@@ -12006,7 +12006,7 @@
       "name": "C_mouthRot_BUF", 
       "parent": "jaw_MatDefRotate_DEFORM"
     }, 
-    "R_lipsMouthJawShaper03Row08_CTL": {
+    "R_mouthGuideShaper03Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -12050,8 +12050,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row08_CTL", 
-          "name": "R_lipsMouthJawShaper03Row08Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row08_CTL", 
+          "name": "R_mouthGuideShaper03Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -12225,8 +12225,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row08_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0800_BUF"
+      "name": "R_mouthGuideShaper03Row08_CTL", 
+      "parent": "R_mouthGuideShaper03Row0800_BUF"
     }, 
     "C_jawMatrixDef01_BUF": {
       "shapes": [
@@ -12450,7 +12450,7 @@
       "name": "C_jawMatrixDef01_BUF", 
       "parent": "C_jawMatrixDef_LOC"
     }, 
-    "C_lipsMouthJawShaperRow05_CTL": {
+    "C_mouthGuideShaperRow05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -12494,8 +12494,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow05_CTL", 
-          "name": "C_lipsMouthJawShaperRow05Main_SHP", 
+          "parent": "C_mouthGuideShaperRow05_CTL", 
+          "name": "C_mouthGuideShaperRow05Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -12669,10 +12669,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow05_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0500_BUF"
+      "name": "C_mouthGuideShaperRow05_CTL", 
+      "parent": "C_mouthGuideShaperRow0500_BUF"
     }, 
-    "R_lipsMouthJawShaper00Row00_CTL": {
+    "R_mouthGuideShaper00Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -12716,8 +12716,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row00_CTL", 
-          "name": "R_lipsMouthJawShaper00Row00Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row00_CTL", 
+          "name": "R_mouthGuideShaper00Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -12891,8 +12891,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row00_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0000_BUF"
+      "name": "R_mouthGuideShaper00Row00_CTL", 
+      "parent": "R_mouthGuideShaper00Row0000_BUF"
     }, 
     "L_cornerTrans_BUF": {
       "shapes": [
@@ -13338,7 +13338,7 @@
       "name": "R_cornerTwistTrans_BUF", 
       "parent": "jaw_MatDefTranslate_DEFORM"
     }, 
-    "L_lipsMouthJawShaper01Row03_CTL": {
+    "L_mouthGuideShaper01Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -13382,8 +13382,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row03_CTL", 
-          "name": "L_lipsMouthJawShaper01Row03Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row03_CTL", 
+          "name": "L_mouthGuideShaper01Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -13557,10 +13557,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row03_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0300_BUF"
+      "name": "L_mouthGuideShaper01Row03_CTL", 
+      "parent": "L_mouthGuideShaper01Row0300_BUF"
     }, 
-    "L_lipsMouthJawShaper02Row05_CTL": {
+    "L_mouthGuideShaper02Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -13604,8 +13604,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row05_CTL", 
-          "name": "L_lipsMouthJawShaper02Row05Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row05_CTL", 
+          "name": "L_mouthGuideShaper02Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -13779,8 +13779,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row05_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0500_BUF"
+      "name": "L_mouthGuideShaper02Row05_CTL", 
+      "parent": "L_mouthGuideShaper02Row0500_BUF"
     }, 
     "R_cornerTrans_BUF": {
       "shapes": [
@@ -14226,7 +14226,7 @@
       "name": "C_jawRot_BUF", 
       "parent": "jaw_MatDefRotate_DEFORM"
     }, 
-    "L_lipsMouthJawShaper03Row02_CTL": {
+    "L_mouthGuideShaper03Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -14270,8 +14270,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row02_CTL", 
-          "name": "L_lipsMouthJawShaper03Row02Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row02_CTL", 
+          "name": "L_mouthGuideShaper03Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -14445,10 +14445,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row02_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0200_BUF"
+      "name": "L_mouthGuideShaper03Row02_CTL", 
+      "parent": "L_mouthGuideShaper03Row0200_BUF"
     }, 
-    "C_lipsMouthJawRoot_CTL": {
+    "C_mouthGuideRoot_CTL": {
       "shapes": [
         {
           "knots": [
@@ -14472,8 +14472,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 3, 
-          "parent": "C_lipsMouthJawRoot_CTL", 
-          "name": "C_lipsMouthJawRootMain_SHP", 
+          "parent": "C_mouthGuideRoot_CTL", 
+          "name": "C_mouthGuideRootMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -14537,10 +14537,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawRoot_CTL", 
-      "parent": "C_lipsMouthJawRoot00_BUF"
+      "name": "C_mouthGuideRoot_CTL", 
+      "parent": "C_mouthGuideRoot00_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row02_CTL": {
+    "R_mouthGuideShaper01Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -14584,8 +14584,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row02_CTL", 
-          "name": "R_lipsMouthJawShaper01Row02Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row02_CTL", 
+          "name": "R_mouthGuideShaper01Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -14759,10 +14759,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row02_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0200_BUF"
+      "name": "R_mouthGuideShaper01Row02_CTL", 
+      "parent": "R_mouthGuideShaper01Row0200_BUF"
     }, 
-    "L_lipsMouthJawShaper01Row04_CTL": {
+    "L_mouthGuideShaper01Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -14806,8 +14806,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row04_CTL", 
-          "name": "L_lipsMouthJawShaper01Row04Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row04_CTL", 
+          "name": "L_mouthGuideShaper01Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -14981,10 +14981,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row04_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0400_BUF"
+      "name": "L_mouthGuideShaper01Row04_CTL", 
+      "parent": "L_mouthGuideShaper01Row0400_BUF"
     }, 
-    "R_lipsMouthJawShaper02Row02_CTL": {
+    "R_mouthGuideShaper02Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -15028,8 +15028,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row02_CTL", 
-          "name": "R_lipsMouthJawShaper02Row02Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row02_CTL", 
+          "name": "R_mouthGuideShaper02Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -15203,10 +15203,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row02_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0200_BUF"
+      "name": "R_mouthGuideShaper02Row02_CTL", 
+      "parent": "R_mouthGuideShaper02Row0200_BUF"
     }, 
-    "L_lipsMouthJawShaper00Row00_CTL": {
+    "L_mouthGuideShaper00Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -15250,8 +15250,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row00_CTL", 
-          "name": "L_lipsMouthJawShaper00Row00Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row00_CTL", 
+          "name": "L_mouthGuideShaper00Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -15425,8 +15425,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row00_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0000_BUF"
+      "name": "L_mouthGuideShaper00Row00_CTL", 
+      "parent": "L_mouthGuideShaper00Row0000_BUF"
     }, 
     "C_mouthTrans_BUF": {
       "shapes": [
@@ -16316,7 +16316,7 @@
       "name": "C_jawSecondaryTrans_BUF", 
       "parent": "jaw_MatDefTranslate_DEFORM"
     }, 
-    "L_lipsMouthJawShaper03Row01_CTL": {
+    "L_mouthGuideShaper03Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -16360,8 +16360,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row01_CTL", 
-          "name": "L_lipsMouthJawShaper03Row01Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row01_CTL", 
+          "name": "L_mouthGuideShaper03Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -16535,10 +16535,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row01_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0100_BUF"
+      "name": "L_mouthGuideShaper03Row01_CTL", 
+      "parent": "L_mouthGuideShaper03Row0100_BUF"
     }, 
-    "R_lipsMouthJawShaper03Row04_CTL": {
+    "R_mouthGuideShaper03Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -16582,8 +16582,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row04_CTL", 
-          "name": "R_lipsMouthJawShaper03Row04Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row04_CTL", 
+          "name": "R_mouthGuideShaper03Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -16757,8 +16757,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row04_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0400_BUF"
+      "name": "R_mouthGuideShaper03Row04_CTL", 
+      "parent": "R_mouthGuideShaper03Row0400_BUF"
     }, 
     "C_jawSecondaryMatrixDef01_BUF": {
       "shapes": [
@@ -17204,7 +17204,7 @@
       "name": "C_jawTrans_BUF", 
       "parent": "jaw_MatDefTranslate_DEFORM"
     }, 
-    "R_lipsMouthJawShaper00Row03_CTL": {
+    "R_mouthGuideShaper00Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -17248,8 +17248,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row03_CTL", 
-          "name": "R_lipsMouthJawShaper00Row03Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row03_CTL", 
+          "name": "R_mouthGuideShaper00Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -17423,10 +17423,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row03_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0300_BUF"
+      "name": "R_mouthGuideShaper00Row03_CTL", 
+      "parent": "R_mouthGuideShaper00Row0300_BUF"
     }, 
-    "C_lipsMouthJawShaperRow06_CTL": {
+    "C_mouthGuideShaperRow06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -17470,8 +17470,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow06_CTL", 
-          "name": "C_lipsMouthJawShaperRow06Main_SHP", 
+          "parent": "C_mouthGuideShaperRow06_CTL", 
+          "name": "C_mouthGuideShaperRow06Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -17645,10 +17645,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow06_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0600_BUF"
+      "name": "C_mouthGuideShaperRow06_CTL", 
+      "parent": "C_mouthGuideShaperRow0600_BUF"
     }, 
-    "R_lipsMouthJawShaper02Row06_CTL": {
+    "R_mouthGuideShaper02Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -17692,8 +17692,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row06_CTL", 
-          "name": "R_lipsMouthJawShaper02Row06Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row06_CTL", 
+          "name": "R_mouthGuideShaper02Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -17867,8 +17867,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row06_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0600_BUF"
+      "name": "R_mouthGuideShaper02Row06_CTL", 
+      "parent": "R_mouthGuideShaper02Row0600_BUF"
     }, 
     "R_cheekMassMatrixDef01_BUF": {
       "shapes": [
@@ -18092,7 +18092,7 @@
       "name": "R_cheekMassMatrixDef01_BUF", 
       "parent": "R_cheekMassMatrixDef_LOC"
     }, 
-    "L_lipsMouthJawShaper02Row03_CTL": {
+    "L_mouthGuideShaper02Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -18136,8 +18136,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row03_CTL", 
-          "name": "L_lipsMouthJawShaper02Row03Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row03_CTL", 
+          "name": "L_mouthGuideShaper02Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -18311,8 +18311,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row03_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0300_BUF"
+      "name": "L_mouthGuideShaper02Row03_CTL", 
+      "parent": "L_mouthGuideShaper02Row0300_BUF"
     }, 
     "C_mouth01_BUF": {
       "shapes": [
@@ -18536,7 +18536,7 @@
       "name": "C_mouth01_BUF", 
       "parent": "C_mouth_LOC"
     }, 
-    "L_lipsMouthJawShaper00Row01_CTL": {
+    "L_mouthGuideShaper00Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -18580,8 +18580,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row01_CTL", 
-          "name": "L_lipsMouthJawShaper00Row01Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row01_CTL", 
+          "name": "L_mouthGuideShaper00Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -18755,10 +18755,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row01_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0100_BUF"
+      "name": "L_mouthGuideShaper00Row01_CTL", 
+      "parent": "L_mouthGuideShaper00Row0100_BUF"
     }, 
-    "R_lipsMouthJawShaper02Row08_CTL": {
+    "R_mouthGuideShaper02Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -18802,8 +18802,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row08_CTL", 
-          "name": "R_lipsMouthJawShaper02Row08Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row08_CTL", 
+          "name": "R_mouthGuideShaper02Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -18977,8 +18977,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row08_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0800_BUF"
+      "name": "R_mouthGuideShaper02Row08_CTL", 
+      "parent": "R_mouthGuideShaper02Row0800_BUF"
     }, 
     "L_cornerTwistTrans_BUF": {
       "shapes": [
@@ -19202,7 +19202,7 @@
       "name": "L_cornerTwistTrans_BUF", 
       "parent": "jaw_MatDefTranslate_DEFORM"
     }, 
-    "L_lipsMouthJawShaper02Row02_CTL": {
+    "L_mouthGuideShaper02Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -19246,8 +19246,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row02_CTL", 
-          "name": "L_lipsMouthJawShaper02Row02Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row02_CTL", 
+          "name": "L_mouthGuideShaper02Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -19421,10 +19421,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row02_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0200_BUF"
+      "name": "L_mouthGuideShaper02Row02_CTL", 
+      "parent": "L_mouthGuideShaper02Row0200_BUF"
     }, 
-    "L_lipsMouthJawShaper02Row06_CTL": {
+    "L_mouthGuideShaper02Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -19468,8 +19468,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row06_CTL", 
-          "name": "L_lipsMouthJawShaper02Row06Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row06_CTL", 
+          "name": "L_mouthGuideShaper02Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -19643,10 +19643,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row06_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0600_BUF"
+      "name": "L_mouthGuideShaper02Row06_CTL", 
+      "parent": "L_mouthGuideShaper02Row0600_BUF"
     }, 
-    "C_lipsMouthJawShaperRow04_CTL": {
+    "C_mouthGuideShaperRow04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -19690,8 +19690,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow04_CTL", 
-          "name": "C_lipsMouthJawShaperRow04Main_SHP", 
+          "parent": "C_mouthGuideShaperRow04_CTL", 
+          "name": "C_mouthGuideShaperRow04Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -19865,10 +19865,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow04_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0400_BUF"
+      "name": "C_mouthGuideShaperRow04_CTL", 
+      "parent": "C_mouthGuideShaperRow0400_BUF"
     }, 
-    "R_lipsMouthJawShaper00Row01_CTL": {
+    "R_mouthGuideShaper00Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -19912,8 +19912,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row01_CTL", 
-          "name": "R_lipsMouthJawShaper00Row01Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row01_CTL", 
+          "name": "R_mouthGuideShaper00Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -20087,10 +20087,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row01_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0100_BUF"
+      "name": "R_mouthGuideShaper00Row01_CTL", 
+      "parent": "R_mouthGuideShaper00Row0100_BUF"
     }, 
-    "R_lipsMouthJawShaper03Row01_CTL": {
+    "R_mouthGuideShaper03Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -20134,8 +20134,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row01_CTL", 
-          "name": "R_lipsMouthJawShaper03Row01Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row01_CTL", 
+          "name": "R_mouthGuideShaper03Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -20309,8 +20309,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row01_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0100_BUF"
+      "name": "R_mouthGuideShaper03Row01_CTL", 
+      "parent": "R_mouthGuideShaper03Row0100_BUF"
     }, 
     "R_corner01_BUF": {
       "shapes": [
@@ -20978,7 +20978,7 @@
       "name": "R_cornerTwistRot_BUF", 
       "parent": "jaw_MatDefRotate_DEFORM"
     }, 
-    "L_lipsMouthJawShaper01Row06_CTL": {
+    "L_mouthGuideShaper01Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -21022,8 +21022,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row06_CTL", 
-          "name": "L_lipsMouthJawShaper01Row06Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row06_CTL", 
+          "name": "L_mouthGuideShaper01Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -21197,10 +21197,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row06_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0600_BUF"
+      "name": "L_mouthGuideShaper01Row06_CTL", 
+      "parent": "L_mouthGuideShaper01Row0600_BUF"
     }, 
-    "L_lipsMouthJawShaper03Row03_CTL": {
+    "L_mouthGuideShaper03Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -21244,8 +21244,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row03_CTL", 
-          "name": "L_lipsMouthJawShaper03Row03Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row03_CTL", 
+          "name": "L_mouthGuideShaper03Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -21419,10 +21419,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row03_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0300_BUF"
+      "name": "L_mouthGuideShaper03Row03_CTL", 
+      "parent": "L_mouthGuideShaper03Row0300_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row07_CTL": {
+    "R_mouthGuideShaper01Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -21466,8 +21466,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row07_CTL", 
-          "name": "R_lipsMouthJawShaper01Row07Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row07_CTL", 
+          "name": "R_mouthGuideShaper01Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -21641,10 +21641,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row07_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0700_BUF"
+      "name": "R_mouthGuideShaper01Row07_CTL", 
+      "parent": "R_mouthGuideShaper01Row0700_BUF"
     }, 
-    "L_lipsMouthJawShaper00Row07_CTL": {
+    "L_mouthGuideShaper00Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -21688,8 +21688,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row07_CTL", 
-          "name": "L_lipsMouthJawShaper00Row07Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row07_CTL", 
+          "name": "L_mouthGuideShaper00Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -21863,10 +21863,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row07_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0700_BUF"
+      "name": "L_mouthGuideShaper00Row07_CTL", 
+      "parent": "L_mouthGuideShaper00Row0700_BUF"
     }, 
-    "L_lipsMouthJawShaper01Row01_CTL": {
+    "L_mouthGuideShaper01Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -21910,8 +21910,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row01_CTL", 
-          "name": "L_lipsMouthJawShaper01Row01Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row01_CTL", 
+          "name": "L_mouthGuideShaper01Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -22085,10 +22085,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row01_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0100_BUF"
+      "name": "L_mouthGuideShaper01Row01_CTL", 
+      "parent": "L_mouthGuideShaper01Row0100_BUF"
     }, 
-    "R_lipsMouthJawShaper02Row07_CTL": {
+    "R_mouthGuideShaper02Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -22132,8 +22132,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row07_CTL", 
-          "name": "R_lipsMouthJawShaper02Row07Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row07_CTL", 
+          "name": "R_mouthGuideShaper02Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -22307,10 +22307,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row07_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0700_BUF"
+      "name": "R_mouthGuideShaper02Row07_CTL", 
+      "parent": "R_mouthGuideShaper02Row0700_BUF"
     }, 
-    "L_lipsMouthJawShaper03Row05_CTL": {
+    "L_mouthGuideShaper03Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -22354,8 +22354,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row05_CTL", 
-          "name": "L_lipsMouthJawShaper03Row05Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row05_CTL", 
+          "name": "L_mouthGuideShaper03Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -22529,10 +22529,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row05_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0500_BUF"
+      "name": "L_mouthGuideShaper03Row05_CTL", 
+      "parent": "L_mouthGuideShaper03Row0500_BUF"
     }, 
-    "L_lipsMouthJawShaper03Row00_CTL": {
+    "L_mouthGuideShaper03Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -22576,8 +22576,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row00_CTL", 
-          "name": "L_lipsMouthJawShaper03Row00Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row00_CTL", 
+          "name": "L_mouthGuideShaper03Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -22751,8 +22751,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row00_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0000_BUF"
+      "name": "L_mouthGuideShaper03Row00_CTL", 
+      "parent": "L_mouthGuideShaper03Row0000_BUF"
     }, 
     "L_cornerMatrixDef01_BUF": {
       "shapes": [
@@ -23198,7 +23198,7 @@
       "name": "L_cornerTwistMatrixDef01_BUF", 
       "parent": "L_cornerTwistMatrixDef_LOC"
     }, 
-    "L_lipsMouthJawShaper01Row05_CTL": {
+    "L_mouthGuideShaper01Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -23242,8 +23242,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row05_CTL", 
-          "name": "L_lipsMouthJawShaper01Row05Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row05_CTL", 
+          "name": "L_mouthGuideShaper01Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -23417,10 +23417,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row05_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0500_BUF"
+      "name": "L_mouthGuideShaper01Row05_CTL", 
+      "parent": "L_mouthGuideShaper01Row0500_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row08_CTL": {
+    "R_mouthGuideShaper01Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -23464,8 +23464,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row08_CTL", 
-          "name": "R_lipsMouthJawShaper01Row08Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row08_CTL", 
+          "name": "R_mouthGuideShaper01Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -23639,8 +23639,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row08_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0800_BUF"
+      "name": "R_mouthGuideShaper01Row08_CTL", 
+      "parent": "R_mouthGuideShaper01Row0800_BUF"
     }, 
     "C_jawSecondaryRot_BUF": {
       "shapes": [
@@ -23864,7 +23864,7 @@
       "name": "C_jawSecondaryRot_BUF", 
       "parent": "jaw_MatDefRotate_DEFORM"
     }, 
-    "R_lipsMouthJawShaper02Row00_CTL": {
+    "R_mouthGuideShaper02Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -23908,8 +23908,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row00_CTL", 
-          "name": "R_lipsMouthJawShaper02Row00Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row00_CTL", 
+          "name": "R_mouthGuideShaper02Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -24083,10 +24083,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row00_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0000_BUF"
+      "name": "R_mouthGuideShaper02Row00_CTL", 
+      "parent": "R_mouthGuideShaper02Row0000_BUF"
     }, 
-    "L_lipsMouthJawShaper02Row07_CTL": {
+    "L_mouthGuideShaper02Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -24130,8 +24130,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row07_CTL", 
-          "name": "L_lipsMouthJawShaper02Row07Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row07_CTL", 
+          "name": "L_mouthGuideShaper02Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -24305,10 +24305,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row07_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0700_BUF"
+      "name": "L_mouthGuideShaper02Row07_CTL", 
+      "parent": "L_mouthGuideShaper02Row0700_BUF"
     }, 
-    "L_lipsMouthJawShaper02Row00_CTL": {
+    "L_mouthGuideShaper02Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -24352,8 +24352,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row00_CTL", 
-          "name": "L_lipsMouthJawShaper02Row00Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row00_CTL", 
+          "name": "L_mouthGuideShaper02Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -24527,10 +24527,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row00_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0000_BUF"
+      "name": "L_mouthGuideShaper02Row00_CTL", 
+      "parent": "L_mouthGuideShaper02Row0000_BUF"
     }, 
-    "L_lipsMouthJawShaper03Row07_CTL": {
+    "L_mouthGuideShaper03Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -24574,8 +24574,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row07_CTL", 
-          "name": "L_lipsMouthJawShaper03Row07Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row07_CTL", 
+          "name": "L_mouthGuideShaper03Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -24749,10 +24749,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row07_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0700_BUF"
+      "name": "L_mouthGuideShaper03Row07_CTL", 
+      "parent": "L_mouthGuideShaper03Row0700_BUF"
     }, 
-    "R_lipsMouthJawShaper03Row05_CTL": {
+    "R_mouthGuideShaper03Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -24796,8 +24796,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row05_CTL", 
-          "name": "R_lipsMouthJawShaper03Row05Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row05_CTL", 
+          "name": "R_mouthGuideShaper03Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -24971,10 +24971,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row05_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0500_BUF"
+      "name": "R_mouthGuideShaper03Row05_CTL", 
+      "parent": "R_mouthGuideShaper03Row0500_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row06_CTL": {
+    "R_mouthGuideShaper01Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -25018,8 +25018,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row06_CTL", 
-          "name": "R_lipsMouthJawShaper01Row06Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row06_CTL", 
+          "name": "R_mouthGuideShaper01Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -25193,10 +25193,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row06_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0600_BUF"
+      "name": "R_mouthGuideShaper01Row06_CTL", 
+      "parent": "R_mouthGuideShaper01Row0600_BUF"
     }, 
-    "R_lipsMouthJawShaper02Row04_CTL": {
+    "R_mouthGuideShaper02Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -25240,8 +25240,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row04_CTL", 
-          "name": "R_lipsMouthJawShaper02Row04Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row04_CTL", 
+          "name": "R_mouthGuideShaper02Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -25415,10 +25415,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row04_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0400_BUF"
+      "name": "R_mouthGuideShaper02Row04_CTL", 
+      "parent": "R_mouthGuideShaper02Row0400_BUF"
     }, 
-    "R_lipsMouthJawShaper03Row06_CTL": {
+    "R_mouthGuideShaper03Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -25462,8 +25462,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row06_CTL", 
-          "name": "R_lipsMouthJawShaper03Row06Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row06_CTL", 
+          "name": "R_mouthGuideShaper03Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -25637,10 +25637,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row06_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0600_BUF"
+      "name": "R_mouthGuideShaper03Row06_CTL", 
+      "parent": "R_mouthGuideShaper03Row0600_BUF"
     }, 
-    "R_lipsMouthJawShaper02Row01_CTL": {
+    "R_mouthGuideShaper02Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -25684,8 +25684,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row01_CTL", 
-          "name": "R_lipsMouthJawShaper02Row01Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row01_CTL", 
+          "name": "R_mouthGuideShaper02Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -25859,10 +25859,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row01_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0100_BUF"
+      "name": "R_mouthGuideShaper02Row01_CTL", 
+      "parent": "R_mouthGuideShaper02Row0100_BUF"
     }, 
-    "L_lipsMouthJawShaper01Row00_CTL": {
+    "L_mouthGuideShaper01Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -25906,8 +25906,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row00_CTL", 
-          "name": "L_lipsMouthJawShaper01Row00Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row00_CTL", 
+          "name": "L_mouthGuideShaper01Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -26081,10 +26081,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row00_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0000_BUF"
+      "name": "L_mouthGuideShaper01Row00_CTL", 
+      "parent": "L_mouthGuideShaper01Row0000_BUF"
     }, 
-    "C_lipsMouthJawShaperRow00_CTL": {
+    "C_mouthGuideShaperRow00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -26128,8 +26128,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow00_CTL", 
-          "name": "C_lipsMouthJawShaperRow00Main_SHP", 
+          "parent": "C_mouthGuideShaperRow00_CTL", 
+          "name": "C_mouthGuideShaperRow00Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -26303,10 +26303,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow00_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0000_BUF"
+      "name": "C_mouthGuideShaperRow00_CTL", 
+      "parent": "C_mouthGuideShaperRow0000_BUF"
     }, 
-    "R_lipsMouthJawShaper00Row05_CTL": {
+    "R_mouthGuideShaper00Row05_CTL": {
       "shapes": [
         {
           "knots": [
@@ -26350,8 +26350,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row05_CTL", 
-          "name": "R_lipsMouthJawShaper00Row05Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row05_CTL", 
+          "name": "R_mouthGuideShaper00Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -26525,8 +26525,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row05_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0500_BUF"
+      "name": "R_mouthGuideShaper00Row05_CTL", 
+      "parent": "R_mouthGuideShaper00Row0500_BUF"
     }, 
     "R_cheekMassRot_BUF": {
       "shapes": [
@@ -26750,7 +26750,7 @@
       "name": "R_cheekMassRot_BUF", 
       "parent": "jaw_MatDefRotate_DEFORM"
     }, 
-    "L_lipsMouthJawShaper00Row02_CTL": {
+    "L_mouthGuideShaper00Row02_CTL": {
       "shapes": [
         {
           "knots": [
@@ -26794,8 +26794,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper00Row02_CTL", 
-          "name": "L_lipsMouthJawShaper00Row02Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row02_CTL", 
+          "name": "L_mouthGuideShaper00Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -26969,8 +26969,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper00Row02_CTL", 
-      "parent": "L_lipsMouthJawShaper00Row0200_BUF"
+      "name": "L_mouthGuideShaper00Row02_CTL", 
+      "parent": "L_mouthGuideShaper00Row0200_BUF"
     }, 
     "C_mouthMatrixDef01_BUF": {
       "shapes": [
@@ -27194,7 +27194,7 @@
       "name": "C_mouthMatrixDef01_BUF", 
       "parent": "C_mouthMatrixDef_LOC"
     }, 
-    "R_lipsMouthJawShaper03Row07_CTL": {
+    "R_mouthGuideShaper03Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -27238,8 +27238,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row07_CTL", 
-          "name": "R_lipsMouthJawShaper03Row07Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row07_CTL", 
+          "name": "R_mouthGuideShaper03Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -27413,10 +27413,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row07_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0700_BUF"
+      "name": "R_mouthGuideShaper03Row07_CTL", 
+      "parent": "R_mouthGuideShaper03Row0700_BUF"
     }, 
-    "L_lipsMouthJawShaper03Row08_CTL": {
+    "L_mouthGuideShaper03Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -27460,8 +27460,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row08_CTL", 
-          "name": "L_lipsMouthJawShaper03Row08Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row08_CTL", 
+          "name": "L_mouthGuideShaper03Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -27635,10 +27635,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row08_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0800_BUF"
+      "name": "L_mouthGuideShaper03Row08_CTL", 
+      "parent": "L_mouthGuideShaper03Row0800_BUF"
     }, 
-    "R_lipsMouthJawShaper00Row08_CTL": {
+    "R_mouthGuideShaper00Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -27682,8 +27682,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row08_CTL", 
-          "name": "R_lipsMouthJawShaper00Row08Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row08_CTL", 
+          "name": "R_mouthGuideShaper00Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -27857,10 +27857,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row08_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0800_BUF"
+      "name": "R_mouthGuideShaper00Row08_CTL", 
+      "parent": "R_mouthGuideShaper00Row0800_BUF"
     }, 
-    "L_lipsMouthJawShaper02Row01_CTL": {
+    "L_mouthGuideShaper02Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -27904,8 +27904,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper02Row01_CTL", 
-          "name": "L_lipsMouthJawShaper02Row01Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row01_CTL", 
+          "name": "L_mouthGuideShaper02Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -28079,10 +28079,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper02Row01_CTL", 
-      "parent": "L_lipsMouthJawShaper02Row0100_BUF"
+      "name": "L_mouthGuideShaper02Row01_CTL", 
+      "parent": "L_mouthGuideShaper02Row0100_BUF"
     }, 
-    "R_lipsMouthJawShaper00Row06_CTL": {
+    "R_mouthGuideShaper00Row06_CTL": {
       "shapes": [
         {
           "knots": [
@@ -28126,8 +28126,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper00Row06_CTL", 
-          "name": "R_lipsMouthJawShaper00Row06Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row06_CTL", 
+          "name": "R_mouthGuideShaper00Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -28301,10 +28301,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper00Row06_CTL", 
-      "parent": "R_lipsMouthJawShaper00Row0600_BUF"
+      "name": "R_mouthGuideShaper00Row06_CTL", 
+      "parent": "R_mouthGuideShaper00Row0600_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row00_CTL": {
+    "R_mouthGuideShaper01Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -28348,8 +28348,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row00_CTL", 
-          "name": "R_lipsMouthJawShaper01Row00Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row00_CTL", 
+          "name": "R_mouthGuideShaper01Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -28523,10 +28523,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row00_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0000_BUF"
+      "name": "R_mouthGuideShaper01Row00_CTL", 
+      "parent": "R_mouthGuideShaper01Row0000_BUF"
     }, 
-    "C_lipsMouthJawShaperRow03_CTL": {
+    "C_mouthGuideShaperRow03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -28570,8 +28570,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow03_CTL", 
-          "name": "C_lipsMouthJawShaperRow03Main_SHP", 
+          "parent": "C_mouthGuideShaperRow03_CTL", 
+          "name": "C_mouthGuideShaperRow03Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -28745,10 +28745,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow03_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0300_BUF"
+      "name": "C_mouthGuideShaperRow03_CTL", 
+      "parent": "C_mouthGuideShaperRow0300_BUF"
     }, 
-    "R_lipsMouthJawShaper02Row03_CTL": {
+    "R_mouthGuideShaper02Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -28792,8 +28792,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper02Row03_CTL", 
-          "name": "R_lipsMouthJawShaper02Row03Main_SHP", 
+          "parent": "R_mouthGuideShaper02Row03_CTL", 
+          "name": "R_mouthGuideShaper02Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -28967,10 +28967,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper02Row03_CTL", 
-      "parent": "R_lipsMouthJawShaper02Row0300_BUF"
+      "name": "R_mouthGuideShaper02Row03_CTL", 
+      "parent": "R_mouthGuideShaper02Row0300_BUF"
     }, 
-    "C_lipsMouthJawShaperRow08_CTL": {
+    "C_mouthGuideShaperRow08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -29014,8 +29014,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_lipsMouthJawShaperRow08_CTL", 
-          "name": "C_lipsMouthJawShaperRow08Main_SHP", 
+          "parent": "C_mouthGuideShaperRow08_CTL", 
+          "name": "C_mouthGuideShaperRow08Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -29189,10 +29189,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lipsMouthJawShaperRow08_CTL", 
-      "parent": "C_lipsMouthJawShaperRow0800_BUF"
+      "name": "C_mouthGuideShaperRow08_CTL", 
+      "parent": "C_mouthGuideShaperRow0800_BUF"
     }, 
-    "L_lipsMouthJawShaper01Row08_CTL": {
+    "L_mouthGuideShaper01Row08_CTL": {
       "shapes": [
         {
           "knots": [
@@ -29236,8 +29236,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row08_CTL", 
-          "name": "L_lipsMouthJawShaper01Row08Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row08_CTL", 
+          "name": "L_mouthGuideShaper01Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -29411,10 +29411,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row08_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0800_BUF"
+      "name": "L_mouthGuideShaper01Row08_CTL", 
+      "parent": "L_mouthGuideShaper01Row0800_BUF"
     }, 
-    "L_lipsMouthJawShaper03Row04_CTL": {
+    "L_mouthGuideShaper03Row04_CTL": {
       "shapes": [
         {
           "knots": [
@@ -29458,8 +29458,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper03Row04_CTL", 
-          "name": "L_lipsMouthJawShaper03Row04Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row04_CTL", 
+          "name": "L_mouthGuideShaper03Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -29633,10 +29633,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper03Row04_CTL", 
-      "parent": "L_lipsMouthJawShaper03Row0400_BUF"
+      "name": "L_mouthGuideShaper03Row04_CTL", 
+      "parent": "L_mouthGuideShaper03Row0400_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row03_CTL": {
+    "R_mouthGuideShaper01Row03_CTL": {
       "shapes": [
         {
           "knots": [
@@ -29680,8 +29680,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row03_CTL", 
-          "name": "R_lipsMouthJawShaper01Row03Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row03_CTL", 
+          "name": "R_mouthGuideShaper01Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -29855,10 +29855,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row03_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0300_BUF"
+      "name": "R_mouthGuideShaper01Row03_CTL", 
+      "parent": "R_mouthGuideShaper01Row0300_BUF"
     }, 
-    "R_lipsMouthJawShaper03Row00_CTL": {
+    "R_mouthGuideShaper03Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -29902,8 +29902,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper03Row00_CTL", 
-          "name": "R_lipsMouthJawShaper03Row00Main_SHP", 
+          "parent": "R_mouthGuideShaper03Row00_CTL", 
+          "name": "R_mouthGuideShaper03Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -30077,10 +30077,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper03Row00_CTL", 
-      "parent": "R_lipsMouthJawShaper03Row0000_BUF"
+      "name": "R_mouthGuideShaper03Row00_CTL", 
+      "parent": "R_mouthGuideShaper03Row0000_BUF"
     }, 
-    "R_lipsMouthJawShaper01Row01_CTL": {
+    "R_mouthGuideShaper01Row01_CTL": {
       "shapes": [
         {
           "knots": [
@@ -30124,8 +30124,8 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_lipsMouthJawShaper01Row01_CTL", 
-          "name": "R_lipsMouthJawShaper01Row01Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row01_CTL", 
+          "name": "R_mouthGuideShaper01Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -30299,10 +30299,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lipsMouthJawShaper01Row01_CTL", 
-      "parent": "R_lipsMouthJawShaper01Row0100_BUF"
+      "name": "R_mouthGuideShaper01Row01_CTL", 
+      "parent": "R_mouthGuideShaper01Row0100_BUF"
     }, 
-    "L_lipsMouthJawShaper01Row07_CTL": {
+    "L_mouthGuideShaper01Row07_CTL": {
       "shapes": [
         {
           "knots": [
@@ -30346,8 +30346,8 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_lipsMouthJawShaper01Row07_CTL", 
-          "name": "L_lipsMouthJawShaper01Row07Main_SHP", 
+          "parent": "L_mouthGuideShaper01Row07_CTL", 
+          "name": "L_mouthGuideShaper01Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -30521,8 +30521,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_lipsMouthJawShaper01Row07_CTL", 
-      "parent": "L_lipsMouthJawShaper01Row0700_BUF"
+      "name": "L_mouthGuideShaper01Row07_CTL", 
+      "parent": "L_mouthGuideShaper01Row0700_BUF"
     }, 
     "L_cheekMassRot_BUF": {
       "shapes": [

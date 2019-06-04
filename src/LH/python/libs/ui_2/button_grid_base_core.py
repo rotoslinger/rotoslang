@@ -15,6 +15,14 @@ reload(guide_utils)
 from rig_2.backup import utils as backup_utils
 reload(backup_utils)
 
+from rig_2.shape import mesh
+reload(mesh)
+from rig_2.shape import nurbscurve
+reload(nurbscurve)
+from rig_2.shape import nurbsurface
+reload(nurbsurface)
+
+
 '''
 @code
 import sys
@@ -64,3 +72,18 @@ def get_no_export_checkboxes(checkboxes):
     guide_shape = export_args[2]
     gimbal_shape = export_args[3]
     return ctrl_shape, guide, guide_shape, gimbal_shape
+
+def print_geo_dict():
+    sel = cmds.ls(sl=True)[0]
+
+    geo_type = cmds.objectType(misc.getShape(sel))
+    
+    if geo_type == "nurbsCurve":
+        print "Type is nurbsCurve"
+        print nurbscurve.get_curve_shape_dict()
+    if geo_type == "mesh":
+        print "Type is mesh"
+        print mesh.meshData(sel).mesh
+    if geo_type == "nurbsSurface":
+        print "Type is nurbsSurface"
+        print nurbsurface.nurbsSurfaceData(sel).nurbs

@@ -90,6 +90,9 @@ def set_guide_transforms(guide_position_dict, no_export_tag_dict):
             continue
         if node in no_export_tag_dict.keys():
             continue
+        # If dynamic mirrored skip
+        if cmds.objExists(node + ".DYNAMIC_MIRRORED"):
+            continue
         position_preservation_node = cmds.createNode("transform")
         cmds.xform(position_preservation_node, ws=True, a=True, r=False, p=True, t=guide_position_dict[node]["translation"])
         cmds.xform(position_preservation_node, ws=True, a=True, r=False, p=True, ro=guide_position_dict[node]["rotation"])
@@ -97,6 +100,7 @@ def set_guide_transforms(guide_position_dict, no_export_tag_dict):
         constraints.append(cmds.parentConstraint(position_preservation_node, node, mo=False)[0])
         constraints.append(cmds.scaleConstraint(position_preservation_node, node, mo=False)[0])
         position_preservation_nodes.append(position_preservation_node)
+        
     cmds.refresh()
     cmds.delete(constraints)
     cmds.refresh()
@@ -125,9 +129,11 @@ def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
         shapeDict[transform] = nurbscurve.get_curve_shape_dict(mayaObject=transform, space=OpenMaya.MSpace.kObject)
     return shapeDict
 
-def set_shapes_from_dict(shape_dict, no_export_tag_dict=None):
+def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=False):
     for transform in shape_dict.keys():
         if no_export_tag_dict and transform in no_export_tag_dict.keys():
+            continue
+        if check_if_exists and not cmds.objExists(shape_dict[transform]["name"]):
             continue
         nurbscurve.create_curve(shape_dict[transform],
                                 name=shape_dict[transform]["name"],

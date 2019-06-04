@@ -461,7 +461,7 @@ def dynamic_mirror_connection(maya_object, hide_connected=True, translate=True, 
 
     if scale:
         scale = cmds.createNode("multiplyDivide", n=maya_object+"OppositeScale_MTD")
-        cmds.setAttr(scale + ".input2X", -1)
+        cmds.setAttr(scale + ".input2X", 1)
         cmds.connectAttr(maya_object + ".scale",  scale + ".input1")
         cmds.connectAttr(scale + ".output",  opposite_object + ".scale")
 
@@ -473,8 +473,8 @@ def dynamic_mirror_connection(maya_object, hide_connected=True, translate=True, 
             message_utils.create_message_attr_setup(node, "opposite_rotate", rotate, "control" )
         if scale:
             message_utils.create_message_attr_setup(node, "opposite_scale", scale, "control" )
-
-
+    tag_utils.tag_dynamic_mirrored(opposite_object)
+    
 def remove_dynamic_mirror_connection(maya_objects=None, unhide=True):
     if not maya_objects: maya_objects = cmds.ls(sl=True)
     for node in maya_objects:
@@ -496,5 +496,7 @@ def remove_dynamic_mirror_connection(maya_objects=None, unhide=True):
                 cmds.deleteAttr(side_node + ".opposite_scale")
             if unhide:
                 cmds.setAttr(side_node + ".v", 1)
+            if cmds.objExists(side_node + ".DYNAMIC_MIRRORED"):
+                cmds.deleteAttr(side_node + ".DYNAMIC_MIRRORED")
 
     

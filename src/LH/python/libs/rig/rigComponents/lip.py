@@ -45,7 +45,7 @@ from rig_2.manipulator import elements as manipulator_elements
 
 
 
-class Line(object):
+class Lip(object):
     @initialize.initializer
     def __init__(
                 self,
@@ -53,6 +53,7 @@ class Line(object):
                 characterName = "character",
                 controlParent="C_control_GRP",
                 rigParent="C_rig_GRP",
+                order_before_deformer=None,
                 upperLip = False,
                 ctrlName = None,  # this will be used as a way to reuse controls between different components and deformers
                 containerName = "lip_container",
@@ -149,7 +150,7 @@ class Line(object):
                 component_name="lip"):
                 pass
 
-    def create_line(self):
+    def create_lip(self):
 
         # if you want to share falloffs between all deformers leave the falloff names None, but more self.control is better...
         if not self.ctrlName:
@@ -179,16 +180,21 @@ class Line(object):
 
         self.control = cmds.circle(n= self.name + "Control", nr=[0,1,0])[0]
         cmds.parent(self.control, self.controlParent)
-
         slideUD = slideSimple.SlideSimple(self.name + "LipSlide",
                                           geoToDeform=self.deformMesh,
                                           slidePatch=self.slidePatch,
                                           slidePatchBase=self.slidePatchBase,
                                           baseGeoToDeform=self.base,
-                                          component_name=self.component_name
-                                          
+                                          component_name=self.component_name, 
+                                            # orderFrontOfChain=False,
+                                            # orderParallel=False,
+                                            # orderBefore=True,
+                                            # orderAfter=False,
+                                            # orderSplit=False,
+                                            # orderExclusive=False,
                                           )
         slideUD.create()
+
 
         outputAttrs = [slideUD.deformer + ".weightArrays[0].vWeights"]
         outputAttrs_LR = [slideUD.deformer + ".weightArrays[0].uWeights"]
@@ -347,7 +353,7 @@ class Line(object):
 
 
             # Create a single matrix deformer (rotation order issues)
-            self.mat_def = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefTranslate",
+            self.mat_def_translate = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefTranslate",
                                     geoToDeform=self.deformMesh,
                                     ctrlName=self.ctrlName + matDefNames[idx],
                                     centerToParent=True,
@@ -375,9 +381,12 @@ class Line(object):
                                     controlShapeDict=self.matDefIconShapeDicts[idx],
                                     component_name=self.component_name,
                                     )
-            self.mat_def.create()
-
-            self.mat_def = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefRotate",
+            self.mat_def_translate.create()
+            
+            
+                
+                
+            self.mat_def_rotate = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefRotate",
                                     geoToDeform=self.deformMesh,
                                     ctrlName=self.ctrlName + matDefNames[idx],
                                     centerToParent=True,
@@ -407,9 +416,9 @@ class Line(object):
 
                                     
                                     )
-            self.mat_def.create()
+            self.mat_def_rotate.create()
             
-            weightStack.connect_weight_stack_anim_curve(self.mat_def, curveWeights)
+            weightStack.connect_weight_stack_anim_curve(self.mat_def_rotate, curveWeights)
 
             # for ctrl in matDef.controls:
             #     cmds.container(container, edit=True, addNode=[ctrl])
@@ -592,6 +601,13 @@ class Line(object):
         self.slide_deformer = slideUD.deformer
         self.vector_deformer = vecDef
 
+
+        if self.order_before_deformer:
+            cmds.reorderDeformers( slideUD.deformer,self.order_before_deformer, misc.getShape(self.deformMesh))
+            cmds.reorderDeformers( self.mat_def_translate.deformer, self.order_before_deformer, misc.getShape(self.deformMesh))
+            cmds.reorderDeformers( self.mat_def_rotate.deformer,self.order_before_deformer, misc.getShape(self.deformMesh))
+
+
         return slideUD.deformer, vecDef
 
     def post_create(self):
@@ -599,7 +615,7 @@ class Line(object):
         deformer_utils.cacheOutAllSlideDeformers()
 
     def create(self):
-        self.create_line()
+        self.create_lip()
         self.post_create()
         
 def lipCurveDeformSplit(name="C_UpperLipWire",
@@ -618,6 +634,7 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
                         removePointIndicies=[],
                         reorderInFrontOfDeformer="",
                         curveDeformerAlgorithm=0,
+                        curve_base=None
 ):
 
     if not falloffDefaults and upperLip:
@@ -703,6 +720,9 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
     # Create curve deformer (TEMP)
     if curveDeformerAlgorithm == 0:
         wire = cmds.wire(blendshapeGeo, wire=curve, dds=[(0),(100000)] , name=name + "WireDeformer")[0]
+        if curve_base:
+            curve_base = misc.getShape(curve_base)
+            cmds.connectAttr(curve_base + ".worldSpace[0]", wire + ".baseWire[0]", f=True)
     if curveDeformerAlgorithm == 1:
         wire = LHCurveDeformerCmds.curveDeformerCmd( driverCurve = curve,
                                             aimCurve = curveAim,

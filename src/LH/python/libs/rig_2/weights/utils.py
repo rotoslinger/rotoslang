@@ -751,3 +751,13 @@ def get_weight_data_from_ctrl(ctrl, elemIndex, weight_stack):
         weightConnection = cmds.listConnections(weight_stack + ".inputs[{0}].{1}".format(elemIndex, plug_name), d=False, s=True)
         weightConnectionObjectType = cmds.objectType(weightConnection)
     return weightValues, weightConnectionObjectType, weightedMesh, weightPlug, weightAttribute
+
+def cache_all_curve_weights(cache=True):
+    nodes = cmds.ls(type="LHCurveWeightNode")
+    for node in nodes:
+        cmds.setAttr(node + ".cacheWeightMesh", cache)
+
+def cache_all_slide_deformers(cache=True):
+    nodes = cmds.ls(type="LHSlideSimple")
+    for node in nodes:
+        cmds.setAttr(node + ".cacheBind", cache)

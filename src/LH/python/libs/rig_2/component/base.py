@@ -2,25 +2,27 @@ import inspect
 from collections import OrderedDict
 from maya import cmds
 from rig_2.root import hierarchy as rig_hierarchy
-reload(rig_hierarchy)
 from rig_2.node import utils as node_utils
-reload(node_utils)
 from rig_2.misc import utils as misc_utils
-reload(misc_utils)
 from rig_2.attr import utils as attr_utils
-reload(attr_utils)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
 from rig_2.attr import constants as attr_constants
-reload(attr_constants)
 from rig.utils import misc
-reload(misc)
+
+
+# reload(rig_hierarchy)
+# reload(node_utils)
+# reload(misc_utils)
+# reload(attr_utils)
+# reload(tag_utils)
+# reload(attr_constants)
+# reload(misc)
 
 
 
 class Subcomponent(object):
     def __init__(self,
-                 parent_component_class,
+                 parent_component_class=None,
                  class_name=None,
                  component_name="base",
                  godnode_class=None,
@@ -34,11 +36,9 @@ class Subcomponent(object):
                  create_skelton_grp=False,
                  create_rig_grp=False,
                  create_control_grp=False,
-                 create_subcomponent_grp=False,
                  arg_dict=None,
                  # This will make the component the base which means you won't need a parent class
                  # a hierarchy will be created for you (or found if it already exists)
-                 is_root=False,
                  ):
         # Arg Snapshot
         class_name = self.get_relative_path()
@@ -58,11 +58,9 @@ class Subcomponent(object):
         self.create_skelton_grp = create_skelton_grp
         self.create_rig_grp = create_rig_grp
         self.create_control_grp = create_control_grp
-        self.create_subcomponent_grp = create_subcomponent_grp
         self.arg_dict = arg_dict
         
         self.container = container
-        self.is_root = is_root
 
         # vars
         self.geo = None
@@ -79,7 +77,8 @@ class Subcomponent(object):
         self.subcomponents = []
         self.container_attrs = []
         self.container_nodes = []
-
+        self.subcomponent_group=None
+        self.component_membership_nodes=[]
         # if parent is a dictionary get the value of the first key
         if type(self.parent) == dict:
             self.parent = self.parent[self.parent.keys()[0]]
@@ -106,43 +105,53 @@ class Subcomponent(object):
 
     def initialize(self):
         """ Check for a root, create if none """
-        hierarchy_class = self.parent_component_class
-        if self.is_root:
-            self.hierarchy_class = rig_hierarchy.base()
-            self.hierarchy_class.initialize()
-
-            if not cmds.objExists(self.hierarchy_class.root):
-                self.hierarchy_class.create()
-                
-            hierarchy_class = self.hierarchy_class
-            
-            
-        self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
+        self.class_node = "{0}_{1}_CLASS".format(self.side, self.name)
 
         # This is for readability, can be removed maybe...
-        self.aggr_name = self.aggr
-        # Tag
+        self.class_node_name = self.class_node
         
+        hierarchy_class = self.parent_component_class
+        
+        
+        self.hierarchy_class = rig_hierarchy.base()
+        self.hierarchy_class.initialize()
+
+        if not cmds.objExists(self.hierarchy_class.root):
+            self.hierarchy_class.create()
+            
+        hierarchy_class = self.hierarchy_class
+        self.create_class_node(parent=self.hierarchy_class.component)
+        self.subcomponent_group = self.class_node
+            
+        # Tag
+        # if self.group_under_subcomponent:
+            
         #Create component Hierarchy within the parent class hierarchy. 
-        self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
+        self.geo, self.skeleton, self.rig, self.control, self.component= rig_hierarchy.init_hierarchy(side=self.side,
                                                                                                     name=self.name,
                                                                                                     suffix=self.suffix,
+                                                                                                    subcomponent_group=self.subcomponent_group,
                                                                                                     hierarchy_class=hierarchy_class)
-        if not self.is_root:
-            # If not base, set the asset structure to be that of the parent class
-            self.geo = self.parent_component_class.geo 
-            self.skeleton = self.parent_component_class.skeleton 
-            self.rig = self.parent_component_class.rig 
-            self.control = self.parent_component_class.control 
-            self.component = self.parent_component_class.component 
-            
-        self.rig_geo = "C_{0}_GRP".format(self.component_name)
-        node_utils.get_node_agnostic("transform", name = self.rig_geo, parent=self.geo)
+                                                                                                    # hierarchy_class=hierarchy_class)
+        
+        # If it has already been created, this will be skipped
+        # self.create_class_node(self.component)    
+        
+        
+        # node_utils.get_node_agnostic("transform", name = self.class_node, parent=self.component)
+        # misc.lock_attrs(node=self.class_node, attr=["all"])
+        # tag_utils.create_component_tag(self.class_node, self.component_name)
+        # tag_utils.tag_arg_node(self.class_node)
+        
 
-        node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
-        misc.lock_attrs(node=self.aggr, attr=["all"])
-        tag_utils.create_component_tag(self.aggr, self.component_name)
-        tag_utils.tag_arg_node(self.aggr)
+
+    def create_class_node(self, parent=None):
+        node_utils.get_node_agnostic("transform", name = self.class_node, parent=parent)
+        # clean up your CLASS node
+        misc.lock_attrs(node=self.class_node, attr=["all"])
+        tag_utils.create_component_tag(self.class_node, self.component_name)
+        tag_utils.tag_arg_node(self.class_node)
+
 
     def get_arg_attrs_from_dict(self):
         for key, val in self.arg_dict.items():
@@ -157,7 +166,7 @@ class Subcomponent(object):
             if type(val) not in attr_constants.SUPPORTED_TYPES:
                 continue
             attr_type = type(val)
-            self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.aggr, attr_name=key, attr_type=attr_type, attr_default=val))
+            self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.class_node, attr_name=key, attr_type=attr_type, attr_default=val))
 
     def get_container(self):
         if not self.container:
@@ -203,8 +212,8 @@ class Subcomponent(object):
         return
         for input, input_node in self.inputs.iteritems():
             attr_name = input
-            full_attr_name = self.aggr + "." + attr_name
-            cmds.addAttr(self.aggr, ln = attr_name, at = "message")
+            full_attr_name = self.class_node + "." + attr_name
+            cmds.addAttr(self.class_node, ln = attr_name, at = "message")
             cmds.connectAttr(input_node + ".message", full_attr_name)
 
     def connect_nodes(self):
@@ -324,46 +333,6 @@ def get_component_args_from_scene(component_name):
             val = str(val)
         arg_dict[str(attr)] = val
     return arg_dict
-    
-class Builder(Subcomponent):
-    def __init__(self,
-                 parent_component_class=None,
-                 class_name=None,
-                 **kw):
-        super(Builder, self).__init__(self, class_name=class_name, **kw)
-        class_name = self.get_relative_path()
-        self.ordered_args = OrderedDict()
-        self.frame = inspect.currentframe()
-        self.get_args()
-        
-    def initialize(self):
-        
-        """ Check for a root, create if none """
-        self.hierarchy_class = rig_hierarchy.base()
-        self.hierarchy_class.initialize()
-
-        if not cmds.objExists(self.hierarchy_class.root):
-            self.hierarchy_class.create()
-
-        self.aggr = "{0}_{1}Aggr_{2}".format(self.side, self.name, self.suffix)
-
-        """
-        Create component Hierarchy within the asset hierarchy. 
-        These transforms should mirror the asset hierarchy's layout and should be populated based on global scaling needs.
-        """
-
-        self.geo, self.skeleton, self.rig, self.control, self.component = rig_hierarchy.init_hierarchy(side=self.side,
-                                                                                              name=self.name,
-                                                                                              suffix=self.suffix,
-                                                                                              hierarchy_class=self.hierarchy_class)
-        node_utils.get_node_agnostic("transform", name = self.aggr, parent=self.component)
-
-        tag_utils.create_component_tag(self.component, self.component_name)
-        tag_utils.tag_arg_node(self.component)
-        
-        misc.lock_attrs(node=self.aggr, attr=["all"])
-
-
 
 class Container(object):
     def __init__(self,

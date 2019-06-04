@@ -234,7 +234,7 @@ def create_curve(curve_dict,
     if outliner_color and "outliner_color" in curve_dict.keys() and curve_dict["outliner_color"]:
         cmds.setAttr(curve_transform + ".useOutlinerColor" , True)
         cmds.setAttr(curve_transform + ".outlinerColor" , *curve_dict["outliner_color"][0])
-        mel.eval('AEdagNodeCommonRefreshOutliners();')
+        # mel.eval('AEdagNodeCommonRefreshOutliners();')
 
     # If one of the shapes under the transform is not in the dictionary, delete it, you may be updating a curve
     if check_existing:
