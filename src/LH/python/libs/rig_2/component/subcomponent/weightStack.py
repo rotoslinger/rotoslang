@@ -1,39 +1,41 @@
 from maya import cmds
 
 from rig_2.name import utils as name_utils
-reload(name_utils)
 from rig_2.weights import utils as weights_utils
-reload(weights_utils)
 from rig_2.animcurve import utils as animcurve_utils
-reload(animcurve_utils)
 from rig_2.node import utils as node_utils
-reload(node_utils)
-
-from rig.utils import weightMapUtils, misc
+from rig.utils import misc
 from rig.deformers import utils as deformerUtils
-
-reload(deformerUtils)
-reload(weightMapUtils)
-reload(misc)
-
 from rig.rigComponents import meshRivetCtrl
-reload(meshRivetCtrl)
-from rig.rigComponents import elements
-reload(elements)
 from rig_2.message import utils as message_utils
-reload(message_utils)
-
 from decorators import initialize
-reload(elements)
-
 from rig_2.manipulator import elements as manipulator_elements
-reload(manipulator_elements)
-
 from rig_2.attr import utils as attr_utils
-reload(attr_utils)
-
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+
+
+# reload(name_utils)
+
+# reload(weights_utils)
+# reload(animcurve_utils)
+
+# reload(node_utils)
+
+# reload(deformerUtils)
+
+# reload(misc)
+
+# reload(meshRivetCtrl)
+
+
+# reload(message_utils)
+
+
+# reload(manipulator_elements)
+
+# reload(attr_utils)
+
+# reload(tag_utils)
 
 class Weight_Node(object):
     def __init__(self,
@@ -107,9 +109,14 @@ class Weight_Node(object):
         self.positionControls()
 
 class AnimCurveWeight(Weight_Node):
-    @initialize.initializer
     def __init__(self,
-                 #  inputWeightAttrs = [],
+                 # Inherited args
+                 # outputAttrs=[],
+                 # name,
+                 # nodeType = None,
+                 # parent = None,
+                 # startAtElemIdx=-1,
+                 # addNewElem=False,
                  baseGeo = "",
                  ctrlNode="",
                  projectionGeo = "",
@@ -148,46 +155,47 @@ class AnimCurveWeight(Weight_Node):
                  inputWeightCurvesFalloffDict=[],
                  autoPositionThreshhold = .9,
                  controlAutoOrientMesh = "",
-                 # Inherited args
-                 # outputAttrs=[],
-                 # name,
-                 # nodeType = None,
-                 # parent = None,
-                 # startAtElemIdx=-1,
-                 # addNewElem=False,
                  **kw):
 
         super(AnimCurveWeight, self).__init__(**kw)
-        # self.baseGeo = baseGeo
-        # self.ctrlNode = ctrlNode
-        # self.projectionGeo = projectionGeo
-        # self.weightCurveNames = weightCurveNames
-        # self.animCurveSuffix = animCurveSuffix
-        # self.startElem = startElem
-        # self.autoCreateAnimCurves = autoCreateAnimCurves
-        # self.autoCreateNum = autoCreateNum
-        # self.autoCreateTimeRange = autoCreateTimeRange
-        # self.autoCreateName = autoCreateName
-
-        # self.addFalloff=addFalloff
-        # self.offset=offset
-        # self.centerWeight =centerWeight
-        # self.outerWeight = outerWeight
-        # self.angle = angle
-        # self.nudge = nudge
-        # self.intermediateVal = intermediateVal
-        # self.lastAngle = lastAngle
-        # self.lastIntermediateVal = lastIntermediateVal
-        # self.intermediateAngle = intermediateAngle
-        # self.lastIntermediateAngle = lastIntermediateAngle
-        # self.createSingleFalloff = createSingleFalloff
-        # self.uKeyframesAllOnes = uKeyframesAllOnes
-        # self.falloffDefaults = falloffDefaults
-        # self.falloffCurveDict = falloffCurveDict
-        # self.falloffItts = falloffItts
-        # self.falloffOtts = falloffOtts
-        # self.singleFalloffName = singleFalloffName
-
+        
+        # args
+        self.baseGeo=baseGeo
+        self.ctrlNode=ctrlNode
+        self.projectionGeo = projectionGeo
+        self.weightCurveNames =weightCurveNames
+        self.animCurveSuffix = animCurveSuffix
+        self.autoCreateAnimCurves = autoCreateAnimCurves
+        self.autoCreateName = autoCreateName
+        self.auto_create_name_side=auto_create_name_side
+        self.autoCreateNum = autoCreateNum
+        self.autoCreateTimeRange =autoCreateTimeRange
+        self.createSingleFalloff =createSingleFalloff
+        self.uKeyframesAllOnes =uKeyframesAllOnes
+        self.falloffCurveDict =falloffCurveDict
+        self.curveOverrideDict = curveOverrideDict
+        self.falloffDefaults=falloffDefaults
+        self.falloffItts=falloffItts
+        self.falloffOtts=falloffOtts
+        self.singleFalloffName = singleFalloffName
+        self.addFalloff = addFalloff
+        self.startElem = startElem
+        self.offset=offset
+        self.centerWeight = centerWeight
+        self.outerWeight =outerWeight
+        self.angle =angle
+        self.nudge = nudge
+        self.intermediateVal =intermediateVal
+        self.lastAngle=lastAngle
+        self.lastIntermediateVal=lastIntermediateVal
+        self.intermediateAngle=intermediateAngle
+        self.lastIntermediateAngle=lastIntermediateAngle
+        self.inputWeightCurvesDict=inputWeightCurvesDict
+        self.inputWeightCurvesFalloffDict=inputWeightCurvesFalloffDict
+        self.autoPositionThreshhold = autoPositionThreshhold
+        self.controlAutoOrientMesh =controlAutoOrientMesh 
+        
+        # attrs
         self.membershipWeights = ""
         self.projectionMesh = ""
         self.baseMesh = ""
@@ -419,7 +427,6 @@ stack.create()
 """
 
 class WeightStack(Weight_Node):
-    @initialize.initializer
     def __init__(self,
                  ctrlNode="",
                  inputWeightAttrs = [],
@@ -477,46 +484,51 @@ class WeightStack(Weight_Node):
                  **kw):
 
         super(WeightStack, self).__init__(**kw)
-        # self.ctrlNode = ctrlNode
-        # self.inputWeightAttrs = inputWeightAttrs
-        # self.factorAttrNames = factorAttrNames
-        # self.geoToWeight = geoToWeight
-        # self.operationVals = operationVals
-        # self.autoCreate = autoCreate
-        # self.autoCreateName = autoCreateName
-        # self.autoCreateOperationVal = autoCreateOperationVal
-        # self.createControl = createControl
-        # self.controlSize = controlSize
-        # self.controlTxConnectionAttrs = controlTxConnectionAttrs
-        # self.controlTyConnectionAttrs = controlTyConnectionAttrs
-        # self.controlTzConnectionAttrs = controlTzConnectionAttrs
-        # self.controlRxConnectionAttrs = controlRxConnectionAttrs
-        # self.controlRyConnectionAttrs = controlRyConnectionAttrs
-        # self.controlRzConnectionAttrs = controlRzConnectionAttrs
-        # self.controlSxConnectionAttrs = controlSxConnectionAttrs
-        # self.controlSyConnectionAttrs = controlSyConnectionAttrs
-        # self.controlSzConnectionAttrs = controlSzConnectionAttrs
-        # self.controlShape = controlShape
-        # self.controlShapeOffset = controlShapeOffset
-        # self.controlShapeOrient = controlShapeOrient
-        # self.controlShapeScale = controlShapeScale
-        # self.controlLockAttrs = controlLockAttrs
-        # self.controlPositionWeightsThreshold = controlPositionWeightsThreshold
-        # self.controlPositionOffset = controlPositionOffset
-        # self.controlAutoOrientMesh = controlAutoOrientMesh
-        # self.controlParent = controlParent
-        # self.UDLR = UDLR
-        # self.outputAttrs_LR = outputAttrs_LR
-        # self.isOutputKDoubleArray = isOutputKDoubleArray
-        # self.controlRivetMesh = controlRivetMesh            
-        # self.controlRivetAimMesh = controlRivetAimMesh            
-        # self.connectFalloff = connectFalloff            
-        # self.falloffCurveWeightNode = falloffCurveWeightNode            
-        # self.falloffElemStart = falloffElemStart            
-        # self.controlSpeedDefaults = controlSpeedDefaults            
-        # self.repositionRivetCtrls = repositionRivetCtrls    
 
+        # args
+        self.ctrlNode=ctrlNode
+        self.inputWeightAttrs =inputWeightAttrs
+        self.factorAttrNames =factorAttrNames
+        self.geoToWeight = geoToWeight
+        self.operationVals=operationVals
+        self.autoCreate = autoCreate
+        self.autoCreateName =autoCreateName
+        self.auto_create_name_side=auto_create_name_side
+        self.autoCreateOperationVal =autoCreateOperationVal
+        self.createControl = createControl
+        self.controlSize = controlSize
+        self.controlTxConnectionAttrs=controlTxConnectionAttrs
+        self.controlTyConnectionAttrs=controlTyConnectionAttrs
+        self.controlTzConnectionAttrs=controlTzConnectionAttrs
+        self.controlRxConnectionAttrs=controlRxConnectionAttrs
+        self.controlRyConnectionAttrs=controlRyConnectionAttrs
+        self.controlRzConnectionAttrs=controlRzConnectionAttrs
+        self.controlSxConnectionAttrs=controlSxConnectionAttrs
+        self.controlSyConnectionAttrs=controlSyConnectionAttrs
+        self.controlSzConnectionAttrs=controlSzConnectionAttrs
+        self.controlShape =controlShape
+        self.controlShapeOffset = controlShapeOffset
+        self.controlShapeOrient = controlShapeOrient
+        self.controlShapeScale = controlShapeScale
+        self.controlLockAttrs = controlLockAttrs
+        self.controlPositionWeightsThreshold=controlPositionWeightsThreshold
+        self.controlPositionOffset=controlPositionOffset
+        self.controlAutoOrientMesh=controlAutoOrientMesh
+        self.controlRivetMesh =controlRivetMesh
+        self.controlRivetAimMesh=controlRivetAimMesh
+        self.controlParent=controlParent
+        self.UDLR =UDLR
+        self.isOutputKDoubleArray=isOutputKDoubleArray
+        self.outputAttrs_LR = outputAttrs_LR
+        self.connectFalloff = connectFalloff
+        self.falloffCurveWeightNode =falloffCurveWeightNode
+        self.falloffElemStart =falloffElemStart
+        self.controlSpeedDefaults = controlSpeedDefaults
+        self.repositionRivetCtrls=repositionRivetCtrls
+        self.inputWeightAttrs_UD=inputWeightAttrs_UD
+        self.inputWeightAttrs_LR=inputWeightAttrs_LR
 
+        # instance attrs
         self.factorAttrNamesLR = []
         self.floatAttrs_LR = []
         self.name_LR = ""
