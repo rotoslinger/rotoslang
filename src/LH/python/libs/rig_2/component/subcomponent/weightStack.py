@@ -1,3 +1,7 @@
+import inspect
+from collections import OrderedDict
+
+
 from maya import cmds
 
 from rig_2.name import utils as name_utils
@@ -12,7 +16,9 @@ from decorators import initialize
 from rig_2.manipulator import elements as manipulator_elements
 from rig_2.attr import utils as attr_utils
 from rig_2.tag import utils as tag_utils
+from rig_2.component import base as component_base
 
+# reload(component_base)
 
 # reload(name_utils)
 
@@ -37,7 +43,7 @@ from rig_2.tag import utils as tag_utils
 
 # reload(tag_utils)
 
-class Weight_Node(object):
+class Weight_Node(component_base.Subcomponent):
     def __init__(self,
                  name,
                  side=None,
@@ -49,6 +55,12 @@ class Weight_Node(object):
                  addNewElem=False,
                  component_name="",
                  ):
+        super(Weight_Node, self).__init__(
+                                   side=side,
+                                   component_name=component_name)
+        # weight node is a subcomponent so it will not have any exposed args...
+        self.ordered_args = OrderedDict()
+        
         self.component_name = component_name
         self.name = name
         self.side = side # WIP

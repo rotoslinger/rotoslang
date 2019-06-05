@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="84d539d8-cdd9-467a-ac62-46df048f5a56" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lip.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lip.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/weightStack.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/weightStack.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -42,10 +42,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/weightStack.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-17">
-              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+            <state relative-caret-position="85">
+              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
               <folding>
-                <element signature="e#0#21#0" expanded="true" />
+                <element signature="e#0#14#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -181,7 +181,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="y" value="59" />
     <option name="width" value="1750" />
     <option name="height" value="981" />
@@ -353,7 +353,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="59" width="1750" height="981" extended-state="1" />
+    <frame x="0" y="59" width="1750" height="981" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.30490655" />
@@ -608,10 +608,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/weightStack.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-17">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        <state relative-caret-position="85">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
           <folding>
-            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
