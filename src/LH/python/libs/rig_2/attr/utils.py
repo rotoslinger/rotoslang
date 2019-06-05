@@ -1,6 +1,8 @@
+import inspect
 import weightmap as _weightmap
 from maya import cmds
 import ast
+from rig_2.attr import constants as attr_constants
 
 def get_attr(node, attr, attrType=None, dataType=None, enumName="this=is:an=example", k=False, weightmap=False, defaultVal=0.0, nice_name="", parent=None):
     if not node:
@@ -11,7 +13,7 @@ def get_attr(node, attr, attrType=None, dataType=None, enumName="this=is:an=exam
     if cmds.objExists(fullName):
         retAttrs.append(fullName)
         # update dv
-        if not weightmap and not dataType:
+        if not weightmap and not dataType and not attrType=="message":
             cmds.addAttr(fullName, e=True, dv=defaultVal)
             cmds.setAttr(fullName, defaultVal)
         return fullName
@@ -60,20 +62,36 @@ def get_attrs(node, attrs, attrType=None, dataType=None, enumName=None, k=False,
                                  parent=None))
     return retAttrs
 
-def get_attr_from_arg(node, attr_name, attr_type, attr_default):
-    type_dict = {list:"string", dict:"string", int:"short", float:"float", str:"string", bool:"bool"}
-    if type_dict[attr_type] == "string":
+def get_attr_from_arg(node, attr_name, attr_type, attr_default):   
+    
+    
+    if type(attr_default) not in attr_constants.ARG_SUPPORTED_TYPES:
+        print attr_default
+        attr_default = get_relative_path(attr_default)
+        dataType = "string"
+        attr_type=str
+        attrType=False
+        defaultVal=None
+    elif attr_constants.ARG_ATTR_TYPE_DICT[attr_type] == "string":
         dataType = "string"
         attrType=False
         defaultVal=None
     else:
-        attrType = type_dict[attr_type]
+        attrType = attr_constants.ARG_ATTR_TYPE_DICT[attr_type]
         dataType = False
         defaultVal=attr_default
+        
     new_attr = get_attr(node=node, attr=attr_name, dataType=dataType, attrType=attrType, defaultVal=defaultVal,  k=True)
-    if type_dict[attr_type] == "string":
+    if attr_constants.ARG_ATTR_TYPE_DICT[attr_type] == "string":
         cmds.setAttr(node + "." + attr_name, str(attr_default), type="string")
     return new_attr
+
+def get_relative_path(class_obj):
+        module = class_obj.__class__.__module__
+        if module is None or module == str.__class__.__module__:
+            return class_obj.__class__.__name__  # Avoid reporting __builtin__
+        else:
+            return module + '.' + class_obj.__class__.__name__
 
 def create_string_array(node, attr_name, default_string_list=None):
     full_attr_name = node + "." + attr_name

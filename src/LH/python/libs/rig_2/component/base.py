@@ -10,25 +10,24 @@ from rig_2.attr import constants as attr_constants
 from rig.utils import misc
 
 
-# reload(rig_hierarchy)
-# reload(node_utils)
-# reload(misc_utils)
-# reload(attr_utils)
-# reload(tag_utils)
-# reload(attr_constants)
-# reload(misc)
+reload(rig_hierarchy)
+reload(node_utils)
+reload(misc_utils)
+reload(attr_utils)
+reload(tag_utils)
+reload(attr_constants)
+reload(misc)
 
 
 
 class Subcomponent(object):
     def __init__(self,
                  parent_component_class=None,
-                 class_name=None,
-                 component_name="base",
+                #  class_name=None,
+                 component_name="subcomponent",
                  godnode_class=None,
                  container="",
                  side="C",
-                 name="subcomponent",
                  suffix = "SUBCPT",
                  debug = False,
                  parent = "",
@@ -37,11 +36,12 @@ class Subcomponent(object):
                  create_rig_grp=False,
                  create_control_grp=False,
                  arg_dict=None,
+                 hide_on_build=False,
                  # This will make the component the base which means you won't need a parent class
                  # a hierarchy will be created for you (or found if it already exists)
                  ):
         # Arg Snapshot
-        class_name = self.get_relative_path()
+        # class_name = self.get_relative_path()
         self.ordered_args = OrderedDict()
         self.frame = inspect.currentframe()
         self.get_args()
@@ -50,7 +50,6 @@ class Subcomponent(object):
         self.component_name = component_name
         self.godnode_class = godnode_class
         self.side = side
-        self.name = name
         self.suffix = suffix
         self.debug = debug
         self.parent = parent
@@ -59,6 +58,7 @@ class Subcomponent(object):
         self.create_rig_grp = create_rig_grp
         self.create_control_grp = create_control_grp
         self.arg_dict = arg_dict
+        self.hide_on_build = hide_on_build
         
         self.container = container
 
@@ -79,6 +79,8 @@ class Subcomponent(object):
         self.container_nodes = []
         self.subcomponent_group=None
         self.component_membership_nodes=[]
+        self.controls = []
+        self.guides = []
         # if parent is a dictionary get the value of the first key
         if type(self.parent) == dict:
             self.parent = self.parent[self.parent.keys()[0]]
@@ -88,6 +90,7 @@ class Subcomponent(object):
             self.get_arg_attrs_from_dict()
         self.initialize()
         self.get_container()
+
 
     def get_relative_path(self):
         module = self.__class__.__module__
@@ -99,14 +102,16 @@ class Subcomponent(object):
 
     def get_args(self):
         args, dummy, dummy, arg_dict = inspect.getargvalues(self.frame)
+        # make sure self is always ordered first
+        self.ordered_args["self"] = arg_dict["self"]
         for key in args:
+            if key == "self":
+                continue
             self.ordered_args[key] = arg_dict[key]
-
 
     def initialize(self):
         """ Check for a root, create if none """
-        self.class_node = "{0}_{1}_CLASS".format(self.side, self.name)
-
+        self.class_node = "{0}_CLASS".format(self.component_name)
         # This is for readability, can be removed maybe...
         self.class_node_name = self.class_node
         
@@ -128,10 +133,10 @@ class Subcomponent(object):
             
         #Create component Hierarchy within the parent class hierarchy. 
         self.geo, self.skeleton, self.rig, self.control, self.component= rig_hierarchy.init_hierarchy(side=self.side,
-                                                                                                    name=self.name,
-                                                                                                    suffix=self.suffix,
-                                                                                                    subcomponent_group=self.subcomponent_group,
-                                                                                                    hierarchy_class=hierarchy_class)
+                                                                                                      name=self.component_name,
+                                                                                                      suffix=self.suffix,
+                                                                                                      subcomponent_group=self.subcomponent_group,
+                                                                                                      hierarchy_class=hierarchy_class)
                                                                                                     # hierarchy_class=hierarchy_class)
         
         # If it has already been created, this will be skipped
@@ -148,9 +153,12 @@ class Subcomponent(object):
     def create_class_node(self, parent=None):
         node_utils.get_node_agnostic("transform", name = self.class_node, parent=parent)
         # clean up your CLASS node
-        misc.lock_attrs(node=self.class_node, attr=["all"])
-        tag_utils.create_component_tag(self.class_node, self.component_name)
+        misc.lock_attrs(node=self.class_node)
+        cmds.setAttr(self.class_node + ".v", channelBox=False, k=False)
+        # This is the only node that will never connect to the component_class, and that is because it is the component class
+        tag_utils.create_component_tag(self.class_node, self.component_name, connect_to_class_node=False)
         tag_utils.tag_arg_node(self.class_node)
+        self.nodes_message_attrr = attr_utils.get_attr(self.class_node, "membership_nodes", attrType="message")
 
 
     def get_arg_attrs_from_dict(self):
@@ -160,11 +168,8 @@ class Subcomponent(object):
     def create_arg_attrs(self):
         self.arg_attrs = []
         for key, val in self.ordered_args.items():
-            # print key,val, type(val)
             if type(val) == unicode:
                 val=str(val)
-            if type(val) not in attr_constants.SUPPORTED_TYPES:
-                continue
             attr_type = type(val)
             self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.class_node, attr_name=key, attr_type=attr_type, attr_default=val))
 
@@ -251,7 +256,11 @@ class Subcomponent(object):
         add_nodes_to_container(self.container, self.container_nodes)
 
     def post_create(self):
-        return
+        if self.hide_on_build:
+            cmds.setAttr(self.class_node + ".v", 0)
+
+    def create_component_tag(self):
+        [tag_utils.create_component_tag(node, component_name=self.component_name) for node in self.component_membership_nodes]
 
     def create(self):
         self.create_arg_attrs()
@@ -273,6 +282,7 @@ class Subcomponent(object):
         self.add_container_attrs()
         self.add_container_nodes()
         self.post_create()
+        self.create_component_tag()
 
     # misc methods
 
@@ -306,6 +316,11 @@ class Subcomponent(object):
         self.safe_append(node_to_add=node_to_add,
                          list_to_append=self.container_nodes)
 
+    def get_controls_guides_etc(self):
+        self.controls=tag_utils.get_all_in_component_with_tag("CONTROL", self.component_name)
+        self.guides=tag_utils.get_all_in_component_with_tag("GUIDE", self.component_name)
+
+
 def get_all_component_args():
     all_arg_dicts = {}
     names = tag_utils.get_all_component_names()
@@ -315,7 +330,6 @@ def get_all_component_args():
             continue
         all_arg_dicts[name] =component_dict
     return all_arg_dicts
-    # print all_arg_dicts
 
 def get_component_args_from_scene(component_name):
     node = tag_utils.get_arg_node_by_component_name(component_name)

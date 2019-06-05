@@ -1,5 +1,4 @@
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 
 from rig_2.weights import utils as weights_utils
@@ -18,7 +17,8 @@ if os not in sys.path:
     sys.path.append(os)
 # from rig.utils import weightMapUtils
 # from rig.deformers import base
-from rig.deformers import weightStack
+from rig_2.component.subcomponent import weightStack
+
 reload(weightStack)
 # from rig.deformers import utils as deformer_utils
 from rig.deformers import matrixDeformer
@@ -35,7 +35,7 @@ from rig.deformers import utils as deformer_utils
 reload(deformer_utils)
 # reload(deformer_utils)
 # reload(base)
-from rig.utils import weightMapUtils, misc
+from rig.utils import misc
 reload(misc)
 from rig.utils import LHCurveDeformerCmds
 reload(LHCurveDeformerCmds)
@@ -178,34 +178,34 @@ class MouthJaw(object):
 
 
         curveWeights_UD = weightStack.AnimCurveWeight(name=self.nameMouth + "CurveWeights",
-                                            baseGeo=self.baseGeoToDeform,
-                                            ctrlNode=self.control,
-                                            projectionGeo=self.projectionMesh,
-                                            # weightCurveNames=UD_Names,
-                                            addNewElem=False,
-                                            autoCreateAnimCurves = False,
-                                            inputWeightCurvesDict=self.slideWeightCurves_UD,
-                                            inputWeightCurvesFalloffDict=self.slideWeightCurvesFalloff_UD,
-                                            component_name=self.component_name
+                                                      baseGeo=self.baseGeoToDeform,
+                                                      ctrlNode=self.control,
+                                                      projectionGeo=self.projectionMesh,
+                                                      # weightCurveNames=UD_Names,
+                                                      addNewElem=False,
+                                                      autoCreateAnimCurves = False,
+                                                      inputWeightCurvesDict=self.slideWeightCurves_UD,
+                                                      inputWeightCurvesFalloffDict=self.slideWeightCurvesFalloff_UD,
+                                                      component_name=self.component_name
 
 
-        )
+                                                      )
         curveWeights_UD.create()
 
         LR_Names = [x + "LR" for x in self.slideAttrs]
 
         curveWeights_LR = weightStack.AnimCurveWeight(name=self.nameMouth + "CurveWeights_LR",
-                                            baseGeo=self.baseGeoToDeform,
-                                            ctrlNode=self.control,
-                                            projectionGeo=self.projectionMesh,
-                                            # weightCurveNames=LR_Names,
-                                            addNewElem=False,
-                                            autoCreateAnimCurves = False,
-                                            inputWeightCurvesDict=self.slideWeightCurves_LR,
-                                            inputWeightCurvesFalloffDict=self.slideWeightCurvesFalloff_LR,
-                                            component_name=self.component_name
+                                                      baseGeo=self.baseGeoToDeform,
+                                                      ctrlNode=self.control,
+                                                      projectionGeo=self.projectionMesh,
+                                                      # weightCurveNames=LR_Names,
+                                                      addNewElem=False,
+                                                      autoCreateAnimCurves = False,
+                                                      inputWeightCurvesDict=self.slideWeightCurves_LR,
+                                                      inputWeightCurvesFalloffDict=self.slideWeightCurvesFalloff_LR,
+                                                      component_name=self.component_name
 
-        )
+                                                      )
         curveWeights_LR.create()
 
         outputAttrs = [self.slideUDLR.deformer + ".weightArrays[0].vWeights"]
@@ -235,7 +235,7 @@ class MouthJaw(object):
                                         controlParent = self.controlParent,
                                         connectFalloff = True,
                                         isOutputKDoubleArray=True,
-                                        falloffCurveWeightNode=None, # If a weight node already exists, use it
+                                        falloffCurveWeightNode=None,  # If a weight node already exists, use it
                                         # autoCreateName=ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
                                         controlSize = 3,
                                         controlShapeOffset = slideCtrlShapeOffsets,
@@ -252,18 +252,18 @@ class MouthJaw(object):
 
     def matDef(self):
         self.matDefCurveWeights = weightStack.AnimCurveWeight(name=self.nameJaw + "MatDefCurveWeights",
-                                                    baseGeo=self.baseGeoToDeform,
-                                                    ctrlNode=self.control,
-                                                    projectionGeo=self.projectionMesh,
-                                                    # weightCurveNames=[],
-                                                    addNewElem=False,
-                                                    autoCreateAnimCurves = False,
-                                                    inputWeightCurvesDict=self.matDefWeightCurves,
-                                                    inputWeightCurvesFalloffDict=self.matDefWeightCurvesFalloff,
-                                                    controlAutoOrientMesh = self.slidePatch,
-                                                    component_name=self.component_name
+                                                              baseGeo=self.baseGeoToDeform,
+                                                              ctrlNode=self.control,
+                                                              projectionGeo=self.projectionMesh,
+                                                              # weightCurveNames=[],
+                                                              addNewElem=False,
+                                                              autoCreateAnimCurves = False,
+                                                              inputWeightCurvesDict=self.matDefWeightCurves,
+                                                              inputWeightCurvesFalloffDict=self.matDefWeightCurvesFalloff,
+                                                              controlAutoOrientMesh = self.slidePatch,
+                                                              component_name=self.component_name
 
-        )
+                                                              )
         self.matDefCurveWeights.create()
 
         cmds.refresh()

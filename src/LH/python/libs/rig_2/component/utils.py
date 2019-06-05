@@ -5,7 +5,9 @@ from rig_2.manipulator import elements as manip_elements
 from rig_2.mirror import utils as mirror_utils
 from rig_2.name import utils as name_utils
 from rig.rigComponents import simpleton
+from rig_2.tag import utils as tag_utils
 
+reload(tag_utils)
 reload(mirror_utils)
 reload(name_utils)
 reload(simpleton)
@@ -30,11 +32,17 @@ def get_projection_geo(mesh,
                        split_suffix="_GEO",
                        x_mult=1,
                        y_mult=1,
-                       flip=False):
-    proj_name = mesh
+                       flip=False,
+                       # If you give a list of meshes you need to give a name!!
+                       name=None):
+    proj_name=""
+    if type(mesh) == str or type(mesh) == unicode:
+        proj_name = mesh
     if split_suffix in mesh:
         proj_name = mesh.split(split_suffix)[0]
     proj_name += "_PRJ"
+    if name:
+        proj_name=name
     x, y, z, center = get_projection_dimensions(mesh)
     x = x*x_mult
     y = y*y_mult
@@ -57,7 +65,7 @@ def get_projection_geo(mesh,
         cmds.polyNormal(plane[0], normalMode=2, userNormalMode=1, ch=False)
     cmds.DeleteHistory(plane[0])
     cmds.makeIdentity(plane[0], apply=True, t=1, r=1, s=1, n=0, pn=1)
-    
+    tag_utils.tag_projection_mesh(plane[0])
     return plane[0]
 
 
@@ -132,13 +140,13 @@ def cluster_lattice_sheet(lattice_name,
             maya_object_name = "{0}_{1}Handle".format(sides[s], range_names[s] + "Row{0:02}".format(t))
             cluster_format_name = "{0}_{1}".format(sides[s], range_names[s] + "Row{0:02}".format(t))
             full_control_name = "{0}_{1}_CTL".format(sides[s],range_names[s] + "Row{0:02}".format(t))
-            component_name = range_names[s] + "Row{0:02}".format(t)
+            simpleton_name = range_names[s] + "Row{0:02}".format(t)
             loop_side = sides[s]
         else:
             maya_object_name = "{0}_{1}Shaper{2:02}Row{3:02}Handle".format(side, component_name, s, t)
             cluster_format_name = "{0}_{1}Shaper{2:02}Row{3:02}".format(side, component_name, s, t)
             full_control_name =  "{0}_{1}Shaper{2:02}Row{3:02}_CTL".format(side, component_name, s, t)
-            component_name = "{0}Shaper{1:02}Row{2:02}".format(component_name, s, t)
+            simpleton_name = "{0}Shaper{1:02}Row{2:02}".format(component_name, s, t)
             loop_side = side
 
         if cmds.objExists(maya_object_name):
@@ -153,7 +161,7 @@ def cluster_lattice_sheet(lattice_name,
             controls.append(full_control_name)
         else:
             control = simpleton.Component( side=loop_side,
-                                        name=component_name,
+                                        name=simpleton_name,
                                         parent=root_control,
                                         translate = position,
                                         rotate = [0,0,0],

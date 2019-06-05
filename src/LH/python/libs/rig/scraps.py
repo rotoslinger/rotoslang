@@ -109,7 +109,7 @@ if os not in sys.path:
 from rig.utils import weightMapUtils
 from rig.utils import misc
 from rig.deformers import base
-from rig.deformers import weightStack
+from rig_2.component.subcomponent import weightStack
 from rig.deformers import matrixDeformer 
 from rig.deformers import utils 
 from rig.rigComponents import lip 

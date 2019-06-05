@@ -1,5 +1,4 @@
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -14,7 +13,8 @@ if os not in sys.path:
     sys.path.append(os)
 # from rig.utils import weightMapUtils
 # from rig.deformers import base
-from rig.deformers import weightStack
+from rig_2.component.subcomponent import weightStack
+
 reload(weightStack)
 # from rig.deformers import utils as deformer_utils
 from rig.deformers import matrixDeformer
@@ -31,7 +31,7 @@ from rig.deformers import utils as deformer_utils
 reload(deformer_utils)
 # reload(deformer_utils)
 # reload(base)
-from rig.utils import weightMapUtils, misc
+from rig.utils import misc
 reload(misc)
 from rig.utils import LHCurveDeformerCmds
 reload(LHCurveDeformerCmds)
@@ -163,55 +163,55 @@ class Brow(object):
             for idx in range(3):
 
                 self.slideCurveWeights[side] = weightStack.AnimCurveWeight(name=currName + "CurveWeights",
-                                                    baseGeo=self.baseGeosToDeform[posIdx],
-                                                    ctrlNode=self.control,
-                                                    projectionGeo=self.projectionMeshes[posIdx],
-                                                    weightCurveNames=[],
-                                                    addNewElem=self.isAddingNewElems[idx],
-                                                    autoCreateAnimCurves = True,
-                                                    autoCreateName = self.ctrlName + side + self.tierNames[idx], # Primary, Secondary, Or Tertiatry
-                                                    singleFalloffName = self.ctrlName + side,
-                                                    autoCreateNum = self.tierCounts[idx],
-                                                    falloffCurveDict = self.slideFalloffDicts[posIdx],
-                                                    curveOverrideDict = self.curveOverrideDict[idx],
-                                                    centerWeight = elements.BROW_CENTER_WEIGHTS[idx],
-                                                    outerWeight = elements.OUTER_WEIGHTS[idx],
-                                                    angle = elements.BROW_ANGLES[idx],
-                                                    nudge = elements.NUDGES[idx],
-                                                    lastAngle=elements.LAST_ANGLES[idx],
-                                                    component_name=self.component_name,
+                                                                           baseGeo=self.baseGeosToDeform[posIdx],
+                                                                           ctrlNode=self.control,
+                                                                           projectionGeo=self.projectionMeshes[posIdx],
+                                                                           weightCurveNames=[],
+                                                                           addNewElem=self.isAddingNewElems[idx],
+                                                                           autoCreateAnimCurves = True,
+                                                                           autoCreateName = self.ctrlName + side + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                                           singleFalloffName = self.ctrlName + side,
+                                                                           autoCreateNum = self.tierCounts[idx],
+                                                                           falloffCurveDict = self.slideFalloffDicts[posIdx],
+                                                                           curveOverrideDict = self.curveOverrideDict[idx],
+                                                                           centerWeight = elements.BROW_CENTER_WEIGHTS[idx],
+                                                                           outerWeight = elements.OUTER_WEIGHTS[idx],
+                                                                           angle = elements.BROW_ANGLES[idx],
+                                                                           nudge = elements.NUDGES[idx],
+                                                                           lastAngle=elements.LAST_ANGLES[idx],
+                                                                           component_name=self.component_name,
 
-                )
+                                                                           )
                 self.slideCurveWeights[side].create()
 
                 currFalloffCurveWeightNode = None
                 if posIdx > 0:
                     currFalloffCurveWeightNode = currName + "CurveWeights"
                 self.slideWeightStack[side] = weightStack.WeightStack(name=currName + "WeightStack",
-                                                geoToWeight=self.deformMeshes[posIdx],
-                                                ctrlNode=self.control,
-                                                inputWeightAttrs=self.slideCurveWeights[side].newKDoubleArrayOutputPlugs,
-                                                addNewElem=self.isAddingNewElems[idx],
-                                                outputAttrs = outputAttrs,
-                                                outputAttrs_LR = outputAttrs_LR,
-                                                autoCreate=True,
-                                                controlPositionWeightsThreshold=self.ctrlAutoPositionThreshold,
-                                                controlRivetMesh = self.controlRivetMeshes[posIdx],
-                                                controlAutoOrientMesh=self.controlAutoOrientMesh,
-                                                controlRivetAimMesh=self.slidePatch,
-                                                controlSpeedDefaults = self.slideControlSpeedDefaults,
-                                                controlParent = self.controlParent,
-                                                connectFalloff = self.connectFalloffs[idx],
-                                                isOutputKDoubleArray=True,
-                                                falloffCurveWeightNode=currFalloffCurveWeightNode, # If a weight node already exists, use it
-                                                # falloffCurveWeightNode="TestCurveWeights",
-                                                autoCreateName = self.ctrlName + side + self.tierNames[idx], # Primary, Secondary, Or Tertiatry
-                                                controlSize = self.slideCtrlSizes[idx],
-                                                controlShapeOffset = self.slideCtrlShapeOffsets[idx],
-                                                controlShape = self.slideIconShapeDict,
-                                                controlLockAttrs=["ry", "rz", "sx", "sz"],
-                                                component_name=self.component_name,
-                                                )
+                                                                      geoToWeight=self.deformMeshes[posIdx],
+                                                                      ctrlNode=self.control,
+                                                                      inputWeightAttrs=self.slideCurveWeights[side].newKDoubleArrayOutputPlugs,
+                                                                      addNewElem=self.isAddingNewElems[idx],
+                                                                      outputAttrs = outputAttrs,
+                                                                      outputAttrs_LR = outputAttrs_LR,
+                                                                      autoCreate=True,
+                                                                      controlPositionWeightsThreshold=self.ctrlAutoPositionThreshold,
+                                                                      controlRivetMesh = self.controlRivetMeshes[posIdx],
+                                                                      controlAutoOrientMesh=self.controlAutoOrientMesh,
+                                                                      controlRivetAimMesh=self.slidePatch,
+                                                                      controlSpeedDefaults = self.slideControlSpeedDefaults,
+                                                                      controlParent = self.controlParent,
+                                                                      connectFalloff = self.connectFalloffs[idx],
+                                                                      isOutputKDoubleArray=True,
+                                                                      falloffCurveWeightNode=currFalloffCurveWeightNode,  # If a weight node already exists, use it
+                                                                      # falloffCurveWeightNode="TestCurveWeights",
+                                                                      autoCreateName = self.ctrlName + side + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                                      controlSize = self.slideCtrlSizes[idx],
+                                                                      controlShapeOffset = self.slideCtrlShapeOffsets[idx],
+                                                                      controlShape = self.slideIconShapeDict,
+                                                                      controlLockAttrs=["ry", "rz", "sx", "sz"],
+                                                                      component_name=self.component_name,
+                                                                      )
                 self.slideWeightStack[side].create()
                 self.ctrlPositions[side].append(self.slideWeightStack[side].positionsFromWeights)
                 self.ctrlRotations[side].append(self.slideWeightStack[side].rotationsFromWeights)
@@ -241,24 +241,24 @@ class Brow(object):
             for idx in range(3):
                 ################################## MATRIX DEFORMER #####################################################################
                 self.matDefCurveWeights[side] = weightStack.AnimCurveWeight(name=currName + "MatDef",
-                                                            baseGeo=self.baseGeosToDeform[posIdx],
-                                                            ctrlNode=self.control,
-                                                            projectionGeo=self.projectionMeshes[posIdx],
-                                                            weightCurveNames=[],
-                                                            addNewElem=self.isAddingNewElems[idx],
-                                                            autoCreateAnimCurves = True,
-                                                            autoCreateName = self.ctrlName + side + self.tierNames[idx], # Primary, Secondary, Or Tertiatry
-                                                            singleFalloffName = self.ctrlName + side + "MATDEFTEST",
-                                                            autoCreateNum = self.tierCounts[idx],
-                                                            falloffCurveDict = self.matDefFalloffDicts[posIdx],
-                                                            curveOverrideDict = self.curveOverrideDict[idx],
-                                                            centerWeight = elements.BROW_CENTER_WEIGHTS[idx],
-                                                            outerWeight = elements.OUTER_WEIGHTS[idx],
-                                                            angle = elements.BROW_ANGLES[idx],
-                                                            nudge = elements.NUDGES[idx],
-                                                            lastAngle=elements.LAST_ANGLES[idx],
-                                                            component_name=self.component_name,
-                )
+                                                                            baseGeo=self.baseGeosToDeform[posIdx],
+                                                                            ctrlNode=self.control,
+                                                                            projectionGeo=self.projectionMeshes[posIdx],
+                                                                            weightCurveNames=[],
+                                                                            addNewElem=self.isAddingNewElems[idx],
+                                                                            autoCreateAnimCurves = True,
+                                                                            autoCreateName = self.ctrlName + side + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                                            singleFalloffName = self.ctrlName + side + "MATDEFTEST",
+                                                                            autoCreateNum = self.tierCounts[idx],
+                                                                            falloffCurveDict = self.matDefFalloffDicts[posIdx],
+                                                                            curveOverrideDict = self.curveOverrideDict[idx],
+                                                                            centerWeight = elements.BROW_CENTER_WEIGHTS[idx],
+                                                                            outerWeight = elements.OUTER_WEIGHTS[idx],
+                                                                            angle = elements.BROW_ANGLES[idx],
+                                                                            nudge = elements.NUDGES[idx],
+                                                                            lastAngle=elements.LAST_ANGLES[idx],
+                                                                            component_name=self.component_name,
+                                                                            )
                 self.matDefCurveWeights[side].create()
 
                 # Create a single matrix deformer (rotation order issues)

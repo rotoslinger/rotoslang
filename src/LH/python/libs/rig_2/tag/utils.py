@@ -47,7 +47,12 @@ def create_tag(node_to_tag, tag_name="TAG", warn=False):
                     l = True,
                     k=False)
 
-def create_component_tag(node_to_tag, component_name):
+def get_class_node_from_component_name(component_name):
+    return "{0}_CLASS".format(component_name)
+
+def create_component_tag(node_to_tag, component_name, connect_to_class_node=True):
+    class_node = "{0}_CLASS".format(component_name)
+
     if type(node_to_tag) != list:
         node_to_tag = [node_to_tag]
     for node in node_to_tag:
@@ -57,6 +62,10 @@ def create_component_tag(node_to_tag, component_name):
 
         attr_utils.get_attr(node, "COMPONENT_MEMBERSHIP", dataType="string")
         cmds.setAttr(attr, component_name, type="string")
+        
+        if connect_to_class_node:
+            component_class_attr = attr_utils.get_attr(node, "component_class", attrType="message")
+            cmds.connectAttr(class_node + ".membership_nodes", component_class_attr)
         return attr
 
 def get_arg_node_by_component_name(component_name):
@@ -95,7 +104,15 @@ def get_all_component_tag_vals():
     component_names = [cmds.getAttr(x + ".COMPONENT_MEMBERSHIP") for x in component_pieces]
     return list(dict.fromkeys(component_names))
 
-def get_nodes_by_component_name(component_name):
+def get_nodes_by_component_name(component_name, message_connection=True):
+    if message_connection:
+        component_class_node = get_class_node_from_component_name(component_name)
+        nodes = cmds.listConnections(component_class_node + ".membership_nodes")
+        if nodes:
+            # make sure no Null returns...
+            nodes = [node for node in nodes if node]
+            return nodes
+    
     component_pieces = get_all_with_tag("COMPONENT_MEMBERSHIP")
     return_nodes = []
     for node in component_pieces:
@@ -152,6 +169,9 @@ def tag_base_geo(node_to_tag):
 def tag_lid_curves(node_to_tag):
     create_tag(node_to_tag, "LID_CURVES")
     
+def tag_brow_curves(node_to_tag):
+    create_tag(node_to_tag, "BROW_CURVES")
+    
 def tag_lip_volume_curves(node_to_tag):
     create_tag(node_to_tag, "LIP_VOLUME_CURVES")
     
@@ -201,12 +221,18 @@ def get_all_with_tag(tag, hint_list=None):
         hint_list = cmds.ls()
     return [x for x in hint_list if cmds.objExists(x + "." + tag)]
 
+def get_all_in_component_with_tag(tag, component_name):
+    hint_list = get_nodes_by_component_name(component_name)
+    return get_all_with_tag(tag, hint_list)
 
 def get_all_shape_with_tag(tag):
     return [x for x in cmds.ls(shapes=True) if cmds.objExists(x + "." + tag)]
 
 
-def vis_all_with_tag(tag, vis=True, component=None):
+def vis_all_with_tag(tag, vis=True, component=None, vis_shape=True, vis_transform=False):
+    # Is only going to set visibility for nodes that have a shape parented directly beneath them
+    # By default only sets vis for the shape to avoid toggling visibility for entire hierarchies
+    # Has option to hide by transform
     hint_list=None
     if component:
        hint_list = get_nodes_by_component_name(component)
@@ -217,12 +243,26 @@ def vis_all_with_tag(tag, vis=True, component=None):
         shapes = cmds.listRelatives(node, s=True)
         if not shapes:
             continue
-        for shape in shapes:
-            if not cmds.objExists(shape + ".visibility"):
-                continue
-            cmds.setAttr(shape + ".v", vis)
-    return tag, vis
+        if vis_transform:
+            safe_set_visibility(node, vis=vis)            
+
+        if not vis_shape:
+            continue
         
+        for shape in shapes:
+            safe_set_visibility(shape, vis=vis)            
+            # if not cmds.objExists(shape + ".visibility"):
+            #     continue
+            # cmds.setAttr(shape + ".v", vis)
+    return tag, vis
+
+def safe_set_visibility(node, vis=True):
+    try:
+        cmds.setAttr(node + ".v", vis)
+    except:
+        # Either the attribute doesn't exist, or it is locked, or connected, okay to silently fail
+        return
+
 def make_selectable_all_with_tag(tag, selectable=True, component=None):
     hint_list=None
     if component:

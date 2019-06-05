@@ -92,9 +92,20 @@ class Filtered_List(QtWidgets.QWidget):
                         
             self.tag_contents_grid_layout.addWidget(self.vis_checkbox, 0, 1, QtCore.Qt.AlignTop)
             self.tag_contents_grid_layout.addWidget(self.selectable_checkbox, 0, 2, QtCore.Qt.AlignTop)
-            
-            
             self.add_widget_to_layout(tag_row_widget)
+            
+            self.tag_selection_option_label = ui_utils.create_label("Choose what visibility effects for geometry.  \n" + 
+                                                                  "By default visibility only effects shape, which avoids hierarchy visibility changing. \n" +
+                                                                  "If transforms have been hidden for certain shapes, such as base geometry, shape vis toggling will need to be done on the transform level."
+                                                                  , color=self.color)
+            
+            self.tag_selection_option_widget, self.tag_selection_option_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=[["Vis effects shape", True],
+                                                                                                    ["Vis effects transform", False]], row=True, color=self.color)
+            
+            self.add_widget_to_layout(self.tag_selection_option_label)
+            self.add_widget_to_layout(self.tag_selection_option_widget)
+            
+
 
         if self.do_tag_filter:
             self.tag_filter_layout, self.tag_filter_line_edit = ui_utils.label_text_box("Filter Tag", color=self.color, text_changed_func=self.filter_data)
@@ -126,7 +137,8 @@ class Filtered_List(QtWidgets.QWidget):
             for idx, checkbox in enumerate(self.tag_vis_widgets):
                 checkbox.setChecked(checked)
                 tag=self.tag_label_widgets[idx].text()
-                tag_utils.vis_all_with_tag(self.tag_label_widgets[idx].text(), checked, component)
+                vis_selection = [checkbox.isChecked() for checkbox in self.tag_selection_option_checkboxes]
+                tag_utils.vis_all_with_tag(self.tag_label_widgets[idx].text(), checked, component, vis_shape=vis_selection[0], vis_transform=vis_selection[1])
                 if not component in self.tag_visibility_status.keys():
                     self.tag_visibility_status[component] = {}
                 self.tag_visibility_status[component][tag] = checked
@@ -188,7 +200,8 @@ class Filtered_List(QtWidgets.QWidget):
         for component in self.component_list.selectedItems():
             component = str(component.text())
             tag = self.tag_label_widgets[idx].text()
-            tag_utils.vis_all_with_tag(tag, vis=self.tag_vis_widgets[idx].isChecked(), component=component)
+            vis_selection = [checkbox.isChecked() for checkbox in self.tag_selection_option_checkboxes]
+            tag_utils.vis_all_with_tag(tag, vis=self.tag_vis_widgets[idx].isChecked(), component=component, vis_shape=vis_selection[0], vis_transform=vis_selection[1])
             if not component in self.tag_visibility_status.keys():
                 self.tag_visibility_status[component] = {}
             self.tag_visibility_status[component][tag] =  self.tag_vis_widgets[idx].isChecked()

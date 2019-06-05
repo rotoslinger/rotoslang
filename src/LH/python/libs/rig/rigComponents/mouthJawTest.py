@@ -1,5 +1,4 @@
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -14,7 +13,8 @@ if os not in sys.path:
     sys.path.append(os)
 # from rig.utils import weightMapUtils
 # from rig.deformers import base
-from rig.deformers import weightStack
+from rig_2.component.subcomponent import weightStack
+
 reload(weightStack)
 # from rig.deformers import utils as deformerUtils
 from rig.deformers import matrixDeformer
@@ -31,7 +31,7 @@ from rig.deformers import utils as deformerUtils
 reload(deformerUtils)
 # reload(deformerUtils)
 # reload(base)
-from rig.utils import weightMapUtils, misc
+from rig.utils import misc
 reload(misc)
 from rig.utils import LHCurveDeformerCmds
 reload(LHCurveDeformerCmds)
@@ -42,7 +42,6 @@ reload(elements)
 from rig.rigComponents import mouthJaw
 reload(mouthJaw)
 
-from decorators import initialize
 reload(elements)
 
 def test():

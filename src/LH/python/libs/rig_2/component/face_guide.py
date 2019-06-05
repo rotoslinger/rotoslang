@@ -11,22 +11,22 @@ from rig_2.component import base as component_base
 from rig_2 import decorator
 from rig_2.mirror import utils as mirror_utils
 from rig_2.shape import mesh, nurbscurve
-from rig_2.component import elements as components_elements
+from rig_2.elements import face_guide_elements
 
 reload(tag_utils)
 reload(component_base)
 reload(decorator)
 reload(mesh)
 reload(nurbscurve)
-reload(components_elements)
+reload(face_guide_elements)
+reload(component_utils)
 
 
 
 class Base(component_base.Subcomponent):
     def __init__(self,
-                 class_name="rig_2.guide.face.Base",
+                #  class_name="rig_2.guide.face.Base", # Will be set by "self.get_relative_path". This really only becomes important when you are doing a dynamic build from within maya 
                  side="C",
-                 name="base",
                  component_name="base",
                  num_local_influence=9,
                  s_divisions=9,
@@ -41,16 +41,15 @@ class Base(component_base.Subcomponent):
                  debug=False,
                  **kw
                  ):
-        super(Base, self).__init__(self, class_name=class_name,
+        super(Base, self).__init__(
                                    side=side,
-                                   name=name,
                                    component_name=component_name, **kw)
-        # self.name="subcomponent",
-        # If you don't want to inherit the last classes args, create a clean dictionary
-        class_name = self.get_relative_path()
+        # Creating a clean dictionary to avoid inheriting arguments from base.Subcomponent
         self.ordered_args = OrderedDict()
+        # Getting args as the current locals at this point in parsing of the file
         self.frame = inspect.currentframe()
         self.get_args()
+
         self.aim_surface=None
         # args
         self.s_divisions = s_divisions
@@ -87,7 +86,7 @@ class Base(component_base.Subcomponent):
     def create_geo(self):
         return
     
-    def create_mesh(self):
+    def create_projection_meshes(self):
         return
 
     def create_base_geo(self):
@@ -115,15 +114,23 @@ class Base(component_base.Subcomponent):
         return_list = []
     
         for geo in geo_list:
-            tag_utils.tag_base_geo(geo)
-            # tag_utils.create_component_tag(geo, component_name=self.component_name)
-            # Don't need to make a base of the projection meshes, this is needed if you are doing a debug build
             geo_name = geo + "BASE"
             if not cmds.objExists(geo_name):
                 cmds.duplicate(geo, n=geo_name)
                 cmds.setAttr(geo_name + ".v", 0)
+            tag_utils.tag_base_geo(geo_name)
             return_list.append(geo_name)
+        self.component_membership_nodes += return_list
         return return_list
+
+    def create_base(self, node):
+        node_name = node + "BASE"
+        if not cmds.objExists(node_name):
+            cmds.duplicate(node, n=node_name)
+            cmds.setAttr(node_name + ".v", 0)
+        tag_utils.tag_base_geo(node_name)
+        self.component_membership_nodes += [node_name]
+        return node_name
 
     def create_lattice(self):
         self.create_single_lattice()
@@ -151,16 +158,16 @@ class Base(component_base.Subcomponent):
             return
 
         ffd_deformer, lattice, lattice_base = cmds.lattice(geo,
-                                                                          n="{0}_{1}".format(side, self.component_name),
-                                                                          outsideLattice=1,
-                                                                          ldivisions=(self.num_local_influence,
-                                                                                      self.num_local_influence,
-                                                                                      self.num_local_influence),
-                                                                          divisions=(self.s_divisions,
-                                                                                     self.t_divisions,
-                                                                                     2),
-                                                                        #   objectCentered=True,
-                                                                          )
+                                                            n="{0}_{1}".format(side, self.component_name),
+                                                            outsideLattice=1,
+                                                            ldivisions=(self.num_local_influence,
+                                                                        self.num_local_influence,
+                                                                        self.num_local_influence),
+                                                            divisions=(self.s_divisions,
+                                                                        self.t_divisions,
+                                                                        2),
+                                                        #   objectCentered=True,
+                                                            )
         cmds.xform(lattice, ws=True, s=[x,y,z], t=center)
         cmds.xform(lattice_base, ws=True, s=[x,y,z], t=center)
         
@@ -188,6 +195,13 @@ class Base(component_base.Subcomponent):
     
         return root_control, controls, clusters
 
+    def create_mesh_projection_per_side(self, meshes_to_project, flip=False):
+        temp_meshes = []
+        for idx , mesh in enumerate(meshes_to_project):
+            projection_mesh = component_utils.get_projection_geo(mesh, self.geo, self.projection_x_subdivisions, self.projection_y_subdivisions, flip=flip)
+            tag_utils.tag_projection_mesh(projection_mesh)
+            temp_meshes.append(projection_mesh)
+        return temp_meshes
 
     def create_single_lattice_controls(self):
         if not self.lattice:
@@ -209,144 +223,21 @@ class Base(component_base.Subcomponent):
         mirror_utils.add_dynamic_mirror_connection(self.l_controls , hide_connected=False, scale=False)
         mirror_utils.add_dynamic_mirror_connection([self.l_root_control], hide_connected=False, scale=True)
 
+    # def create_component_tag(self):
+    #     [tag_utils.create_component_tag(node, component_name=self.component_name) for node self.component_membership_nodes]
+
     # @decorator.undo_chunk
     def create(self):
         super(Base, self).create()
         self.create_geo()
-        self.create_mesh()
+        self.create_projection_meshes()
         self.create_nurbs()
         self.create_base_geo()
         self.create_lattice()
         self.create_lattice_controls()
-
-class Lid_Guide(Base):
-    def __init__(self,
-                 side="C",
-                 name="lidGuide",
-                 component_name="lidGuide",
-                 s_divisions=3,
-                 t_divisions=3,
-                 **kw
-                 ):
-
-        super(Lid_Guide, self).__init__(self,
-                                        side=side,
-                                        name=name,
-                                        component_name=component_name,
-                                        s_divisions=s_divisions,
-                                        t_divisions=t_divisions,
-                                        **kw)
-        # Add args to base class
-        class_name = self.get_relative_path()
-        self.frame = inspect.currentframe()
-        self.get_args()
+        self.create_component_tag()
 
 
-
-    def create_geo(self):
-
-        self.l_upper_lid = mesh.safe_create_mesh(components_elements.L_UP_LID_MESH, parent=self.geo)
-        self.l_lower_lid = mesh.safe_create_mesh(components_elements.L_LOW_LID_MESH, parent=self.geo)
-        
-        self.r_upper_lid = mesh.safe_create_mesh(components_elements.R_UP_LID_MESH, parent=self.geo)
-        self.r_lower_lid = mesh.safe_create_mesh(components_elements.R_LOW_LID_MESH, parent=self.geo)
-
-    
-        for geo in [self.l_upper_lid, self.l_lower_lid, self.r_upper_lid, self.r_lower_lid]:
-            tag_utils.tag_reference_geo(geo)
-        # [tag_utils.create_component_tag(curve, component_name=self.component_name) for curve in [self.up_lip_volume, self.low_lip_volume]]
-
-        # The slide mesh will be fit to the jaw
-        # self.mesh_projection_x_overrides = [.9, .9, 1]
-        
-        self.l_curves = []
-        self.r_curves = []
-        
-        for curve_dict in [components_elements.L_UP_LID_CRV, components_elements.L_LOW_LID_CRV]:
-            curve, dummy = nurbscurve.safe_create_curve(curve_dict,
-                                                        curve_dict["name"],
-                                                        parent=self.geo,
-                                                        transform_suffix=None,
-                                                        shape_suffix=None
-                                                        )
-            self.l_curves.append(curve)
-            
-        for curve_dict in [components_elements.R_UP_LID_CRV, components_elements.R_LOW_LID_CRV]:
-            curve, dummy = nurbscurve.safe_create_curve(curve_dict,
-                                                        curve_dict["name"],
-                                                        parent=self.geo,
-                                                        transform_suffix=None,
-                                                        shape_suffix=None
-                                                        )
-            self.r_curves.append(curve)
-        [tag_utils.tag_lid_curves(curve) for curve in self.l_curves + self.r_curves]
-
-
-        # Prepare data to be used later for fitting
-        self.l_slide_fit_meshes = [self.l_upper_lid, self.l_lower_lid]
-        self.r_slide_fit_meshes = [self.r_upper_lid, self.r_lower_lid]
-        
-        self.l_meshes_to_project= self.l_slide_fit_meshes
-        self.r_meshes_to_project= self.r_slide_fit_meshes
-
-        self.l_lattice_geo = self.l_meshes_to_project + self.l_curves
-        self.r_lattice_geo = self.r_meshes_to_project + self.r_curves
-        
-        self.component_membership_nodes += self.l_meshes_to_project + self.r_meshes_to_project + self.l_curves + self.r_curves
-        
-        self.l_geo_to_be_base += self.l_curves
-        self.r_geo_to_be_base += self.r_curves
-        
-    def create_mesh(self):
-        self.l_projection_meshes = self.create_mesh_projection_per_side(self.l_meshes_to_project)
-        self.r_projection_meshes = self.create_mesh_projection_per_side(self.r_meshes_to_project, flip=True)
-        self.l_lattice_geo += self.l_projection_meshes
-        self.r_lattice_geo += self.r_projection_meshes
-        
-        self.component_membership_nodes += self.l_projection_meshes + self.r_projection_meshes
-
-    def create_mesh_projection_per_side(self, meshes_to_project, flip=False):
-        temp_meshes = []
-        for idx , mesh in enumerate(meshes_to_project):
-            projection_mesh = component_utils.get_projection_geo(mesh, self.geo, self.projection_x_subdivisions, self.projection_y_subdivisions, flip=flip)
-            tag_utils.tag_projection_mesh(projection_mesh)
-            temp_meshes.append(projection_mesh)
-        return temp_meshes
-
-    def create_nurbs(self):
-        # return
-        side_mesh_dict = {"L": self.l_slide_fit_meshes, "R": self.r_slide_fit_meshes}
-        for side in ["L", "R"]:
-            fit_meshes = side_mesh_dict[side]
-        # for side, fit_meshes in itertools.product(["L", "R"], [self.l_slide_fit_meshes, self.r_slide_fit_meshes]):
-            x, y, z, center = component_utils.get_projection_dimensions(fit_meshes)
-            slide_name= "{0}_{1}_SLDE".format(side, self.component_name)
-            x += self.slide_patch_x_overshoot
-            y += self.slide_patch_y_overshoot
-            if cmds.objExists(slide_name):
-                self.slide_nurbs = slide_name
-            else:
-                self.slide_nurbs = cmds.nurbsPlane(name=slide_name,
-                                                ax=[0,0,1],
-                                                width = x,
-                                                lengthRatio=y/x,
-                                                patchesU=self.slide_x_subdivisions,
-                                                patchesV=self.slide_y_subdivisions)[0]
-                tag_utils.tag_slide_geo(self.slide_nurbs)
-                tag_utils.create_component_tag(self.slide_nurbs, component_name=self.component_name)
-                cmds.parent(self.slide_nurbs, self.geo)
-
-                cmds.move(center[0], center[1], center[2], self.slide_nurbs)
-                
-            cmds.DeleteHistory(self.slide_nurbs)
-            cmds.makeIdentity(self.slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
-    
-            if side == "L":
-                self.l_lattice_geo += [self.slide_nurbs]
-                self.l_geo_to_be_base += [self.slide_nurbs]
-            else:
-                self.r_lattice_geo += [self.slide_nurbs]
-                self.r_geo_to_be_base += [self.slide_nurbs]
 
 
 
@@ -354,20 +245,17 @@ class Lid_Guide(Base):
 class Mouth_Guide(Base):
     def __init__(self,
                  side="C",
-                 name="mouthGuide",
                  component_name="mouthGuide",
                  up_lip_complex=False,
                  low_lip_complex=False,
                  **kw
                  ):
 
-        super(Mouth_Guide, self).__init__(self,
+        super(Mouth_Guide, self).__init__(
                                         side=side,
-                                        name=name,
                                         component_name=component_name,
                                         **kw)
         # Add args to base class
-        class_name = self.get_relative_path()
         self.frame = inspect.currentframe()
         self.get_args()
         # args
@@ -387,82 +275,104 @@ class Mouth_Guide(Base):
         self.mouth_jaw_component_name="mouthJaw"
         self.lips_component_name="lips"
 
-
-
     def create_geo(self):
 
-        up_lip_dict = components_elements.UP_LIP_SIMPLE
+        up_lip_dict = face_guide_elements.UP_LIP_SIMPLE
         if self.up_lip_complex:
-            up_lip_dict = components_elements.UP_LIP_COMPLEX
-        low_lip_dict = components_elements.LOW_LIP_SIMPLE
+            up_lip_dict = face_guide_elements.UP_LIP_COMPLEX
+        low_lip_dict = face_guide_elements.LOW_LIP_SIMPLE
         if self.low_lip_complex:
-            low_lip_dict = components_elements.LOW_LIP_COMPLEX
+            low_lip_dict = face_guide_elements.LOW_LIP_COMPLEX
 
         self.upper_lip = mesh.safe_create_mesh(up_lip_dict, parent=self.geo)
         self.lower_lip = mesh.safe_create_mesh(low_lip_dict, parent=self.geo)
-        self.mouth_jaw = mesh.safe_create_mesh(components_elements.MOUTH_JAW, parent=self.geo)
+        self.mouth_jaw = mesh.safe_create_mesh(face_guide_elements.MOUTH_JAW, parent=self.geo)
 
         for geo in [self.upper_lip, self.lower_lip, self.mouth_jaw]:
             tag_utils.tag_reference_geo(geo)
-            tag_utils.create_component_tag(geo, component_name=self.component_name)
-
-            # vis_attr = self.aggr + ".hide_reference_geo"
-            # cmds.connectAttr(vis_attr, geo + ".v", f=True)
-
 
         # The slide mesh will be fit to the jaw
         self.slide_fit_to_mesh = self.mouth_jaw
         self.meshes_to_project= [self.upper_lip, self.lower_lip, self.mouth_jaw]
-        self.mesh_projection_x_overrides = [.9, .9, 1]
-        self.up_lip_volume, dummy = nurbscurve.safe_create_curve(components_elements.UP_LIP_VOLUME,
-                                                                 components_elements.UP_LIP_VOLUME["name"],
+
+        self.create_curves()
+
+        self.component_membership_nodes += [self.upper_lip, self.lower_lip, self.mouth_jaw]
+                
+        self.lattice_geo += [self.upper_lip, self.lower_lip, self.mouth_jaw]
+        
+        
+        
+    def create_curves(self):
+        self.up_lip_volume, dummy = nurbscurve.safe_create_curve(face_guide_elements.UP_LIP_VOLUME,
+                                                                 face_guide_elements.UP_LIP_VOLUME["name"],
                                                                  parent=self.geo,
                                                                  transform_suffix=None,
                                                                  shape_suffix=None
 
                                                                  )
-        self.low_lip_volume, dummy = nurbscurve.safe_create_curve(components_elements.LOW_LIP_VOLUME,
-                                                                  components_elements.LOW_LIP_VOLUME["name"],
+        self.low_lip_volume, dummy = nurbscurve.safe_create_curve(face_guide_elements.LOW_LIP_VOLUME,
+                                                                  face_guide_elements.LOW_LIP_VOLUME["name"],
                                                                   parent=self.geo,
                                                                   transform_suffix=None,
                                                                   shape_suffix=None
                                                                   )
         [tag_utils.tag_lip_volume_curves(curve) for curve in [self.up_lip_volume, self.low_lip_volume]]
-        [tag_utils.create_component_tag(curve, component_name=self.component_name) for curve in [self.up_lip_volume, self.low_lip_volume]]
 
 
-        self.up_lip_roll, dummy = nurbscurve.safe_create_curve(components_elements.UP_LIP_ROLL,
-                                                               components_elements.UP_LIP_ROLL["name"],
+        self.up_lip_roll, dummy = nurbscurve.safe_create_curve(face_guide_elements.UP_LIP_ROLL,
+                                                               face_guide_elements.UP_LIP_ROLL["name"],
                                                                parent=self.geo,
                                                                transform_suffix=None,
                                                                shape_suffix=None
 
                                                                )
-        self.low_lip_roll, dummy = nurbscurve.safe_create_curve(components_elements.LOW_LIP_ROLL,
-                                                                components_elements.LOW_LIP_ROLL["name"],
+        self.low_lip_roll, dummy = nurbscurve.safe_create_curve(face_guide_elements.LOW_LIP_ROLL,
+                                                                face_guide_elements.LOW_LIP_ROLL["name"],
                                                                 parent=self.geo,
                                                                 transform_suffix=None,
                                                                 shape_suffix=None
                                                                 )
         [tag_utils.tag_lip_volume_curves(curve) for curve in [self.up_lip_roll, self.low_lip_roll]]
-        [tag_utils.create_component_tag(curve, component_name=self.component_name) for curve in [self.up_lip_roll, self.low_lip_roll]]
+        
+        self.up_lip_volume_base = self.create_base(self.up_lip_volume)
+        self.low_lip_volume_base = self.create_base(self.low_lip_volume)
+        self.up_lip_roll_base = self.create_base(self.up_lip_roll)
+        self.low_lip_roll_base = self.create_base(self.low_lip_roll)
+        
+        self.component_membership_nodes += [self.up_lip_volume, self.low_lip_volume,
+                            self.up_lip_roll, self.low_lip_roll, self.up_lip_volume_base, self.low_lip_volume_base,
+                            self.up_lip_roll_base, self.low_lip_roll_base]
+                
+        self.lattice_geo += [self.up_lip_volume, self.low_lip_volume,
+                            self.up_lip_roll, self.low_lip_roll, self.up_lip_volume_base, self.low_lip_volume_base,
+                            self.up_lip_roll_base, self.low_lip_roll_base]
 
-        self.lattice_geo = [self.upper_lip, self.lower_lip, self.mouth_jaw, self.up_lip_volume, self.low_lip_volume,
-                            self.up_lip_roll, self.low_lip_roll]
-        self.geo_to_be_base += [self.up_lip_volume, self.low_lip_volume,
-                            self.up_lip_roll, self.low_lip_roll]
-    def create_mesh(self):
-        self.projection_meshes = []
-        for idx , mesh in enumerate(self.meshes_to_project):
-            x_mult=1
-            if len(self.mesh_projection_x_overrides) >= len(self.meshes_to_project):
-                x_mult = self.mesh_projection_x_overrides[idx]
-            projection_mesh = component_utils.get_projection_geo(mesh, self.geo, self.projection_x_subdivisions, self.projection_y_subdivisions, x_mult=x_mult)
-            tag_utils.tag_projection_mesh(projection_mesh)
-            tag_utils.create_component_tag(projection_mesh, component_name=self.component_name)
-            self.projection_meshes.append(projection_mesh)
-        self.lattice_geo += self.projection_meshes
 
+
+
+
+
+    def create_projection_meshes(self):        
+        self.meshes_to_project= [self.upper_lip, self.lower_lip, self.mouth_jaw]
+        self.upper_lip_projection =  component_utils.get_projection_geo(self.upper_lip,
+                                                                        self.geo,
+                                                                        self.projection_x_subdivisions,
+                                                                        self.projection_y_subdivisions,
+                                                                        x_mult=.9)
+        self.lower_lip_projection =  component_utils.get_projection_geo(self.lower_lip,
+                                                                        self.geo,
+                                                                        self.projection_x_subdivisions,
+                                                                        self.projection_y_subdivisions,
+                                                                        x_mult=.9)
+        self.mouth_jaw_projection =  component_utils.get_projection_geo(self.mouth_jaw,
+                                                                        self.geo,
+                                                                        self.projection_x_subdivisions,
+                                                                        self.projection_y_subdivisions,
+                                                                        x_mult=1)
+        self.lattice_geo += [self.upper_lip_projection, self.lower_lip_projection, self.mouth_jaw_projection]
+        self.component_membership_nodes += [self.upper_lip_projection, self.lower_lip_projection, self.mouth_jaw_projection]
+        
     def create_nurbs(self):
         self.slide_fit_to_mesh = self.mouth_jaw
         x, y, z, center = component_utils.get_projection_dimensions(self.slide_fit_to_mesh)
@@ -479,13 +389,254 @@ class Mouth_Guide(Base):
                                             patchesU=self.slide_x_subdivisions,
                                             patchesV=self.slide_y_subdivisions)[0]
             tag_utils.tag_slide_geo(self.slide_nurbs)
-            tag_utils.create_component_tag(self.slide_nurbs, component_name=self.component_name)
             cmds.parent(self.slide_nurbs, self.geo)
 
             cmds.move(center[0], center[1], center[2], self.slide_nurbs)
 
-        self.lattice_geo.append(self.slide_nurbs)
-        self.geo_to_be_base.append(self.slide_nurbs)
+        self.slide_nurbs_base = self.create_base(self.slide_nurbs)
+        
+        self.lattice_geo += [self.slide_nurbs, self.slide_nurbs_base]
+        self.component_membership_nodes += [self.slide_nurbs, self.slide_nurbs_base]
 
-        # slide_name= "C_{0}_AIM".format(self.component_name)
-        # self.aim_surface
+class Lid_Guide(Base):
+    def __init__(self,
+                 side="C",
+                 component_name="lidGuide",
+                 s_divisions=3,
+                 t_divisions=3,
+                 **kw
+                 ):
+
+        super(Lid_Guide, self).__init__(
+                                        side=side,
+                                        component_name=component_name,
+                                        s_divisions=s_divisions,
+                                        t_divisions=t_divisions,
+                                        **kw)
+        # Add args to base class
+        class_name = self.get_relative_path()
+        self.frame = inspect.currentframe()
+        self.get_args()
+        self.l_slide_mesh = ""
+        self.r_slide_mesh = ""
+
+
+    def create_geo(self):
+
+        l_brow = mesh.safe_create_mesh(face_guide_elements.L_UP_LID_MESH, parent=self.geo)
+        self.l_lower_lid = mesh.safe_create_mesh(face_guide_elements.L_LOW_LID_MESH, parent=self.geo)
+        
+        r_brow = mesh.safe_create_mesh(face_guide_elements.R_UP_LID_MESH, parent=self.geo)
+        self.r_lower_lid = mesh.safe_create_mesh(face_guide_elements.R_LOW_LID_MESH, parent=self.geo)
+
+    
+        for geo in [l_brow, self.l_lower_lid, r_brow, self.r_lower_lid]:
+            tag_utils.tag_reference_geo(geo)
+        
+        self.l_curves = []
+        self.r_curves = []
+        
+        for curve_dict in [face_guide_elements.L_UP_LID_CRV, face_guide_elements.L_LOW_LID_CRV]:
+            curve, dummy = nurbscurve.safe_create_curve(curve_dict,
+                                                        curve_dict["name"],
+                                                        parent=self.geo,
+                                                        transform_suffix=None,
+                                                        shape_suffix=None
+                                                        )
+            self.l_curves.append(curve)
+            
+        for curve_dict in [face_guide_elements.R_UP_LID_CRV, face_guide_elements.R_LOW_LID_CRV]:
+            curve, dummy = nurbscurve.safe_create_curve(curve_dict,
+                                                        curve_dict["name"],
+                                                        parent=self.geo,
+                                                        transform_suffix=None,
+                                                        shape_suffix=None
+                                                        )
+            self.r_curves.append(curve)
+            
+        [tag_utils.tag_lid_curves(curve) for curve in self.l_curves + self.r_curves]
+
+
+        # Prepare data to be used later for fitting
+        self.slide_fit_meshes = [l_brow, self.l_lower_lid]
+        self.r_slide_fit_meshes = [r_brow, self.r_lower_lid]
+        
+        self.l_meshes_to_project= self.slide_fit_meshes
+        self.r_meshes_to_project= self.r_slide_fit_meshes
+
+        self.l_lattice_geo = self.l_meshes_to_project + self.l_curves
+        self.r_lattice_geo = self.r_meshes_to_project + self.r_curves
+        
+        self.component_membership_nodes += self.l_meshes_to_project + self.r_meshes_to_project + self.l_curves + self.r_curves
+        
+        self.l_geo_to_be_base += self.l_curves
+        self.r_geo_to_be_base += self.r_curves
+        
+    def create_projection_meshes(self):
+        self.l_projection_meshes = self.create_mesh_projection_per_side(self.l_meshes_to_project)
+        self.r_projection_meshes = self.create_mesh_projection_per_side(self.r_meshes_to_project, flip=True)
+        self.l_lattice_geo += self.l_projection_meshes
+        self.r_lattice_geo += self.r_projection_meshes
+        
+        self.component_membership_nodes += self.l_projection_meshes + self.r_projection_meshes
+
+
+    def create_nurbs(self):
+        # return
+        side_mesh_dict = {"L": self.slide_fit_meshes, "R": self.r_slide_fit_meshes}
+        for side in ["L", "R"]:
+            fit_meshes = side_mesh_dict[side]
+        # for side, fit_meshes in itertools.product(["L", "R"], [self.slide_fit_meshes, self.r_slide_fit_meshes]):
+            x, y, z, center = component_utils.get_projection_dimensions(fit_meshes)
+            slide_name= "{0}_{1}_SLDE".format(side, self.component_name)
+            x += self.slide_patch_x_overshoot
+            y += self.slide_patch_y_overshoot
+            if cmds.objExists(slide_name):
+                slide_nurbs = slide_name
+            else:
+                slide_nurbs = cmds.nurbsPlane(name=slide_name,
+                                                ax=[0,0,1],
+                                                width = x,
+                                                lengthRatio=y/x,
+                                                patchesU=self.slide_x_subdivisions,
+                                                patchesV=self.slide_y_subdivisions)[0]
+                tag_utils.tag_slide_geo(slide_nurbs)
+                cmds.parent(slide_nurbs, self.geo)
+
+                cmds.move(center[0], center[1], center[2], slide_nurbs)
+                
+            cmds.DeleteHistory(slide_nurbs)
+            cmds.makeIdentity(slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
+    
+            if side == "L":
+                self.l_lattice_geo += [slide_nurbs]
+                self.l_geo_to_be_base += [slide_nurbs]
+                self.l_slide_mesh = slide_nurbs
+
+            else:
+                self.r_lattice_geo += [slide_nurbs]
+                self.r_geo_to_be_base += [slide_nurbs]
+                self.r_slide_mesh = slide_nurbs
+                
+        self.component_membership_nodes += [self.l_slide_mesh, self.r_slide_mesh]
+
+
+class Brow_Guide(Base):
+    def __init__(self,
+                 side="C",
+                 component_name="browGuide",
+                 s_divisions=7,
+                 t_divisions=4,
+                 **kw
+                 ):
+
+        super(Brow_Guide, self).__init__(
+                                        side=side,
+                                        component_name=component_name,
+                                        s_divisions=s_divisions,
+                                        t_divisions=t_divisions,
+                                        **kw)
+        # Add args to base class
+        self.frame = inspect.currentframe()
+        self.get_args()
+
+    def create_geo(self):
+
+        self.l_brow = mesh.safe_create_mesh(face_guide_elements.L_BROW_MESH, parent=self.geo)
+        
+        self.r_brow = mesh.safe_create_mesh(face_guide_elements.R_BROW_MESH, parent=self.geo)
+
+    
+        for geo in [self.l_brow, self.r_brow]:
+            tag_utils.tag_reference_geo(geo)
+        # [tag_utils.create_component_tag(curve, component_name=self.component_name) for curve in [self.up_lip_volume, self.low_lip_volume]]
+
+        # The slide mesh will be fit to the jaw
+        # self.mesh_projection_x_overrides = [.9, .9, 1]
+        
+        
+        self.l_curve, dummy = nurbscurve.safe_create_curve(face_guide_elements.L_BROW_CRV,
+                                                    face_guide_elements.L_BROW_CRV["name"],
+                                                    parent=self.geo,
+                                                    transform_suffix=None,
+                                                    shape_suffix=None
+                                                    )
+        
+        self.r_curve, dummy = nurbscurve.safe_create_curve(face_guide_elements.R_BROW_CRV,
+                                                    face_guide_elements.R_BROW_CRV["name"],
+                                                    parent=self.geo,
+                                                    transform_suffix=None,
+                                                    shape_suffix=None
+                                                    )
+        self.c_curve, dummy = nurbscurve.safe_create_curve(face_guide_elements.C_BROW_CRV,
+                                                    face_guide_elements.C_BROW_CRV["name"],
+                                                    parent=self.geo,
+                                                    transform_suffix=None,
+                                                    shape_suffix=None
+                                                    )
+        
+            
+        [tag_utils.tag_brow_curves(curve) for curve in [self.l_curve, self.r_curve, self.c_curve]]
+
+
+        # Prepare data to be used later for fitting
+        self.slide_fit_meshes = [self.l_brow, self.r_brow]
+        
+        self.l_mesh_to_project= self.l_brow
+        self.r_mesh_to_project= self.r_brow
+        self.c_meshes_to_project= [self.l_brow, self.r_brow]
+
+        self.lattice_geo =  [self.l_brow, self.r_brow, self.l_curve, self.r_curve, self.c_curve]
+        
+        self.component_membership_nodes += [self.l_brow, self.r_brow, self.l_curve, self.r_curve, self.c_curve]
+        
+        self.geo_to_be_base += [self.l_curve, self.r_curve, self.c_curve]
+        
+    def create_projection_meshes(self):
+        
+        self.l_projection_mesh = component_utils.get_projection_geo(self.l_mesh_to_project,
+                                                                    self.geo,
+                                                                    self.projection_x_subdivisions,
+                                                                    self.projection_y_subdivisions, )
+        self.r_projection_mesh = component_utils.get_projection_geo(self.r_mesh_to_project,
+                                                                    self.geo,
+                                                                    self.projection_x_subdivisions,
+                                                                    self.projection_y_subdivisions,
+                                                                    flip=True)
+        self.c_projection_mesh = component_utils.get_projection_geo([self.l_brow, self.r_brow],
+                                                                    self.geo,
+                                                                    self.projection_x_subdivisions,
+                                                                    self.projection_y_subdivisions,
+                                                                    flip=False,
+                                                                    name="C_brow_PRJ")
+
+        for mesh in [self.l_projection_mesh, self.r_projection_mesh, self.c_projection_mesh]:
+            tag_utils.tag_projection_mesh(mesh)
+        self.lattice_geo += [self.l_projection_mesh, self.r_projection_mesh, self.c_projection_mesh]
+        self.component_membership_nodes += [self.l_projection_mesh, self.r_projection_mesh, self.c_projection_mesh]
+
+    def create_nurbs(self):
+        # return
+        x, y, z, center = component_utils.get_projection_dimensions([self.l_mesh_to_project, self.r_mesh_to_project])
+        slide_name= "C_{0}_SLDE".format(self.component_name)
+        x += self.slide_patch_x_overshoot
+        y += self.slide_patch_y_overshoot
+        if cmds.objExists(slide_name):
+            self.slide_nurbs = slide_name
+        else:
+            self.slide_nurbs = cmds.nurbsPlane(name=slide_name,
+                                            ax=[0,0,1],
+                                            width = x,
+                                            lengthRatio=y/x,
+                                            patchesU=self.slide_x_subdivisions,
+                                            patchesV=self.slide_y_subdivisions)[0]
+            tag_utils.tag_slide_geo(self.slide_nurbs)
+            tag_utils.create_component_tag(self.slide_nurbs, component_name=self.component_name)
+            cmds.parent(self.slide_nurbs, self.geo)
+            cmds.move(center[0], center[1], center[2], self.slide_nurbs)
+            
+        cmds.DeleteHistory(self.slide_nurbs)
+        cmds.makeIdentity(self.slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
+
+        self.geo_to_be_base += [self.slide_nurbs]
+        self.lattice_geo += [self.slide_nurbs]

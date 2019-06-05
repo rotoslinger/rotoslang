@@ -1,5 +1,4 @@
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -14,7 +13,8 @@ if os not in sys.path:
     sys.path.append(os)
 # from rig.utils import weightMapUtils
 # from rig.deformers import base
-from rig.deformers import weightStack
+from rig_2.component.subcomponent import weightStack
+
 reload(weightStack)
 # from rig.deformers import utils as deformerUtils
 from rig.deformers import matrixDeformer
@@ -23,7 +23,8 @@ reload(matrixDeformer)
 # reload(base)
 
 def faceTest():
-    print weightStack
+    print
+    weightStack
     fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/Prototype/LipPrototype.ma"
 
     # fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/TestCurveWeights.ma"
@@ -81,19 +82,19 @@ def faceTest():
     createNum3 = 7
 
     curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
-                                        baseGeo=base,
-                                        ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=False,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = "lipSingle",
-                                        singleFalloffName = "lip",
-                                        autoCreateNum = 1,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                        #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
+                                               baseGeo=base,
+                                               ctrlNode=control,
+                                               projectionGeo=projectionMesh,
+                                               weightAttrNames=[],
+                                               addNewElem=False,
+                                               autoCreateAnimCurves = True,
+                                               autoCreateName = "lipSingle",
+                                               singleFalloffName = "lip",
+                                               autoCreateNum = 1,
+                                               autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal, lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
+                                               #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
 
-    )
+                                               )
     curveWeights.create()
 
 
@@ -166,20 +167,20 @@ def faceTest():
 
 
     curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
-                                        baseGeo=base,
-                                        ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=True,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = "lipPrime",
-                                        singleFalloffName = "lip",
-                                        autoCreateNum = createNum1,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                        #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                        startElem = 1,
+                                               baseGeo=base,
+                                               ctrlNode=control,
+                                               projectionGeo=projectionMesh,
+                                               weightAttrNames=[],
+                                               addNewElem=True,
+                                               autoCreateAnimCurves = True,
+                                               autoCreateName = "lipPrime",
+                                               singleFalloffName = "lip",
+                                               autoCreateNum = createNum1,
+                                               autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal, lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
+                                               #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
+                                               startElem = 1,
 
-    )
+                                               )
     curveWeights.create()
 
 
@@ -236,20 +237,20 @@ def faceTest():
 
 
     curveWeights = weightStack.AnimCurveWeight(name="TestCurveWeights",
-                                        baseGeo=base,
-                                        ctrlNode=control,
-                                        projectionGeo=projectionMesh,
-                                        weightAttrNames=[],
-                                        addNewElem=True,
-                                        autoCreateAnimCurves = True,
-                                        autoCreateName = "lipSecondary",
-                                        singleFalloffName = "lip",
-                                        autoCreateNum = createNum2,
-                                        autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal,lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
-                                        #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
-                                        startElem = 4,
+                                               baseGeo=base,
+                                               ctrlNode=control,
+                                               projectionGeo=projectionMesh,
+                                               weightAttrNames=[],
+                                               addNewElem=True,
+                                               autoCreateAnimCurves = True,
+                                               autoCreateName = "lipSecondary",
+                                               singleFalloffName = "lip",
+                                               autoCreateNum = createNum2,
+                                               autoCreateTimeRange = autoCreateTimeRange, offset=offset, centerWeight = centerWeight, outerWeight = outerWeight, angle = angle, nudge = nudge, intermediateVal=intermediateVal, lastAngle=lastAngle, lastIntermediateVal=lastIntermediateVal, intermediateAngle=intermediateAngle, lastIntermediateAngle=lastIntermediateAngle,
+                                               #autoCreateTimeRange = 20.0, offset=.0, centerWeight = .4, outerWeight = .6, angle = 0, nudge = -0.03
+                                               startElem = 4,
 
-    )
+                                               )
     curveWeights.create()
 
 

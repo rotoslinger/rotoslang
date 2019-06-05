@@ -87,7 +87,7 @@ def convert_value_to_literals(dictionary_value):
     litteral_val = literal_eval(test_val)
     if not litteral_val:
         return dictionary_value
-    for attr_instance in attr_constants.SUPPORTED_TYPES:
+    for attr_instance in attr_constants.ARG_SUPPORTED_TYPES:
         if not isinstance(litteral_val, attr_instance):
             continue
         return litteral_val

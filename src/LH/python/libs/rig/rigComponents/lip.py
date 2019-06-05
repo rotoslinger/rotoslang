@@ -1,5 +1,4 @@
 from maya import cmds
-import maya.OpenMaya as OpenMaya
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
@@ -14,7 +13,8 @@ if os not in sys.path:
     sys.path.append(os)
 # from rig.utils import weightMapUtils
 # from rig.deformers import self.base
-from rig.deformers import weightStack
+from rig_2.component.subcomponent import weightStack
+
 reload(weightStack)
 # from rig.deformers import utils as deformerUtils
 from rig.deformers import matrixDeformer
@@ -29,7 +29,7 @@ from rig.deformers import curveRollSimple
 reload(curveRollSimple)
 # reload(deformerUtils)
 # reload(self.base)
-from rig.utils import weightMapUtils, misc
+from rig.utils import misc
 reload(misc)
 from rig.utils import LHCurveDeformerCmds
 reload(LHCurveDeformerCmds)
@@ -261,25 +261,25 @@ class Lip(object):
             lastIntermediateAngle=30
 
             curveWeights = weightStack.AnimCurveWeight(name=self.name + "CurveWeights",
-                                                baseGeo=self.base,
-                                                ctrlNode=self.control,
-                                                projectionGeo=self.projectionMesh,
-                                                weightCurveNames=[],
-                                                addNewElem=isAddingNewElems[idx],
-                                                autoCreateAnimCurves = True,
-                                                autoCreateName = self.ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
-                                                singleFalloffName = self.ctrlName,
-                                                autoCreateNum = tierCounts[idx],
-                                                falloffDefaults=self.falloffDefaults,
-                                                centerWeight = elements.CENTER_WEIGHTS[idx],
-                                                outerWeight = elements.OUTER_WEIGHTS[idx],
-                                                angle = elements.ANGLES[idx],
-                                                nudge = elements.NUDGES[idx],
-                                                lastAngle=elements.LAST_ANGLES[idx],
-                                                component_name=self.component_name,
+                                                       baseGeo=self.base,
+                                                       ctrlNode=self.control,
+                                                       projectionGeo=self.projectionMesh,
+                                                       weightCurveNames=[],
+                                                       addNewElem=isAddingNewElems[idx],
+                                                       autoCreateAnimCurves = True,
+                                                       autoCreateName = self.ctrlName + tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                       singleFalloffName = self.ctrlName,
+                                                       autoCreateNum = tierCounts[idx],
+                                                       falloffDefaults=self.falloffDefaults,
+                                                       centerWeight = elements.CENTER_WEIGHTS[idx],
+                                                       outerWeight = elements.OUTER_WEIGHTS[idx],
+                                                       angle = elements.ANGLES[idx],
+                                                       nudge = elements.NUDGES[idx],
+                                                       lastAngle=elements.LAST_ANGLES[idx],
+                                                       component_name=self.component_name,
 
 
-            )
+                                                       )
             curveWeights.create()
 
             stack = weightStack.WeightStack(name=self.name + "WeightStack",
@@ -299,9 +299,9 @@ class Lip(object):
                                             controlParent = self.controlParent,
                                             connectFalloff = connectFalloffs[idx],
                                             isOutputKDoubleArray=True,
-                                            falloffCurveWeightNode=falloffCurveWeightNodes[idx], # If a weight node already exists, use it
+                                            falloffCurveWeightNode=falloffCurveWeightNodes[idx],  # If a weight node already exists, use it
                                             # falloffCurveWeightNode="TestCurveWeights",
-                                            autoCreateName=self.ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                            autoCreateName=self.ctrlName + tierNames[idx],  # Primary, Secondary, Or Tertiatry
                                             controlSize = slideCtrlSizes[idx],
                                             controlShapeOffset = slideCtrlShapeOffsets[idx],
                                             controlShape = self.slideIconShapeDict,
@@ -327,27 +327,27 @@ class Lip(object):
 
             ################################## MATRIX DEFORMER #####################################################################
             curveWeights = weightStack.AnimCurveWeight(name=self.name + "MatDef",
-                                                        baseGeo=self.base,
-                                                        ctrlNode=self.control,
-                                                        projectionGeo=self.projectionMesh,
-                                                        weightCurveNames=[],
-                                                        addNewElem=isAddingNewElems[idx],
-                                                        autoCreateAnimCurves = True,
-                                                        autoCreateName = self.ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
-                                                        singleFalloffName = self.falloffMatrixDeformerName,
-                                                        autoCreateNum = tierCounts[idx],
-                                                        falloffDefaults=self.falloffMatrixDefaults,
-                                                        falloffItts=self.falloffIttsMatDef,
-                                                        falloffOtts=self.falloffOttsMatDef,
-                                                        falloffCurveDict = self.matDefFalloffCurve,
-                                                        startElem = tierAddAtIndex[idx],
-                                                        centerWeight = elements.CENTER_WEIGHTS[idx],
-                                                        outerWeight = elements.OUTER_WEIGHTS[idx],
-                                                        angle = elements.ANGLES[idx],
-                                                        nudge = elements.NUDGES[idx],
-                                                        lastAngle=elements.LAST_ANGLES[idx],
-                                                        component_name=self.component_name,
-            )
+                                                       baseGeo=self.base,
+                                                       ctrlNode=self.control,
+                                                       projectionGeo=self.projectionMesh,
+                                                       weightCurveNames=[],
+                                                       addNewElem=isAddingNewElems[idx],
+                                                       autoCreateAnimCurves = True,
+                                                       autoCreateName = self.ctrlName + tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                       singleFalloffName = self.falloffMatrixDeformerName,
+                                                       autoCreateNum = tierCounts[idx],
+                                                       falloffDefaults=self.falloffMatrixDefaults,
+                                                       falloffItts=self.falloffIttsMatDef,
+                                                       falloffOtts=self.falloffOttsMatDef,
+                                                       falloffCurveDict = self.matDefFalloffCurve,
+                                                       startElem = tierAddAtIndex[idx],
+                                                       centerWeight = elements.CENTER_WEIGHTS[idx],
+                                                       outerWeight = elements.OUTER_WEIGHTS[idx],
+                                                       angle = elements.ANGLES[idx],
+                                                       nudge = elements.NUDGES[idx],
+                                                       lastAngle=elements.LAST_ANGLES[idx],
+                                                       component_name=self.component_name,
+                                                       )
             curveWeights.create()
             
 
@@ -430,28 +430,28 @@ class Lip(object):
             vectorDeformer = None
             if self.doLipThick:
                 curveWeights = weightStack.AnimCurveWeight(name=self.name + "ThickDef",
-                                                baseGeo=self.base,
-                                                ctrlNode=self.control,
-                                                projectionGeo=self.projectionMesh,
-                                                weightCurveNames=[],
-                                                addNewElem=isAddingNewElems[idx],
-                                                autoCreateAnimCurves = True,
-                                                autoCreateName = self.ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
-                                                singleFalloffName = self.falloffLipThickName,
-                                                autoCreateNum = tierCounts[idx],
-                                                falloffCurveDict = self.thickFalloffCurve,
-                                                falloffDefaults=self.falloffThickDefaults,
-                                                falloffItts=["linear","linear","linear","linear"],
-                                                falloffOtts=["linear","linear","linear","linear"],
-                                                startElem = tierAddAtIndex[idx],
-                                                centerWeight = elements.CENTER_WEIGHTS[idx],
-                                                outerWeight = elements.OUTER_WEIGHTS[idx],
-                                                angle = elements.ANGLES[idx],
-                                                nudge = elements.NUDGES[idx],
-                                                lastAngle=elements.LAST_ANGLES[idx],
-                                                component_name=self.component_name,
+                                                           baseGeo=self.base,
+                                                           ctrlNode=self.control,
+                                                           projectionGeo=self.projectionMesh,
+                                                           weightCurveNames=[],
+                                                           addNewElem=isAddingNewElems[idx],
+                                                           autoCreateAnimCurves = True,
+                                                           autoCreateName = self.ctrlName + tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                           singleFalloffName = self.falloffLipThickName,
+                                                           autoCreateNum = tierCounts[idx],
+                                                           falloffCurveDict = self.thickFalloffCurve,
+                                                           falloffDefaults=self.falloffThickDefaults,
+                                                           falloffItts=["linear","linear","linear","linear"],
+                                                           falloffOtts=["linear","linear","linear","linear"],
+                                                           startElem = tierAddAtIndex[idx],
+                                                           centerWeight = elements.CENTER_WEIGHTS[idx],
+                                                           outerWeight = elements.OUTER_WEIGHTS[idx],
+                                                           angle = elements.ANGLES[idx],
+                                                           nudge = elements.NUDGES[idx],
+                                                           lastAngle=elements.LAST_ANGLES[idx],
+                                                           component_name=self.component_name,
 
-                )
+                                                           )
                 curveWeights.create()
 
                 syAttrs = []
@@ -480,7 +480,7 @@ class Lip(object):
                                                 # controlShape=thickShape,
                                                 connectFalloff = connectFalloffs[idx],
                                                 isOutputKDoubleArray=True,
-                                                autoCreateName=self.ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                                autoCreateName=self.ctrlName + tierNames[idx],  # Primary, Secondary, Or Tertiatry
 
                                                 # autoCreateName=self.ctrlName + tierNames[idx] + "THICK", # Primary, Secondary, Or Tertiatry
                                                 controlSize = thickCtrlSizes[idx],
@@ -505,28 +505,28 @@ class Lip(object):
             ################################## LIP ROLL DEFORMER #####################################################################    
             if self.doLipRoll:
                 curveWeights = weightStack.AnimCurveWeight(name=self.name + "CurveWeightsROLL",
-                                                baseGeo=self.base,
-                                                ctrlNode=self.control,
-                                                projectionGeo=self.projectionMesh,
-                                                weightCurveNames=[],
-                                                addNewElem=isAddingNewElems[idx],
-                                                autoCreateAnimCurves = True,
-                                                autoCreateName = self.ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
-                                                singleFalloffName = self.falloffLipRollName,
-                                                autoCreateNum = tierCounts[idx],
-                                                falloffCurveDict = self.rollFalloffCurve,
-                                                falloffDefaults=self.falloffThickDefaults,
-                                                falloffItts=["linear","linear","linear","linear"],
-                                                falloffOtts=["linear","linear","linear","linear"],
-                                                startElem = tierAddAtIndex[idx],
-                                                centerWeight = elements.CENTER_WEIGHTS[idx],
-                                                outerWeight = elements.OUTER_WEIGHTS[idx],
-                                                angle = elements.ANGLES[idx],
-                                                nudge = elements.NUDGES[idx],
-                                                lastAngle=elements.LAST_ANGLES[idx],
-                                                component_name=self.component_name,
+                                                           baseGeo=self.base,
+                                                           ctrlNode=self.control,
+                                                           projectionGeo=self.projectionMesh,
+                                                           weightCurveNames=[],
+                                                           addNewElem=isAddingNewElems[idx],
+                                                           autoCreateAnimCurves = True,
+                                                           autoCreateName = self.ctrlName + tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                           singleFalloffName = self.falloffLipRollName,
+                                                           autoCreateNum = tierCounts[idx],
+                                                           falloffCurveDict = self.rollFalloffCurve,
+                                                           falloffDefaults=self.falloffThickDefaults,
+                                                           falloffItts=["linear","linear","linear","linear"],
+                                                           falloffOtts=["linear","linear","linear","linear"],
+                                                           startElem = tierAddAtIndex[idx],
+                                                           centerWeight = elements.CENTER_WEIGHTS[idx],
+                                                           outerWeight = elements.OUTER_WEIGHTS[idx],
+                                                           angle = elements.ANGLES[idx],
+                                                           nudge = elements.NUDGES[idx],
+                                                           lastAngle=elements.LAST_ANGLES[idx],
+                                                           component_name=self.component_name,
 
-                )
+                                                           )
                 curveWeights.create()
 
                 rxAttrs = []
@@ -556,7 +556,7 @@ class Lip(object):
                                                 isOutputKDoubleArray=True,
                                                 # falloffCurveWeightNode="TestCurveWeights",
                                                 # autoCreateName=self.ctrlName + tierNames[idx] + "ROLL", # Primary, Secondary, Or Tertiatry
-                                                autoCreateName=self.ctrlName + tierNames[idx], # Primary, Secondary, Or Tertiatry
+                                                autoCreateName=self.ctrlName + tierNames[idx],  # Primary, Secondary, Or Tertiatry
                                                 controlSize = thickCtrlSizes[idx],
                                                 controlShapeOffset = thickCtrlShapeOffsets[idx],
                                                 repositionRivetCtrls = False,
@@ -634,7 +634,8 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
                         removePointIndicies=[],
                         reorderInFrontOfDeformer="",
                         curveDeformerAlgorithm=0,
-                        curve_base=None
+                        curve_base=None,
+                        component_name=None,
 ):
 
     if not falloffDefaults and upperLip:
@@ -654,6 +655,7 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
                                                     # orderParallel=True,
                                                     # orderBefore=False,
                                                     # orderAfter=False,
+                                                    component_name=component_name
                                                    )
     blendshape.create()
     # Turn on Blending
@@ -665,20 +667,22 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
     inputWeightAttrs=[]
     if not handPaint:
         curveWeights = weightStack.AnimCurveWeight(name=name + "ReverseCurveDeformerAnimCurveWeights",
-                                    baseGeo=deformedGeometryBase,
-                                    ctrlNode=blendshapeGeo,
-                                    projectionGeo=projectionPatch,
-                                    weightCurveNames=[name + "CurveDeformerNormalize"],
-                                    addNewElem=False,
-                                    autoCreateAnimCurves = False,
-                                    autoCreateName = '',
-                                    singleFalloffName = '',
-                                    autoCreateNum = None,
-                                    falloffDefaults = falloffDefaults,
-                                    uKeyframesAllOnes=True,
-                                    falloffItts=falloffItts,
-                                    falloffOtts=falloffOtts
-        )
+                                                   baseGeo=deformedGeometryBase,
+                                                   ctrlNode=blendshapeGeo,
+                                                   projectionGeo=projectionPatch,
+                                                   weightCurveNames=[name + "CurveDeformerNormalize"],
+                                                   addNewElem=False,
+                                                   autoCreateAnimCurves = False,
+                                                   autoCreateName = '',
+                                                   singleFalloffName = '',
+                                                   autoCreateNum = None,
+                                                   falloffDefaults = falloffDefaults,
+                                                   uKeyframesAllOnes=True,
+                                                   falloffItts=falloffItts,
+                                                   falloffOtts=falloffOtts,
+                                                   component_name=component_name
+
+                                                   )
         curveWeights.create()
         cmds.getAttr(curveWeights.node + ".outDoubleWeights[0].outWeightsDoubleArray")
 
@@ -699,6 +703,7 @@ def lipCurveDeformSplit(name="C_UpperLipWire",
                                     UDLR = False,
                                     createControl=False,
                                     isOutputKDoubleArray=True,
+                                    component_name=component_name
                                     )
     stack.create()
 
