@@ -185,11 +185,6 @@ class Lip(component_base.Component):
         self.slidePatchBase=slidePatchBase
         self.component_name=component_name
 
-
-
-
-
-
     def create_lip(self):
 
         # if you want to share falloffs between all deformers leave the falloff names None, but more self.control_parent is better...
@@ -211,8 +206,9 @@ class Lip(component_base.Component):
         if self.fileName:
             cmds.file( self.fileName, i=True, f=True )
 
-        if not self.controlRivetMesh:
-            self.controlRivetMesh = self.deformMesh
+        # if not self.controlRivetMesh:
+
+        #     self.controlRivetMesh = self.deformMesh
 
         # # Temporary, create character hierarchy
         # if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):

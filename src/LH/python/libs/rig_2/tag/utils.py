@@ -64,7 +64,7 @@ def create_component_tag(node_to_tag, component_name, connect_to_class_node=True
         cmds.setAttr(attr, component_name, type="string")
         
         if connect_to_class_node:
-            component_class_attr = attr_utils.get_attr(node, "component_class", attrType="message")
+            component_class_attr = attr_utils.get_attr(node, "component_class_" + component_name, attrType="message")
             cmds.connectAttr(class_node + ".membership_nodes", component_class_attr)
         return attr
 
@@ -183,6 +183,9 @@ def tag_projection_mesh(node_to_tag):
     
 def tag_reference_geo(node_to_tag):
     create_tag(node_to_tag, "REFERENCE_GEO")
+    
+def tag_guide_geo(node_to_tag):
+    create_tag(node_to_tag, "GUIDE_GEO")
 #################################################
 
 def tag_gimbal(node_to_tag):
@@ -297,6 +300,9 @@ def vis_all_shape_with_tag(tag, vis=True):
 
 def get_all_gimbals():
     return get_all_with_tag("GIMBAL")
+
+def get_all_guide_geo():
+    return get_all_with_tag("GUIDE_GEO")
 
 
 def get_all_guides():
@@ -427,7 +433,7 @@ def get_data_from_connection_dict(connection_dict_list):
     output_indices = []
     hand_weights = []
     for curve_dict in connection_dict_list:
-        controls.append(curve_dict["control_node"])
+        controls.append(curve_dict["control_parent"])
         curve_names.append(curve_dict["curve_name"])
         curve_weights_nodes.append(curve_dict["curve_weights_node"])
         nodes.append(curve_dict["node"])

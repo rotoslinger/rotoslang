@@ -23,24 +23,22 @@ class base(object):
         self.asset_name                   = asset_name
         
         #---vars
-        # side and suffix could be args, but for now they will be constant until we figure out what to do with them
-        self.side                        = "C"
         self.suffix                      = "GRP"
         self.groups                      = []
 
     def initialize(self):
         """ Placeholder for naming node_utils """
-        self.root = "{0}_{1}_{2}".format(self.side, self.asset_name, self.suffix)
-        self.geo = "{0}_{1}_{2}".format(self.side, "Geo", self.suffix)
-        self.skeleton = "{0}_{1}_{2}".format(self.side, "Skeleton", self.suffix)
-        self.rig = "{0}_{1}_{2}".format(self.side, "Rig", self.suffix)
-        self.control = "{0}_{1}_{2}".format(self.side, "Control", self.suffix)
-        self.component = "{0}_{1}_{2}".format(self.side, "Components", self.suffix)
+        self.root = "{0}_{1}".format(self.asset_name, self.suffix)
+        self.geo = "{0}_{1}".format("Geo", self.suffix)
+        self.skeleton = "{0}_{1}".format("Skeleton", self.suffix)
+        self.rig = "{0}_{1}".format("Rig", self.suffix)
+        self.control = "{0}_{1}".format("Control", self.suffix)
+        self.component = "{0}_{1}".format( "Components", self.suffix)
 
     def create_nodes(self):
         """ Create and name rig transforms """
         node_utils.get_node_agnostic(name = self.root, nodeType="transform", parent=None)
-        init_hierarchy(side=self.side, name="", suffix=self.suffix, hierarchy_class=None, parent=self.root)
+        init_hierarchy(name="", suffix=self.suffix, hierarchy_class=None, parent=self.root)
         self.groups = [self.root, self.geo, self.skeleton, self.rig, self.component]
 
 
@@ -65,7 +63,7 @@ class base(object):
         self.create_nodes()
         self.finalize()
 
-def init_hierarchy(side,
+def init_hierarchy(
                    name,
                    suffix,
                    hierarchy_class=None,
@@ -81,11 +79,11 @@ def init_hierarchy(side,
     """
     Having a subcomponent group is going to trigger an automatic creation of all subcomponent grps
     """
-    geo = "{0}_{1}Geo_{2}".format(side, name, suffix)
-    skeleton = "{0}_{1}Skeleton_{2}".format(side, name, suffix)
-    rig = "{0}_{1}Rig_{2}".format(side, name, suffix)
-    control = "{0}_{1}Control_{2}".format(side, name, suffix)
-    component = "{0}_{1}Components_{2}".format(side, name, suffix)
+    geo = "{0}Geo_{1}".format( name, suffix)
+    skeleton = "{0}Skeleton_{1}".format( name, suffix)
+    rig = "{0}Rig_{1}".format( name, suffix)
+    control = "{0}Control_{1}".format( name, suffix)
+    component = "{0}Components_{1}".format( name, suffix)
 
     # Where to parent the new nodes.  If this is the root there will be no parent class
     class_geo = parent
@@ -102,10 +100,10 @@ def init_hierarchy(side,
         component = hierarchy_class.component
 
     if subcomponent_group:
-        geo = "{0}_{1}_GEO".format(side, name)
-        skeleton = "{0}_{1}_SKELETON".format(side, name)
-        rig = "{0}_{1}_RIG".format(side, name)
-        control = "{0}_{1}_CONTROL".format(side, name)
+        geo = "{0}_GEO".format( name)
+        skeleton = "{0}_SKELETON".format( name)
+        rig = "{0}_RIG".format(name)
+        control = "{0}_CONTROL".format(name)
 
         create_geo_grp=True,
         create_skelton_grp=True,

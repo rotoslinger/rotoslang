@@ -17,7 +17,7 @@ reload(attr_constants)
 import rig_2
 reload(rig_2)
 from rig_2 import decorator
-def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, guide_components=True):
+def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, guide_components=True, guide_geo=True):
     export_dict = {}
     no_export_tag_dict = tag_utils.get_no_exports()
     export_dict["no_export_tag_dict"] = no_export_tag_dict
@@ -33,10 +33,14 @@ def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
     if guide_components:
         export_dict["guide_components"] = component_base.get_all_component_args()
 
+    if guide_geo:
+        export_dict["guide_geo"] = guide_utils.get_guide_geo(no_export_tag_dict)
+
     # Make sure the path exists
     path= os.path.dirname(os.path.normpath(filename))
     if not os.path.exists(path):
         os.mkdir(path)
+
 
     file = open(filename, "wb")
     json.dump(export_dict, file, sort_keys = False, indent = 2)
@@ -44,7 +48,7 @@ def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
     return export_dict
 
 
-def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=True):
+def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=True, guide_geo=True):
     file = open(filename, "rb")
     import_dict = json.load(file)
     file.close()
@@ -70,7 +74,9 @@ def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
     # Gimbal Shapes
     if gimbal_shape:
         guide_utils.set_shapes_from_dict(import_dict["gimbal_shapes"], no_export_tag_dict, check_if_exists=True)
-        
+
+    if "guide_geo" in  import_dict.keys() and guide_geo:
+        guide_utils.set_guide_geo_dict(import_dict["guide_geo"], no_export_tag_dict)
         
 def literal_eval(string_attribute):
     try:

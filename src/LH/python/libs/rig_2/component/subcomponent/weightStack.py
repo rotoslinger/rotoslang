@@ -5,45 +5,44 @@ from collections import OrderedDict
 from maya import cmds
 
 from rig_2.name import utils as name_utils
+reload(name_utils)
+
 from rig_2.weights import utils as weights_utils
+reload(weights_utils)
+
 from rig_2.animcurve import utils as animcurve_utils
+reload(animcurve_utils)
+
 from rig_2.node import utils as node_utils
+reload(node_utils)
+
 from rig.utils import misc
+reload(misc)
+
 from rig.deformers import utils as deformerUtils
+reload(deformerUtils)
+
 from rig.rigComponents import meshRivetCtrl
+reload(meshRivetCtrl)
+
 from rig_2.message import utils as message_utils
-from decorators import initialize
+reload(message_utils)
+
 from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
+
 from rig_2.attr import utils as attr_utils
+reload(attr_utils)
+
 from rig_2.tag import utils as tag_utils
+reload(tag_utils)
+
 from rig_2.component import base as component_base
-
-# reload(component_base)
-
-# reload(name_utils)
-
-# reload(weights_utils)
-# reload(animcurve_utils)
-
-# reload(node_utils)
-
-# reload(deformerUtils)
-
-# reload(misc)
-
-# reload(meshRivetCtrl)
+reload(component_base)
 
 
-# reload(message_utils)
 
-
-# reload(manipulator_elements)
-
-# reload(attr_utils)
-
-# reload(tag_utils)
-
-class Weight_Node(component_base.Subcomponent):
+class Weight_Node(component_base.Component):
     def __init__(self,
                  name,
                  side=None,
@@ -55,12 +54,9 @@ class Weight_Node(component_base.Subcomponent):
                  addNewElem=False,
                  component_name="",
                  ):
-        super(Weight_Node, self).__init__(
-                                   side=side,
-                                   component_name=component_name)
+        super(Weight_Node, self).__init__(component_name=component_name)
         # weight node is a subcomponent so it will not have any exposed args...
         self.ordered_args = OrderedDict()
-        
         self.component_name = component_name
         self.name = name
         self.side = side # WIP
@@ -878,7 +874,7 @@ def create_anim_curve_connection_attr(control_node, attr_name, curve_name, outpu
     connection_info_dict = {}
     connection_info_dict["curve_name"] = curve_name
     connection_info_dict["output_idx"] = output_idx
-    connection_info_dict["control_node"] = control_node
+    connection_info_dict["control_parent"] = control_node
     connection_info_dict["node"] = stack_node
     connection_info_dict["curve_weights_node"] = curve_weights_node
     connection_info_dict["hand_weights"] = None

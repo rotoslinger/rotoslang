@@ -159,7 +159,7 @@ class Component(base.Component):
         self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
                                                 name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=False,
                                                 scale=False, offsetBuffer = self.buffer2, maintainOffsetT=True, 
-                                                maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=self.normalConstraintPatch)
+                                                maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=self.normalConstraintPatch, component_name=self.component_name)
 
         driverAttributes = ["txOut", "tyOut", "tzOut",
                             "rx", "ry", "rz",

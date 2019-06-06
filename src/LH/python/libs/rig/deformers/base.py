@@ -1,3 +1,6 @@
+import inspect
+from collections import OrderedDict
+
 from maya import cmds
 from rig.utils import weightMapUtils, misc
 reload(weightMapUtils)
@@ -6,21 +9,8 @@ import copy
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 
-"""
-sld = cmds.ls(typ="LHSlideDeformer")
-vec = cmds.ls(typ="LHVectorDeformer")
-crd = cmds.ls(typ="LHCurveRollDeformer")
-for i in sld+vec+crd:
-    print i
-    print weightMapUtils.createMultiWeightMapOnDeformer(deformer=i, mesh="C_body_HI", weightName="membership",addAttr=True,dataType="doubleArray")
-"""
-
-def createMeshPlane():
-    return
-
-def createNurbsPlane():
-    return
-
+from rig_2.component import base as component_base
+reload(component_base)
 
 
 class Deformer(object):
@@ -45,7 +35,7 @@ class Deformer(object):
                     orderSplit=False,
                     orderExclusive=False,
                     component_name="",
-                 **kw):
+                 ):
         # args
         self.component_name=component_name
         self.name = name

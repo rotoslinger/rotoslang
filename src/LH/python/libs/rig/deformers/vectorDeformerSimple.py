@@ -62,6 +62,12 @@ class VectorDeformerSimple(base.Deformer):
                 self.vectorCurve = cmds.curve(name= self.name + "Curve",
                                     d=1, p=[(0,0,0),self.toPoint],
                                     k=[0,1])
+                print self.vectorCurve,self.parent
+                print self.vectorCurve,self.parent
+                print self.vectorCurve
+                print self.vectorCurve
+                print self.vectorCurve
+                cmds.parent(self.vectorCurve, self.parent)
         self.vectorCurve = misc.getShape(self.vectorCurve)
 
     def setDefaults(self):

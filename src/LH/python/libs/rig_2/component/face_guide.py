@@ -23,7 +23,7 @@ reload(component_utils)
 
 
 
-class Base(component_base.Subcomponent):
+class Base(component_base.Component):
     def __init__(self,
                 #  class_name="rig_2.guide.face.Base", # Will be set by "self.get_relative_path". This really only becomes important when you are doing a dynamic build from within maya 
                  side="C",
@@ -44,7 +44,7 @@ class Base(component_base.Subcomponent):
         super(Base, self).__init__(
                                    side=side,
                                    component_name=component_name, **kw)
-        # Creating a clean dictionary to avoid inheriting arguments from base.Subcomponent
+        # Creating a clean dictionary to avoid inheriting arguments from base.Component
         self.ordered_args = OrderedDict()
         # Getting args as the current locals at this point in parsing of the file
         self.frame = inspect.currentframe()
@@ -78,7 +78,7 @@ class Base(component_base.Subcomponent):
         self.lattice = None
         self.l_lattice = None
         self.r_lattice = None
-        
+        self.guide_geo = []
         
     def create_nurbs(self):
         return
@@ -182,14 +182,14 @@ class Base(component_base.Subcomponent):
 
     def create_controls(self, lattice, side="C", is_symmetric=True, do_dynamic_connections=True):
         root_control, controls, clusters = component_utils.cluster_lattice_sheet(lattice_name=lattice,
-                                                                                s_count=self.s_divisions,
-                                                                                t_count=self.t_divisions,
-                                                                                control_parent=self.control,
-                                                                                handle_parent=self.rig,
-                                                                                component_name=self.component_name,
-                                                                                side=side,
-                                                                                is_symmetric=is_symmetric,
-                                                                                do_dynamic_connections=do_dynamic_connections)
+                                                                                 s_count=self.s_divisions,
+                                                                                 t_count=self.t_divisions,
+                                                                                 control_parent=self.control_parent,
+                                                                                 handle_parent=self.rig,
+                                                                                 component_name=self.component_name,
+                                                                                 side=side,
+                                                                                 is_symmetric=is_symmetric,
+                                                                                 do_dynamic_connections=do_dynamic_connections)
         if clusters and cmds.objExists(root_control):
             component_utils.safe_parent(clusters, root_control)
     
@@ -223,10 +223,10 @@ class Base(component_base.Subcomponent):
         mirror_utils.add_dynamic_mirror_connection(self.l_controls , hide_connected=False, scale=False)
         mirror_utils.add_dynamic_mirror_connection([self.l_root_control], hide_connected=False, scale=True)
 
-    # def create_component_tag(self):
-    #     [tag_utils.create_component_tag(node, component_name=self.component_name) for node self.component_membership_nodes]
+    def create_guide_geo_tag(self):
+        for node in self.guide_geo:
+            tag_utils.tag_guide_geo(node)
 
-    # @decorator.undo_chunk
     def create(self):
         super(Base, self).create()
         self.create_geo()
@@ -235,10 +235,8 @@ class Base(component_base.Subcomponent):
         self.create_base_geo()
         self.create_lattice()
         self.create_lattice_controls()
+        self.create_guide_geo_tag()
         self.create_component_tag()
-
-
-
 
 
 
@@ -347,7 +345,9 @@ class Mouth_Guide(Base):
         self.lattice_geo += [self.up_lip_volume, self.low_lip_volume,
                             self.up_lip_roll, self.low_lip_roll, self.up_lip_volume_base, self.low_lip_volume_base,
                             self.up_lip_roll_base, self.low_lip_roll_base]
-
+        self.guide_geo +=[self.up_lip_volume, self.low_lip_volume,
+                            self.up_lip_roll, self.low_lip_roll, self.up_lip_volume_base, self.low_lip_volume_base,
+                            self.up_lip_roll_base, self.low_lip_roll_base]
 
 
 
@@ -372,6 +372,7 @@ class Mouth_Guide(Base):
                                                                         x_mult=1)
         self.lattice_geo += [self.upper_lip_projection, self.lower_lip_projection, self.mouth_jaw_projection]
         self.component_membership_nodes += [self.upper_lip_projection, self.lower_lip_projection, self.mouth_jaw_projection]
+        self.guide_geo +=  [self.upper_lip_projection, self.lower_lip_projection, self.mouth_jaw_projection]
         
     def create_nurbs(self):
         self.slide_fit_to_mesh = self.mouth_jaw
@@ -397,6 +398,7 @@ class Mouth_Guide(Base):
         
         self.lattice_geo += [self.slide_nurbs, self.slide_nurbs_base]
         self.component_membership_nodes += [self.slide_nurbs, self.slide_nurbs_base]
+        self.guide_geo +=  [self.slide_nurbs, self.slide_nurbs_base]
 
 class Lid_Guide(Base):
     def __init__(self,
@@ -471,7 +473,8 @@ class Lid_Guide(Base):
         
         self.l_geo_to_be_base += self.l_curves
         self.r_geo_to_be_base += self.r_curves
-        
+        self.guide_geo += self.l_curves + self.r_curves
+
     def create_projection_meshes(self):
         self.l_projection_meshes = self.create_mesh_projection_per_side(self.l_meshes_to_project)
         self.r_projection_meshes = self.create_mesh_projection_per_side(self.r_meshes_to_project, flip=True)
@@ -479,7 +482,7 @@ class Lid_Guide(Base):
         self.r_lattice_geo += self.r_projection_meshes
         
         self.component_membership_nodes += self.l_projection_meshes + self.r_projection_meshes
-
+        self.guide_geo += self.l_projection_meshes + self.r_projection_meshes
 
     def create_nurbs(self):
         # return
@@ -519,7 +522,7 @@ class Lid_Guide(Base):
                 self.r_slide_mesh = slide_nurbs
                 
         self.component_membership_nodes += [self.l_slide_mesh, self.r_slide_mesh]
-
+        self.guide_geo += [self.l_slide_mesh, self.r_slide_mesh]
 
 class Brow_Guide(Base):
     def __init__(self,
@@ -578,6 +581,7 @@ class Brow_Guide(Base):
             
         [tag_utils.tag_brow_curves(curve) for curve in [self.l_curve, self.r_curve, self.c_curve]]
 
+        self.guide_geo += [self.l_curve, self.r_curve, self.c_curve]
 
         # Prepare data to be used later for fitting
         self.slide_fit_meshes = [self.l_brow, self.r_brow]
@@ -614,6 +618,7 @@ class Brow_Guide(Base):
             tag_utils.tag_projection_mesh(mesh)
         self.lattice_geo += [self.l_projection_mesh, self.r_projection_mesh, self.c_projection_mesh]
         self.component_membership_nodes += [self.l_projection_mesh, self.r_projection_mesh, self.c_projection_mesh]
+        self.guide_geo += [self.l_projection_mesh, self.r_projection_mesh, self.c_projection_mesh]
 
     def create_nurbs(self):
         # return
@@ -640,3 +645,5 @@ class Brow_Guide(Base):
 
         self.geo_to_be_base += [self.slide_nurbs]
         self.lattice_geo += [self.slide_nurbs]
+        
+        self.guide_geo += [self.slide_nurbs]

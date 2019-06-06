@@ -20,9 +20,10 @@ reload(misc)
 
 
 
-class Subcomponent(object):
+class Component(object):
     def __init__(self,
                  parent_component_class=None,
+                 geo_hier_name="C_geo_GRP",
                 #  class_name=None,
                  component_name="subcomponent",
                  godnode_class=None,
@@ -47,6 +48,7 @@ class Subcomponent(object):
         self.get_args()
         # Args
         self.parent_component_class = parent_component_class
+        self.geo_hier_name = geo_hier_name
         self.component_name = component_name
         self.godnode_class = godnode_class
         self.side = side
@@ -66,7 +68,7 @@ class Subcomponent(object):
         self.geo = None
         self.skeleton = None
         self.rig = None
-        self.control = None
+        self.control_parent = None
         self.nodes_to_lock = []
         self.nodes_to_hide = []
         self.nodes_to_cleanup = []
@@ -123,6 +125,9 @@ class Subcomponent(object):
 
         if not cmds.objExists(self.hierarchy_class.root):
             self.hierarchy_class.create()
+            if cmds.objExists(self.geo_hier_name):
+                cmds.parent(self.geo_hier_name, self.hierarchy_class.geo)
+            
             
         hierarchy_class = self.hierarchy_class
         self.create_class_node(parent=self.hierarchy_class.component)
@@ -132,11 +137,11 @@ class Subcomponent(object):
         # if self.group_under_subcomponent:
             
         #Create component Hierarchy within the parent class hierarchy. 
-        self.geo, self.skeleton, self.rig, self.control, self.component= rig_hierarchy.init_hierarchy(side=self.side,
-                                                                                                      name=self.component_name,
-                                                                                                      suffix=self.suffix,
-                                                                                                      subcomponent_group=self.subcomponent_group,
-                                                                                                      hierarchy_class=hierarchy_class)
+        self.geo, self.skeleton, self.rig, self.control_parent, self.component= rig_hierarchy.init_hierarchy(
+                                                                                                             name=self.component_name,
+                                                                                                             suffix=self.suffix,
+                                                                                                             subcomponent_group=self.subcomponent_group,
+                                                                                                             hierarchy_class=hierarchy_class)
                                                                                                     # hierarchy_class=hierarchy_class)
         
         # If it has already been created, this will be skipped

@@ -37,8 +37,8 @@ from rig.utils import misc
 from rig.deformers import base
 from rig_2.component.subcomponent import weightStack
 from rig.deformers import matrixDeformer 
-from rig.deformers import utils 
-from rig.rigComponents import lip 
+from rig.deformers import utils
+from rig_2.component.subcomponent import lip_sub
 from rig.rigComponents import line 
 from rig.rigComponents import meshRivetCtrl
 from rig.rigComponents import elements 
@@ -47,7 +47,7 @@ reload(elements)
 reload(meshRivetCtrl)
 reload(misc)
 reload(weightMapUtils)
-reload(lip)
+reload(lip_sub)
 reload(utils)
 reload(matrixDeformer)
 reload(weightStack)
@@ -418,20 +418,20 @@ def test(reloadPlugin = False, auto_load=True):
     # cmds.reorderDeformers(lowerLipSlide, lowerLipThick, misc.getShape(deformMeshLower))
 
 
-    lip.lipCurveDeformSplit(name="C_LowerLipWire",
-                            # curveDeformerAlgorithm=1,
-                            curve=lowerCurve,
-                            curveAim=lowerCurveAim,
-                            deformedGeometry=deformMeshLower,
-                            projectionPatch=projectionMeshLower,
-                            deformedGeometryBase=baseLower,
-                            addWeightStack=["lowerLipWeightStack_LR", "lowerLipWeightStack_UD"],
-                            addAtIndex=tierCount1+tierCount2+tierCount3,
-                            handPaint=False,
-                            upperLip=False,
-                            reorderInFrontOfDeformer=lowerLipSlide,
-                            removePointIndicies=lowerRemovePointIndicies,
-                            falloffDefaults = "")
+    lip_sub.lipCurveDeformSplit(name="C_LowerLipWire",
+                                # curveDeformerAlgorithm=1,
+                                curve=lowerCurve,
+                                curveAim=lowerCurveAim,
+                                deformedGeometry=deformMeshLower,
+                                projectionPatch=projectionMeshLower,
+                                deformedGeometryBase=baseLower,
+                                addWeightStack=["lowerLipWeightStack_LR", "lowerLipWeightStack_UD"],
+                                addAtIndex=tierCount1+tierCount2+tierCount3,
+                                handPaint=False,
+                                upperLip=False,
+                                reorderInFrontOfDeformer=lowerLipSlide,
+                                removePointIndicies=lowerRemovePointIndicies,
+                                falloffDefaults = "")
     
 
 
@@ -555,19 +555,19 @@ def test(reloadPlugin = False, auto_load=True):
     upperLipCurveClass.create()
     # cmds.reorderDeformers(upperLipSlide, upperLipThick, misc.getShape(deformMeshUpper))
 
-    blendshape = lip.lipCurveDeformSplit(name="C_UpperLipWire",
-                                         curve=upperCurve,
-                                        curveAim=upperCurveAim,
-                                        deformedGeometry=deformMeshUpper,
-                                        projectionPatch=projectionMeshUpper,
-                                        deformedGeometryBase=baseUpper,
-                                        addWeightStack=["upperLipWeightStack_LR", "upperLipWeightStack_UD"],
-                                        addAtIndex=tierCount1+tierCount2+tierCount3,
-                                        handPaint=False,
-                                        upperLip=True,
-                                        removePointIndicies=upperRemovePointIndicies,
-                                        reorderInFrontOfDeformer=upperLipSlide,
-                                        falloffDefaults = "")
+    blendshape = lip_sub.lipCurveDeformSplit(name="C_UpperLipWire",
+                                             curve=upperCurve,
+                                             curveAim=upperCurveAim,
+                                             deformedGeometry=deformMeshUpper,
+                                             projectionPatch=projectionMeshUpper,
+                                             deformedGeometryBase=baseUpper,
+                                             addWeightStack=["upperLipWeightStack_LR", "upperLipWeightStack_UD"],
+                                             addAtIndex=tierCount1+tierCount2+tierCount3,
+                                             handPaint=False,
+                                             upperLip=True,
+                                             removePointIndicies=upperRemovePointIndicies,
+                                             reorderInFrontOfDeformer=upperLipSlide,
+                                             falloffDefaults = "")
     cmds.select(upperLipCurveClass.mat_def.controls)
     cmds.viewFit()
 

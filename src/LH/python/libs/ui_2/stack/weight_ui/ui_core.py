@@ -108,7 +108,7 @@ def weight_curves_to_point_weights():
 
 def print_control_weightcurve_connection(weight_curve_type, weightcurve_dict_list):
     for curve_dict in weightcurve_dict_list:
-        print "================================ {0} {1} =====================================".format(curve_dict["control_node"], weight_curve_type)
+        print "================================ {0} {1} =====================================".format(curve_dict["control_parent"], weight_curve_type)
         print "{0} --> {1} --> {2} --> {3}".format(
                                                                                              curve_dict["curve_name"],
                                                                                              curve_dict["curve_weights_node"],

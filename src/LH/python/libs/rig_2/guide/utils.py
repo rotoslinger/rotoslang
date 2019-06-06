@@ -20,6 +20,8 @@ from rig_2.shape import nurbscurve
 reload(nurbscurve)
 from rig_2.mirror import utils as mirror_utils
 reload(nurbscurve)
+from rig_2.shape import utils as shape_utils
+reload(shape_utils)
 
 def get_control_shapes(no_export_tag_dict=None):
     all_controls = tag_utils.get_all_controls()
@@ -32,6 +34,10 @@ def get_guide_positions(no_export_tag_dict=None):
 def get_guide_shapes(no_export_tag_dict=None):
     all_guide_transforms = tag_utils.get_all_guides()
     return get_shape_dicts(all_guide_transforms, no_export_tag_dict=no_export_tag_dict)
+
+def get_guide_geo(no_export_tag_dict=None):
+    all_guide_geo_transforms = tag_utils.get_all_guide_geo()
+    return get_guide_geo_dict(all_guide_geo_transforms, no_export_tag_dict=no_export_tag_dict)
 
 def get_gimbal_shapes(no_export_tag_dict=None):
     all_gimbal_transforms = tag_utils.get_all_gimbals()
@@ -61,9 +67,7 @@ def get_guide_custom_attrs(guide_nodes, no_export_tag_dict, specified_attrs):
             continue
         custom_attribute_dict[node]["user_defined_attrs"] = cmds.listAttr( node, cb=True)
 
-        
-
-
+    
 def get_guide_transforms(guide_nodes, no_export_tag_dict, debug=False):
     guide_position_dict = {}
     translations = []
@@ -142,6 +146,19 @@ def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=Fa
                                 check_existing = True
                                 )
 
+def get_guide_geo_dict(transforms, no_export_tag_dict=None):
+    sorted_transforms = []
+    for transform in transforms:
+        if no_export_tag_dict and transform in no_export_tag_dict.keys():
+            continue
+        sorted_transforms.append(transform)
+    return shape_utils.create_agnostic_point_position_dict(sorted_transforms)
+
+def set_guide_geo_dict(guide_geo_dict, no_export_tag_dict=None):
+    for shape in guide_geo_dict.keys():
+        if no_export_tag_dict and shape in no_export_tag_dict.keys() or not cmds.objExists(shape):
+            continue
+        shape_utils.set_agnostic_point_position(shape, guide_geo_dict[shape])
 
 
 ###############################################################################

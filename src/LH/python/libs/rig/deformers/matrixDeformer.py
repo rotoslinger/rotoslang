@@ -2,6 +2,10 @@ from maya import cmds
 
 from rig_2.name import utils as name_utils
 reload(name_utils)
+from rig_2.node import utils as node_utils
+reload(node_utils)
+
+
 from rig_2.message import utils as message_utils
 reload(message_utils)
 from rig_2.tag import utils as tag_utils
@@ -145,7 +149,7 @@ class MatrixDeformer(base.Deformer):
     def getNodes(self):
         self.matrixNodes = []
         self.matrixBaseNodes = []
-        self.deformerParent = cmds.createNode("transform", name = self.name + "_DEFORM", parent = self.rigParent)
+        self.deformerParent = node_utils.get_node_agnostic("transform", name = self.name + "_DEFORM", parent = self.rigParent)
         self.locatorNames = self.manualLocatorNames
         if not self.manualLocatorNames:
             self.locatorNames = name_utils.name_based_on_range(count=self.numToAdd, name=self.locatorName, suffixSeperator="", side_name=self.auto_create_name_side)
@@ -158,12 +162,12 @@ class MatrixDeformer(base.Deformer):
             #     currParent = self.deformerParent[idx]
             idx = idx + self.addAtIndex
 
-            bufferFormatName = "{0}{1:02}_BUF"
+            bufferFormatName = "{0}_BUF"
             if self.manualLocatorNames:
                 bufferFormatName = "{0}_BUF"
 
 
-            bufferName = bufferFormatName.format(locatorName, idx)
+            bufferName = bufferFormatName.format(locatorName)
 
             if not bufferName in self.matrixBuffers:
                 self.matrixBuffers.append(bufferName)
@@ -172,26 +176,26 @@ class MatrixDeformer(base.Deformer):
                 cmds.createNode("transform", n=bufferName, p=currParent)
 
             # Sometimes the name has to be numbered, but sometimes you have an individual name for every node...
-            locatorFormatName ="{0}{1:02}_LOC"
-            locatorBaseFormatName = "{0}Base{1:02}_LOC"
+            locatorFormatName ="{0}_LOC"
+            locatorBaseFormatName = "{0}Base_LOC"
             if self.manualLocatorNames:
                 locatorFormatName ="{0}_LOC"
                 locatorBaseFormatName = "{0}Base_LOC"
 
 
-            matrixNodeName = locatorFormatName.format(locatorName, idx)
-            matrixBaseNodeName = locatorBaseFormatName.format(locatorName, idx)
+            matrixNodeName = locatorFormatName.format(locatorName)
+            matrixBaseNodeName = locatorBaseFormatName.format(locatorName)
 
 
             if not cmds.objExists(matrixNodeName):
-                loc = cmds.spaceLocator(name=locatorFormatName.format(locatorName, idx))[0]
+                loc = cmds.spaceLocator(name=locatorFormatName.format(locatorName))[0]
                 self.matrixNodes.append(loc)
                 if cmds.objExists(bufferName):
                     cmds.parent(loc, bufferName)
             else:
                 self.matrixNodes.append(matrixNodeName)
             if not cmds.objExists(matrixBaseNodeName):
-                loc = cmds.spaceLocator(name=locatorBaseFormatName.format(locatorName, idx))[0]
+                loc = cmds.spaceLocator(name=locatorBaseFormatName.format(locatorName))[0]
                 self.matrixBaseNodes.append(loc)
                 if cmds.objExists(bufferName):
                     cmds.parent(loc, bufferName)

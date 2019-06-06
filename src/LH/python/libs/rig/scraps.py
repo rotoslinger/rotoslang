@@ -111,8 +111,8 @@ from rig.utils import misc
 from rig.deformers import base
 from rig_2.component.subcomponent import weightStack
 from rig.deformers import matrixDeformer 
-from rig.deformers import utils 
-from rig.rigComponents import lip 
+from rig.deformers import utils
+from rig_2.component.subcomponent import lip_sub
 from rig.rigComponents import line 
 from rig.rigComponents import lineTest 
 from rig.rigComponents import meshRivetCtrl 
@@ -121,7 +121,7 @@ reload(lineTest)
 reload(meshRivetCtrl)
 reload(misc)
 reload(weightMapUtils)
-reload(lip)
+reload(lip_sub)
 reload(utils)
 reload(matrixDeformer)
 reload(weightStack)

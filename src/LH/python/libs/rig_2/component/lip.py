@@ -1,14 +1,14 @@
 import inspect
 from collections import OrderedDict
-from rig.rigComponents import lip 
+from rig_2.component.subcomponent import lip_sub
 from rig.rigComponents import elements 
 from rig_2.component import base
 
 reload(base) 
-reload(lip)
+reload(lip_sub)
 
 
-class Lip(base.Subcomponent):
+class Lip(base.Component):
     def __init__(self,
                 #  class_name=None, # Will be set by "self.get_relative_path". This really only becomes important when you are doing a dynamic build from within maya 
                  component_name="lip",
@@ -21,12 +21,11 @@ class Lip(base.Subcomponent):
                  lower_remove_point_indicies=[],
                  upper_lip_name="upLip",
                  lower_lip_name="lowLip",
+                 control_rivet_mesh=None,
                  **kw
                  ):
         super(Lip, self).__init__(component_name=component_name, **kw)
-        # by creating a local var "class_name" here we are insuring a relative path of this class is formed and set in the maya args
-        # class_name = self.get_relative_path()
-        # Creating a clean dictionary to avoid inheriting arguments from base.Subcomponent
+        # Creating a clean dictionary to avoid inheriting arguments from base.Component
         self.ordered_args = OrderedDict()
         # Getting args as the current locals at this point in parsing of the file
         self.frame = inspect.currentframe()
@@ -47,13 +46,18 @@ class Lip(base.Subcomponent):
     
     
     
-    
         # constant placeholders until get multiwrap geo_asset_class class worked out
         self.deformMeshUpper="C_upperLip"
         self.baseUpper="C_upperLipBase"
         self.deformMeshLower="C_lowerLip"
         self.baseLower="C_lowerLipBase"
-
+        self.rivet_mesh_upper = control_rivet_mesh
+        self.rivet_mesh_lower = control_rivet_mesh
+        if not self.rivet_mesh_upper:
+            self.rivet_mesh_upper = self.deformMeshUpper
+        if not self.rivet_mesh_lower:
+            self.rivet_mesh_lower = self.deformMeshLower
+            
     def unpack_args_from_guide_class(self):
         # In order for the volume lip curves to deforme in the correct way, while keeping the guides live, we need to reorder the deformers
         self.order_before_deformer = self.lip_guide_class.ffd_deformer
@@ -136,252 +140,260 @@ class Lip(base.Subcomponent):
         self.matDefFalloffCurveUpper = elements.UPPER_LIP_MATDEF_FALLOFF
     
     def create_upper_lip(self):
-        self.upperLipClass = lip.Lip(name="upperLip",
-                    upperLip=True,
-                    tierCount1=self.tierCount1,
-                    tierCount2=self.tierCount2,
-                    tierCount3=self.tierCount3,
-                    thickToPoint=self.thickToPointUpper,
-                    slideCtrlSize1=self.slideCtrlSize1,
-                    slideCtrlSize2=self.slideCtrlSize2,
-                    slideCtrlSize3=self.slideCtrlSize3,
-                    matDefCtrlSize1=self.matDefCtrlSize1,
-                    matDefCtrlSize2=self.matDefCtrlSize2,
-                    matDefCtrlSize3=self.matDefCtrlSize3,
-                    matDefFalloffCurve = self.matDefFalloffCurveUpper,
+        self.upperLipClass = lip_sub.Lip(name="upperLip",
+                                         component_name=self.component_name,
+                                        controlRivetMesh = self.rivet_mesh_upper,
+                                         upperLip=True,
+                                         tierCount1=self.tierCount1,
+                                         tierCount2=self.tierCount2,
+                                         tierCount3=self.tierCount3,
+                                         thickToPoint=self.thickToPointUpper,
+                                         slideCtrlSize1=self.slideCtrlSize1,
+                                         slideCtrlSize2=self.slideCtrlSize2,
+                                         slideCtrlSize3=self.slideCtrlSize3,
+                                         matDefCtrlSize1=self.matDefCtrlSize1,
+                                         matDefCtrlSize2=self.matDefCtrlSize2,
+                                         matDefCtrlSize3=self.matDefCtrlSize3,
+                                         matDefFalloffCurve = self.matDefFalloffCurveUpper,
 
-                    slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
-                    slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
-                    slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
-                    
-                    slideCtrlPosOffset1=self.slideCtrlPosOffset1,
-                    slideCtrlPosOffset2=self.slideCtrlPosOffset2,
-                    slideCtrlPosOffset3=self.slideCtrlPosOffset3,
-                    
-                    slideControlSpeedDefaults=self.slideControlSpeedDefaults,
+                                         slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
+                                         slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
+                                         slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
 
-                    thickCtrlSize1=self.thickCtrlSize1,
-                    thickCtrlSize2=self.thickCtrlSize2,
-                    thickCtrlSize3=self.thickCtrlSize3,
+                                         slideCtrlPosOffset1=self.slideCtrlPosOffset1,
+                                         slideCtrlPosOffset2=self.slideCtrlPosOffset2,
+                                         slideCtrlPosOffset3=self.slideCtrlPosOffset3,
 
-                    thickCtrlShapeOffset1=self.thickCtrlShapeOffset1Upper,
-                    thickCtrlShapeOffset2=self.thickCtrlShapeOffset2Upper,
-                    thickCtrlShapeOffset3=self.thickCtrlShapeOffset3Upper,
-                    thickFalloffCurve=self.thickFalloffCurveUpper,
+                                         slideControlSpeedDefaults=self.slideControlSpeedDefaults,
 
-                    matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1Upper,
-                    matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2Upper,
-                    matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3Upper,
+                                         thickCtrlSize1=self.thickCtrlSize1,
+                                         thickCtrlSize2=self.thickCtrlSize2,
+                                         thickCtrlSize3=self.thickCtrlSize3,
 
-                    rollCurveName = self.rollCurveNameUpper,
-                    rollFalloffCurve = elements.UPPER_LIP_ROLL_FALLOFF,
+                                         thickCtrlShapeOffset1=self.thickCtrlShapeOffset1Upper,
+                                         thickCtrlShapeOffset2=self.thickCtrlShapeOffset2Upper,
+                                         thickCtrlShapeOffset3=self.thickCtrlShapeOffset3Upper,
+                                         thickFalloffCurve=self.thickFalloffCurveUpper,
 
-                    ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
+                                         matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1Upper,
+                                         matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2Upper,
+                                         matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3Upper,
 
-                    falloffDefaults=self.falloffDefaultsUpper,
-                    falloffMatrixDefaults=self.falloffMatrixDefaultsUpper,
-                    fileName=None,
-                    deformMesh=self.deformMeshUpper,
-                    base=self.baseUpper,
-                    controlAutoOrientMesh = self.controlAutoOrientMesh,
-                    projectionMesh=self.projectionMeshUpper,
-                    slidePatch=self.slidePatch,
-                    slidePatchBase=self.slidePatchBase)
+                                         rollCurveName = self.rollCurveNameUpper,
+                                         rollFalloffCurve = elements.UPPER_LIP_ROLL_FALLOFF,
+
+                                         ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
+
+                                         falloffDefaults=self.falloffDefaultsUpper,
+                                         falloffMatrixDefaults=self.falloffMatrixDefaultsUpper,
+                                         fileName=None,
+                                         deformMesh=self.deformMeshUpper,
+                                         base=self.baseUpper,
+                                         controlAutoOrientMesh = self.controlAutoOrientMesh,
+                                         projectionMesh=self.projectionMeshUpper,
+                                         slidePatch=self.slidePatch,
+                                         slidePatchBase=self.slidePatchBase)
                     
         self.upperLipClass.create()
         self.upperLipSlide, self.upperLipThick = self.upperLipClass.slide_deformer, self.upperLipClass.vector_deformer
+        self.upperLipCurveClass = lip_sub.Lip(name="upperLipCurve",
+                                              component_name=self.component_name,
+                                              ctrlName = "upperLip",
+                                              order_before_deformer=self.order_before_deformer,
 
-        self.upperLipCurveClass = lip.Lip(name="upperLipCurve",
-                                          ctrlName = "upperLip",
-                                          order_before_deformer=self.order_before_deformer,
+                                              upperLip=True,
+                                              doLipThick = False,
+                                              doLipRoll = False,
+                                              #fileName=fileName,
+                                              controlRivetMesh = self.rivet_mesh_upper,
+                                              multiSlideForBaseCurve=False,
+                                              repositionRivetCtrls=True,
+                                              tierCount1=self.tierCount1,
+                                              tierCount2=self.tierCount2,
+                                              tierCount3=self.tierCount3,
 
-                                          upperLip=True,
-                                          doLipThick = False,
-                                          doLipRoll = False,
-                                          #fileName=fileName,
-                                          controlRivetMesh = self.deformMeshUpper,
-                                          multiSlideForBaseCurve=False,
-                                          repositionRivetCtrls=True,
-                                          tierCount1=self.tierCount1,
-                                          tierCount2=self.tierCount2,
-                                          tierCount3=self.tierCount3,
+                                              slideCtrlSize1=self.slideCtrlSize1,
+                                              slideCtrlSize2=self.slideCtrlSize2,
+                                              slideCtrlSize3=self.slideCtrlSize3,
+                                              matDefCtrlSize1=self.matDefCtrlSize1,
+                                              matDefCtrlSize2=self.matDefCtrlSize2,
+                                              matDefCtrlSize3=self.matDefCtrlSize3,
 
-                                          slideCtrlSize1=self.slideCtrlSize1,
-                                          slideCtrlSize2=self.slideCtrlSize2,
-                                          slideCtrlSize3=self.slideCtrlSize3,
-                                          matDefCtrlSize1=self.matDefCtrlSize1,
-                                          matDefCtrlSize2=self.matDefCtrlSize2,
-                                          matDefCtrlSize3=self.matDefCtrlSize3,
+                                              slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
+                                              slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
+                                              slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
 
-                                          slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
-                                          slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
-                                          slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
+                                              slideCtrlPosOffset1=self.slideCtrlPosOffset1,
+                                              slideCtrlPosOffset2=self.slideCtrlPosOffset2,
+                                              slideCtrlPosOffset3=self.slideCtrlPosOffset3,
 
-                                          slideCtrlPosOffset1=self.slideCtrlPosOffset1,
-                                          slideCtrlPosOffset2=self.slideCtrlPosOffset2,
-                                          slideCtrlPosOffset3=self.slideCtrlPosOffset3,
+                                              slideControlSpeedDefaults=self.slideControlSpeedDefaults,
 
-                                          slideControlSpeedDefaults=self.slideControlSpeedDefaults,
+                                              matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1Upper,
+                                              matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2Upper,
+                                              matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3Upper,
 
-                                          matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1Upper,
-                                          matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2Upper,
-                                          matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3Upper,
+                                              ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
 
-                                          ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
-
-                                          falloffDefaults=self.falloffDefaultsUpper,
-                                          falloffMatrixDefaults=self.falloffMatrixDefaultsUpper,
-                                          fileName=None,
-                                          deformMesh=self.up_lip_volume_curve,
-                                          base=self.baseUpperCurve,
-                                          projectionMesh=self.projectionMeshUpper,
-                                          controlAutoOrientMesh = self.controlAutoOrientMesh,
-                                          slidePatch=self.slidePatch,
-                                          slidePatchBase=self.slidePatchBase)
+                                              falloffDefaults=self.falloffDefaultsUpper,
+                                              falloffMatrixDefaults=self.falloffMatrixDefaultsUpper,
+                                              fileName=None,
+                                              deformMesh=self.up_lip_volume_curve,
+                                              base=self.baseUpperCurve,
+                                              projectionMesh=self.projectionMeshUpper,
+                                              controlAutoOrientMesh = self.controlAutoOrientMesh,
+                                              slidePatch=self.slidePatch,
+                                              slidePatchBase=self.slidePatchBase)
         self.upperLipCurveClass.create()
 
-        self.upper_lip_volume_blend = lip.lipCurveDeformSplit(name="C_UpperLipWire",
-                                                              curve=self.up_lip_volume_curve,
-                                                              deformedGeometry=self.deformMeshUpper,
-                                                              projectionPatch=self.projectionMeshUpper,
-                                                              deformedGeometryBase=self.baseUpper,
-                                                              addWeightStack=["upperLipWeightStack_LR", "upperLipWeightStack_UD"],
-                                                              addAtIndex=self.tierCount1 + self.tierCount2 + self.tierCount3,
-                                                              handPaint=False,
-                                                              upperLip=True,
-                                                              removePointIndicies=self.upper_remove_point_indicies,
-                                                              reorderInFrontOfDeformer=self.upperLipSlide,
-                                                              falloffDefaults = "",
-                                                              curve_base=self.baseUpperCurve,
-                                                              component_name = self.component_name)
+        
+        
+
+        self.upper_lip_volume_blend = lip_sub.lipCurveDeformSplit(name="C_UpperLipWire",
+                                                                  curve=self.up_lip_volume_curve,
+                                                                  deformedGeometry=self.deformMeshUpper,
+                                                                  projectionPatch=self.projectionMeshUpper,
+                                                                  deformedGeometryBase=self.baseUpper,
+                                                                  addWeightStack=[self.upperLipClass.slide_weight_stack.node,
+                                                                              self.upperLipClass.slide_weight_stack.node_LR],
+                                                                  addAtIndex=self.tierCount1 + self.tierCount2 + self.tierCount3,
+                                                                  handPaint=False,
+                                                                  upperLip=True,
+                                                                  removePointIndicies=self.upper_remove_point_indicies,
+                                                                  reorderInFrontOfDeformer=self.upperLipSlide,
+                                                                  falloffDefaults = "",
+                                                                  curve_base=self.baseUpperCurve,
+                                                                  component_name = self.component_name)
     def create_lower_lip(self):
 
 
-        self.lowerLipClass = lip.Lip(name="lowerLip",
-                    upperLip=False,
-                    tierCount1=self.tierCount1,
-                    tierCount2=self.tierCount2,
-                    tierCount3=self.tierCount3,
-                    thickToPoint=self.thickToPoint,
-                    slideCtrlSize1=self.slideCtrlSize1,
-                    slideCtrlSize2=self.slideCtrlSize2,
-                    slideCtrlSize3=self.slideCtrlSize3,
+        self.lowerLipClass = lip_sub.Lip(name="lowerLip",
+                                         component_name=self.component_name,
+                                        controlRivetMesh = self.rivet_mesh_lower,
+                                         upperLip=False,
+                                         tierCount1=self.tierCount1,
+                                         tierCount2=self.tierCount2,
+                                         tierCount3=self.tierCount3,
+                                         thickToPoint=self.thickToPoint,
+                                         slideCtrlSize1=self.slideCtrlSize1,
+                                         slideCtrlSize2=self.slideCtrlSize2,
+                                         slideCtrlSize3=self.slideCtrlSize3,
 
-                    matDefCtrlSize1=self.matDefCtrlSize1,
-                    matDefCtrlSize2=self.matDefCtrlSize2,
-                    matDefCtrlSize3=self.matDefCtrlSize3,
-                    matDefFalloffCurve = self.matDefFalloffCurve,
-                    rollCurveName = self.rollCurveNameLower,
+                                         matDefCtrlSize1=self.matDefCtrlSize1,
+                                         matDefCtrlSize2=self.matDefCtrlSize2,
+                                         matDefCtrlSize3=self.matDefCtrlSize3,
+                                         matDefFalloffCurve = self.matDefFalloffCurve,
+                                         rollCurveName = self.rollCurveNameLower,
 
-                    rollFalloffCurve = elements.LOWER_LIP_ROLL_FALLOFF,
-
-
-                    slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
-                    slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
-                    slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
-                    
-                    slideCtrlPosOffset1=self.slideCtrlPosOffset1,
-                    slideCtrlPosOffset2=self.slideCtrlPosOffset2,
-                    slideCtrlPosOffset3=self.slideCtrlPosOffset3,
-                    
-                    slideControlSpeedDefaults=self.slideControlSpeedDefaults,
-
-                    matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1,
-                    matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2,
-                    matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3,
-
-                    ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
-
-                    thickCtrlSize1=self.thickCtrlSize1,
-                    thickCtrlSize2=self.thickCtrlSize2,
-                    thickCtrlSize3=self.thickCtrlSize3,
+                                         rollFalloffCurve = elements.LOWER_LIP_ROLL_FALLOFF,
 
 
-                    thickCtrlShapeOffset1=self.thickCtrlShapeOffset1,
-                    thickCtrlShapeOffset2=self.thickCtrlShapeOffset2,
-                    thickCtrlShapeOffset3=self.thickCtrlShapeOffset3,
-                    
-                    falloffDefaults=self.falloffDefaults,
-                    falloffMatrixDefaults=self.falloffMatrixDefaults,
-                    fileName=None,
-                    deformMesh=self.deformMeshLower,
-                    controlAutoOrientMesh = self.controlAutoOrientMesh,
-                    base=self.baseLower,
-                    projectionMesh=self.projectionMeshLower,
-                    slidePatch=self.slidePatch,
-                    slidePatchBase=self.slidePatchBase)
+                                         slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
+                                         slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
+                                         slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
+
+                                         slideCtrlPosOffset1=self.slideCtrlPosOffset1,
+                                         slideCtrlPosOffset2=self.slideCtrlPosOffset2,
+                                         slideCtrlPosOffset3=self.slideCtrlPosOffset3,
+
+                                         slideControlSpeedDefaults=self.slideControlSpeedDefaults,
+
+                                         matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1,
+                                         matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2,
+                                         matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3,
+
+                                         ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
+
+                                         thickCtrlSize1=self.thickCtrlSize1,
+                                         thickCtrlSize2=self.thickCtrlSize2,
+                                         thickCtrlSize3=self.thickCtrlSize3,
+
+
+                                         thickCtrlShapeOffset1=self.thickCtrlShapeOffset1,
+                                         thickCtrlShapeOffset2=self.thickCtrlShapeOffset2,
+                                         thickCtrlShapeOffset3=self.thickCtrlShapeOffset3,
+
+                                         falloffDefaults=self.falloffDefaults,
+                                         falloffMatrixDefaults=self.falloffMatrixDefaults,
+                                         fileName=None,
+                                         deformMesh=self.deformMeshLower,
+                                         controlAutoOrientMesh = self.controlAutoOrientMesh,
+                                         base=self.baseLower,
+                                         projectionMesh=self.projectionMeshLower,
+                                         slidePatch=self.slidePatch,
+                                         slidePatchBase=self.slidePatchBase)
         self.lowerLipClass.create()
         self.lowerLipSlide, self.lowerLipThick = self.lowerLipClass.slide_deformer, self.lowerLipClass.vector_deformer
 
+        self.lowerLipCurveClass = lip_sub.Lip(name="lowerLipCurve",
+                                              component_name=self.component_name,
+                                              ctrlName = "lowerLip",
+                                              order_before_deformer=self.order_before_deformer,
+                                              controlRivetMesh = self.rivet_mesh_lower,
+                                              doLipThick = False,
+                                              doLipRoll = False,
+                                              upperLip=False,
+                                              # multiSlideForBaseCurve=False,
+                                              multiSlideForBaseCurve=False,
+                                              # repositionRivetCtrls=True,
+                                              repositionRivetCtrls=True,
+                                              tierCount1=self.tierCount1,
+                                              tierCount2=self.tierCount2,
+                                              tierCount3=self.tierCount3,
 
+                                              slideCtrlSize1=self.slideCtrlSize1,
+                                              slideCtrlSize2=self.slideCtrlSize2,
+                                              slideCtrlSize3=self.slideCtrlSize3,
+                                              matDefCtrlSize1=self.matDefCtrlSize1,
+                                              matDefCtrlSize2=self.matDefCtrlSize2,
+                                              matDefCtrlSize3=self.matDefCtrlSize3,
 
-        self.lowerLipCurveClass = lip.Lip(name="lowerLipCurve",
-                                          ctrlName = "lowerLip",
-                                          order_before_deformer=self.order_before_deformer,
-                                          controlRivetMesh = self.deformMeshLower,
-                                          doLipThick = False,
-                                          doLipRoll = False,
-                                          upperLip=False,
-                                          # multiSlideForBaseCurve=False,
-                                          multiSlideForBaseCurve=False,
-                                          # repositionRivetCtrls=True,
-                                          repositionRivetCtrls=True,
-                                          tierCount1=self.tierCount1,
-                                          tierCount2=self.tierCount2,
-                                          tierCount3=self.tierCount3,
+                                              slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
+                                              slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
+                                              slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
 
-                                          slideCtrlSize1=self.slideCtrlSize1,
-                                          slideCtrlSize2=self.slideCtrlSize2,
-                                          slideCtrlSize3=self.slideCtrlSize3,
-                                          matDefCtrlSize1=self.matDefCtrlSize1,
-                                          matDefCtrlSize2=self.matDefCtrlSize2,
-                                          matDefCtrlSize3=self.matDefCtrlSize3,
+                                              slideCtrlPosOffset1=self.slideCtrlPosOffset1,
+                                              slideCtrlPosOffset2=self.slideCtrlPosOffset2,
+                                              slideCtrlPosOffset3=self.slideCtrlPosOffset3,
 
-                                          slideCtrlShapeOffset1=self.slideCtrlShapeOffset1,
-                                          slideCtrlShapeOffset2=self.slideCtrlShapeOffset2,
-                                          slideCtrlShapeOffset3=self.slideCtrlShapeOffset3,
+                                              slideControlSpeedDefaults=self.slideControlSpeedDefaults,
 
-                                          slideCtrlPosOffset1=self.slideCtrlPosOffset1,
-                                          slideCtrlPosOffset2=self.slideCtrlPosOffset2,
-                                          slideCtrlPosOffset3=self.slideCtrlPosOffset3,
+                                              matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1,
+                                              matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2,
+                                              matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3,
 
-                                          slideControlSpeedDefaults=self.slideControlSpeedDefaults,
+                                              ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
 
-                                          matDefCtrlShapeOffset1=self.matDefCtrlShapeOffset1,
-                                          matDefCtrlShapeOffset2=self.matDefCtrlShapeOffset2,
-                                          matDefCtrlShapeOffset3=self.matDefCtrlShapeOffset3,
-
-                                          ctrlAutoPositionThreshold = self.ctrlAutoPositionThreshold,
-
-                                          falloffDefaults=self.falloffDefaults,
-                                          falloffMatrixDefaults=self.falloffMatrixDefaults,
-                                          fileName=None,
-                                          deformMesh=self.low_lip_volume_curve,
-                                          base=self.baseLowerCurve,
-                                          controlAutoOrientMesh = self.controlAutoOrientMesh,
-                                          # deformMesh=lowerCurve,
-                                          # base="lowerLipCurveBase",
-                                          projectionMesh=self.projectionMeshLower,
-                                          slidePatch=self.slidePatch,
-                                          slidePatchBase=self.slidePatchBase)
+                                              falloffDefaults=self.falloffDefaults,
+                                              falloffMatrixDefaults=self.falloffMatrixDefaults,
+                                              fileName=None,
+                                              deformMesh=self.low_lip_volume_curve,
+                                              base=self.baseLowerCurve,
+                                              controlAutoOrientMesh = self.controlAutoOrientMesh,
+                                              # deformMesh=lowerCurve,
+                                              # base="lowerLipCurveBase",
+                                              projectionMesh=self.projectionMeshLower,
+                                              slidePatch=self.slidePatch,
+                                              slidePatchBase=self.slidePatchBase)
 
         self.lowerLipCurveClass.create()
 
 
-        self.lower_lip_volume_blend = lip.lipCurveDeformSplit(name="C_LowerLipWire",
-                                                              curve=self.low_lip_volume_curve,
-                                                              deformedGeometry=self.deformMeshLower,
-                                                              projectionPatch=self.projectionMeshLower,
-                                                              deformedGeometryBase=self.baseLower,
-                                                              addWeightStack=["lowerLipWeightStack_LR", "lowerLipWeightStack_UD"],
-                                                              addAtIndex=self.tierCount1 + self.tierCount2 + self.tierCount3,
-                                                              handPaint=False,
-                                                              upperLip=False,
-                                                              reorderInFrontOfDeformer=self.lowerLipSlide,
-                                                              removePointIndicies=self.lower_remove_point_indicies,
-                                                              falloffDefaults = "",
-                                                              curve_base=self.baseLowerCurve,
-                                                              component_name = self.component_name)
+        self.lower_lip_volume_blend = lip_sub.lipCurveDeformSplit(name="C_LowerLipWire",
+                                                                  curve=self.low_lip_volume_curve,
+                                                                  deformedGeometry=self.deformMeshLower,
+                                                                  projectionPatch=self.projectionMeshLower,
+                                                                  deformedGeometryBase=self.baseLower,
+                                                                  addWeightStack=[self.lowerLipCurveClass.slide_weight_stack.node,
+                                                                              self.lowerLipCurveClass.slide_weight_stack.node_LR],
+                                                                  addAtIndex=self.tierCount1 + self.tierCount2 + self.tierCount3,
+                                                                  handPaint=False,
+                                                                  upperLip=False,
+                                                                  reorderInFrontOfDeformer=self.lowerLipSlide,
+                                                                  removePointIndicies=self.lower_remove_point_indicies,
+                                                                  falloffDefaults = "",
+                                                                  curve_base=self.baseLowerCurve,
+                                                                  component_name = self.component_name)
         
 
     def create(self):

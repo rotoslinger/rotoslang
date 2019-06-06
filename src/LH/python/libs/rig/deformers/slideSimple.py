@@ -6,6 +6,8 @@ reload(weightMapUtils)
 reload(misc)
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
+from rig_2.component import base as component_base
+reload(component_base)
 
 class SlideSimple(base.Deformer):
     def __init__(self,
@@ -27,7 +29,7 @@ class SlideSimple(base.Deformer):
                     locations=[],
                     hide=True,
                     rotationAmount = 0,
-                 **kw):
+                    **kw):
         super(SlideSimple, self).__init__(**kw)
         self.name = name
         self.addAtIndex = addAtIndex
