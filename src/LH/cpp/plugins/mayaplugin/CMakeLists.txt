@@ -1,6 +1,8 @@
+# YOU HAVE TO SET TO BUILD ON Win64 OR YOU WILL GET ERRORS
+# 1 Windows inside build dir run:       cmake ..
+# 2 THEN WINDOWS:                       cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
+# 3 THEN Windows inside build dir run:  cmake --build . --config Debug
 
-# WINDOWS cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
-# Windows build cmake --build . --config Debug
 
 # OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
 cmake_minimum_required(VERSION 3.1.3)

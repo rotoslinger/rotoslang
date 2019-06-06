@@ -76,7 +76,6 @@ class Deformer(object):
         if cmds.objExists(self.name):
             self.deformer = self.name
             return
-
         self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name,
                                       foc=self.orderFrontOfChain,
                                       bf=self.orderBefore,

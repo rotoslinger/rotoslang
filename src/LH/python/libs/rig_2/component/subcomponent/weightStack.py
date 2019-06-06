@@ -87,6 +87,11 @@ class Weight_Node(component_base.Component):
             self.node = self.name
             return
         self.node = node_utils.get_node_agnostic(self.nodeType, name=self.name, parent=self.parent, component_name=self.component_name)
+        # Node has cycle issues, will be deleted before giving to animators, so ignore cycles during setup...
+        if self.nodeType == "LHCurveWeightNode":
+            cmds.cycleCheck( self.node, e=False)
+
+            
     def getDriverNodes(self):
         return
 

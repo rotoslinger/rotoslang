@@ -1,25 +1,24 @@
 from maya import cmds, OpenMaya
 
-from rig_2.component import face_guide
-reload(face_guide)
-from rig.rigComponents import lidTest
-reload(lidTest)
-from rig.rigComponents import browTest
-reload(browTest)
-from rig_2.component import face_guide
-reload(face_guide)
-
+from rig_2.filepath import utils as filepath_utils
+reload(filepath_utils)
 from rig_2.export import utils as export_utils
 reload(export_utils)
+
+
+from rig_2.component import face_guide
+reload(face_guide)
+from rig_2.component import lid
+reload(lid)
+from rig.rigComponents import browTest
+reload(browTest)
+
 from rig.rigComponents import mouthJaw
 reload(mouthJaw)
 
 from rig_2.component import lip, mouth
 reload(mouth)
 reload(lip)
-
-from rig_2.filepath import utils as filepath_utils
-reload(filepath_utils)
 
 
 
@@ -48,19 +47,20 @@ def build(asset_name="oldMan", reload_plugins=True, asset_filepath="C:/Users/har
     export_utils.import_all(filename=guide_file, build_components=False)
 
     build_lip(mouth_jaw_guides)
-    build_mouth(mouth_jaw_guides)
+    # build_mouth(mouth_jaw_guides)
                 
-    '''
-    build_mouth(mouth_jaw_guides)
-    build_lids(lid_guides)
-    build_brows(brow_guides)
-    '''
+    # build_lids(lid_guides)
+    # build_brows(brow_guides)
     # # import the guides again, this time for all of the non guide components
     export_utils.import_all(filename=guide_file, build_components=False)
 
 
     cmds.select("C_bodyBind_GEO")
     cmds.viewFit()
+    
+def build_lids(lid_guides):
+    lid_class = lid.Lid()
+    lid_class.create()
 
 
 def get_file(asset_filepath, asset_name,  reload_plugins=True):
@@ -109,8 +109,6 @@ def build_mouth(mouth_jaw_guides):
     # cmds.select(MouthJawClass.mat_def_translate.controls)
     # cmds.viewFit()
 
-def build_lids(lid_guides):
-    lidTest.test(auto_load=False, old_man=True)
 
 def build_brow(brow_guides):
     browTest.test(auto_load=False, old_man=True)

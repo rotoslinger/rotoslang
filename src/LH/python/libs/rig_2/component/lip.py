@@ -324,7 +324,6 @@ class Lip(base.Component):
                                          slidePatchBase=self.slidePatchBase)
         self.lowerLipClass.create()
         self.lowerLipSlide, self.lowerLipThick = self.lowerLipClass.slide_deformer, self.lowerLipClass.vector_deformer
-
         self.lowerLipCurveClass = lip_sub.Lip(name="lowerLipCurve",
                                               component_name=self.component_name,
                                               ctrlName = "lowerLip",
@@ -384,8 +383,8 @@ class Lip(base.Component):
                                                                   deformedGeometry=self.deformMeshLower,
                                                                   projectionPatch=self.projectionMeshLower,
                                                                   deformedGeometryBase=self.baseLower,
-                                                                  addWeightStack=[self.lowerLipCurveClass.slide_weight_stack.node,
-                                                                              self.lowerLipCurveClass.slide_weight_stack.node_LR],
+                                                                  addWeightStack=[self.lowerLipClass.slide_weight_stack.node,
+                                                                              self.lowerLipClass.slide_weight_stack.node_LR],
                                                                   addAtIndex=self.tierCount1 + self.tierCount2 + self.tierCount3,
                                                                   handPaint=False,
                                                                   upperLip=False,

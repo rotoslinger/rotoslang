@@ -213,9 +213,11 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
     def __init__(self, name="TEST", parent=None, widgets=None, color=None, bg_color=None):
         super(MainWindow, self).__init__(parent=parent)
+        self.win_name = name + "_Main"
+        self.setObjectName(self.win_name)
+
         self.widgets = widgets
         # QtWidgets.QMainWindow.__init__(self)
-
 
         self.dock = QtWidgets.QDockWidget(name, self)
         self.dock.setAutoFillBackground(True)
@@ -240,6 +242,17 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
         self.dock.setWidget(contents)
         
+    # def cleanup(self):
+    #     try:
+    #         globals()[self.win_name].close()
+    #         globals()[self.win_name].deleteLater()
+    #     except:
+    #         pass
+    #     del globals()[self.win_name]
+        
+    # def closeEvent(self, event):
+    #     self.cleanup()
+
         
 def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey, parent=None):
     dock = MainWindow(name=text, parent=parent, widgets=widget_list, color=color, bg_color=bg_color)

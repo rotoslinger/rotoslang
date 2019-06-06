@@ -170,7 +170,9 @@ class Mouth(base.Component):
         self.componentDict=componentDict
         self.component_name= component_name
         self.control_rivet_mesh = control_rivet_mesh
-        
+        if not self.control_rivet_mesh:
+            self.control_rivet_mesh = self.deformMesh
+
     def unpack_args_from_guide_class(self):
         return
 
@@ -233,8 +235,6 @@ class Mouth(base.Component):
 
         slideCtrlPosOffsets=[0,0,0]
         slideCtrlShapeOffsets=[0,0,7]
-        if not self.control_rivet_mesh:
-            self.control_rivet_mesh = self.deformMesh
         controlAutoOrientMesh = self.slidePatch
         slideIconShapeDict = manipulator_elements.circle
 
@@ -323,74 +323,74 @@ class Mouth(base.Component):
             matDefCtrlShapeSizes = 1
 
         self.mat_def_translate = matrixDeformer.MatrixDeformer(name=self.nameJaw + "Translate_MatrixDef",
-                                geoToDeform=self.deformMesh,
-                                ctrlName=self.matDefAttrs,
-                                manualLocatorNames = transLocatorNames,
-                                centerToParent=True,
-                                addAtIndex=0,
-                                numToAdd=False,
-                                # offset=[0,0,1],
-                                reverseDeformerOrder = True,
-                                # locatorName=name + tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
-                                # rotationTranforms=stack.controls,
-                                curveWeightsNode=self.matDefCurveWeights.node,
-                                geoToConstrainMesh=self.deformMesh,
-                                curveWeightsConnectionIdx=0,
-                                translations = pivotTranslations,
-                                rotations = pivotRotations,
-                                scales = pivotScale,
-                                # ctrlTranslations = ctrlTranslations,
-                                # ctrlRotations = ctrlRotations,
-                                # ctrlScales = ctrlScale,
-                                controlParent = self.control_parent,
-                                rigParent = self.rig,
-                                offset = matDefCtrlShapeOffsets,
-                                size = matDefCtrlShapeSizes,
-                                # locatorName = name + "MatDefTranslateLocator",
-                                # locations=[position],
-                                hide = True,
-                                connectTranslate = True,
-                                connectRotate = False,
-                                connectScale = False,
-                                controlShapeDict=manipulator_elements.primary_plus,
-                                controlAutoOrientMesh = self.slidePatch,
-                                controlType=1,
-                                # customControlShapes = self.matDefCustomControlShapes,
-                                component_name=self.component_name
-                                )
+                                                               geoToDeform=self.deformMesh,
+                                                               ctrlName=self.matDefAttrs,
+                                                               manualLocatorNames = transLocatorNames,
+                                                               centerToParent=True,
+                                                               addAtIndex=0,
+                                                               numToAdd=False,
+                                                               # offset=[0,0,1],
+                                                               reverseDeformerOrder = True,
+                                                               # locatorName=name + tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
+                                                               # rotationTranforms=stack.controls,
+                                                               curveWeightsNode=self.matDefCurveWeights.node,
+                                                               control_rivet_mesh=self.control_rivet_mesh,
+                                                               curveWeightsConnectionIdx=0,
+                                                               translations = pivotTranslations,
+                                                               rotations = pivotRotations,
+                                                               scales = pivotScale,
+                                                               # ctrlTranslations = ctrlTranslations,
+                                                               # ctrlRotations = ctrlRotations,
+                                                               # ctrlScales = ctrlScale,
+                                                               controlParent = self.control_parent,
+                                                               rigParent = self.rig,
+                                                               offset = matDefCtrlShapeOffsets,
+                                                               size = matDefCtrlShapeSizes,
+                                                               # locatorName = name + "MatDefTranslateLocator",
+                                                               # locations=[position],
+                                                               hide = True,
+                                                               connectTranslate = True,
+                                                               connectRotate = False,
+                                                               connectScale = False,
+                                                               controlShapeDict=manipulator_elements.primary_plus,
+                                                               controlAutoOrientMesh = self.slidePatch,
+                                                               controlType=1,
+                                                               # customControlShapes = self.matDefCustomControlShapes,
+                                                               component_name=self.component_name
+                                                               )
         self.mat_def_translate.create()
 
         self.mat_def_rotate = matrixDeformer.MatrixDeformer(name=self.nameJaw + "Rotate_MatrixDef",
-                            geoToDeform=self.deformMesh,
-                            ctrlName=self.matDefAttrs,
-                            manualLocatorNames = rotLocatorNames,
-                            centerToParent=True,
-                            addAtIndex=0,
-                            numToAdd=False,
-                            # offset=[0,0,1],
-                            reverseDeformerOrder = True,
-                            # locatorName=name + tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
-                            # rotationTranforms=stack.controls,
-                            curveWeightsNode=self.matDefCurveWeights.node,
-                            geoToConstrainMesh=self.deformMesh,
-                            curveWeightsConnectionIdx=0,
-                            translations = pivotTranslations,
-                            rotations = pivotRotations,
-                            controlParent = self.control_parent,
-                            rigParent = self.rig,
-                            offset = matDefCtrlShapeOffsets,
-                            size = matDefCtrlShapeSizes,
-                            # locatorName = name + "MatDefTranslateLocator",
-                            # locations=[position],
-                            hide = True,
-                            connectTranslate = False,
-                            connectRotate = True,
-                            connectScale = True,
-                            controlShapeDict=manipulator_elements.primary_plus,
-                            controlAutoOrientMesh = self.slidePatch,
-                            controlType=1,
-                            component_name=self.component_name
-                            )
+                                                            geoToDeform=self.deformMesh,
+                                                            ctrlName=self.matDefAttrs,
+                                                            manualLocatorNames = rotLocatorNames,
+                                                            centerToParent=True,
+                                                            addAtIndex=0,
+                                                            numToAdd=False,
+                                                            # offset=[0,0,1],
+                                                            reverseDeformerOrder = True,
+                                                            # locatorName=name + tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
+                                                            # rotationTranforms=stack.controls,
+                                                            curveWeightsNode=self.matDefCurveWeights.node,
+                                                            control_rivet_mesh=self.control_rivet_mesh,
+                                                            curveWeightsConnectionIdx=0,
+                                                            translations = pivotTranslations,
+                                                            rotations = pivotRotations,
+                                                            controlParent = self.control_parent,
+                                                            rigParent = self.rig,
+                                                            offset = matDefCtrlShapeOffsets,
+                                                            size = matDefCtrlShapeSizes,
+                                                            # locatorName = name + "MatDefTranslateLocator",
+                                                            # locations=[position],
+                                                            hide = True,
+                                                            connectTranslate = False,
+                                                            connectRotate = True,
+                                                            connectScale = True,
+                                                            controlShapeDict=manipulator_elements.primary_plus,
+                                                            controlAutoOrientMesh = self.slidePatch,
+                                                            controlType=1,
+                                                            component_name=self.component_name
+                                                            )
                               
         self.mat_def_rotate.create()
         weightStack.connect_weight_stack_anim_curve(self.mat_def_translate, self.matDefCurveWeights)

@@ -56,16 +56,17 @@ def create_component_tag(node_to_tag, component_name, connect_to_class_node=True
     if type(node_to_tag) != list:
         node_to_tag = [node_to_tag]
     for node in node_to_tag:
+        if connect_to_class_node and cmds.objExists(class_node + ".membership_nodes"):
+            if not cmds.objExists(node + ".component_class_" + component_name):
+                component_class_attr = attr_utils.get_attr(node, "component_class_" + component_name, attrType="message")
+                cmds.connectAttr(class_node + ".membership_nodes", component_class_attr, f=True)
+
         attr = node + ".COMPONENT_MEMBERSHIP"
         if cmds.objExists(attr):
             return attr
-
         attr_utils.get_attr(node, "COMPONENT_MEMBERSHIP", dataType="string")
         cmds.setAttr(attr, component_name, type="string")
         
-        if connect_to_class_node:
-            component_class_attr = attr_utils.get_attr(node, "component_class_" + component_name, attrType="message")
-            cmds.connectAttr(class_node + ".membership_nodes", component_class_attr)
         return attr
 
 def get_arg_node_by_component_name(component_name):

@@ -2,7 +2,7 @@ import sys
 
 from rig_2.message import utils as message_utils
 reload(message_utils)
-from rig_2.tag.utils import tag_rivet_mesh, create_component_tag
+# from rig_2.tag.utils import tag_rivet_mesh, create_component_tag
 
 
 
@@ -1272,16 +1272,13 @@ def getSetMaintainOffset(transform=None, offsetTransform=None, maintainOffsetT=T
         cmds.xform(transform, ws=True, s=offsetTransform["scale"])
 
 def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translate=True, rotate=True, scale=False,
-                  offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None, component_name=None):
+                  offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None):
     """
     suffix GCS
     """
     if not driverMesh and not driven: 
         driverMesh = cmds.ls(sl=True)[0]
         driven = cmds.ls(sl=True)[1]
-    tag_rivet_mesh(driverMesh)
-    if component_name:
-        create_component_tag(driverMesh, component_name=component_name)
     driverMesh = getShape(driverMesh)
     if not name:
         name = "C_test_GCS"

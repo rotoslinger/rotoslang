@@ -1,3 +1,13 @@
+# WINDOWS BUILD TERMINAL COMMANDS:
+# YOU HAVE TO SET TO BUILD ON Win64 OR YOU WILL GET ERRORS
+# 1 Windows inside build dir run:       cmake ..
+# 2 THEN WINDOWS:                       cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
+# 3 THEN Windows inside build dir run:  cmake --build . --config Debug
+
+
+
+
+
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"

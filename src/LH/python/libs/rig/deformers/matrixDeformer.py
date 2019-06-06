@@ -45,51 +45,51 @@ def createTestMatrixDeformer():
 
 class MatrixDeformer(base.Deformer):
     def __init__(self,
-                    name="testMatrixDeformer",
-                    deformerType="LHMatrixDeformer",
-                    geoToConstrainMesh = "",
-                    ctrlName = "",
-                    manualLocatorNames=[],
-                    geoToDeform="",
-                    controlParent=[],
-                    rigParent="",
-                    centerToParent=False,
-                    doCreateCtrls=True,
-                    controlShapeDict=None,
-                    rotationTranforms=[],
-                    translations = [],
-                    rotations = [],
-                    scales = [],
+                 name="testMatrixDeformer",
+                 deformerType="LHMatrixDeformer",
+                 control_rivet_mesh ="",
+                 ctrlName = "",
+                 manualLocatorNames=[],
+                 geoToDeform="",
+                 controlParent=[],
+                 rigParent="",
+                 centerToParent=False,
+                 doCreateCtrls=True,
+                 controlShapeDict=None,
+                 rotationTranforms=[],
+                 translations = [],
+                 rotations = [],
+                 scales = [],
 
-                    offset = [0,0,0],
-                    posOffset = [0,0,0],
-                    size = 1,
-                    addAtIndex=0,
-                    numToAdd=1,
-                    locatorName="test",
-                    curveWeightsNode="",
-                    curveWeightsConnectionIdx=0,
-                    autoNameWithSide=True,
-                    # name side is when you want to have the ctrls mirrored
-                    # for example you have a left eye and a right eye
-                    # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
-                    # instead they will be named L_leftEye, L_centerEye, L_rightEye and the right controls will be named R_leftEye, R_centerEye, R_rightEye
-                    auto_create_name_side=False,
-                    hide=True,
-                    reverseDeformerOrder = False,
-                    connectTranslate=True,
-                    connectRotate=True,
-                    connectScale=True,
-                    # 0 is simpleton, 1 is rivet control
-                    controlType = 0,
-                    controlAutoOrientMesh="",
-                    customControlShapes = [],
-                    guide = False,
-                    # inherited args
-                    # orderFrontOfChain=True,
-                    # orderParallel=False,
-                    # orderBefore=False,
-                    # orderAfter=False,
+                 offset = [0,0,0],
+                 posOffset = [0,0,0],
+                 size = 1,
+                 addAtIndex=0,
+                 numToAdd=1,
+                 locatorName="test",
+                 curveWeightsNode="",
+                 curveWeightsConnectionIdx=0,
+                 autoNameWithSide=True,
+                 # name side is when you want to have the ctrls mirrored
+                 # for example you have a left eye and a right eye
+                 # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
+                 # instead they will be named L_leftEye, L_centerEye, L_rightEye and the right controls will be named R_leftEye, R_centerEye, R_rightEye
+                 auto_create_name_side=False,
+                 hide=True,
+                 reverseDeformerOrder = False,
+                 connectTranslate=True,
+                 connectRotate=True,
+                 connectScale=True,
+                 # 0 is simpleton, 1 is rivet control
+                 controlType = 0,
+                 controlAutoOrientMesh="",
+                 customControlShapes = [],
+                 guide = False,
+                 # inherited args
+                 # orderFrontOfChain=True,
+                 # orderParallel=False,
+                 # orderBefore=False,
+                 # orderAfter=False,
 
                  **kw):
         super(MatrixDeformer, self).__init__(**kw)
@@ -98,7 +98,7 @@ class MatrixDeformer(base.Deformer):
         self.ctrlName = ctrlName
         self.manualLocatorNames = manualLocatorNames
         self.deformerType = deformerType
-        self.geoToConstrainMesh = geoToConstrainMesh
+        self.control_rivet_mesh = control_rivet_mesh
         self.geoToDeform = geoToDeform
         self.controlParent = controlParent
         self.rigParent = rigParent
@@ -140,11 +140,8 @@ class MatrixDeformer(base.Deformer):
         self.matrixBuffers = []
         self.controls = []
 
-    # def getDeformer(self):
-    #     if cmds.objExists(self.name):
-    #         self.deformer = self.name
-    #         return
-    #     self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name, foc=True)[0]
+        if not self.control_rivet_mesh:
+            self.control_rivet_mesh = self.geoToDeform
 
     def getNodes(self):
         self.matrixNodes = []
@@ -323,7 +320,7 @@ class MatrixDeformer(base.Deformer):
                                                         speedTzDefault=1,
                                                         parent=self.controlParent[idx],
                                                         curveData=controlShape,
-                                                        mesh = self.geoToDeform,
+                                                        mesh = self.control_rivet_mesh,
                                                         translate = translations[idx],
                                                         rotate = rotations[idx],
                                                         normalConstraintPatch=self.controlAutoOrientMesh,

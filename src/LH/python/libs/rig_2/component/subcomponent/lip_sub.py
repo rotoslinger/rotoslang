@@ -387,7 +387,7 @@ class Lip(component_base.Component):
                                                                    reverseDeformerOrder = True,
                                                                    locatorName=self.name + tierNames[idx] + "Trans",  # Primary, Secondary, Or Tertiatry
                                                                    curveWeightsNode=curveWeights.node,
-                                                                   geoToConstrainMesh=self.deformMesh,
+                                                                   control_rivet_mesh=self.deformMesh,
                                                                    curveWeightsConnectionIdx=tierAddAtIndex[idx],
                                                                    translations = self.slide_weight_stack.positionsFromWeights,
                                                                    rotations = self.slide_weight_stack.rotationsFromWeights,
@@ -420,7 +420,7 @@ class Lip(component_base.Component):
                                                                 locatorName=self.name + tierNames[idx] + "ROT",  # Primary, Secondary, Or Tertiatry
                                                                 # rotationTranforms=self.slide_weight_stack.controls,
                                                                 curveWeightsNode=curveWeights.node,
-                                                                geoToConstrainMesh=self.deformMesh,
+                                                                control_rivet_mesh=self.deformMesh,
                                                                 curveWeightsConnectionIdx=tierAddAtIndex[idx],
                                                                 translations = self.slide_weight_stack.positionsFromWeights,
                                                                 rotations = self.slide_weight_stack.rotationsFromWeights,

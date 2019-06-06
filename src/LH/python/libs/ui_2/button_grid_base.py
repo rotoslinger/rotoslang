@@ -16,6 +16,13 @@ from ui_2 import filtered_list
 reload(filtered_list)
 from rig_2.weights import utils as weight_utils
 reload(weight_utils)
+
+
+def getMayaWindow():
+    ptr = OpenMayaUI.MQtUtil.mainWindow()
+    return wrapInstance(long(ptr), QtWidgets.QMainWindow)
+
+
 class Base(QtWidgets.QWidget):
 
     def __init__(self,
@@ -38,7 +45,7 @@ class Base(QtWidgets.QWidget):
                  tag_remove_no_export_func=None,
                  no_export_tag_options=None,
                  ):
-        super(Base, self).__init__(parent)
+        super(Base, self).__init__(parent )
         # args
         self.parent = parent
         self.win_title = win_title
@@ -90,7 +97,8 @@ class Base(QtWidgets.QWidget):
 
     def initialize_main_window(self):
         self.setWindowFlags(QtCore.Qt.Window)
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        # self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnBottomHint)
 
         # If you would like to save preferences on close
 
@@ -341,11 +349,21 @@ class Base(QtWidgets.QWidget):
             self.settings_obj.setValue("scroll_val_y", scroll_val_y)
             scroll_val_x = self.scrollArea.horizontalScrollBar().value()
             self.settings_obj.setValue("scroll_val_x", scroll_val_x)
+        self.mayaWin.removeEventFilter(self)
+
         # If save import/export path....
         # self.settings_obj.setValue("importPath", self.import_dialog.contents.text())
         # self.settings_obj.setValue("exportPath", self.export_dialog.contents.text())
 
+    # def set_window_flag_on(self, bla=False):
+    #     self.setWindowFlags(QtCore.Qt.Window)
+    #     # self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+    #     return True
 
+    # def set_window_flag_off(self, bla=False):
+    #     self.setWindowFlags(QtCore.Qt.Window)
+    #     self.setWindowFlags(QtCore.Qt.WindowStaysOnBottomHint)
+    #     return True
     def openUI(self):
         self.initialize_main_window()
 
@@ -361,10 +379,51 @@ class Base(QtWidgets.QWidget):
         except:
             pass
         ptr = OpenMayaUI.MQtUtil.mainWindow()
-        mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        self.mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        # self.setParent(self.mayaWin)
+        # self.installEventFilter(self)
+        self.mayaWin.installEventFilter(self)
         globals()[self.win_name] = self
         globals()[self.win_name].show()
+        
         return globals()[self.win_name]
+    
+    def eventFilter(self, object, event):
+        #         if event.type() == QtCore.QEvent.WindowActivate:
+        #     self.set_window_flag_on()
+        # elif event.type()== QtCore.QEvent.WindowDeactivate:
+        #     self.set_window_flag_off()
+
+        if event.type() == QtCore.QEvent.WindowActivate and not self.windowState() == QtCore.Qt.WindowMinimized:
+            # print "widget window has gained focus"
+            # self.activateWindow()
+            self.raise_()
+
+            QtWidgets.QApplication.setActiveWindow(self)
+            # return True
+            # self.set_window_flag_on()
+        elif event.type()== QtCore.QEvent.WindowDeactivate:
+            self.raise_()
+            pass
+        #     return True
+        # return True
+
+            # QtWidgets.QApplication.setActiveWindow(self.mayaWin)
+            # print "widget window has gained focus"
+            # self.set_window_flag_off()
+        # elif event.type()== QtCore.QEvent.FocusIn:
+        #     print "widget has gained keyboard focus"
+        # elif event.type()== QtCore.QEvent.FocusOut:
+        #     print "widget has lost keyboard focus"
+
+# class FocusEventFilter(QtCore.QObject):
+    
+#     def eventFilter(self, obj, event):
+                     
+#         if event.type() == QtCore.QEvent.WindowActivate:
+#             print "widget window has gained focus"
+#         elif event.type()== QtCore.QEvent.WindowDeactivate:
+#             print "widget window has lost focus"
 
 
 
