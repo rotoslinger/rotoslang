@@ -1,43 +1,50 @@
-from maya import cmds
-import sys
-# from rig.deformers import utils as deformerUtils
-from rig.deformers import matrixDeformer
-from rig.deformers import slideSimple
-from rig.deformers import blendshapeSimple
-from rig.deformers import vectorDeformerSimple
-from rig.deformers import curveRollSimple
-# reload(deformerUtils)
-# reload(self.base)
-from rig.utils import misc
-from rig.utils import LHCurveDeformerCmds
-from rig.rigComponents import meshRivetCtrl 
-from rig.rigComponents import elements
-from decorators import initialize
-from rig.deformers import utils as deformer_utils
-from rig_2.manipulator import elements as manipulator_elements
-reload(weightStack)
-reload(matrixDeformer)
-reload(slideSimple)
-reload(blendshapeSimple)
-reload(vectorDeformerSimple)
-reload(curveRollSimple)
-reload(LHCurveDeformerCmds)
-reload(meshRivetCtrl)
-reload(elements)
-reload(elements)
-reload(deformer_utils)
+import inspect
+from collections import OrderedDict
 
+from maya import cmds
+from rig.deformers import matrixDeformer
+reload(matrixDeformer)
+
+from rig.deformers import slideSimple
+reload(slideSimple)
+
+from rig.deformers import blendshapeSimple
+reload(blendshapeSimple)
+
+from rig.deformers import vectorDeformerSimple
+reload(vectorDeformerSimple)
+
+from rig.deformers import curveRollSimple
+reload(curveRollSimple)
+
+from rig.utils import misc
 reload(misc)
 
+from rig.utils import LHCurveDeformerCmds
+reload(LHCurveDeformerCmds)
 
-class Lip(object):
-    @initialize.initializer
+from rig.rigComponents import elements, meshRivetCtrl
+reload(meshRivetCtrl)
+
+from rig.deformers import utils as deformer_utils
+reload(deformer_utils)
+
+from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
+
+from rig_2.component.subcomponent import weightStack
+reload(weightStack)
+
+from rig_2.component import base as component_base
+reload(component_base)
+
+
+class Lip(component_base.Component):
     def __init__(
                 self,
+                component_name="lip",
                 name="lowerLip",
                 characterName = "character",
-                controlParent="C_control_GRP",
-                rigParent="C_rig_GRP",
                 order_before_deformer=None,
                 upperLip = False,
                 ctrlName = None,  # this will be used as a way to reuse controls between different components and deformers
@@ -47,97 +54,145 @@ class Lip(object):
                 tierCount1=1,
                 tierCount2=3,
                 tierCount3=9,
-
                 falloffDefaults=(-10, -9.9, -4, 10.0),
-
                 ################# Slides ########################
-
                 falloffSlideName = None,
-
                 slideCtrlSize1=1,
                 slideCtrlSize2=.65,
                 slideCtrlSize3=.35,
-
                 slideCtrlShapeOffset1=[0,0.0,2],
                 slideCtrlShapeOffset2=[0,0.0,2],
                 slideCtrlShapeOffset3=[0,0.0,2],
-
                 slideCtrlPosOffset1=[0, 0.0, 0],
                 slideCtrlPosOffset2=[0, 0.0, 0],
                 slideCtrlPosOffset3=[0, 0.0, 0],
-
                 slideFalloffDefaults=(-10, -9.9, -4, 10.0),
                 slideFalloffDefaultCurve = None,
-
                 slideIconShapeDict = manipulator_elements.circle,
-
                 slideControlSpeedDefaults = [.1,.1,.1],
-
                 ################# MatrixDeformers ###############
                 falloffMatrixDeformerName = None,
-
                 matDefCtrlSize1=.5,
                 matDefCtrlSize2=.5,
                 matDefCtrlSize3=.5,
-
                 matDefCtrlShapeOffset1=[0,0.0,2],
                 matDefCtrlShapeOffset2=[0,0.0,2],
                 matDefCtrlShapeOffset3=[0,0.0,2],
-
                 matDefFalloffCurve=None,
-
                 falloffMatrixDefaults=(-11, -7, -2, 10.0),
                 falloffIttsMatDef=["linear","linear","linear","linear"],
                 falloffOttsMatDef=["linear","spline","linear","linear"],
                 matDefIconShapeDicts = [manipulator_elements.primary_plus,
                                         manipulator_elements.secondary_plus,
                                         manipulator_elements.tertiary_plus],
-
                 ################# ThickDeformers ###############
                 doLipThick = True,
                 falloffLipThickName = None,
                 thickCtrlSize1=.7,
                 thickCtrlSize2=.65,
                 thickCtrlSize3=.35,
-
                 thickCtrlShapeOffset1 = [ 0, -2, 2],
                 thickCtrlShapeOffset2 = [0,-2.0,1],
                 thickCtrlShapeOffset3 = [0,-2.0,1],
-
                 thickToPoint = (0, 0.978, -0.208),
                 falloffThickDefaults=(10, -1, -4, 10.0),
-
                 thickFalloffCurve = elements.LOWER_LIP_THICK_FALLOFF,
-
-
                 ################ Roll Deformer ####################
                 rollCurveName = "upperLipCurve",
                 doLipRoll = True,
                 falloffLipRollName = None,
                 falloffRollDefaults=(-10, -9.9, -4, 10.0),
-
                 controlRivetMesh = None,
                 ctrlAutoPositionThreshold = .9,
-
                 rollFalloffCurve = elements.LOWER_LIP_ROLL_FALLOFF,
-
                 controlAutoOrientMesh="slide",
                 repositionRivetCtrls=False,
-
                 fileName="/scratch/levih/dev/rotoslang/src/scenes/presentation/ForTransfer/humanLipTest.ma",
                 deformMesh="humanLipsLower",
                 base="humanLipsLowerBase",
                 projectionMesh="lowLipProjection",
-
-
                 slidePatch="slide",
                 slidePatchBase="slideBase",
-                component_name="lip"):
-                pass
+                ):
+        super(Lip, self).__init__(component_name=component_name)
+        # weight node is a subcomponent so it will not have any exposed args...
+        self.ordered_args = OrderedDict()
+        
+        # args
+        self.name=name
+        self.characterName = characterName
+        self.order_before_deformer=order_before_deformer
+        self.upperLip = upperLip
+        self.ctrlName =ctrlName
+        self.containerName = containerName
+        self.multiSlideForBaseCurve=multiSlideForBaseCurve
+        self.component_type=component_type
+        self.tierCount1=tierCount1
+        self.tierCount2=tierCount2
+        self.tierCount3=tierCount3
+        self.falloffDefaults=falloffDefaults
+        self.falloffSlideName =falloffSlideName
+        self.slideCtrlSize1=slideCtrlSize1
+        self.slideCtrlSize2=slideCtrlSize2
+        self.slideCtrlSize3=slideCtrlSize3
+        self.slideCtrlShapeOffset1=slideCtrlShapeOffset1
+        self.slideCtrlShapeOffset2=slideCtrlShapeOffset2
+        self.slideCtrlShapeOffset3=slideCtrlShapeOffset3
+        self.slideCtrlPosOffset1=slideCtrlPosOffset1
+        self.slideCtrlPosOffset2=slideCtrlPosOffset2
+        self.slideCtrlPosOffset3=slideCtrlPosOffset3
+        self.slideFalloffDefaults=slideFalloffDefaults
+        self.slideFalloffDefaultCurve = slideFalloffDefaultCurve
+        self.slideIconShapeDict = slideIconShapeDict
+        self.slideControlSpeedDefaults = slideControlSpeedDefaults
+        self.falloffMatrixDeformerName =falloffMatrixDeformerName
+        self.matDefCtrlSize1=matDefCtrlSize1
+        self.matDefCtrlSize2=matDefCtrlSize2
+        self.matDefCtrlSize3=matDefCtrlSize3
+        self.matDefCtrlShapeOffset1=matDefCtrlShapeOffset1
+        self.matDefCtrlShapeOffset2=matDefCtrlShapeOffset2
+        self.matDefCtrlShapeOffset3=matDefCtrlShapeOffset3
+        self.matDefFalloffCurve=matDefFalloffCurve
+        self.falloffMatrixDefaults=falloffMatrixDefaults
+        self.falloffIttsMatDef=falloffIttsMatDef
+        self.falloffOttsMatDef=falloffOttsMatDef
+        self.matDefIconShapeDicts =matDefIconShapeDicts
+        self.doLipThick =doLipThick
+        self.falloffLipThickName = falloffLipThickName
+        self.thickCtrlSize1=thickCtrlSize1
+        self.thickCtrlSize2=thickCtrlSize2
+        self.thickCtrlSize3=thickCtrlSize3
+        self.thickCtrlShapeOffset1 = thickCtrlShapeOffset1
+        self.thickCtrlShapeOffset2 = thickCtrlShapeOffset2
+        self.thickCtrlShapeOffset3 = thickCtrlShapeOffset3
+        self.thickToPoint = thickToPoint
+        self.falloffThickDefaults=falloffThickDefaults
+        self.thickFalloffCurve = thickFalloffCurve
+        self.rollCurveName = rollCurveName
+        self.doLipRoll = doLipRoll
+        self.falloffLipRollName = falloffLipRollName
+        self.falloffRollDefaults=falloffRollDefaults
+        self.controlRivetMesh =controlRivetMesh
+        self.ctrlAutoPositionThreshold = ctrlAutoPositionThreshold
+        self.rollFalloffCurve = rollFalloffCurve
+        self.controlAutoOrientMesh=controlAutoOrientMesh
+        self.repositionRivetCtrls=repositionRivetCtrls
+        self.fileName=fileName
+        self.deformMesh=deformMesh
+        self.base=base
+        self.projectionMesh=projectionMesh
+        self.slidePatch=slidePatch
+        self.slidePatchBase=slidePatchBase
+        self.component_name=component_name
+
+
+
+
+
 
     def create_lip(self):
 
-        # if you want to share falloffs between all deformers leave the falloff names None, but more self.control is better...
+        # if you want to share falloffs between all deformers leave the falloff names None, but more self.control_parent is better...
         if not self.ctrlName:
             self.ctrlName = self.name
 
@@ -145,13 +200,13 @@ class Lip(object):
             self.falloffSlideName = self.ctrlName
 
         if not self.falloffMatrixDeformerName: # Falloff for lip the matrix deformer is going to be minimal because it is used for tweaks and puckers
-            self.falloffMatrixDeformerName = self.ctrlName + "MATDEFTEST"
+            self.falloffMatrixDeformerName = self.ctrlName + "MatDef"
 
         if not self.falloffLipThickName: # Falloff for lip thick should be minimal
-            self.falloffLipThickName = self.ctrlName + "LIPTHICK"
+            self.falloffLipThickName = self.ctrlName + "Thick"
 
         if not self.falloffLipRollName: # Falloff for lip roll may be more broad, but not as broad as the slide falloff
-            self.falloffLipRollName = self.ctrlName + "LIPROLL"
+            self.falloffLipRollName = self.ctrlName + "Roll"
 
         if self.fileName:
             cmds.file( self.fileName, i=True, f=True )
@@ -159,13 +214,13 @@ class Lip(object):
         if not self.controlRivetMesh:
             self.controlRivetMesh = self.deformMesh
 
-        # Temporary, create character hierarchy
-        if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):
-            misc.create_rig_hier(char_name=self.characterName)
+        # # Temporary, create character hierarchy
+        # if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):
+        #     misc.create_rig_hier(char_name=self.characterName)
 
-        self.control = cmds.circle(n= self.name + "Control", nr=[0,1,0])[0]
-        cmds.parent(self.control, self.controlParent)
-        slideUD = slideSimple.SlideSimple(self.name + "LipSlide",
+        self.control_node = cmds.circle(n=self.name + "Control", nr=[0, 1, 0])[0]
+        cmds.parent(self.control_node, self.control_parent)
+        self.slide_ud = slideSimple.SlideSimple(self.name + "_SlideDef",
                                           geoToDeform=self.deformMesh,
                                           slidePatch=self.slidePatch,
                                           slidePatchBase=self.slidePatchBase,
@@ -178,15 +233,15 @@ class Lip(object):
                                             # orderSplit=False,
                                             # orderExclusive=False,
                                           )
-        slideUD.create()
+        self.slide_ud.create()
 
 
-        outputAttrs = [slideUD.deformer + ".weightArrays[0].vWeights"]
-        outputAttrs_LR = [slideUD.deformer + ".weightArrays[0].uWeights"]
+        outputAttrs = [self.slide_ud.deformer + ".weightArrays[0].vWeights"]
+        outputAttrs_LR = [self.slide_ud.deformer + ".weightArrays[0].uWeights"]
         # super crappy implementation, this should be made more elegant ASAP
         if self.multiSlideForBaseCurve:
-            outputAttrs = [slideUD.deformer + ".weightArrays[0].vWeights", slideUD.deformer + ".weightArrays[1].vWeights"]
-            outputAttrs_LR = [slideUD.deformer + ".weightArrays[0].uWeights", slideUD.deformer + ".weightArrays[1].uWeights"]
+            outputAttrs = [self.slide_ud.deformer + ".weightArrays[0].vWeights", self.slide_ud.deformer + ".weightArrays[1].vWeights"]
+            outputAttrs_LR = [self.slide_ud.deformer + ".weightArrays[0].uWeights", self.slide_ud.deformer + ".weightArrays[1].uWeights"]
         # Loop Vars each divided into 3
         tierNames = ["Primary", "Secondary", "Tertiary"]
         tierDefaultVisibility = [True, True, True]
@@ -245,9 +300,9 @@ class Lip(object):
             lastIntermediateVal=.8
             lastIntermediateAngle=30
 
-            curveWeights = weightStack.AnimCurveWeight(name=self.name + "CurveWeights",
+            self.slide_curve_weights = weightStack.AnimCurveWeight(name=self.name + "Slide_CurveWeights",
                                                        baseGeo=self.base,
-                                                       ctrlNode=self.control,
+                                                       ctrlNode=self.control_node,
                                                        projectionGeo=self.projectionMesh,
                                                        weightCurveNames=[],
                                                        addNewElem=isAddingNewElems[idx],
@@ -265,12 +320,12 @@ class Lip(object):
 
 
                                                        )
-            curveWeights.create()
+            self.slide_curve_weights.create()
 
-            stack = weightStack.WeightStack(name=self.name + "WeightStack",
+            self.slide_weight_stack = weightStack.WeightStack(name=self.name + "Slide_WeightStack",
                                             geoToWeight=self.base,
-                                            ctrlNode=self.control,
-                                            inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
+                                            ctrlNode=self.control_node,
+                                            inputWeightAttrs=self.slide_curve_weights.newKDoubleArrayOutputPlugs,
                                             addNewElem=isAddingNewElems[idx],
                                             outputAttrs = outputAttrs,
                                             outputAttrs_LR = outputAttrs_LR,
@@ -281,7 +336,7 @@ class Lip(object):
                                             controlAutoOrientMesh=self.controlAutoOrientMesh,
                                             controlRivetAimMesh=self.slidePatch,
                                             controlSpeedDefaults = self.slideControlSpeedDefaults,
-                                            controlParent = self.controlParent,
+                                            controlParent = self.control_parent,
                                             connectFalloff = connectFalloffs[idx],
                                             isOutputKDoubleArray=True,
                                             falloffCurveWeightNode=falloffCurveWeightNodes[idx],  # If a weight node already exists, use it
@@ -294,26 +349,14 @@ class Lip(object):
                                             controlLockAttrs=["ry", "rz", "sx", "sz"],
                                             component_name=self.component_name,
                                             )
-            stack.create()
+            self.slide_weight_stack.create()
             
-            # print "THIS IS THE COUNT", " Stack CONTROLS", len(stack.controls), " WEIGHT CURVES", len(curveWeights.weightCurves)
-            # print "THIS IS THE COUNT", " weightCurvesFalloff", len(curveWeights.weightCurvesFalloff)
-            # stack.controls
-            # curveWeights.weightCurves
-            # curveWeights.weightCurvesFalloff
-            weightStack.connect_weight_stack_anim_curve(stack, curveWeights)
-            # Add controls to the container and connect to visibility
-
-            # for ctrl in stack.controls:
-            #     cmds.container(container, edit=True, addNode=[ctrl])
-            #     shape = misc.getShape(ctrl)
-            #     cmds.connectAttr(slideContainerAttrNames[idx], shape + ".visibility", f=True)
-
+            weightStack.connect_weight_stack_anim_curve(self.slide_weight_stack, self.slide_curve_weights)
 
             ################################## MATRIX DEFORMER #####################################################################
-            curveWeights = weightStack.AnimCurveWeight(name=self.name + "MatDef",
+            curveWeights = weightStack.AnimCurveWeight(name=self.name + "MatDef_AnimCurveWeight",
                                                        baseGeo=self.base,
-                                                       ctrlNode=self.control,
+                                                       ctrlNode=self.control_node,
                                                        projectionGeo=self.projectionMesh,
                                                        weightCurveNames=[],
                                                        addNewElem=isAddingNewElems[idx],
@@ -338,69 +381,68 @@ class Lip(object):
 
 
             # Create a single matrix deformer (rotation order issues)
-            self.mat_def_translate = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefTranslate",
-                                    geoToDeform=self.deformMesh,
-                                    ctrlName=self.ctrlName + matDefNames[idx],
-                                    centerToParent=True,
-                                    addAtIndex=tierAddAtIndex[idx],
-                                    numToAdd=tierCounts[idx],
-                                    # offset=[0,0,1],
-                                    reverseDeformerOrder = True,
-                                    locatorName=self.name + tierNames[idx] + "Trans", # Primary, Secondary, Or Tertiatry
-                                    # rotationTranforms=stack.controls,
-                                    curveWeightsNode=curveWeights.node,
-                                    geoToConstrainMesh=self.deformMesh,
-                                    curveWeightsConnectionIdx=tierAddAtIndex[idx],
-                                    translations = stack.positionsFromWeights,
-                                    rotations = stack.rotationsFromWeights,
-                                    controlParent = stack.controls,
-                                    rigParent = self.rigParent,
-                                    offset = matDefCtrlShapeOffsets[idx],
-                                    size = matDefCtrlSizes[idx],
-                                    # locatorName = self.name + "MatDefTranslateLocator",
-                                    # locations=[position],
-                                    hide = True,
-                                    connectTranslate = True,
-                                    connectRotate = False,
-                                    connectScale = False,
-                                    controlShapeDict=self.matDefIconShapeDicts[idx],
-                                    component_name=self.component_name,
-                                    )
+            self.mat_def_translate = matrixDeformer.MatrixDeformer(name=self.name + "Translate_MatrixDef",
+                                                                   geoToDeform=self.deformMesh,
+                                                                   ctrlName=self.ctrlName + matDefNames[idx],
+                                                                   centerToParent=True,
+                                                                   addAtIndex=tierAddAtIndex[idx],
+                                                                   numToAdd=tierCounts[idx],
+                                                                   # offset=[0,0,1],
+                                                                   reverseDeformerOrder = True,
+                                                                   locatorName=self.name + tierNames[idx] + "Trans",  # Primary, Secondary, Or Tertiatry
+                                                                   curveWeightsNode=curveWeights.node,
+                                                                   geoToConstrainMesh=self.deformMesh,
+                                                                   curveWeightsConnectionIdx=tierAddAtIndex[idx],
+                                                                   translations = self.slide_weight_stack.positionsFromWeights,
+                                                                   rotations = self.slide_weight_stack.rotationsFromWeights,
+                                                                   controlParent = self.slide_weight_stack.controls,
+                                                                   rigParent = self.rig,
+                                                                   offset = matDefCtrlShapeOffsets[idx],
+                                                                   size = matDefCtrlSizes[idx],
+                                                                   # locatorName = self.name + "MatDefTranslateLocator",
+                                                                   # locations=[position],
+                                                                   hide = True,
+                                                                   connectTranslate = True,
+                                                                   connectRotate = False,
+                                                                   connectScale = False,
+                                                                   controlShapeDict=self.matDefIconShapeDicts[idx],
+                                                                   component_name=self.component_name,
+                                                                   )
             self.mat_def_translate.create()
             
             
                 
                 
-            self.mat_def_rotate = matrixDeformer.MatrixDeformer(name=self.name + "_MatDefRotate",
-                                    geoToDeform=self.deformMesh,
-                                    ctrlName=self.ctrlName + matDefNames[idx],
-                                    centerToParent=True,
-                                    addAtIndex=tierAddAtIndex[idx],
-                                    numToAdd=tierCounts[idx],
-                                    # offset=[0,0,1],
-                                    reverseDeformerOrder = True,
-                                    locatorName=self.name + tierNames[idx] + "ROT", # Primary, Secondary, Or Tertiatry
-                                    # rotationTranforms=stack.controls,
-                                    curveWeightsNode=curveWeights.node,
-                                    geoToConstrainMesh=self.deformMesh,
-                                    curveWeightsConnectionIdx=tierAddAtIndex[idx],
-                                    translations = stack.positionsFromWeights,
-                                    rotations = stack.rotationsFromWeights,
-                                    controlParent = stack.controls,
-                                    rigParent = self.rigParent,
-                                    offset = matDefCtrlShapeOffsets[idx],
-                                    size = matDefCtrlSizes[idx],
-                                    # locatorName = self.name + "MatDefRotateLocator",
-                                    # locations=[position],
-                                    hide = True,
-                                    connectTranslate = False,
-                                    connectRotate = True,
-                                    connectScale = True,
-                                    controlShapeDict=self.matDefIconShapeDicts[idx],
-                                    component_name=self.component_name,
+            self.mat_def_rotate = matrixDeformer.MatrixDeformer(name=self.name + "Rotate_MatrixDef",
+                                                                geoToDeform=self.deformMesh,
+                                                                ctrlName=self.ctrlName + matDefNames[idx],
+                                                                centerToParent=True,
+                                                                addAtIndex=tierAddAtIndex[idx],
+                                                                numToAdd=tierCounts[idx],
+                                                                # offset=[0,0,1],
+                                                                reverseDeformerOrder = True,
+                                                                locatorName=self.name + tierNames[idx] + "ROT",  # Primary, Secondary, Or Tertiatry
+                                                                # rotationTranforms=self.slide_weight_stack.controls,
+                                                                curveWeightsNode=curveWeights.node,
+                                                                geoToConstrainMesh=self.deformMesh,
+                                                                curveWeightsConnectionIdx=tierAddAtIndex[idx],
+                                                                translations = self.slide_weight_stack.positionsFromWeights,
+                                                                rotations = self.slide_weight_stack.rotationsFromWeights,
+                                                                controlParent = self.slide_weight_stack.controls,
+                                                                rigParent = self.rig,
+                                                                offset = matDefCtrlShapeOffsets[idx],
+                                                                size = matDefCtrlSizes[idx],
+                                                                # locatorName = self.name + "MatDefRotateLocator",
+                                                                # locations=[position],
+                                                                hide = True,
+                                                                connectTranslate = False,
+                                                                connectRotate = True,
+                                                                connectScale = True,
+                                                                controlShapeDict=self.matDefIconShapeDicts[idx],
+                                                                component_name=self.component_name,
 
-                                    
-                                    )
+
+                                                                )
             self.mat_def_rotate.create()
             
             weightStack.connect_weight_stack_anim_curve(self.mat_def_rotate, curveWeights)
@@ -414,9 +456,9 @@ class Lip(object):
             ################################## LIP THICK DEFORMER #####################################################################
             vectorDeformer = None
             if self.doLipThick:
-                curveWeights = weightStack.AnimCurveWeight(name=self.name + "ThickDef",
+                curveWeights = weightStack.AnimCurveWeight(name=self.name + "Thick_AnimCurveWeight",
                                                            baseGeo=self.base,
-                                                           ctrlNode=self.control,
+                                                           ctrlNode=self.control_node,
                                                            projectionGeo=self.projectionMesh,
                                                            weightCurveNames=[],
                                                            addNewElem=isAddingNewElems[idx],
@@ -440,7 +482,7 @@ class Lip(object):
                 curveWeights.create()
 
                 syAttrs = []
-                for ctrl in stack.controls:
+                for ctrl in self.slide_weight_stack.controls:
                     # Make plus minus average to 0 out scales
                     syAttr = ctrl + ".sy"
                     PMA = cmds.createNode("plusMinusAverage", n=ctrl + "ThickDefSy_PMA")
@@ -450,9 +492,9 @@ class Lip(object):
                 thickShape = manipulator_elements.up_arrow
                 if not self.upperLip:
                     thickShape = manipulator_elements.down_arrow
-                stack = weightStack.WeightStack(name=self.name + "WeightStackThick",
+                stack = weightStack.WeightStack(name=self.name + "Thick_WeightStack",
                                                 geoToWeight=self.deformMesh,
-                                                ctrlNode=self.control,
+                                                ctrlNode=self.control_node,
                                                 inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                                 addNewElem=isAddingNewElems[idx],
                                                 UDLR = False,
@@ -461,7 +503,7 @@ class Lip(object):
                                                 controlRivetMesh = self.controlRivetMesh,
                                                 controlAutoOrientMesh=self.controlAutoOrientMesh,
                                                 controlRivetAimMesh=self.slidePatch,
-                                                controlParent = self.controlParent,
+                                                controlParent = self.control_parent,
                                                 # controlShape=thickShape,
                                                 connectFalloff = connectFalloffs[idx],
                                                 isOutputKDoubleArray=True,
@@ -482,16 +524,20 @@ class Lip(object):
                                                 )
                 stack.create()
 
-                vectorDeformer = vectorDeformerSimple.VectorDeformerSimple(name = self.name + "THICKTEST", geoToDeform=self.deformMesh, weightStackNode=stack.node, toPoint = self.thickToPoint)
+                vectorDeformer = vectorDeformerSimple.VectorDeformerSimple(name = self.name + "_ThickDef",
+                                                                           geoToDeform=self.deformMesh,
+                                                                           weightStackNode=stack.node,
+                                                                           toPoint = self.thickToPoint,
+                                                                           parent = self.geo)
                 vectorDeformer.create() 
 
                 weightStack.connect_weight_stack_anim_curve(stack, curveWeights)
 
             ################################## LIP ROLL DEFORMER #####################################################################    
             if self.doLipRoll:
-                curveWeights = weightStack.AnimCurveWeight(name=self.name + "CurveWeightsROLL",
+                curveWeights = weightStack.AnimCurveWeight(name=self.name + "Roll_AnimCurveWeights",
                                                            baseGeo=self.base,
-                                                           ctrlNode=self.control,
+                                                           ctrlNode=self.control_node,
                                                            projectionGeo=self.projectionMesh,
                                                            weightCurveNames=[],
                                                            addNewElem=isAddingNewElems[idx],
@@ -521,9 +567,9 @@ class Lip(object):
                 if not self.upperLip:
                     thickShape = manipulator_elements.down_arrow
 
-                stack = weightStack.WeightStack(name=self.name + "WeightStackRoll",
+                stack = weightStack.WeightStack(name=self.name + "Roll_WeightStack",
                                                 geoToWeight=self.deformMesh,
-                                                ctrlNode=self.control,
+                                                ctrlNode=self.control_node,
                                                 inputWeightAttrs=curveWeights.newKDoubleArrayOutputPlugs,
                                                 addNewElem=isAddingNewElems[idx],
                                                 UDLR = False,
@@ -535,7 +581,7 @@ class Lip(object):
                                                 controlAutoOrientMesh=self.controlAutoOrientMesh,
                                                 controlRivetAimMesh=self.slidePatch,
                                                 #controlSpeedDefaults = self.slideControlSpeedDefaults,
-                                                controlParent = self.controlParent,
+                                                controlParent = self.control_parent,
                                                 controlShape=thickShape,
                                                 connectFalloff = connectFalloffs[idx],
                                                 isOutputKDoubleArray=True,
@@ -553,12 +599,10 @@ class Lip(object):
                                                 component_name=self.component_name,
                                                 )
                 stack.create()
-                # rollDeformer = vectorDeformerSimple.VectorDeformerSimple(self.name = self.name + "THICKTEST", geoToDeform=self.deformMesh, weightStackNode=stack.node, toPoint = self.thickToPoint)
-                # rollDeformer.create()
                 weightStack.connect_weight_stack_anim_curve(stack, curveWeights)
 
                 curveRoll = curveRollSimple.CurveRollSimple(
-                                                            name=self.name + "ROLLTEST",
+                                                            name=self.name + "_RollDef",
                                                             deformerType="LHCurveRollSimple",
                                                             membershipWeightsAttr = "",
                                                             rollWeightsAttr = "",
@@ -579,21 +623,21 @@ class Lip(object):
             vecDef = vectorDeformer.deformer
             if type(self.deformMesh) == list:
                 for mesh in self.deformMesh:
-                    cmds.reorderDeformers(slideUD.deformer, vectorDeformer.deformer, misc.getShape(mesh))
+                    cmds.reorderDeformers(self.slide_ud.deformer, vectorDeformer.deformer, misc.getShape(mesh))
             else:
-                cmds.reorderDeformers(slideUD.deformer, vectorDeformer.deformer, misc.getShape(self.deformMesh))
+                cmds.reorderDeformers(self.slide_ud.deformer, vectorDeformer.deformer, misc.getShape(self.deformMesh))
 
-        self.slide_deformer = slideUD.deformer
+        self.slide_deformer = self.slide_ud.deformer
         self.vector_deformer = vecDef
 
 
         if self.order_before_deformer:
-            cmds.reorderDeformers( slideUD.deformer,self.order_before_deformer, misc.getShape(self.deformMesh))
+            cmds.reorderDeformers( self.slide_ud.deformer,self.order_before_deformer, misc.getShape(self.deformMesh))
             cmds.reorderDeformers( self.mat_def_translate.deformer, self.order_before_deformer, misc.getShape(self.deformMesh))
             cmds.reorderDeformers( self.mat_def_rotate.deformer,self.order_before_deformer, misc.getShape(self.deformMesh))
 
 
-        return slideUD.deformer, vecDef
+        return self.slide_ud.deformer, vecDef
 
     def post_create(self):
         cmds.refresh()
