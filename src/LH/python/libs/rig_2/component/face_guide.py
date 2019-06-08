@@ -39,11 +39,12 @@ class Base(component_base.Component):
                  slide_patch_y_overshoot=0,
                  hide_reference_geo=True,
                  debug=False,
+                 is_guide_class=True,
                  **kw
                  ):
         super(Base, self).__init__(
                                    side=side,
-                                   component_name=component_name, **kw)
+                                   component_name=component_name, is_guide_class=is_guide_class, **kw)
         # Creating a clean dictionary to avoid inheriting arguments from base.Component
         self.ordered_args = OrderedDict()
         # Getting args as the current locals at this point in parsing of the file
@@ -79,7 +80,13 @@ class Base(component_base.Component):
         self.l_lattice = None
         self.r_lattice = None
         self.guide_geo = []
-        
+        self.slide_nurbs = ""
+        self.l_slide_nurbs = ""
+        self.r_slide_nurbs = ""
+        self.rivet_orient_patch = ""
+        self.l_rivet_orient_patch = ""
+        self.r_rivet_orient_patch = ""
+
     def create_nurbs(self):
         return
     
@@ -119,6 +126,7 @@ class Base(component_base.Component):
                 cmds.duplicate(geo, n=geo_name)
                 cmds.setAttr(geo_name + ".v", 0)
             tag_utils.tag_base_geo(geo_name)
+            tag_utils.tag_guide_geo(geo_name)
             return_list.append(geo_name)
         self.component_membership_nodes += return_list
         return return_list
@@ -131,6 +139,31 @@ class Base(component_base.Component):
         tag_utils.tag_base_geo(node_name)
         self.component_membership_nodes += [node_name]
         return node_name
+    
+    def create_rivet_normal_patch(self, node, side=""):
+        node_name = side + self.component_name + "_RivetOrientPatch"
+        if not cmds.objExists(node_name):
+            cmds.duplicate(node, n=node_name)
+        tag_utils.tag_guide_geo(node_name)
+        tag_utils.tag_rivet_orient_patch(node_name)
+        self.component_membership_nodes += [node_name]
+        if not side:
+            self.lattice_geo += [node_name]
+        if side=="L_":
+            self.l_lattice_geo += [node_name]
+        if side=="R_":
+            self.r_lattice_geo += [node_name]
+
+    def create_all_rivet_orient_patches(self):
+        if self.slide_nurbs:
+            self.rivet_orient_patch = self.create_rivet_normal_patch(self.slide_nurbs)
+            
+        if self.l_slide_nurbs:
+            self.l_rivet_orient_patch = self.create_rivet_normal_patch(self.l_slide_nurbs, side="L_")
+            
+        if self.r_slide_nurbs:
+            self.r_rivet_orient_patch = self.create_rivet_normal_patch(self.r_slide_nurbs, side="R_")
+
 
     def create_lattice(self):
         self.create_single_lattice()
@@ -227,12 +260,14 @@ class Base(component_base.Component):
         for node in self.guide_geo:
             tag_utils.tag_guide_geo(node)
 
+
     def create(self):
         super(Base, self).create()
         self.create_geo()
         self.create_projection_meshes()
         self.create_nurbs()
         self.create_base_geo()
+        self.create_all_rivet_orient_patches()
         self.create_lattice()
         self.create_lattice_controls()
         self.create_guide_geo_tag()
@@ -419,8 +454,8 @@ class Lid_Guide(Base):
         class_name = self.get_relative_path()
         self.frame = inspect.currentframe()
         self.get_args()
-        self.l_slide_mesh = ""
-        self.r_slide_mesh = ""
+        self.l_slide_nurbs = ""
+        self.r_slide_nurbs = ""
 
 
     def create_geo(self):
@@ -514,15 +549,15 @@ class Lid_Guide(Base):
             if side == "L":
                 self.l_lattice_geo += [slide_nurbs]
                 self.l_geo_to_be_base += [slide_nurbs]
-                self.l_slide_mesh = slide_nurbs
+                self.l_slide_nurbs = slide_nurbs
 
             else:
                 self.r_lattice_geo += [slide_nurbs]
                 self.r_geo_to_be_base += [slide_nurbs]
-                self.r_slide_mesh = slide_nurbs
+                self.r_slide_nurbs = slide_nurbs
                 
-        self.component_membership_nodes += [self.l_slide_mesh, self.r_slide_mesh]
-        self.guide_geo += [self.l_slide_mesh, self.r_slide_mesh]
+        self.component_membership_nodes += [self.l_slide_nurbs, self.r_slide_nurbs]
+        self.guide_geo += [self.l_slide_nurbs, self.r_slide_nurbs]
 
 class Brow_Guide(Base):
     def __init__(self,
@@ -647,3 +682,97 @@ class Brow_Guide(Base):
         self.lattice_geo += [self.slide_nurbs]
         
         self.guide_geo += [self.slide_nurbs]
+
+# def create_nurbs(self):
+#     # return
+#     x, y, z, center = component_utils.get_projection_dimensions([self.l_mesh_to_project, self.r_mesh_to_project])
+#     slide_name= "C_{0}_SLDE".format(self.component_name)
+#     x += self.slide_patch_x_overshoot
+#     y += self.slide_patch_y_overshoot
+#     if cmds.objExists(slide_name):
+#         self.slide_nurbs = slide_name
+#     else:
+#         self.slide_nurbs = cmds.nurbsPlane(name=slide_name,
+#                                         ax=[0,0,1],
+#                                         width = x,
+#                                         lengthRatio=y/x,
+#                                         patchesU=self.slide_x_subdivisions,
+#                                         patchesV=self.slide_y_subdivisions)[0]
+#         tag_utils.tag_slide_geo(self.slide_nurbs)
+#         tag_utils.create_component_tag(self.slide_nurbs, component_name=self.component_name)
+#         cmds.parent(self.slide_nurbs, self.geo)
+#         cmds.move(center[0], center[1], center[2], self.slide_nurbs)
+        
+#     cmds.DeleteHistory(self.slide_nurbs)
+#     cmds.makeIdentity(self.slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
+
+#     self.geo_to_be_base += [self.slide_nurbs]
+#     self.lattice_geo += [self.slide_nurbs]
+    
+#     self.guide_geo += [self.slide_nurbs]
+    
+# def create_nurbs(self):
+#     self.slide_fit_to_mesh = self.mouth_jaw
+#     x, y, z, center = component_utils.get_projection_dimensions(self.slide_fit_to_mesh)
+#     slide_name= "C_{0}_SLDE".format(self.component_name)
+#     x += self.slide_patch_x_overshoot
+#     y += self.slide_patch_y_overshoot
+#     if cmds.objExists(slide_name):
+#         self.slide_nurbs = slide_name
+#     else:
+#         self.slide_nurbs = cmds.nurbsPlane(name=slide_name,
+#                                         ax=[0,0,1],
+#                                         width = x,
+#                                         lengthRatio=y/x,
+#                                         patchesU=self.slide_x_subdivisions,
+#                                         patchesV=self.slide_y_subdivisions)[0]
+#         tag_utils.tag_slide_geo(self.slide_nurbs)
+#         cmds.parent(self.slide_nurbs, self.geo)
+
+#         cmds.move(center[0], center[1], center[2], self.slide_nurbs)
+
+#     self.slide_nurbs_base = self.create_base(self.slide_nurbs)
+    
+#     self.lattice_geo += [self.slide_nurbs, self.slide_nurbs_base]
+#     self.component_membership_nodes += [self.slide_nurbs, self.slide_nurbs_base]
+#     self.guide_geo +=  [self.slide_nurbs, self.slide_nurbs_base]
+
+# def create_nurbs(self):
+#     # return
+#     side_mesh_dict = {"L": self.slide_fit_meshes, "R": self.r_slide_fit_meshes}
+#     for side in ["L", "R"]:
+#         fit_meshes = side_mesh_dict[side]
+#     # for side, fit_meshes in itertools.product(["L", "R"], [self.slide_fit_meshes, self.r_slide_fit_meshes]):
+#         x, y, z, center = component_utils.get_projection_dimensions(fit_meshes)
+#         slide_name= "{0}_{1}_SLDE".format(side, self.component_name)
+#         x += self.slide_patch_x_overshoot
+#         y += self.slide_patch_y_overshoot
+#         if cmds.objExists(slide_name):
+#             slide_nurbs = slide_name
+#         else:
+#             slide_nurbs = cmds.nurbsPlane(name=slide_name,
+#                                             ax=[0,0,1],
+#                                             width = x,
+#                                             lengthRatio=y/x,
+#                                             patchesU=self.slide_x_subdivisions,
+#                                             patchesV=self.slide_y_subdivisions)[0]
+#             tag_utils.tag_slide_geo(slide_nurbs)
+#             cmds.parent(slide_nurbs, self.geo)
+
+#             cmds.move(center[0], center[1], center[2], slide_nurbs)
+            
+#         cmds.DeleteHistory(slide_nurbs)
+#         cmds.makeIdentity(slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
+
+#         if side == "L":
+#             self.l_lattice_geo += [slide_nurbs]
+#             self.l_geo_to_be_base += [slide_nurbs]
+#             self.l_slide_nurbs = slide_nurbs
+
+#         else:
+#             self.r_lattice_geo += [slide_nurbs]
+#             self.r_geo_to_be_base += [slide_nurbs]
+#             self.r_slide_nurbs = slide_nurbs
+            
+#     self.component_membership_nodes += [self.l_slide_nurbs, self.r_slide_nurbs]
+#     self.guide_geo += [self.l_slide_nurbs, self.r_slide_nurbs]

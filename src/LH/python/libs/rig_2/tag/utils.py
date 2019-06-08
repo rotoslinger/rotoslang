@@ -152,6 +152,9 @@ def remove_tag_no_export(tagged_node):
 
 def tag_weighted_mesh(node_to_tag):
     create_tag(node_to_tag, "WEIGHTED_MESH")
+    
+def tag_guide_class(node_to_tag):
+    create_tag(node_to_tag, "GUIDE_CLASS")
 
 
 def tag_arg_node(node_to_tag):
@@ -187,6 +190,9 @@ def tag_reference_geo(node_to_tag):
     
 def tag_guide_geo(node_to_tag):
     create_tag(node_to_tag, "GUIDE_GEO")
+    
+def tag_rivet_orient_patch(node_to_tag):
+    create_tag(node_to_tag, "RIVET_ORIENT_PATCH")
 #################################################
 
 def tag_gimbal(node_to_tag):

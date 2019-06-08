@@ -66,7 +66,6 @@ def get_attr_from_arg(node, attr_name, attr_type, attr_default):
     
     
     if type(attr_default) not in attr_constants.ARG_SUPPORTED_TYPES:
-        print attr_default
         attr_default = get_relative_path(attr_default)
         dataType = "string"
         attr_type=str

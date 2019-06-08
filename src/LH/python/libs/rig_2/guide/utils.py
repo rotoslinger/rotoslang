@@ -6,6 +6,8 @@ reload(message_utils)
 
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
+from rig_2.weights import utils as weight_utils
+reload(weight_utils)
 from rig.utils import misc
 reload(misc)
 from rig.utils import exportUtils
@@ -234,4 +236,20 @@ def mirror_selected_shape_transforms():
             if not target_node or not cmds.objExists(target_node):
                 continue
             nurbscurve.mirror_shape(source_node, target_node)
+            
+def bake_all_guides():
+    guide_class_nodes = tag_utils.get_all_with_tag("GUIDE_CLASS")
+    weight_utils.cache_all_curve_weights(False)
+    weight_utils.cache_all_slide_deformers(False)
+    selection = cmds.ls(sl=True)
+    for node in guide_class_nodes:
+        cmds.select(node)
+        cmds.DeleteHistory(node)
+        try:
+            cmds.makeIdentity(node, apply=True, t=1, r=1, s=1, n=0, pn=1)
+        except:
+            pass
+    weight_utils.cache_all_curve_weights(True)
+    weight_utils.cache_all_slide_deformers(True)
+    cmds.select(selection)
 

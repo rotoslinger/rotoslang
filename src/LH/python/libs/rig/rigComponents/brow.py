@@ -1,22 +1,7 @@
 from maya import cmds
 import sys
-linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
-mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
-
-#---determine operating system
-os = sys.platform
-if "linux" in os:
-    os = linux
-if "darwin" in os:
-    os = mac
-if os not in sys.path:
-    sys.path.append(os)
-# from rig.utils import weightMapUtils
-# from rig.deformers import base
 from rig_2.component.subcomponent import weightStack
-
 reload(weightStack)
-# from rig.deformers import utils as deformer_utils
 from rig.deformers import matrixDeformer
 reload(matrixDeformer)
 from rig.deformers import slideSimple
@@ -29,8 +14,6 @@ from rig.deformers import curveRollSimple
 reload(curveRollSimple)
 from rig.deformers import utils as deformer_utils
 reload(deformer_utils)
-# reload(deformer_utils)
-# reload(base)
 from rig.utils import misc
 reload(misc)
 from rig.utils import LHCurveDeformerCmds
@@ -47,9 +30,17 @@ from rig.utils import lhExport
 reload(lhExport)
 
 from rig_2.manipulator import elements as manipulator_elements
-
+    # slidePatch="C_browSlide_SURF"
+    # slidePatchBase="C_browSlideBase_SURF"
+    # controlAutoOrientMesh ="C_browSlide_SURF"
+    # leftBrowMesh = "C_brow_GEO"
+    # leftBrowBaseMesh = "C_browBase_GEO"
+    # rightBrowMesh = "C_brow_GEO"
+    # rightBrowBaseMesh = "C_browBase_GEO"
+    # L_projectionMesh="L_browProjection_MESH"
+    # R_projectionMesh="R_browProjection_MESH"
+        
 class Brow(object):
-    @initialize.initializer
     def __init__(self,
                  tierCounts=[1,3,5],
                  side="L",

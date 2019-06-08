@@ -56,7 +56,7 @@ class Mouth(base.Component):
                 slidePatch="C_mouthGuide_SLDE",
                 slidePatchBase="C_mouthGuide_SLDEBASE",
                 projectionMesh="C_mouthJawPkg_PRJ",
-
+                rivet_orient_patch = "mouthGuide_RivetOrientPatch",
                  ###########################################################################################
                  # if you would like to auto place controls base on weights set these values to empty lists []
                  matDefTranslations = None,
@@ -149,6 +149,7 @@ class Mouth(base.Component):
         self.baseGeoToDeform=baseGeoToDeform
         self.slidePatch=slidePatch
         self.slidePatchBase=slidePatchBase
+        self.rivet_orient_patch = rivet_orient_patch
         self.projectionMesh=projectionMesh
         self.matDefTranslations = matDefTranslations
         self.matDefRotations = matDefRotations
@@ -235,7 +236,8 @@ class Mouth(base.Component):
 
         slideCtrlPosOffsets=[0,0,0]
         slideCtrlShapeOffsets=[0,0,7]
-        controlAutoOrientMesh = self.slidePatch
+        if not self.rivet_orient_patch:
+            self.rivet_orient_patch = self.slidePatch
         slideIconShapeDict = manipulator_elements.circle
 
         stack = weightStack.WeightStack(name=self.nameMouth + "WeightStack",
@@ -250,8 +252,9 @@ class Mouth(base.Component):
                                         controlPositionWeightsThreshold=self.ctrlAutoPositionThreshold,
                                         controlPositionOffset=slideCtrlPosOffsets,
                                         controlRivetMesh = self.control_rivet_mesh,
-                                        controlAutoOrientMesh=controlAutoOrientMesh,
-                                        controlRivetAimMesh=controlAutoOrientMesh,
+                                        controlAutoOrientMesh=self.rivet_orient_patch,
+                                        
+                                        controlRivetAimMesh=self.rivet_orient_patch,
                                         controlSpeedDefaults = self.slideSpeedDefaults,
                                         controlParent = self.control_parent,
                                         connectFalloff = True,
@@ -281,7 +284,7 @@ class Mouth(base.Component):
                                                               autoCreateAnimCurves = False,
                                                               inputWeightCurvesDict=self.matDefWeightCurves,
                                                               inputWeightCurvesFalloffDict=self.matDefWeightCurvesFalloff,
-                                                              controlAutoOrientMesh = self.slidePatch,
+                                                              controlAutoOrientMesh = self.rivet_orient_patch,
                                                               component_name=self.component_name
 
                                                               )
@@ -353,7 +356,7 @@ class Mouth(base.Component):
                                                                connectRotate = False,
                                                                connectScale = False,
                                                                controlShapeDict=manipulator_elements.primary_plus,
-                                                               controlAutoOrientMesh = self.slidePatch,
+                                                               controlAutoOrientMesh = self.rivet_orient_patch,
                                                                controlType=1,
                                                                # customControlShapes = self.matDefCustomControlShapes,
                                                                component_name=self.component_name
@@ -387,7 +390,7 @@ class Mouth(base.Component):
                                                             connectRotate = True,
                                                             connectScale = True,
                                                             controlShapeDict=manipulator_elements.primary_plus,
-                                                            controlAutoOrientMesh = self.slidePatch,
+                                                            controlAutoOrientMesh = self.rivet_orient_patch,
                                                             controlType=1,
                                                             component_name=self.component_name
                                                             )

@@ -5,10 +5,14 @@
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/brow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/brow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lid.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJaw.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJaw.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lid.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/mouth.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/mouth.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -163,7 +167,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="y" value="59" />
     <option name="width" value="1750" />
     <option name="height" value="981" />
@@ -346,7 +350,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="59" width="1750" height="981" extended-state="1" />
+    <frame x="0" y="59" width="1750" height="981" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.30490655" />

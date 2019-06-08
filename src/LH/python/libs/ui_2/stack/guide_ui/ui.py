@@ -188,6 +188,30 @@ class Guide_UI(button_grid_base.Base):
         #                                                             color=elements.red,
         #                                                             button_func=remove_no_export_button_func_with_args
         #                                                             )
+        ############ DELETE ALL WEIGHT CURVES #####################################
+        self.bake_guides, self.bake_guides_button = ui_utils.label_button(label_text="WARNING: Bakes all guides.\n" +
+                                                                          "Only Use as finalization, BE CAREFUL EXPORTING AFTER THIS STEP.\n" +
+                                                                          "Guides will no longer be live.",
+                                                                    button_text="Bake All Guides",
+                                                                    color=elements.red,
+                                                                    button_func=ui_core.bake_all_guides,
+                                                                    bg_color=elements.med_red
+                                                                    )
+
+        self.bake_guides_widgets = ui_utils.create_collapsable_dock("Finalize",
+                                                                [
+                                                                ui_utils.create_heading(text="Finalize", color=elements.red),
+                                                                self.bake_guides, 
+                                                                self.bake_guides_button,
+                                                                ui_utils.separator(),
+                                                                self.space
+                                                                ],
+                                                                elements.red,
+                                                                elements.dark_red
+                                                                )
+        self.import_export_widgets.append(self.bake_guides_widgets)
+
+
 
         self.create_misc_utils()
 

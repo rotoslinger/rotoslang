@@ -1,4 +1,5 @@
 from maya import cmds, OpenMaya
+from rig_2 import decorator
 
 from rig_2.filepath import utils as filepath_utils
 reload(filepath_utils)
@@ -10,20 +11,20 @@ from rig_2.component import face_guide
 reload(face_guide)
 from rig_2.component import lid
 reload(lid)
-from rig.rigComponents import browTest
-reload(browTest)
 
 from rig.rigComponents import mouthJaw
 reload(mouthJaw)
 
-from rig_2.component import lip, mouth
+from rig_2.component import lip, mouth, brow
 reload(mouth)
 reload(lip)
+reload(brow)
 
+DEBUG = False
 
-
+@decorator.suppress_warnings
 def build(asset_name="oldMan", reload_plugins=True, asset_filepath="C:/Users/harri/Desktop/dev/rotoslang/src/scenes/assets/oldMan/oldMan.ma"):
-    
+
     guide_file = filepath_utils.get_file_by_asset_name(asset_name, file="guides")
     get_file(asset_filepath, asset_name)
     
@@ -32,14 +33,11 @@ def build(asset_name="oldMan", reload_plugins=True, asset_filepath="C:/Users/har
     mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
     mouth_jaw_guides.create()
     
-    # lid_guides = face_guide.Lid_Guide()
-    # lid_guides.create()
-    # l_lid_guides_ffd = lid_guides.l_ffd_deformer
-    # r_lid_guides_ffd = lid_guides.r_ffd_deformer
+    lid_guides = face_guide.Lid_Guide(hide_on_build=True)
+    lid_guides.create()
 
-    # brow_guides = face_guide.Brow_Guide()
-    # brow_guides.create()
-    # brow_guides_ffd = brow_guides.ffd_deformer
+    brow_guides = face_guide.Brow_Guide(hide_on_build=True)
+    brow_guides.create()
     
     # Import guides for the guide components.
     # They need to be placed in the proper location before the rigs build to make thing simpler
@@ -47,10 +45,11 @@ def build(asset_name="oldMan", reload_plugins=True, asset_filepath="C:/Users/har
     export_utils.import_all(filename=guide_file, build_components=False)
 
     build_lip(mouth_jaw_guides)
-    # build_mouth(mouth_jaw_guides)
-                
-    # build_lids(lid_guides)
-    # build_brows(brow_guides)
+    build_mouth(mouth_jaw_guides) 
+    build_lids(lid_guides)
+    build_brow(brow_guides)
+
+    
     # # import the guides again, this time for all of the non guide components
     export_utils.import_all(filename=guide_file, build_components=False)
 
@@ -58,9 +57,53 @@ def build(asset_name="oldMan", reload_plugins=True, asset_filepath="C:/Users/har
     cmds.select("C_bodyBind_GEO")
     cmds.viewFit()
     
+def build_brow(brow_guides):
+    brow_class = brow.Brow(guide_class=brow_guides,
+                            leftBrowMesh = "C_brow_GEO",
+                            leftBrowBaseMesh = "C_browBase_GEO",
+                            rightBrowMesh = "C_brow_GEO",
+                            rightBrowBaseMesh = "C_browBase_GEO",
+                            slidePatch="C_browGuide_SLDE",
+                            slidePatchBase="C_browGuide_SLDEBASE",
+                            L_projectionMesh="L_brow_REF_PRJ",
+                            R_projectionMesh="R_brow_REF_PRJ",
+                            
+                            )
+    brow_class.create()
+
 def build_lids(lid_guides):
-    lid_class = lid.Lid()
-    lid_class.create()
+    l_lid_class = lid.Lid(guide_class=lid_guides,
+                          component_name="lLids",
+                          tierCounts=[1,3,5],
+                          side="L",
+                          upperLipMesh="L_upperLid",
+                          upperLipBaseMesh="L_upperLidBase",
+                          lowerLidMesh="L_lowerLid",
+                          lowerLidBaseMesh="L_lowerLidBase",
+                          slidePatch="L_lidGuide_SLDE",
+                          slidePatchBase="L_lidGuide_SLDEBASE",
+                          projectionMeshUpper="L_upperLid_REF_PRJ",
+                          projectionMeshLower="L_lowerLid_REF_PRJ",
+                          rivet_orient_patch = "L_lidGuide_RivetOrientPatch",
+                          
+                          )
+    
+    l_lid_class.create()
+    r_lid_class = lid.Lid(guide_class=lid_guides,
+                          component_name="rLids",
+                          tierCounts=[1,3,5],
+                          side="R",
+                          upperLipMesh="R_upperLid",
+                          upperLipBaseMesh="R_upperLidBase",
+                          lowerLidMesh="R_lowerLid",
+                          lowerLidBaseMesh="R_lowerLidBase",
+                          slidePatch="R_lidGuide_SLDE",
+                          slidePatchBase="R_lidGuide_SLDEBASE",
+                          projectionMeshUpper="R_upperLid_REF_PRJ",
+                          projectionMeshLower="R_lowerLid_REF_PRJ",
+                          rivet_orient_patch = "R_lidGuide_RivetOrientPatch",
+                          )
+    r_lid_class.create()
 
 
 def get_file(asset_filepath, asset_name,  reload_plugins=True):
@@ -91,24 +134,5 @@ def build_lip(mouth_jaw_guides):
 def build_mouth(mouth_jaw_guides):
     MouthJawClass = mouth.Mouth(control_rivet_mesh="C_bodyBind_GEO")
     MouthJawClass.create() 
-    # MouthJawClass = mouthJaw.MouthJaw(
-    #              nameMouth="mouth",
-    #              nameJaw="jaw",
-    #              deformMesh="jawMouth",
-    #              baseGeoToDeform="jawMouthBase",
-                 
-    #              slidePatch="C_mouthGuide_SLDE",
-    #              slidePatchBase="C_mouthGuide_SLDEBASE",
-    #              projectionMesh="C_mouthJawPkg_PRJ",
-    #              characterName = "character",
-    #              controlParent="C_control_GRP",
-    #              rigParent="C_rig_GRP",
-    #              ctrlAutoPositionThreshold=.09,
-    # )
-    # MouthJawClass.create() 
-    # cmds.select(MouthJawClass.mat_def_translate.controls)
-    # cmds.viewFit()
 
 
-def build_brow(brow_guides):
-    browTest.test(auto_load=False, old_man=True)

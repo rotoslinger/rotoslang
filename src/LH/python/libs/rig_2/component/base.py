@@ -38,6 +38,7 @@ class Component(object):
                  create_control_grp=False,
                  arg_dict=None,
                  hide_on_build=False,
+                 is_guide_class=False,
                  # This will make the component the base which means you won't need a parent class
                  # a hierarchy will be created for you (or found if it already exists)
                  ):
@@ -61,6 +62,7 @@ class Component(object):
         self.create_control_grp = create_control_grp
         self.arg_dict = arg_dict
         self.hide_on_build = hide_on_build
+        self.is_guide_class = is_guide_class
         
         self.container = container
 
@@ -164,7 +166,8 @@ class Component(object):
         tag_utils.create_component_tag(self.class_node, self.component_name, connect_to_class_node=False)
         tag_utils.tag_arg_node(self.class_node)
         self.nodes_message_attrr = attr_utils.get_attr(self.class_node, "membership_nodes", attrType="message")
-
+        if self.is_guide_class:
+            tag_utils.tag_guide_class(self.class_node)
 
     def get_arg_attrs_from_dict(self):
         for key, val in self.arg_dict.items():

@@ -144,3 +144,6 @@ def copy_shape(checkbox):
     cmds.undoInfo(state=True, openChunk=True)
     nurbscurve.copy_shape(checkbox[0].isChecked())
     cmds.undoInfo(state=True, closeChunk=True)
+
+def bake_all_guides():
+    guide_utils.bake_all_guides()

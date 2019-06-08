@@ -152,18 +152,10 @@ def removeWeightMapOnObject(mayaObject=None,
 #         type = cmds.getAttr(mayaMesh + "." + attr, typ=True)
 #         if not type == "doubleArray":
 #             continue
-#         # print cmds.setToolTo("artAttrContext")
-#         # print cmds.artAttrCtx()
-#         #print cmds.makePaintable(mayaMesh, aca=True,q=True)
 #         #cmds.artUserPaintCtx('artUserPaintCtx')
 #         # cmds.currentCtx()
-#         #print cmds.artUserPaintCtx("artAttrContext", objattrArray=True,q=True)
 #         # ctx = cmds.artAttrCtx('artAttrCtx3')
-#         # print "CONTEXT NAME ", ctx
 #         # cmds.setToolTo('artAttrCtx3')
-#         #
-#         # print cmds.artAttrCtx('artAttrCtx3', q=True, objattrArray=True)
-#         #
 #         # cmds.deleteUI(ctx)
 
 def connectWeightMapToWeightNode(sourceMap=None, destWeightNode=None, sourceFactor=None, sourceOperationEnum=None, force=False):
@@ -203,9 +195,10 @@ def connectWeightMapToWeightNode(sourceMap=None, destWeightNode=None, sourceFact
         safeConnectWeightAttrs(sourceOperationEnumCheck, destWeightNode, force, size, sourceOperationEnum, "operation")
 
 
-def safeConnectWeightAttrs(isConnected, destNode, forceConnection, size, attrToConnect, attrName="inputWeights"):
+def safeConnectWeightAttrs(isConnected, destNode, forceConnection, size, attrToConnect, attrName="inputWeights", debug=False):
     if isConnected:
-        print attrToConnect + "  has already been connected to " + destNode
+        if debug:
+            print attrToConnect + "  has already been connected to " + destNode
         if forceConnection:
             cmds.connectAttr(attrToConnect, destNode + ".Inputs[{0}].{1}".format(size, attrName))
     else:
@@ -217,7 +210,6 @@ def connectionCheck(destNode, attr):
     if not connections:
         return False
     for con in connections:
-        print con
         if str(con) == attr:
             return True
     return False
@@ -273,16 +265,11 @@ def createAndConnectFloatConvertNode(inComingAttr, weightAttrToConnectTo, name="
 #         type = cmds.getAttr(childAttrName, type=True)
 #         if type == "double":
 #             attrToConnect = destNode + "." + destAttr + "[0]." + childWeights
-#             print "DOUBLE"
 #         if type == "doubleArray":
 #             attrToConnect = destNode + "." + destAttr + "[0]." + childWeights
-#             print "doubleArray"
 #         if type == "float":
 #             attrToConnect = destNode + "." + destAttr + "[0]." + childWeights
-#             print "float"
 
-                # for i in range(size):
-    #     print babyWeights
 
     # cmds.createNode("LHKDoubleArrayToKFloatArray")
     # # To get new array item
@@ -331,7 +318,6 @@ def addCapsuleWeightsToLHCollisionDeformer(meshIdx=0, addAttr=True, updatePainta
 def addCapsuleWeightMap(name=None, deformer=None, attr=None, idx=None, mesh=None, addAttr=True):
     if not name or not deformer or not attr or not mesh:
         return
-    print "ACTUALLY CREATING ", idx
     createWeightMapOnDeformer(deformer=deformer, mesh=mesh, weightName=name, dataType="doubleArray",
                             defaultValue=1.0, addAttr=addAttr,
                             makePaintable=True)

@@ -20,3 +20,14 @@ def undo_ignore(func):
         cmds.undoInfo(stateWithoutFlush = True)
         return result
     return wrapper
+
+
+def suppress_warnings(func):
+    # Ifnores undo just for the decorated method
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        cmds.scriptEditorInfo(suppressWarnings=True)
+        result = func(*args, **kwargs)
+        cmds.scriptEditorInfo(suppressWarnings=False)
+        return result
+    return wrapper

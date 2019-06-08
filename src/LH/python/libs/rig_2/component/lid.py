@@ -85,9 +85,10 @@ reload(base)
 
 class Lid(base.Component):
     def __init__(self,
-                 component_name="L_lids",
+                 component_name="lids",
                  tierCounts=[1,3,5],
                  side="L",
+                 guide_class=None,
                  ctrlName = "lidControl",  # this will be used as a way to reuse controls between different components and deformers
                  upperLipMesh = "L_upperLid",
                  upperLipBaseMesh = "L_upperLidBase",
@@ -97,9 +98,7 @@ class Lid(base.Component):
                  slidePatchBase="L_lidGuide_SLDEBASE",
                  projectionMeshUpper="L_upperLid_REF_PRJ",
                  projectionMeshLower="L_lowerLid_REF_PRJ",
-                 characterName = "character",
-                 controlParent="C_control_GRP",
-                 rigParent="C_rig_GRP",
+                 rivet_orient_patch = "L_lidGuide_RivetOrientPatch",
                  ctrlAutoPositionThreshold=.09,
                  containerName = "L_lids",
                  slideIconShapeDict = manipulator_elements.circle,
@@ -130,6 +129,7 @@ class Lid(base.Component):
         self.component_name=component_name
         self.tierCounts=tierCounts
         self.side=side
+        self.guide_class=guide_class
         self.component_name=component_name
         self.ctrlName = ctrlName
         self.upperLipMesh = upperLipMesh
@@ -140,9 +140,7 @@ class Lid(base.Component):
         self.slidePatchBase=slidePatchBase
         self.projectionMeshUpper=projectionMeshUpper
         self.projectionMeshLower=projectionMeshLower
-        self.characterName = characterName
-        self.controlParent=controlParent
-        self.rigParent=rigParent
+        self.rivet_orient_patch=rivet_orient_patch
         self.ctrlAutoPositionThreshold=ctrlAutoPositionThreshold
         self.containerName = containerName
         self.slideIconShapeDict = slideIconShapeDict
@@ -168,30 +166,42 @@ class Lid(base.Component):
 
 
     def prepare(self):
-        # if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):
-        #     misc.create_rig_hier(char_name=self.characterName)
 
         self.control = cmds.circle(n= self.component_name + "Control", nr=[0,1,0])[0]
         cmds.parent(self.control, self.control_parent)
 
-        # Create container
-        if not cmds.objExists(self.containerName):
-            self.container = cmds.container(n=self.containerName)
-        else:
-            self.container = self.containerName
-        self.slideContainerAttrNames = []
-        self.matDefContainerAttrNames = []
-        for ctrlTypeName in ["slide", "matDef"]:
-            for posIdx, tierName in enumerate(self.tierNames):
-                attrName = ctrlTypeName + tierName + "Vis"
-                fullAttrName = self.container + "." + attrName
-                if not cmds.objExists(fullAttrName):
-                    cmds.addAttr(self.container, ln = attrName, at = "short", dv = self.tierDefaultVisibility[posIdx], min = 0, max = 1)
-                    cmds.setAttr( fullAttrName, cb = True, k = False)
-                if ctrlTypeName == "slide":
-                    self.slideContainerAttrNames.append(fullAttrName)
-                if ctrlTypeName == "matDef":
-                    self.matDefContainerAttrNames.append(fullAttrName)
+
+        # upperLipMesh = "L_upperLid",
+        # upperLipBaseMesh = "L_upperLidBase",
+        # lowerLidMesh = "L_lowerLid",
+        # lowerLidBaseMesh = "L_lowerLidbase",
+        # slidePatch="L_lidGuide_SLDE",
+        # slidePatchBase="L_lidGuide_SLDEBASE",
+        # projectionMeshUpper="L_upperLid_REF_PRJ",
+        # projectionMeshLower="L_lowerLid_REF_PRJ",
+
+        # # Create container
+        # if not cmds.objExists(self.containerName):
+        #     self.container = cmds.container(n=self.containerName)
+        # else:
+        #     self.container = self.containerName
+        # self.slideContainerAttrNames = []
+        # self.matDefContainerAttrNames = []
+        # for ctrlTypeName in ["slide", "matDef"]:
+        #     for posIdx, tierName in enumerate(self.tierNames):
+        #         attrName = ctrlTypeName + tierName + "Vis"
+        #         fullAttrName = self.container + "." + attrName
+        #         if not cmds.objExists(fullAttrName):
+        #             cmds.addAttr(self.container, ln = attrName, at = "short", dv = self.tierDefaultVisibility[posIdx], min = 0, max = 1)
+        #             cmds.setAttr( fullAttrName, cb = True, k = False)
+        #         if ctrlTypeName == "slide":
+        #             self.slideContainerAttrNames.append(fullAttrName)
+        #         if ctrlTypeName == "matDef":
+        #             self.matDefContainerAttrNames.append(fullAttrName)
+                    
+    def unpack_args_from_guide(self):
+        if not self.guide_class:
+            return
 
     def lidSlide(self):
         self.deformMeshes =  [self.upperLipMesh, self.lowerLidMesh]
@@ -205,7 +215,9 @@ class Lid(base.Component):
         self.tierStartElemIdxs = [0, self.tierCounts[0], self.tierCounts[1] + self.tierCounts[0]]
         self.tierAddAtIndex = [0, self.tierCounts[0], self.tierCounts[1] + self.tierCounts[0]]
 
-        self.controlAutoOrientMesh = self.slidePatch
+
+        if not self.rivet_orient_patch:
+            self.rivet_orient_patch = self.slidePatch
         self.slideDeformers = {}
         self.slideCurveWeights = {}
         self.slideWeightStack = {}
@@ -269,8 +281,8 @@ class Lid(base.Component):
                                                                           auto_create_name_side = self.side,
                                                                           controlPositionWeightsThreshold=self.ctrlAutoPositionThreshold,
                                                                           controlRivetMesh = self.controlRivetMeshes[posIdx],
-                                                                          controlAutoOrientMesh=self.controlAutoOrientMesh,
-                                                                          controlRivetAimMesh=self.slidePatch,
+                                                                          controlAutoOrientMesh=self.rivet_orient_patch,
+                                                                          controlRivetAimMesh=self.rivet_orient_patch,
                                                                           controlSpeedDefaults = self.slideControlSpeedDefaults,
                                                                           controlParent = self.control_parent,
                                                                           connectFalloff = self.connectFalloffs[idx],
@@ -392,17 +404,19 @@ class Lid(base.Component):
                 weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate[position], self.matDefCurveWeights[position])
                 weightStack.connect_weight_stack_anim_curve(self.matDeformersTranslate[position], self.matDefCurveWeights[position])
 
-                for ctrl in self.matDeformersTranslate[position].controls:
-                    cmds.container(self.container, edit=True, addNode=[ctrl])
-                    shape = misc.getShape(ctrl)
-                    cmds.connectAttr(self.matDefContainerAttrNames[idx], shape + ".visibility", f=True)
+                # for ctrl in self.matDeformersTranslate[position].controls:
+                #     cmds.container(self.container, edit=True, addNode=[ctrl])
+                #     shape = misc.getShape(ctrl)
+                #     cmds.connectAttr(self.matDefContainerAttrNames[idx], shape + ".visibility", f=True)
 
     def post_create(self):
         cmds.refresh()
         deformer_utils.cacheOutAllSlideDeformers()
 
     def create(self):
+        super(Lid, self).create()
         self.prepare()
+        self.unpack_args_from_guide()
         self.lidSlide()
         self.lidMatDef()
         self.post_create()
