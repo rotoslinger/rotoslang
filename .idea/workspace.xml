@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="84d539d8-cdd9-467a-ac62-46df048f5a56" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/brow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/brow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lid.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lid.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJaw.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/mouthJaw.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lid.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lid.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/mouth.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/mouth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/button_grid_base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -85,8 +75,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/face_guide.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="282">
-              <caret line="193" column="63" selection-start-line="193" selection-start-column="63" selection-end-line="193" selection-end-column="63" />
+            <state relative-caret-position="843">
+              <caret line="226" column="63" selection-start-line="226" selection-start-column="63" selection-end-line="226" selection-end-column="63" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -168,7 +158,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="59" />
+    <option name="x" value="155" />
+    <option name="y" value="733" />
     <option name="width" value="1750" />
     <option name="height" value="981" />
   </component>
@@ -568,8 +559,8 @@
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lip.py" />
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/face_guide.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="193" column="63" selection-start-line="193" selection-start-column="63" selection-end-line="193" selection-end-column="63" />
+        <state relative-caret-position="843">
+          <caret line="226" column="63" selection-start-line="226" selection-start-column="63" selection-end-line="226" selection-end-column="63" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
