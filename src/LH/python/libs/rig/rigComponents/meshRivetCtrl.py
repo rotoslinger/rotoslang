@@ -20,6 +20,9 @@ reload(nurbscurve)
 from rig_2.manipulator import elements as manipulator_elements
 reload(manipulator_elements)
 
+from rig_2.node import utils as node_utils
+reload(node_utils)
+
 class Component(base.Component):
     def __init__(self,
                 # Inherited Attrs
@@ -156,13 +159,24 @@ class Component(base.Component):
         #                                         name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=True,
         #                                         scale=True, offsetBuffer = self.buffer2, maintainOffsetT=True, 
         #                                         maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None)
+        self.up_vector_object = node_utils.get_locator(name = "{0}_{1}_UpVector".format(self.side, self.name), parent = self.cmptMasterParent)
+        cmds.setAttr(self.up_vector_object + ".v", 0)
         tag_utils.tag_rivet_mesh(self.mesh)
         if self.component_name:
             tag_utils.create_component_tag(self.mesh, component_name=self.component_name)
         self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,
-                                                name = "{0}_{1}_GCS".format(self.side, self.name), translate=True, rotate=False,
-                                                scale=False, offsetBuffer = self.buffer2, maintainOffsetT=True, 
-                                                maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=self.normalConstraintPatch )
+                                                name = "{0}_{1}_GCS".format(self.side, self.name),
+                                                translate=True,
+                                                rotate=False,
+                                                scale=False,
+                                                offsetBuffer = self.buffer2,
+                                                maintainOffsetT=True, 
+                                                maintainOffsetR=True,
+                                                maintainOffsetS=True,
+                                                normalConstraintPatch=self.normalConstraintPatch,
+                                                up_vector_object=self.up_vector_object,
+                                                up_vector=[0,1,0],
+                                                up_vec_mult=100)
 
         driverAttributes = ["txOut", "tyOut", "tzOut",
                             "rx", "ry", "rz",

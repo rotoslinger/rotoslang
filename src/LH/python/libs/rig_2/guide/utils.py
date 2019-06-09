@@ -192,6 +192,10 @@ def control_tag_no_export(add=True, checkbox_on=False):
 def control_from_selected():
     return [control for control in cmds.ls(sl=True) if cmds.objExists(control + ".CONTROL")]
 
+def tag_no_export_component_membership(component_node, tag=True):
+    return
+    
+
 def tag_all_no_export(ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
     control_tag_no_export(checkbox_on=ctrl_shape)
     guide_tag_no_export(checkbox_on=guide)
@@ -238,9 +242,10 @@ def mirror_selected_shape_transforms():
             nurbscurve.mirror_shape(source_node, target_node)
             
 def bake_all_guides():
-    guide_class_nodes = tag_utils.get_all_with_tag("GUIDE_CLASS")
+    guide_class_nodes = tag_utils.get_all_with_tag("GUIDE_CACHEABLE")
     weight_utils.cache_all_curve_weights(False)
     weight_utils.cache_all_slide_deformers(False)
+    # to preserve current selection
     selection = cmds.ls(sl=True)
     for node in guide_class_nodes:
         cmds.select(node)
@@ -251,5 +256,6 @@ def bake_all_guides():
             pass
     weight_utils.cache_all_curve_weights(True)
     weight_utils.cache_all_slide_deformers(True)
+    # Select what you had selected before you started
     cmds.select(selection)
 

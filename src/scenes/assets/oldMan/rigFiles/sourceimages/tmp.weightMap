@@ -1,0 +1,5 @@
+// Exported skin weight map file
+// 
+C_bodyRig_GEO	root	C_bodyRig_GEO_root.iff
+C_bodyRig_GEO	neck	C_bodyRig_GEO_neck.iff
+C_bodyRig_GEO	head	C_bodyRig_GEO_head.iff

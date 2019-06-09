@@ -133,6 +133,7 @@ class Mouth(base.Component):
                                                ],
                  componentDict = elements.MATDEF_COMPONENT_DICT,
                  control_rivet_mesh = None,
+
                 **kw
                  ):
         super(Mouth, self).__init__(component_name=component_name, **kw)
@@ -173,6 +174,7 @@ class Mouth(base.Component):
         self.control_rivet_mesh = control_rivet_mesh
         if not self.control_rivet_mesh:
             self.control_rivet_mesh = self.deformMesh
+        self.input_anchor_nodes.append(self.control_parent)
 
     def unpack_args_from_guide_class(self):
         return

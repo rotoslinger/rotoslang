@@ -62,6 +62,7 @@ class Camera(component_base.Subcomponent):
         return
 
     def create_inputs(self):
+        super(Camera, self).create_inputs()
         self.inputs["input_aim"] = self.camera_buffers[0]
         self.inputs["input_aim_traj"] = self.camera_buffers[1]
         self.inputs["input_aim_head"] = self.camera_buffers[2]

@@ -33,13 +33,15 @@ class base(object):
         self.skeleton = "{0}_{1}".format("Skeleton", self.suffix)
         self.rig = "{0}_{1}".format("Rig", self.suffix)
         self.control = "{0}_{1}".format("Control", self.suffix)
+        self.input = "{0}_{1}".format( "Input", self.suffix)
+        self.output = "{0}_{1}".format( "Output", self.suffix)
         self.component = "{0}_{1}".format( "Components", self.suffix)
 
     def create_nodes(self):
         """ Create and name rig transforms """
         node_utils.get_node_agnostic(name = self.root, nodeType="transform", parent=None)
         init_hierarchy(name="", suffix=self.suffix, hierarchy_class=None, parent=self.root)
-        self.groups = [self.root, self.geo, self.skeleton, self.rig, self.component]
+        self.groups = [self.root, self.geo, self.skeleton, self.rig, self.input, self.output, self.component]
 
 
     def finalize(self):
@@ -74,6 +76,8 @@ def init_hierarchy(
                    create_control_grp=False,
                    create_subcomponent_grp=False,
                    create_guide_grp=False,
+                   create_input=False,
+                   create_output=False,
                    subcomponent_group=None,
                    ):
     """
@@ -84,6 +88,8 @@ def init_hierarchy(
     rig = "{0}Rig_{1}".format( name, suffix)
     control = "{0}Control_{1}".format( name, suffix)
     component = "{0}Components_{1}".format( name, suffix)
+    input = "{0}Input_{1}".format( name, suffix)
+    output = "{0}Output_{1}".format( name, suffix)
 
     # Where to parent the new nodes.  If this is the root there will be no parent class
     class_geo = parent
@@ -91,12 +97,16 @@ def init_hierarchy(
     class_rig = parent
     class_control = parent
     class_component = parent
+    class_input = parent
+    class_output = parent
     
     if hierarchy_class:
         class_geo = hierarchy_class.geo
         class_skeleton = hierarchy_class.skeleton
         class_rig = hierarchy_class.rig
         class_control = hierarchy_class.control
+        class_input = hierarchy_class.input
+        class_output = hierarchy_class.output
         component = hierarchy_class.component
 
     if subcomponent_group:
@@ -104,16 +114,22 @@ def init_hierarchy(
         skeleton = "{0}_SKELETON".format( name)
         rig = "{0}_RIG".format(name)
         control = "{0}_CONTROL".format(name)
+        input = "{0}_INPUT".format(name)
+        output = "{0}_OUTPUT".format(name)
 
         create_geo_grp=True,
         create_skelton_grp=True,
         create_rig_grp=True,
         create_control_grp=True,
+        create_input=True,
+        create_output=True,
         
         class_geo = subcomponent_group
         class_skeleton = subcomponent_group
         class_rig = subcomponent_group
         class_control = subcomponent_group
+        class_input = subcomponent_group
+        class_output = subcomponent_group
 
     if create_geo_grp or not hierarchy_class:
         node_utils.get_node_agnostic(name = geo, nodeType="transform", parent=class_geo)
@@ -135,9 +151,19 @@ def init_hierarchy(
     else:
         control = class_control
         
+    if create_input or not hierarchy_class:
+        node_utils.get_node_agnostic(name = input, nodeType="transform", parent=class_input)
+    else:
+        input = class_input
+        
+    if create_output or not hierarchy_class:
+        node_utils.get_node_agnostic(name = output, nodeType="transform", parent=class_output)
+    else:
+        output = class_output
+        
 
     # only create the component transform if you are creating the root
     if not hierarchy_class:
         node_utils.get_node_agnostic(name = component, nodeType="transform", parent=class_component)
 
-    return geo, skeleton, rig, control, component
+    return geo, skeleton, rig, control, input, output, component

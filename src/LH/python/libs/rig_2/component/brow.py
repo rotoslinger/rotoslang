@@ -71,7 +71,6 @@ class Brow(base.Component):
 
                  tierDefaultVisibility = [True, True, True],
                  **kw
-
     ):
         super(Brow, self).__init__(component_name=component_name, **kw)
         self.ordered_args = OrderedDict()
@@ -115,11 +114,8 @@ class Brow(base.Component):
 
         self.tierDefaultVisibility =tierDefaultVisibility
         
-        
-        
-        
         self.tierNames = ["Primary", "Secondary", "Tertiary"]
-
+        self.input_anchor_nodes.append(self.control_parent)
 
     def prepare(self):
 

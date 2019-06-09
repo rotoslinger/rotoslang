@@ -193,6 +193,9 @@ def tag_guide_geo(node_to_tag):
     
 def tag_rivet_orient_patch(node_to_tag):
     create_tag(node_to_tag, "RIVET_ORIENT_PATCH")
+    
+def tag_guide_cacheable(node_to_tag):
+    create_tag(node_to_tag, "GUIDE_CACHEABLE")
 #################################################
 
 def tag_gimbal(node_to_tag):

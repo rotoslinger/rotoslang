@@ -40,11 +40,12 @@ class Base(component_base.Component):
                  hide_reference_geo=True,
                  debug=False,
                  is_guide_class=True,
+                 input_driver="",
                  **kw
                  ):
         super(Base, self).__init__(
                                    side=side,
-                                   component_name=component_name, is_guide_class=is_guide_class, **kw)
+                                   component_name=component_name, is_guide_class=is_guide_class, input_driver=input_driver, **kw)
         # Creating a clean dictionary to avoid inheriting arguments from base.Component
         self.ordered_args = OrderedDict()
         # Getting args as the current locals at this point in parsing of the file
@@ -86,6 +87,7 @@ class Base(component_base.Component):
         self.rivet_orient_patch = ""
         self.l_rivet_orient_patch = ""
         self.r_rivet_orient_patch = ""
+        self.input_anchor_nodes.append(self.input)
 
     def create_nurbs(self):
         return
@@ -144,8 +146,11 @@ class Base(component_base.Component):
         node_name = side + self.component_name + "_RivetOrientPatch"
         if not cmds.objExists(node_name):
             cmds.duplicate(node, n=node_name)
+            # This patch will be driven by the face rig, so it needs to be constrained.  Also, don't forget to bake out guides...
+            cmds.parent(node_name, self.input)
         tag_utils.tag_guide_geo(node_name)
         tag_utils.tag_rivet_orient_patch(node_name)
+        tag_utils.tag_guide_cacheable(node_name)
         self.component_membership_nodes += [node_name]
         if not side:
             self.lattice_geo += [node_name]
@@ -153,6 +158,7 @@ class Base(component_base.Component):
             self.l_lattice_geo += [node_name]
         if side=="R_":
             self.r_lattice_geo += [node_name]
+        return node_name
 
     def create_all_rivet_orient_patches(self):
         if self.slide_nurbs:

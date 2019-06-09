@@ -13,7 +13,7 @@ class Lip(base.Component):
                 #  class_name=None, # Will be set by "self.get_relative_path". This really only becomes important when you are doing a dynamic build from within maya 
                  component_name="lip",
                  lip_guide_class=None, 
-                 geo_asset_class=None, 
+                 geo_asset_class=None,
                  tierCount1=1,
                  tierCount2=3,
                  tierCount3=5,
@@ -22,6 +22,18 @@ class Lip(base.Component):
                  upper_lip_name="upLip",
                  lower_lip_name="lowLip",
                  control_rivet_mesh=None,
+                 order_before_deformer = "",
+                 slidePatch = "",
+                 slidePatchBase = "",
+                 controlAutoOrientMesh = "",
+                 projectionMeshUpper = "",
+                 projectionMeshLower = "",
+                 up_lip_volume_curve = "",
+                 low_lip_volume_curve = "",
+                 baseUpperCurve = "",
+                 baseLowerCurve= "",
+                 rollCurveNameUpper = "",
+                 rollCurveNameLower = "",
                  **kw
                  ):
         super(Lip, self).__init__(component_name=component_name, **kw)
@@ -34,52 +46,65 @@ class Lip(base.Component):
         # args
         self.lip_guide_class = lip_guide_class
         self.geo_asset_class = geo_asset_class
-
         self.tierCount1 = tierCount1
         self.tierCount2 = tierCount2
         self.tierCount3 = tierCount3
-        
         self.upper_remove_point_indicies = upper_remove_point_indicies
         self.lower_remove_point_indicies = lower_remove_point_indicies
         self.upper_lip_name = upper_lip_name
         self.lower_lip_name = lower_lip_name
-    
-    
-    
+        self.order_before_deformer =order_before_deformer
+        self.slidePatch =slidePatch
+        self.slidePatchBase = slidePatchBase
+        self.controlAutoOrientMesh = controlAutoOrientMesh
+        self.projectionMeshUpper = projectionMeshUpper
+        self.projectionMeshLower = projectionMeshLower
+        self.up_lip_volume_curve = up_lip_volume_curve
+        self.low_lip_volume_curve = low_lip_volume_curve
+        self.baseUpperCurve = baseUpperCurve
+        self.baseLowerCurve=baseLowerCurve
+        self.rollCurveNameUpper = rollCurveNameUpper
+        self.rollCurveNameLower = rollCurveNameLower
+
+        # SUPER TEMP!!!!!!!
         # constant placeholders until get multiwrap geo_asset_class class worked out
         self.deformMeshUpper="C_upperLip"
         self.baseUpper="C_upperLipBase"
         self.deformMeshLower="C_lowerLip"
         self.baseLower="C_lowerLipBase"
+        
         self.rivet_mesh_upper = control_rivet_mesh
         self.rivet_mesh_lower = control_rivet_mesh
         if not self.rivet_mesh_upper:
             self.rivet_mesh_upper = self.deformMeshUpper
         if not self.rivet_mesh_lower:
             self.rivet_mesh_lower = self.deformMeshLower
-            
+        self.input_anchor_nodes.append(self.control_parent)
+ 
     def unpack_args_from_guide_class(self):
-        # In order for the volume lip curves to deforme in the correct way, while keeping the guides live, we need to reorder the deformers
-        self.order_before_deformer = self.lip_guide_class.ffd_deformer
-        
-        self.slidePatch=self.lip_guide_class.slide_nurbs
-        self.slidePatchBase=self.lip_guide_class.slide_nurbs_base
-        
-        # WILL LIKELY WANT TO CHANGE THIS LATER!!!! ADD ORIENT MESH TO GUIDES FOR 
-        self.controlAutoOrientMesh =self.lip_guide_class.slide_nurbs
+        # If a lip guide class is given, fill automatically find the correct geometry to set up the lip rig
+        if self.lip_guide_class:
+            # In order for the volume lip curves to deforme in the correct way, while keeping the guides live, we need to reorder the deformers
+            self.order_before_deformer = self.lip_guide_class.ffd_deformer
+            
+            self.slidePatch=self.lip_guide_class.slide_nurbs
+            self.slidePatchBase=self.lip_guide_class.slide_nurbs_base
+            
+            # WILL LIKELY WANT TO CHANGE THIS LATER!!!! ADD ORIENT MESH TO GUIDES FOR 
+            self.controlAutoOrientMesh =self.lip_guide_class.rivet_orient_patch
 
-        
-        self.projectionMeshUpper=self.lip_guide_class.upper_lip_projection
-        self.projectionMeshLower=self.lip_guide_class.lower_lip_projection
+            
+            self.projectionMeshUpper=self.lip_guide_class.upper_lip_projection
+            self.projectionMeshLower=self.lip_guide_class.lower_lip_projection
 
-        self.up_lip_volume_curve=self.lip_guide_class.up_lip_volume
-        self.low_lip_volume_curve=self.lip_guide_class.low_lip_volume
+            self.up_lip_volume_curve=self.lip_guide_class.up_lip_volume
+            self.low_lip_volume_curve=self.lip_guide_class.low_lip_volume
 
-        self.baseUpperCurve=self.lip_guide_class.up_lip_volume_base
-        self.baseLowerCurve=self.lip_guide_class.low_lip_volume_base
+            self.baseUpperCurve=self.lip_guide_class.up_lip_volume_base
+            self.baseLowerCurve=self.lip_guide_class.low_lip_volume_base
 
-        self.rollCurveNameUpper = self.lip_guide_class.up_lip_roll
-        self.rollCurveNameLower =self.lip_guide_class.low_lip_roll
+            self.rollCurveNameUpper = self.lip_guide_class.up_lip_roll
+            self.rollCurveNameLower =self.lip_guide_class.low_lip_roll
         
 
     def unpack_constants(self):

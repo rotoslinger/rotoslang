@@ -39,12 +39,16 @@ class Component(object):
                  arg_dict=None,
                  hide_on_build=False,
                  is_guide_class=False,
-                 # This will make the component the base which means you won't need a parent class
-                 # a hierarchy will be created for you (or found if it already exists)
+                 input_driver="",
+                 output_driven="",
+                 control_driver="",
+                 # Should change this default, but it is good for the short term ;)
+                 input_anchor_name="face_input"
                  ):
         # Arg Snapshot
         # class_name = self.get_relative_path()
         self.ordered_args = OrderedDict()
+        # self.component_hier_inputs = OrderedDict()
         self.frame = inspect.currentframe()
         self.get_args()
         # Args
@@ -63,6 +67,10 @@ class Component(object):
         self.arg_dict = arg_dict
         self.hide_on_build = hide_on_build
         self.is_guide_class = is_guide_class
+        self.input_driver = input_driver
+        self.output_driven = output_driven
+        self.control_driver = control_driver
+        self.input_anchor_name = input_anchor_name
         
         self.container = container
 
@@ -94,7 +102,8 @@ class Component(object):
             self.get_arg_attrs_from_dict()
         self.initialize()
         self.get_container()
-
+        # These are the nodes that will be constrained to the input anchor
+        self.input_anchor_nodes =[]
 
     def get_relative_path(self):
         module = self.__class__.__module__
@@ -129,8 +138,7 @@ class Component(object):
             self.hierarchy_class.create()
             if cmds.objExists(self.geo_hier_name):
                 cmds.parent(self.geo_hier_name, self.hierarchy_class.geo)
-            
-            
+        self.input_anchor = node_utils.get_node_agnostic("transform", name=self.input_anchor_name, parent=self.hierarchy_class.component)
         hierarchy_class = self.hierarchy_class
         self.create_class_node(parent=self.hierarchy_class.component)
         self.subcomponent_group = self.class_node
@@ -139,23 +147,25 @@ class Component(object):
         # if self.group_under_subcomponent:
             
         #Create component Hierarchy within the parent class hierarchy. 
-        self.geo, self.skeleton, self.rig, self.control_parent, self.component= rig_hierarchy.init_hierarchy(
+        self.geo, self.skeleton, self.rig, self.control_parent, self.input, self.output, self.component = rig_hierarchy.init_hierarchy(
                                                                                                              name=self.component_name,
                                                                                                              suffix=self.suffix,
                                                                                                              subcomponent_group=self.subcomponent_group,
                                                                                                              hierarchy_class=hierarchy_class)
-                                                                                                    # hierarchy_class=hierarchy_class)
         
-        # If it has already been created, this will be skipped
-        # self.create_class_node(self.component)    
+        self.geo_input = self.geo
+        self.skeleton_input = self.skeleton
+        self.rig_input = self.rig
+        self.control_parent_input = self.control_parent
+        self.component_input = self.component
         
-        
-        # node_utils.get_node_agnostic("transform", name = self.class_node, parent=self.component)
-        # misc.lock_attrs(node=self.class_node, attr=["all"])
-        # tag_utils.create_component_tag(self.class_node, self.component_name)
-        # tag_utils.tag_arg_node(self.class_node)
-        
-
+        # if self.do_component_hier_inputs:
+        #     self.component_hier_inputs["geo_input"] = ""
+        #     self.component_hier_inputs["skeleton_input"] = ""
+        #     self.component_hier_inputs["rig_input"] = ""
+        #     self.component_hier_inputs["control_parent_input"] = ""
+        #     self.component_hier_inputs["component_input"] = ""
+        #     self.create_arg_attrs_agnostic(self.component_hier_inputs)
 
     def create_class_node(self, parent=None):
         node_utils.get_node_agnostic("transform", name = self.class_node, parent=parent)
@@ -180,6 +190,15 @@ class Component(object):
                 val=str(val)
             attr_type = type(val)
             self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.class_node, attr_name=key, attr_type=attr_type, attr_default=val))
+
+    def create_arg_attrs_agnostic(self, agnostic_arg_dict):
+        self.arg_attrs = []
+        for key, val in agnostic_arg_dict.items():
+            if type(val) == unicode:
+                val=str(val)
+            attr_type = type(val)
+            self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.class_node, attr_name=key, attr_type=attr_type, attr_default=val))
+
 
     def get_container(self):
         if not self.container:
@@ -230,8 +249,24 @@ class Component(object):
             cmds.connectAttr(input_node + ".message", full_attr_name)
 
     def connect_nodes(self):
-        return
-
+        # THIS IS A VERY TEMP TEST, the final input output connection should be much more customizable.
+        # I reccommend doing all constraints and connections very specifically, and avoid generalized connections like this
+        # Also would like to avoid massive super complicated dictionaries of connections and connection types excetera
+        # but I recognize that might be needed for simplifying certain things... I would just like to avoid complications early......
+        if self.input_driver:
+            cmds.parentConstraint(self.input_driver, self.input, mo=True)
+            cmds.scaleConstraint(self.input_driver, self.input, mo=True)
+        if self.output_driven:
+            cmds.parentConstraint(self.output, self.output_driven, mo=True)
+            cmds.scaleConstraint(self.output, self.output_driven, mo=True)
+        if self.control_driver:
+            cmds.parentConstraint(self.control_driver, self.control_parent, mo=True)
+            cmds.scaleConstraint(self.control_driver, self.control_parent, mo=True)
+        for node in self.input_anchor_nodes:
+            cmds.parentConstraint(self.input_anchor, node, mo=True)
+            cmds.scaleConstraint(self.input_anchor, node, mo=True)
+            
+            
     def organize_container(self):
         return
 

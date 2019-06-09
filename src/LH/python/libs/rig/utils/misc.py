@@ -1272,7 +1272,8 @@ def getSetMaintainOffset(transform=None, offsetTransform=None, maintainOffsetT=T
         cmds.xform(transform, ws=True, s=offsetTransform["scale"])
 
 def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translate=True, rotate=True, scale=False,
-                  offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None):
+                  offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None,
+                  up_vector_object="", up_vector=[0,1,0], up_vec_mult=100):
     """
     suffix GCS
     """
@@ -1308,22 +1309,54 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     if rotate and not normalConstraintPatch:
         cmds.connectAttr(decompose + ".outputRotate", driven + ".rotate" )
     elif normalConstraintPatch:
-        cmds.normalConstraint(normalConstraintPatch, driven)
+        cmds.normalConstraint(normalConstraintPatch, driven, u=up_vector, wuo=up_vector_object, worldUpType="object")
+        reorient_normal_constraint_up_vector_object(up_vector_object, driven, up_vector, up_vec_mult=up_vec_mult)
+        # cmds.normalConstraint(normalConstraintPatch, driven)
+
     if scale:
         cmds.connectAttr(decompose + ".outputScale", driven + ".scale" )
     if offsetBuffer:
         getSetMaintainOffset(offsetBuffer, offsetTransform)
 
     message_utils.create_message_attr_setup(constraint, "offsetBuffer", offsetBuffer, "geoConstraint")
+    message_utils.create_message_attr_setup(constraint, "upVectorObject", up_vector_object, "geoConstraint")
+    message_utils.create_message_attr_setup(constraint, "drivenObject", driven, "geoConstraint")
 
     return constraint
 
+def reorient_normal_constraint_up_vector_object(up_vector_object, driven_object, up_vector=[0,1,0], up_vec_mult=100):
+    # make sure the mult is high enough to never allow flipping.... 1000 seems to be more than enough
+    # Assumes the normal isn't horizontal planar....
+    # The normal should be at least slightly elevated in one axis...
+    driven_location = cmds.xform(driven_object, q=True, ws=True, t=True)
+    driven_location_up_adjusted = [driven_location[0] + up_vector[0], driven_location[1] + up_vector[1], driven_location[2] + up_vector[2]]
+    cmds.xform(up_vector_object, ws=True, t=driven_location_up_adjusted )
+    # rotation should now be relatively straight...
+    driven_rotation = cmds.xform(driven_object, q=True, ws=True, ro=True)
+    # put the up vector in the same planar space as the driven_object
+    cmds.xform(up_vector_object, ws=True, t=driven_location, ro=driven_rotation)
+    up_vector_object_trans= cmds.xform(up_vector_object, q=True, os=True, t=True)
+    up_vector_object_trans_adjusted =  [up_vector_object_trans[0] + up_vector[0] * up_vec_mult,
+                                        up_vector_object_trans[1] + up_vector[1] * up_vec_mult,
+                                        up_vector_object_trans[2] + up_vector[2] * up_vec_mult]
+    # translate in the up vector in the plane space
+    cmds.xform(up_vector_object, os=True, t=up_vector_object_trans_adjusted)
 
-def updateGeoConstraint(offsetBuffer=False, geoConstraint=False, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True):
+
+def updateGeoConstraint(offsetBuffer=False,
+                        geoConstraint=False,
+                        maintainOffsetT=True,
+                        maintainOffsetR=True,
+                         maintainOffsetS=True,
+                         up_vector=[0,1,0],
+                         up_vec_mult=100
+                         ):
     if geoConstraint and not offsetBuffer:
         offsetBuffer = message_utils.get_node_from_message_out(geoConstraint + ".offsetBuffer")
     if offsetBuffer and not geoConstraint:
         geoConstraint = message_utils.get_node_from_message_in(offsetBuffer + ".geoConstraint")
+        
+    up_vector_object = message_utils.get_node_from_message_in(offsetBuffer + ".upVectorObject")
 
     if not offsetBuffer:
         offsetBuffer = cmds.ls(sl=True)[0]
@@ -1345,6 +1378,9 @@ def updateGeoConstraint(offsetBuffer=False, geoConstraint=False, maintainOffsetT
     for idx, attrSuffix in enumerate(["X", "Y", "Z"]):
         cmds.setAttr(geoConstraint + ".baryWeights" + attrSuffix, weights[idx])
     getSetMaintainOffset(offsetBuffer, offsetTransform)
+    if up_vector_object:
+        driven_object = message_utils.get_node_from_message_in(offsetBuffer + ".drivenObject")
+        reorient_normal_constraint_up_vector_object(up_vector_object, driven_object, up_vector=[0,1,0], up_vec_mult=up_vec_mult)
 
 def move(transform=None, translate=None, rotate=None, scale=None):
     if not transform:

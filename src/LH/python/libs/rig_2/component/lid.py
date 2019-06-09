@@ -43,45 +43,7 @@ from rig_2.component import base
 from rig.rigComponents import mouthJaw
 
 reload(base) 
-    # R_upperLipMesh = "R_upperLid"
-    # R_upperLipBaseMesh = "R_upperLidBase"
-    # R_lowerLidMesh = "R_lowerLid"
-    # R_lowerLidBaseMesh = "R_lowerLidBase"
-    # R_slidePatch="R_lidSlide"
-    # R_slidePatchBase="R_lidSlideBase"
-    # R_controlAutoOrientMesh ="R_lidSlide"
-    # R_projectionMeshUpper="R_upLidProjection"
-    # R_projectionMeshLower="R_lowLidProjection"
 
-    # L_upperLipMesh = "L_upperLid"
-    # L_upperLipBaseMesh = "L_upperLidBase"
-    # L_lowerLidMesh = "L_lowerLid"
-    # L_lowerLidBaseMesh = "L_lowerLidbase"
-    # L_slidePatch="L_lidSlide"
-    # L_slidePatchBase="L_lidSlideBase"
-    # L_controlAutoOrientMesh ="L_lidSlide"
-    # L_projectionMeshUpper="L_upLidProjection"
-    # L_projectionMeshLower="L_lowLidProjection"
-                    # tierCounts=[1,3,5],
-                    # side="L",
-                    # nameLids="leftLid",
-                    # ctrlName = "lid",  # this will be used as a way to reuse controls between different components and deformers
-                    # upperLipMesh = L_upperLipMesh,
-                    # upperLipBaseMesh = L_upperLipBaseMesh,
-                    # lowerLidMesh = L_lowerLidMesh,
-                    # lowerLidBaseMesh = L_lowerLidBaseMesh,
-                    # slidePatch=L_slidePatch,
-                    # slidePatchBase=L_slidePatchBase,
-                    # projectionMeshUpper=L_projectionMeshUpper,
-                    # projectionMeshLower=L_projectionMeshLower,
-                    # ctrlAutoPositionThreshold=.09,
-                    # containerName = "L_lids",
-                    # slideControlSpeedDefaults = slide_speed,
-                    # slideCtrlSizes = [1, .65, .35],
-                    # slideCtrlShapeOffset1=[0,0.0,2],
-                    # slideCtrlShapeOffset2=[0,0.0,2],
-                    # slideCtrlShapeOffset3=[0,0.0,2],
-                    # component_name="L_lids"
 
 class Lid(base.Component):
     def __init__(self,
@@ -158,7 +120,8 @@ class Lid(base.Component):
         self.matDefCtrlShapeOffset2=matDefCtrlShapeOffset2
         self.matDefCtrlShapeOffset3=matDefCtrlShapeOffset3
         self.tierDefaultVisibility =tierDefaultVisibility
-        
+        self.input_anchor_nodes.append(self.control_parent)
+
         
         
         
