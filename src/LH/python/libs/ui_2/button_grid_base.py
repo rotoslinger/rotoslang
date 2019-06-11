@@ -210,9 +210,9 @@ class Base(QtWidgets.QWidget):
 
         self.import_label, self.import_button = ui_utils.label_button(label_text=self.import_label_text,
                                                                     button_text="Import",
-                                                                    color=elements.purple,
+                                                                    color=elements.blue,
                                                                     button_func=self.import_func,
-                                                                    bg_color=elements.dark_purple,
+                                                                    bg_color=elements.dark_blue,
                                                                     )
         ######## Export Guides ###############
         self.backup_layout, self.backup_checkbox = ui_utils.check_box_list(checkbox_names_defaults=[
@@ -224,12 +224,6 @@ class Base(QtWidgets.QWidget):
                                                         default_filename = self.default_file_name,
                                                         default_path=self.default_export_path)
         # Export Args
-        # file_dialog=self.export_dialog                                                 
-        # checkboxes=self.export_checkboxes
-        # backup_checkbox=self.backup_checkbox
-        # backup_filename = self.export_dialog.get_filename()
-        # backup_path = self.export_dialog.default_backup_path
-        # export_func_with_args = lambda: core.export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path)
         self.export_label, self.export_button = ui_utils.label_button(label_text=self.export_label_text,
                                                                     button_text="Export",
                                                                     color=elements.purple,
@@ -240,26 +234,32 @@ class Base(QtWidgets.QWidget):
         self.import_export_widgets = [
 
                                         ui_utils.create_collapsable_dock("Save Data",
-                                                                        [
-                                                                        ui_utils.create_heading(text="Save Data", color=elements.purple),
-                                                                        self.import_label, 
-                                                                        self.import_button,
-                                                                        self.import_dialog,
-                                                                        self.import_checkboxes_grid,
-                                                                        ui_utils.separator(),
-                                                                        self.space,
-
-                                                                        self.export_label, 
-                                                                        self.export_button,
-                                                                        self.export_dialog,
-                                                                        self.export_checkboxes_grid,
-                                                                        self.backup_layout,
-                                                                        ui_utils.separator(),
-                                                                        self.space
-                                                                        ],
-                                                                        elements.purple,
-                                                                        elements.very_dark_purple)
-                                   ]
+                                                                        [ui_utils.create_collapsable_dock("Export Data",
+                                                                                                        [ui_utils.create_heading(text="Export Data", color=elements.purple),
+                                                                                                        self.export_label, 
+                                                                                                        self.export_button,
+                                                                                                        self.export_dialog,
+                                                                                                        self.export_checkboxes_grid,
+                                                                                                        self.backup_layout,
+                                                                                                        ui_utils.separator(),
+                                                                                                        self.space],
+                                                                                                        elements.purple,
+                                                                                                        elements.very_dark_purple),
+                                                                        ui_utils.create_collapsable_dock("Import Data",
+                                                                                                        [ui_utils.create_heading(text="Import Data", color=elements.blue),
+                                                                                                        self.import_label, 
+                                                                                                        self.import_button,
+                                                                                                        self.import_dialog,
+                                                                                                        self.import_checkboxes_grid,
+                                                                                                        ui_utils.separator(),
+                                                                                                        self.space],
+                                                                                                        elements.blue,
+                                                                                                        elements.very_dark_blue)],
+                                                                        # elements.green,
+                                                                        # elements.dark_green,
+                                                                        title_size=16),
+                                        
+                                        ]
 
     def create_tag_window(self):
         ############ ADD NO EXPORT ########################
@@ -268,34 +268,92 @@ class Base(QtWidgets.QWidget):
         self.no_export_label, self.no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to tag NO_EXPORT",
                                                                     button_text="Tag NO_EXPORT",
                                                                     color=elements.green,
+                                                                    bg_color = elements.med_green,
                                                                     button_func=no_export_button_func_with_args
+                                                                    )
+        no_export_component_label = "Select Component Class and Run to tag NO EXPORT."
+        tooltip= ("All nodes in Component must be properly tagged with create_component_tag() in rig_2.tag.utils \n" +
+                  "The connect_to_class_node arg must be set to True when tagging nodes with this method.")
+
+        self.no_export_component_label, self.no_export_component_button = ui_utils.label_button(label_text=no_export_component_label,
+                                                                    button_text="Tag Component NO_EXPORT",
+                                                                    color=elements.green,
+                                                                    bg_color = elements.med_green,
+                                                                    button_func=core.tag_component_no_export,
+                                                                    tooltip=tooltip,
                                                                     )
 
         ############ REMOVE NO EXPORT ########################
-        self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options, color=elements.green)
+        self.remove_no_export_checkbox_grid, self.remove_no_export_checkboxes = ui_utils.check_box_list(checkbox_names_defaults=self.no_export_tag_options, color=elements.red)
         remove_no_export_button_func_with_args = self.tag_remove_no_export_func
         self.remove_no_export_label, self.remove_no_export_button = ui_utils.label_button(label_text="Select ctrl(s) and run to Remove NO_EXPORT",
                                                                     button_text="Remove NO_EXPORT tag",
-                                                                    color=elements.green,
+                                                                    color=elements.red,
+                                                                    bg_color=elements.med_red,
                                                                     button_func=remove_no_export_button_func_with_args
                                                                     )
 
+        no_export_component_label = "Select Component Class and Run to tag NO EXPORT."
+        tooltip= ("Be careful, this will remove ALL NO_EXPORT tags from every node in the component")
+
+        self.remove_no_export_component_label, self.remove_no_export_component_button = ui_utils.label_button(label_text=no_export_component_label,
+                                                                    button_text="Remove NO_EXPORT from component",
+                                                                    color=elements.red,
+                                                                    bg_color=elements.med_red,
+                                                                    button_func=core.remove_tag_component_no_export,
+                                                                    tooltip=tooltip,
+                                                                    )
+
+
         self.tag_window = [ui_utils.create_collapsable_dock("Tagging",
                                             [
-                                                ui_utils.create_heading(text="Tagging", color=elements.green),
-                                                self.no_export_label, 
-                                                self.no_export_button,
-                                                self.no_export_checkbox_grid,
+                                                # ui_utils.create_heading(text="Tagging", color=elements.green),
                                                 ui_utils.separator(),
                                                 self.space,
-                                                self.remove_no_export_label, 
-                                                self.remove_no_export_button,
-                                                self.remove_no_export_checkbox_grid,
-                                                ui_utils.separator(),
-                                                self.space,
+                                                
+                                                ui_utils.create_collapsable_dock("Add No Export",
+                                                        [  
+                                                        ui_utils.create_heading(text="Add No Export", color=elements.green, size=12),
+                                                        self.no_export_label, 
+                                                        self.no_export_button,
+                                                        self.no_export_checkbox_grid,
+                                                        
+                                                        ui_utils.separator(),
+                                                        self.space,
+                                                        self.no_export_component_label,
+                                                        self.no_export_component_button,
+                                                        ui_utils.separator(),
+                                                        self.space
+                                                        
+                                                        ],
+                                                        elements.green,
+                                                        elements.dark_green),
+                                                ui_utils.create_collapsable_dock("Remove No Export",
+                                                        [  
+                                                        ui_utils.create_heading(text="Remove No Export", color=elements.red, size=12),
+                                                        self.remove_no_export_label, 
+                                                        self.remove_no_export_button,
+                                                        self.remove_no_export_checkbox_grid,
+                                                        ui_utils.separator(),
+                                                        self.space,
+                                                        
+                                                        ui_utils.separator(),
+                                                        self.space,
+                                                        self.remove_no_export_component_label,
+                                                        self.remove_no_export_component_button,
+                                                        ui_utils.separator(),
+                                                        self.space
+
+                                                        ],
+                                                        elements.red,
+                                                        elements.very_dark_red),
+                                                
                                             ],
-                                            elements.green,
-                                            elements.dark_green)]
+                                            # elements.red,
+                                            # elements.very_dark_red,
+                                            title_size=16,
+                                            )]
+
 
     def restore_window_state(self):
         self.get_settings_path()

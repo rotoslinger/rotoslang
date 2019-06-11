@@ -48,7 +48,7 @@ def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
     return export_dict
 
 
-def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=True, guide_geo=True):
+def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=False, guide_geo=True):
     file = open(filename, "rb")
     import_dict = json.load(file)
     file.close()
@@ -60,8 +60,9 @@ def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
         create_class_from_dict(import_dict["guide_components"])
 
 
-    # Set NO_EXPORT tags
-    tag_utils.set_tags_from_dict(no_export_tag_dict)
+    # Set NO_EXPORT tags This will also update the tag dict with component level overrides
+    #(if the component is tagged NO_EXPORT, all of its nodes will recieve the tag)
+    no_export_tag_dict = tag_utils.set_tags_from_dict(no_export_tag_dict)
     # Control Shapes
     if ctrl_shape:
         guide_utils.set_shapes_from_dict(import_dict["control_shapes"], no_export_tag_dict, check_if_exists=True)

@@ -11,7 +11,7 @@ def get_node_agnostic(nodeType, name, parent=None, tag_name="", component_name="
         node =  cmds.createNode(nodeType, n=name, p=parent, ss=True)
     if tag_name and not cmds.objExists(node + "." + tag_name):
         tag_utils.create_tag(node, tag_name=tag_name, warn=False)
-    if component_name and not cmds.objExists(node + ".COMPONENT_MEMBER"):
+    if component_name:
         tag_utils.create_component_tag(node, component_name=component_name)
     return node
 

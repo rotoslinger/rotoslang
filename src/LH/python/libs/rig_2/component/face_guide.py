@@ -41,6 +41,7 @@ class Base(component_base.Component):
                  debug=False,
                  is_guide_class=True,
                  input_driver="",
+                 guide_geo_export_override=True,
                  **kw
                  ):
         super(Base, self).__init__(
@@ -65,7 +66,8 @@ class Base(component_base.Component):
         self.slide_patch_y_overshoot = slide_patch_y_overshoot
         self.hide_reference_geo = hide_reference_geo
         self.debug = debug
-        
+        self.guide_geo_export_override = guide_geo_export_override
+
         # vars
         self.mesh_projection_x_overrides = []
         self.base_names=[]
@@ -128,7 +130,7 @@ class Base(component_base.Component):
                 cmds.duplicate(geo, n=geo_name)
                 cmds.setAttr(geo_name + ".v", 0)
             tag_utils.tag_base_geo(geo_name)
-            tag_utils.tag_guide_geo(geo_name)
+            self.guide_geo.append(geo_name)
             return_list.append(geo_name)
         self.component_membership_nodes += return_list
         return return_list
@@ -148,7 +150,7 @@ class Base(component_base.Component):
             cmds.duplicate(node, n=node_name)
             # This patch will be driven by the face rig, so it needs to be constrained.  Also, don't forget to bake out guides...
             cmds.parent(node_name, self.input)
-        tag_utils.tag_guide_geo(node_name)
+        self.guide_geo.append(node_name)
         tag_utils.tag_rivet_orient_patch(node_name)
         tag_utils.tag_guide_cacheable(node_name)
         self.component_membership_nodes += [node_name]
@@ -265,8 +267,9 @@ class Base(component_base.Component):
     def create_guide_geo_tag(self):
         for node in self.guide_geo:
             tag_utils.tag_guide_geo(node)
-
-
+            if self.guide_geo_export_override:
+                tag_utils.tag_export_override(node)
+                
     def create(self):
         super(Base, self).create()
         self.create_geo()

@@ -187,7 +187,7 @@ class Mouth(base.Component):
     def slide(self):
         # Temporary, create character hierarchy
         
-        self.slideUDLR = slideSimple.SlideSimple(name = self.nameMouth + "LipSlide",
+        self.slideUDLR = slideSimple.SlideSimple(name = self.nameMouth + "_Slide",
                                                geoToDeform=self.deformMesh,
                                                slidePatch=self.slidePatch,
                                                slidePatchBase=self.slidePatchBase,
@@ -202,7 +202,7 @@ class Mouth(base.Component):
         UD_Names = [x + "UD" for x in self.slideAttrs]
 
 
-        curveWeights_UD = weightStack.AnimCurveWeight(name=self.nameMouth + "CurveWeights",
+        curveWeights_UD = weightStack.AnimCurveWeight(name=self.nameMouth + "_CurveWeights",
                                                       baseGeo=self.baseGeoToDeform,
                                                       ctrlNode=self.control,
                                                       projectionGeo=self.projectionMesh,
@@ -219,7 +219,7 @@ class Mouth(base.Component):
 
         LR_Names = [x + "LR" for x in self.slideAttrs]
 
-        curveWeights_LR = weightStack.AnimCurveWeight(name=self.nameMouth + "CurveWeights_LR",
+        curveWeights_LR = weightStack.AnimCurveWeight(name=self.nameMouth + "_CurveWeights_LR",
                                                       baseGeo=self.baseGeoToDeform,
                                                       ctrlNode=self.control,
                                                       projectionGeo=self.projectionMesh,
@@ -242,7 +242,7 @@ class Mouth(base.Component):
             self.rivet_orient_patch = self.slidePatch
         slideIconShapeDict = manipulator_elements.circle
 
-        stack = weightStack.WeightStack(name=self.nameMouth + "WeightStack",
+        stack = weightStack.WeightStack(name=self.nameMouth + "_WeightStack",
                                         geoToWeight=self.deformMesh,
                                         ctrlNode=self.control,
                                         factorAttrNames=self.slideAttrs,

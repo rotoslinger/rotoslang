@@ -138,7 +138,7 @@ class Component(object):
             self.hierarchy_class.create()
             if cmds.objExists(self.geo_hier_name):
                 cmds.parent(self.geo_hier_name, self.hierarchy_class.geo)
-        self.input_anchor = node_utils.get_node_agnostic("transform", name=self.input_anchor_name, parent=self.hierarchy_class.component)
+        self.input_anchor = node_utils.get_node_agnostic("transform", name=self.input_anchor_name, parent=self.hierarchy_class.input)
         hierarchy_class = self.hierarchy_class
         self.create_class_node(parent=self.hierarchy_class.component)
         self.subcomponent_group = self.class_node

@@ -192,9 +192,15 @@ def control_tag_no_export(add=True, checkbox_on=False):
 def control_from_selected():
     return [control for control in cmds.ls(sl=True) if cmds.objExists(control + ".CONTROL")]
 
-def tag_no_export_component_membership(component_node, tag=True):
-    return
-    
+def tag_no_export_component_membership(add_tag=True):
+    components = tag_utils.component_from_selected()
+    for component in components:
+        # Gets all nodes that belong to the component
+        tag_utils.no_export_add_remove_selector(component, add=add_tag)
+        nodes = tag_utils.get_all_nodes_by_maya_component_class_name(component)
+        for node in nodes:
+            tag_utils.no_export_add_remove_selector(node, add=add_tag)
+
 
 def tag_all_no_export(ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True):
     control_tag_no_export(checkbox_on=ctrl_shape)

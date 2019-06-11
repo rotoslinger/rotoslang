@@ -11,26 +11,68 @@ from rig_2.tag import constants as tag_constants
 reload(tag_constants)
 
 
-def get_no_exports():
-    return get_tag_dict(tag_filter=["NO_EXPORT"])
+def get_no_exports(check_component_class_no_export=True):
+    return get_tag_dict(tag_filter=["NO_EXPORT"],
+                        check_component_class_no_export=check_component_class_no_export)
 
-def get_tag_dict(tag_filter=["NO_EXPORT"]):
+def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True):
     tag_dict = {}
     for tag in tag_filter:
         for node in get_all_with_tag(tag):
-            # Instantiate empty list if the key does not yet exist
+            # Make sure to remove from the dict if EXPORT_OVERRIDE exists
+            if node in tag_dict.keys() and cmds.objExists(node + ".EXPORT_OVERRIDE"):
+                del tag_dict[node]
+                continue
+            if cmds.objExists(node + ".EXPORT_OVERRIDE"):
+                continue
+            # Create key entry if the key does not yet exist
             if node not in tag_dict.keys():
                 tag_dict[node] = []
             tag_dict[node].append(tag)
+    if not check_component_class_no_export:
+        return tag_dict
+    # This is strictly for enforcing the class NO EXPORT NODES tag
+    for component in get_all_component_names():
+        component_class_node = get_class_node_from_component_name(component)
+        if not cmds.objExists(component_class_node + ".NO_EXPORT"):
+            continue
+        for node in get_nodes_by_component_name(component):
+            # Failsafe make sure to remove from the dict if EXPORT_OVERRIDE exists
+            if node in tag_dict.keys() and cmds.objExists(node + ".EXPORT_OVERRIDE"):
+                del tag_dict[node]
+            if cmds.objExists(node + ".EXPORT_OVERRIDE"):
+                continue
+            # Create key entry if the key does not yet exist
+            if node not in tag_dict.keys():
+                tag_dict[node] = []
+            tag_dict[node].append("NO_EXPORT")
+            # Create the tag 
+            create_tag(node, "NO_EXPORT")
     return tag_dict
 
 # Temp, for testing, REMOVE ME
 TAG_DICT = {u'C_upperLipPrimaryGimbal_CTL': ['NO_EXPORT'], u'C_upperLipPrimary01_BUF': ['NO_EXPORT'], u'C_upperLipPrimary_CTL': ['NO_EXPORT'], u'C_upperLipPrimary_GUIDE': ['NO_EXPORT']}
 
-def set_tags_from_dict(tag_dict = TAG_DICT):
+def set_tags_from_dict(tag_dict = TAG_DICT, check_component_class_no_export=True):
     for node in tag_dict.keys():
         for tag in tag_dict[node]:
             create_tag(node, tag)
+    if not check_component_class_no_export:
+        return
+    # This is strictly for enforcing the class NO EXPORT NODES tag
+    for component in get_all_component_names():
+        component_class_node = get_class_node_from_component_name(component)
+        if not cmds.objExists(component_class_node + ".NO_EXPORT"):
+            continue
+        for node in get_nodes_by_component_name(component):
+            if cmds.objExists(node + ".EXPORT_OVERRIDE"):
+                continue
+            create_tag(node, "NO_EXPORT")
+        # Create key entry if the key does not yet exist
+            if node not in tag_dict.keys():
+                tag_dict[node] = []
+            tag_dict[node].append("NO_EXPORT")
+    return tag_dict
 
 def create_tag(node_to_tag, tag_name="TAG", warn=False):
     if cmds.objExists(node_to_tag + "." + tag_name):
@@ -56,10 +98,9 @@ def create_component_tag(node_to_tag, component_name, connect_to_class_node=True
     if type(node_to_tag) != list:
         node_to_tag = [node_to_tag]
     for node in node_to_tag:
-        if connect_to_class_node and cmds.objExists(class_node + ".membership_nodes"):
-            if not cmds.objExists(node + ".component_class_" + component_name):
-                component_class_attr = attr_utils.get_attr(node, "component_class_" + component_name, attrType="message")
-                cmds.connectAttr(class_node + ".membership_nodes", component_class_attr, f=True)
+        if connect_to_class_node:
+            component_class_attr = attr_utils.get_attr(node, "component_class_" + component_name, attrType="message")
+            cmds.connectAttr(class_node + ".membership_nodes", component_class_attr, f=True)
 
         attr = node + ".COMPONENT_MEMBERSHIP"
         if cmds.objExists(attr):
@@ -98,8 +139,6 @@ def get_all_component_names():
     component_names = list(dict.fromkeys(component_names))
     return component_names
 
-
-
 def get_all_component_tag_vals():
     component_pieces = get_all_with_tag("COMPONENT_MEMBERSHIP")
     component_names = [cmds.getAttr(x + ".COMPONENT_MEMBERSHIP") for x in component_pieces]
@@ -123,6 +162,14 @@ def get_nodes_by_component_name(component_name, message_connection=True):
         return_nodes.append(node)
 
     return return_nodes
+
+def get_all_nodes_by_maya_component_class_name(component_class_node):
+    nodes = cmds.listConnections(component_class_node + ".membership_nodes")
+    if nodes:
+        # make sure no Null returns...
+        nodes = [node for node in nodes if node]
+        return nodes
+    
 
 def remove_tag(tagged_node, tag_name="TAG"):
     attr_full_name = tagged_node + "." + tag_name
@@ -190,7 +237,11 @@ def tag_reference_geo(node_to_tag):
     
 def tag_guide_geo(node_to_tag):
     create_tag(node_to_tag, "GUIDE_GEO")
-    
+
+def tag_export_override(node_to_tag):
+    create_tag(node_to_tag, "EXPORT_OVERRIDE")
+
+
 def tag_rivet_orient_patch(node_to_tag):
     create_tag(node_to_tag, "RIVET_ORIENT_PATCH")
     
@@ -200,7 +251,6 @@ def tag_guide_cacheable(node_to_tag):
 
 def tag_gimbal(node_to_tag):
     create_tag(node_to_tag, "GIMBAL")
-
 
 def tag_control(node_to_tag):
     create_tag(node_to_tag, "CONTROL")
@@ -371,6 +421,8 @@ def add_no_export_tag(nodes):
     # if set to be tagged NO_EXPORT attr is added,
     # this is then exported along with whatever else and recreated on build
     # if it is removed, it will export
+    if type(nodes) != list:
+        nodes= [nodes]
     for node in nodes:
         tag_no_export(node)
 
@@ -379,6 +431,8 @@ def remove_no_export_tag(nodes):
     # if set to be tagged NO_EXPORT attr is added,
     # this is then exported along with whatever else and recreated on build
     # if it is removed, it will export
+    if type(nodes) != list:
+        nodes= [nodes]
     for node in nodes:
         remove_tag_no_export(node)
 
@@ -391,6 +445,9 @@ def no_export_add_remove_selector(nodes, add=True):
 
 def control_from_selected():
     return [control for control in cmds.ls(sl=True) if cmds.objExists(control + ".CONTROL")]
+
+def component_from_selected():
+    return get_all_with_tag("COMPONENT_ARG_NODE", hint_list=cmds.ls(sl=True))
 
 def tag_no_export_from_control_message(message_name, add=True, checkbox_on=False):
     # Finds a node from the specified control by the specified message name, tags it NO_EXPORT, or removes that tag

@@ -36,7 +36,7 @@ def build(asset_name="oldMan",
     
     
     # Create Guides First
-    mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=False)
+    mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
     mouth_jaw_guides.create()
     
     lid_guides = face_guide.Lid_Guide(hide_on_build=True)
@@ -51,9 +51,9 @@ def build(asset_name="oldMan",
     export_utils.import_all(filename=guide_file, build_components=False)
 
     lip_class = build_lip(mouth_jaw_guides)
-    mouth_class = build_mouth(mouth_jaw_guides) 
-    l_lids_class, r_lids_class = build_lids(lid_guides)
-    brow_class = build_brow(brow_guides)
+    # mouth_class = build_mouth(mouth_jaw_guides) 
+    # l_lids_class, r_lids_class = build_lids(lid_guides)
+    # brow_class = build_brow(brow_guides)
 
     # The face class will be used to wire everything together... it contains the face_anchor
     face_class = face.Face(face_driver="head_output")
@@ -134,6 +134,7 @@ def build_lip(mouth_jaw_guides):
 
 def build_mouth(mouth_jaw_guides):
     MouthJawClass = mouth.Mouth(control_rivet_mesh="C_bodyBind_GEO",
+                                component_name = "Mouth"
                                 )
     MouthJawClass.create() 
     

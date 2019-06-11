@@ -241,13 +241,17 @@ def setAnimCurveShape(animCurve, animCurveDict):
                                     out_tangents_type[i])
 
 
-def create_set_anim_curves(animCurveDictList, falloff=False):
+def create_set_anim_curves(animCurveDictList, falloff=False, component_name=""):
     tag_name = "WEIGHT_CURVE"
     if falloff:
         tag_name = "FALLOFF_WEIGHT_CURVE"
     retCurves=[]
     for animCurveDict in animCurveDictList:
-        newCurve = node_utils.get_node_agnostic(nodeType="animCurveTU", name=animCurveDict["name"], parent=None, tag_name=tag_name)
+        newCurve = node_utils.get_node_agnostic(nodeType="animCurveTU",
+                                                name=animCurveDict["name"],
+                                                parent=None,
+                                                tag_name=tag_name,
+                                                component_name=component_name)
         setAnimCurveShape(newCurve, animCurveDict)
         retCurves.append(newCurve)
     return retCurves

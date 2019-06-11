@@ -87,3 +87,9 @@ def print_geo_dict():
     if geo_type == "nurbsSurface":
         print "Type is nurbsSurface"
         print nurbsurface.nurbsSurfaceData(sel).nurbs
+
+def tag_component_no_export():
+    guide_utils.tag_no_export_component_membership(add_tag=True)
+    
+def remove_tag_component_no_export():
+    guide_utils.tag_no_export_component_membership(add_tag=False)

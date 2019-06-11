@@ -226,6 +226,8 @@ class MatrixDeformer(base.Deformer):
             self.guide_shapes.append(guideShape[0])
             tag_utils.tag_guide(guide_transform)
             tag_utils.tag_guide_shape(guideShape[0])
+            tag_utils.create_component_tag(guide_transform, self.component_name)
+            tag_utils.create_component_tag(guideShape[0], self.component_name)
             # Set the default visibility of the guide
             if not self.guide:
                 cmds.setAttr(guideShape[0] + ".v", 0)

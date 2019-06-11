@@ -289,7 +289,7 @@ class Lid(base.Component):
             currName = self.side + "_" + self.component_name + position + "MatDef"
             for idx in range(3):
                 ################################## MATRIX DEFORMER #####################################################################
-                self.matDefCurveWeights[position] = weightStack.AnimCurveWeight(name=currName + "MatDef",
+                self.matDefCurveWeights[position] = weightStack.AnimCurveWeight(name=currName + "_AnimCurveWeights",
                                                                                 baseGeo=self.baseGeosToDeform[posIdx],
                                                                                 ctrlNode=self.control,
                                                                                 projectionGeo=self.projectionMeshes[posIdx],

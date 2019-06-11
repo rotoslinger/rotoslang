@@ -256,8 +256,11 @@ class AnimCurveWeight(Weight_Node):
         self.baseMesh = misc.getShape(self.baseGeo)
 
         if self.inputWeightCurvesDict and self.inputWeightCurvesFalloffDict:
-            self.weightCurves = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesDict)
-            self.weightCurvesFalloff = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesFalloffDict, falloff=True)
+            self.weightCurves = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesDict,
+                                                                       component_name=self.component_name)
+            self.weightCurvesFalloff = animcurve_utils.create_set_anim_curves(self.inputWeightCurvesFalloffDict,
+                                                                              falloff=True,
+                                                                              component_name=self.component_name)
             return
 
         if self.autoCreateAnimCurves:

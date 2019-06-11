@@ -179,7 +179,7 @@ class Weight_UI(button_grid_base.Base):
                                                                 self.space
                                                                 ],
                                                                 elements.red,
-                                                                elements.dark_red
+                                                                elements.very_dark_red
                                                                 )
         self.import_export_widgets.append(self.delete_widgets)
 

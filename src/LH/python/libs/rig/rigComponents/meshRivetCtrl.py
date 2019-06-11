@@ -125,7 +125,7 @@ class Component(base.Component):
 
         for guide_shape in self.guideShapes:
             tag_utils.tag_guide_shape(guide_shape)
-
+            tag_utils.create_component_tag(guide_shape, self.component_name)
             # Set the default visibility of the guide
             if not self.guide:
                 cmds.setAttr(guide_shape + ".v", 0)
@@ -152,7 +152,8 @@ class Component(base.Component):
 
         tag_utils.create_tag(self.guide_transform, "RIVET_GUIDE")
         tag_utils.tag_rivet_mesh(self.mesh)
-
+        tag_utils.create_component_tag(self.guide_transform, self.component_name)
+        tag_utils.create_component_tag(self.guideShape, self.component_name)
 
     def createNodes(self):
         # self.geoConstraint = misc.geoConstraint(driverMesh = self.mesh, driven = self.locator, parent = self.cmptMasterParent,

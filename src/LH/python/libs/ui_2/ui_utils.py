@@ -39,14 +39,19 @@ def create_label(text="test", color="color: rgb(255, 102, 255);", center=True, t
         label.setAlignment(QtCore.Qt.AlignCenter)
     return label
 
-def create_heading(text="test", color="color: rgb(255, 102, 255);"):
+def create_heading(text="test", color="color: rgb(255, 102, 255);", size=14):
     label = create_label(text=text, color=color, center=True)
     label.setAlignment(QtCore.Qt.AlignCenter)
-    label.setFont(QtGui.QFont("Times", 12, QtGui.QFont.Bold)) 
+    label.setFont(QtGui.QFont("Times", size, QtGui.QFont.Bold)) 
     return label
 
 
-def create_button(text="test", color=elements.light_grey, bg_color= elements.grey, button_pressed_func=None):
+def create_button(text="test",
+                  color=elements.light_grey,
+                  bg_color= elements.grey,
+                  button_pressed_func=None,
+                  tooltip="",
+                  tooltip_color=elements.black):
     button = QtWidgets.QPushButton(text)
     if bg_color:
         bg_color = "background-" + bg_color
@@ -54,7 +59,10 @@ def create_button(text="test", color=elements.light_grey, bg_color= elements.gre
     button.setStyleSheet(color)
     if button_pressed_func:
         button.clicked.connect(button_pressed_func)
-
+    if tooltip:
+        button.setToolTip(tooltip)
+        tooltip_color =  "QToolTip {0}".format(r"{" + tooltip_color + r"}")
+        button.setStyleSheet(color + ";" + tooltip_color)
     return button
 
 def label_button(label_text="Test label",
@@ -62,9 +70,10 @@ def label_button(label_text="Test label",
                  color="color: rgb(255, 102, 255);",
                  button_func=test_func,
                  bg_color=elements.grey,
+                 tooltip="",
                  ):
     label = create_label(text=label_text, color=color)
-    button = create_button(text=button_text, color=color, bg_color=bg_color)
+    button = create_button(text=button_text, color=color, bg_color=bg_color, tooltip=tooltip)
     button.clicked.connect(button_func)
     return label, button
 
@@ -190,29 +199,38 @@ class DockContents(QtWidgets.QFrame):
         self.setAutoFillBackground(True)
         self.setBackgroundRole(QtGui.QPalette.Background)
         p = self.palette()
-        bg_color = get_QColor_from_style(bg_color)
-        p.setColor(self.backgroundRole(), bg_color)
+        tmp_bg_color = get_QColor_from_style(bg_color)
+        tmp_fg_color = get_QColor_from_style(color)
+        p.setColor(self.backgroundRole(), tmp_bg_color)
+        p.setColor(self.foregroundRole(), tmp_fg_color)
         self.setPalette(p)
-
-    # _sizehint = None
-
-    # def setSizeHint(self, width, height):
-    #     self._sizehint = QtCore.QSize(width, height)
-
-    # def sizeHint(self):
-    #     if self._sizehint is not None:
-    #         return self._sizehint
-    #     return super(DockContents, self).sizeHint()
+        # self.setStyleSheet(get_bg_color_from_color(bg_color) + ';' + get_fg_color_from_color(color))
 
 
 def change_in_size():
     print "AAAAAAAAAAAA"
     
-    
+def get_bg_color_from_color(color):
+    return color.replace("color", "background-color: ")
+
+def get_fg_color_from_color(color):
+    return color.replace("color", "foreground-color: ")
+
 class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
-    def __init__(self, name="TEST", parent=None, widgets=None, color=None, bg_color=None):
+    def __init__(self, name="TEST", parent=None, widgets=None, color=None, bg_color=None, title_size=8, sp_color=elements.purple):
         super(MainWindow, self).__init__(parent=parent)
+        
+        self.setAutoFillBackground(True)
+        self.setBackgroundRole(QtGui.QPalette.Background)
+        p = self.palette()
+        tmp_bg_color = get_QColor_from_style(bg_color)
+        tmp_fg_color = get_QColor_from_style(color)
+        p.setColor(self.backgroundRole(), tmp_bg_color)
+        p.setColor(self.foregroundRole(), tmp_fg_color)
+        self.setPalette(p)
+        
+        
         self.win_name = name + "_Main"
         self.setObjectName(self.win_name)
 
@@ -220,21 +238,18 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         # QtWidgets.QMainWindow.__init__(self)
 
         self.dock = QtWidgets.QDockWidget(name, self)
-        self.dock.setAutoFillBackground(True)
-        self.dock.setStyleSheet(color)
-        self.dock.setFont(QtGui.QFont("Helvetica", 8, QtGui.QFont.DemiBold))
+        self.dock.setFont(QtGui.QFont("Helvetica", title_size, QtGui.QFont.DemiBold))
+        
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dock)
         
         contents = DockContents(name=name, color=color, bg_color=bg_color)
-        # contents.setSizeHint(400, 100)
+
         contents.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)
         contents.setLineWidth(2)
         
         layout = QtWidgets.QVBoxLayout(contents)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # self.scrollArea  = QtWidgets.QScrollArea(self)
-        # self.scrollArea.setWidgetResizable(True)
 
 
         for index, widget in enumerate(self.widgets):
@@ -254,8 +269,8 @@ class MainWindow(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
     #     self.cleanup()
 
         
-def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey, parent=None):
-    dock = MainWindow(name=text, parent=parent, widgets=widget_list, color=color, bg_color=bg_color)
+def create_collapsable_dock(text, widget_list, color=elements.blue, bg_color = elements.base_grey, parent=None, title_size=8):
+    dock = MainWindow(name=text, parent=parent, widgets=widget_list, color=color, bg_color=bg_color, title_size=title_size)
         
         
         # self.setCentralWidget(self.dock)
