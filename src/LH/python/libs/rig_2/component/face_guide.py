@@ -359,7 +359,7 @@ class Mouth_Guide(Base):
                                                                   transform_suffix=None,
                                                                   shape_suffix=None
                                                                   )
-        [tag_utils.tag_lip_volume_curves(curve) for curve in [self.up_lip_volume, self.low_lip_volume]]
+        [tag_utils.tag_guide_curves(curve) for curve in [self.up_lip_volume, self.low_lip_volume]]
 
 
         self.up_lip_roll, dummy = nurbscurve.safe_create_curve(face_guide_elements.UP_LIP_ROLL,
@@ -375,7 +375,7 @@ class Mouth_Guide(Base):
                                                                 transform_suffix=None,
                                                                 shape_suffix=None
                                                                 )
-        [tag_utils.tag_lip_volume_curves(curve) for curve in [self.up_lip_roll, self.low_lip_roll]]
+        [tag_utils.tag_guide_curves(curve) for curve in [self.up_lip_roll, self.low_lip_roll]]
         
         self.up_lip_volume_base = self.create_base(self.up_lip_volume)
         self.low_lip_volume_base = self.create_base(self.low_lip_volume)
@@ -500,7 +500,7 @@ class Lid_Guide(Base):
                                                         )
             self.r_curves.append(curve)
             
-        [tag_utils.tag_lid_curves(curve) for curve in self.l_curves + self.r_curves]
+        [tag_utils.tag_guide_curves(curve) for curve in self.l_curves + self.r_curves]
 
 
         # Prepare data to be used later for fitting
@@ -623,7 +623,7 @@ class Brow_Guide(Base):
                                                     )
         
             
-        [tag_utils.tag_brow_curves(curve) for curve in [self.l_curve, self.r_curve, self.c_curve]]
+        [tag_utils.tag_guide_curves(curve) for curve in [self.l_curve, self.r_curve, self.c_curve]]
 
         self.guide_geo += [self.l_curve, self.r_curve, self.c_curve]
 
@@ -691,97 +691,3 @@ class Brow_Guide(Base):
         self.lattice_geo += [self.slide_nurbs]
         
         self.guide_geo += [self.slide_nurbs]
-
-# def create_nurbs(self):
-#     # return
-#     x, y, z, center = component_utils.get_projection_dimensions([self.l_mesh_to_project, self.r_mesh_to_project])
-#     slide_name= "C_{0}_SLDE".format(self.component_name)
-#     x += self.slide_patch_x_overshoot
-#     y += self.slide_patch_y_overshoot
-#     if cmds.objExists(slide_name):
-#         self.slide_nurbs = slide_name
-#     else:
-#         self.slide_nurbs = cmds.nurbsPlane(name=slide_name,
-#                                         ax=[0,0,1],
-#                                         width = x,
-#                                         lengthRatio=y/x,
-#                                         patchesU=self.slide_x_subdivisions,
-#                                         patchesV=self.slide_y_subdivisions)[0]
-#         tag_utils.tag_slide_geo(self.slide_nurbs)
-#         tag_utils.create_component_tag(self.slide_nurbs, component_name=self.component_name)
-#         cmds.parent(self.slide_nurbs, self.geo)
-#         cmds.move(center[0], center[1], center[2], self.slide_nurbs)
-        
-#     cmds.DeleteHistory(self.slide_nurbs)
-#     cmds.makeIdentity(self.slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
-
-#     self.geo_to_be_base += [self.slide_nurbs]
-#     self.lattice_geo += [self.slide_nurbs]
-    
-#     self.guide_geo += [self.slide_nurbs]
-    
-# def create_nurbs(self):
-#     self.slide_fit_to_mesh = self.mouth_jaw
-#     x, y, z, center = component_utils.get_projection_dimensions(self.slide_fit_to_mesh)
-#     slide_name= "C_{0}_SLDE".format(self.component_name)
-#     x += self.slide_patch_x_overshoot
-#     y += self.slide_patch_y_overshoot
-#     if cmds.objExists(slide_name):
-#         self.slide_nurbs = slide_name
-#     else:
-#         self.slide_nurbs = cmds.nurbsPlane(name=slide_name,
-#                                         ax=[0,0,1],
-#                                         width = x,
-#                                         lengthRatio=y/x,
-#                                         patchesU=self.slide_x_subdivisions,
-#                                         patchesV=self.slide_y_subdivisions)[0]
-#         tag_utils.tag_slide_geo(self.slide_nurbs)
-#         cmds.parent(self.slide_nurbs, self.geo)
-
-#         cmds.move(center[0], center[1], center[2], self.slide_nurbs)
-
-#     self.slide_nurbs_base = self.create_base(self.slide_nurbs)
-    
-#     self.lattice_geo += [self.slide_nurbs, self.slide_nurbs_base]
-#     self.component_membership_nodes += [self.slide_nurbs, self.slide_nurbs_base]
-#     self.guide_geo +=  [self.slide_nurbs, self.slide_nurbs_base]
-
-# def create_nurbs(self):
-#     # return
-#     side_mesh_dict = {"L": self.slide_fit_meshes, "R": self.r_slide_fit_meshes}
-#     for side in ["L", "R"]:
-#         fit_meshes = side_mesh_dict[side]
-#     # for side, fit_meshes in itertools.product(["L", "R"], [self.slide_fit_meshes, self.r_slide_fit_meshes]):
-#         x, y, z, center = component_utils.get_projection_dimensions(fit_meshes)
-#         slide_name= "{0}_{1}_SLDE".format(side, self.component_name)
-#         x += self.slide_patch_x_overshoot
-#         y += self.slide_patch_y_overshoot
-#         if cmds.objExists(slide_name):
-#             slide_nurbs = slide_name
-#         else:
-#             slide_nurbs = cmds.nurbsPlane(name=slide_name,
-#                                             ax=[0,0,1],
-#                                             width = x,
-#                                             lengthRatio=y/x,
-#                                             patchesU=self.slide_x_subdivisions,
-#                                             patchesV=self.slide_y_subdivisions)[0]
-#             tag_utils.tag_slide_geo(slide_nurbs)
-#             cmds.parent(slide_nurbs, self.geo)
-
-#             cmds.move(center[0], center[1], center[2], slide_nurbs)
-            
-#         cmds.DeleteHistory(slide_nurbs)
-#         cmds.makeIdentity(slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
-
-#         if side == "L":
-#             self.l_lattice_geo += [slide_nurbs]
-#             self.l_geo_to_be_base += [slide_nurbs]
-#             self.l_slide_nurbs = slide_nurbs
-
-#         else:
-#             self.r_lattice_geo += [slide_nurbs]
-#             self.r_geo_to_be_base += [slide_nurbs]
-#             self.r_slide_nurbs = slide_nurbs
-            
-#     self.component_membership_nodes += [self.l_slide_nurbs, self.r_slide_nurbs]
-#     self.guide_geo += [self.l_slide_nurbs, self.r_slide_nurbs]

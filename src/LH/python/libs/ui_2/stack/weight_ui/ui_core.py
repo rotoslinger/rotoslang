@@ -69,7 +69,7 @@ def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup
                                           falloff_weight_curves=falloff_weight_curves,
                                           hand_painted_weights=hand_painted_weights)
     
-    full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
+    full_backup_name = backup_utils.generate_backup_filename(backup_path, backup_filename)
     backup_utils.generate_backup_file(full_backup_name, export_dict)
 
 @decorator.undo_ignore

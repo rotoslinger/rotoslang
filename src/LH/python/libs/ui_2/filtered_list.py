@@ -9,6 +9,8 @@ from ui_2 import elements
 reload(elements)
 from rig_2.tag import utils as tag_utils
 reload(tag_utils)
+from rig_2.tag import constants as tag_constants
+reload(tag_utils)
 from rig_2 import decorator
 reload(decorator)
 
@@ -63,6 +65,8 @@ class Filtered_List(QtWidgets.QWidget):
         self.nodes_from_selected_components = []
         self.tag_checklist_contents = None
         
+        self.get_all_tags()
+        
         if self.label:
             self.label_widget = ui_utils.create_label(self.label, text_size=13, color=self.color)
             self.add_widget_to_layout(self.label_widget)
@@ -74,11 +78,20 @@ class Filtered_List(QtWidgets.QWidget):
             self.add_widget_to_layout(self.refresh_button)
             self.populate_component_list()
 
+        if self.do_tag_filter:
+            self.tag_filter_layout, self.tag_filter_line_edit = ui_utils.label_text_box("Filter Tag", color=self.color, text_changed_func=self.trigger_multi_filter)
+            self.add_widget_to_layout(self.tag_filter_layout)
+    
+        if self.do_search_filter:
+            self.search_layout, self.search_line_edit = ui_utils.label_text_box("Search", color=self.color, text_changed_func=self.filter_data)
+            self.add_widget_to_layout(self.search_layout)
+
         if self.do_component_tag_buttons:            
-            tag_row_widget, self.tag_contents_grid_layout, self.scrollArea,self.tag_checklist_contents = ui_utils.label_scroll_area(label_name="Tag Filter",
+            tag_row_widget, self.tag_contents_grid_layout, self.scrollArea,self.tag_checklist_contents = ui_utils.label_scroll_area(label_name="Tag Vis Selector",
                                                                                                      color=elements.blue,
                                                                                                      list_height=200,
                                                                                                      selection_changed_func=None)
+            self.tag_contents_grid_layout.setAlignment(QtCore.Qt.AlignTop)
             
             self.vis_checkbox = QtWidgets.QCheckBox("Vis All")
             self.vis_checkbox.setFont(QtGui.QFont("Helvetica", 12))
@@ -107,13 +120,6 @@ class Filtered_List(QtWidgets.QWidget):
             
 
 
-        if self.do_tag_filter:
-            self.tag_filter_layout, self.tag_filter_line_edit = ui_utils.label_text_box("Filter Tag", color=self.color, text_changed_func=self.filter_data)
-            self.add_widget_to_layout(self.tag_filter_layout)
-    
-        if self.do_search_filter:
-            self.search_layout, self.search_line_edit = ui_utils.label_text_box("Search", color=self.color, text_changed_func=self.filter_data)
-            self.add_widget_to_layout(self.search_layout)
         
         self.add_widget_to_layout(ui_utils.create_label("Nodes Associated With Component", color = self.color))
         self.list_widget = ui_utils.collection_list(color=self.color, list_height=200, selection_changed_func=self.list_widget_selection_changed)
@@ -126,6 +132,22 @@ class Filtered_List(QtWidgets.QWidget):
         self.tag_name = None
 
         self.create_layout()
+        
+    def get_all_tags(self):
+        self.all_tags = []
+        components = tag_utils.get_all_component_names()
+        for component in components:
+            self.all_tags += tag_utils.get_all_tags_in_component(component)
+        # remove duplicate entries
+        self.all_tags = list(dict.fromkeys(self.all_tags))
+
+            
+
+    
+    def trigger_multi_filter(self):
+        self.get_tag_checklists_from_selected()
+        self.filter_data()
+        
 
     def vis_all(self):
         if not self.tag_vis_widgets:
@@ -171,6 +193,7 @@ class Filtered_List(QtWidgets.QWidget):
 
 
     def populate_component_list(self):
+        self.get_all_tags()
         self.update_tag_all_checklists()
 
         self.get_components()
@@ -214,8 +237,31 @@ class Filtered_List(QtWidgets.QWidget):
                 self.tag_selectability_status[component] = {}
             self.tag_selectability_status[component][tag] = self.tag_select_widgets[idx].isChecked()
 
+    def get_filter_list(self):
+        
+        if self.tag_filter_line_edit:
+            self.tag_filter_text = self.tag_filter_line_edit.text()
 
-
+        filter_text = self.tag_filter_text
+        if " " in filter_text:
+            filter_text.replace(" ", "")
+        
+        if "," in filter_text:
+            filter_text = filter_text.split(",")
+        
+        if type(filter_text) != list:
+            filter_text = [filter_text]
+        tmp_list = []
+        for tag in filter_text:
+            tag=str(tag)
+            if not tag:
+                continue
+            if tag == " " or tag == unicode(" "):
+                continue
+            if " " in tag:
+                tag.replace(" ", "")
+            tmp_list.append(tag)
+        return tmp_list
 
     def get_tag_checklists_from_selected(self):
         self.update_tag_all_checklists()
@@ -229,12 +275,27 @@ class Filtered_List(QtWidgets.QWidget):
         self.tag_label_widgets = []
         self.tag_vis_widgets = []
         self.tag_select_widgets = []
+        # self.tag_dict = {}
+        filter_list = self.get_filter_list()
         for component in [str(item.text()) for item in self.component_list.selectedItems()]:
+            # self.tag_filter_text
             tags = tag_utils.get_all_tags_in_component(component)
             tags = sorted(list(dict.fromkeys(tags)))
-        
+            
+            for i in tag_constants.TAG_VIS_SEL_PANEL_IGNORE:
+                if i in tags:
+                    tags.remove(i)
+                    
+            if self.tag_filter_line_edit.text():
+                final_text = re.compile(self.tag_filter_line_edit.text())
+                final_list = list(filter(final_text.search, tags))
+                if final_list:
+                    tags = final_list
+
             for idx, tag in enumerate(tags):
-                
+                if not tag:
+                    continue
+
                 label = ui_utils.create_label(tag, self.color, center=False)
 
                 vis_checkbox = QtWidgets.QCheckBox("Visibility")
@@ -283,7 +344,7 @@ class Filtered_List(QtWidgets.QWidget):
         self.nodes_from_selected_components = self.get_nodes_from_selected_components()
         if not self.tag_filter_line_edit and not self.search_layout and not self.tag_filter and not self.nodes_from_selected_components:
             return
-        
+
         if self.tag_filter_line_edit:
             self.tag_filter_text = self.tag_filter_line_edit.text()
 
@@ -297,22 +358,41 @@ class Filtered_List(QtWidgets.QWidget):
         
         self.final_list = tag_utils.get_all_with_tag(self.tag_filter)
 
-        if self.tag_filter_text:
-            self.tag_filter_tag_list = tag_utils.get_all_with_tag(self.tag_filter_text)
-            self.final_list = [x for x in self.final_list if x in self.tag_filter_tag_list]
-            
         # If you are using component selection to narrow down the results, make sure to only include nodes that are in the selected component
         if self.nodes_from_selected_components:
             self.final_list = [x for x in self.final_list if x in self.nodes_from_selected_components]
 
-        if not self.search_text:
+        if not self.search_text and not self.tag_filter_text:
             self.populate_list()
             return
-
-        # Search using regular expression module
+        
+        # Search name using regular expression module
         final_text = re.compile(self.search_text)
         self.final_list = list(filter(final_text.search, self.final_list))
+        
+        # Search using TAGS with regular expression
+        filtered_tags = []  
+        if self.tag_filter_line_edit.text():
+            final_text = re.compile(self.tag_filter_line_edit.text())
+            final_list = list(filter(final_text.search, self.all_tags))
+            if final_list:
+                filtered_tags = final_list
+            tmp_list = []
+            for tag in filtered_tags:
+                tag=str(tag)
+                if not tag:
+                    continue
+                if tag == " " or tag == unicode(" "):
+                    continue
+                if " " in tag:
+                    tag.replace(" ", "")
+                tmp_list += [x for x in self.final_list if cmds.objExists(x + "." + tag)]
+
+            self.final_list = tmp_list
+
+        ###################
         self.populate_list()
+
 
 
     def sort_list(self, by_type=True, alphabetic=True):

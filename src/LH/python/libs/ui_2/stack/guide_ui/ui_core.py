@@ -69,12 +69,22 @@ def remove_tag_no_export(checkboxes):
 def update_geo_constraints():
     misc.update_all_geo_constraints()
 
-def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
+def export_all(file_dialog, checkboxes, backup_checkbox, ):
     backup_arg = backup_checkbox[0].isChecked()
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
-    export_dict = export_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
-    full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
-    backup_utils.generate_backup_file(full_backup_name, export_dict)
+    # backup_filename = self.export_dialog.get_filename()
+    # backup_path = self.export_dialog.default_backup_path
+
+    export_dict = export_utils.export_all(asset_name=file_dialog.asset_name,
+                                          filepath=file_dialog.contents.text(),
+                                          ctrl_shape=ctrl_shape,
+                                          guide=guide,
+                                          guide_shape=guide_shape,
+                                          gimbal_shape=gimbal_shape,
+                                          backup=backup_arg
+                                          )
+    # full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
+    # backup_utils.generate_backup_file(full_backup_name, export_dict)
 
 # Undo ignore stack for the next chunk because undoing will break the scene...
 @decorator.undo_ignore

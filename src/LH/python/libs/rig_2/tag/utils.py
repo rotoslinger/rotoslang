@@ -147,6 +147,8 @@ def get_all_component_tag_vals():
 def get_nodes_by_component_name(component_name, message_connection=True):
     if message_connection:
         component_class_node = get_class_node_from_component_name(component_name)
+        if not cmds.objExists(component_class_node + ".membership_nodes"):
+            return []
         nodes = cmds.listConnections(component_class_node + ".membership_nodes")
         if nodes:
             # make sure no Null returns...
@@ -216,6 +218,9 @@ def tag_slide_geo(node_to_tag):
 
 def tag_base_geo(node_to_tag):
     create_tag(node_to_tag, "BASE_GEO")
+    
+def tag_guide_curves(node_to_tag):
+    create_tag(node_to_tag, "GUIDE_CURVES")
     
 def tag_lid_curves(node_to_tag):
     create_tag(node_to_tag, "LID_CURVES")

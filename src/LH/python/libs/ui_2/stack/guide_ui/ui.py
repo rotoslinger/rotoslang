@@ -80,9 +80,10 @@ class Guide_UI(button_grid_base.Base):
         file_dialog=self.export_dialog                                                 
         checkboxes=self.export_checkboxes
         backup_checkbox=self.backup_checkbox
-        backup_filename = self.export_dialog.get_filename()
-        backup_path = self.export_dialog.default_backup_path
-        ui_core.export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path)
+        # backup_filename = self.export_dialog.get_filename()
+        # backup_path = self.export_dialog.default_backup_path
+        # self.export_dialog.asset_name
+        ui_core.export_all(file_dialog, checkboxes, backup_checkbox)
 
     def import_func(self):
         ui_core.import_all(self.import_dialog, self.import_checkboxes)

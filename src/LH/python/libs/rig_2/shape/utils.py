@@ -54,14 +54,11 @@ def get_points(shape, idx):
         return
     tweak_node=tweak_node[0]
     if geo_type == "nurbsCurve" or geo_type == "nurbsSurface":
-        # select -r C_upperLipVolume_CRV.cv[0:20] ;
         point_positions_attr_name = "{0}.plist[{1}].controlPoints[0:{2}]".format(tweak_node, idx, point_count)
-        # print "object TYPE",  cmds.getAttr("{0}.plist[0].controlPoints".format(tweak_node), type=True)
         point_positions = cmds.getAttr(point_positions_attr_name)
     if geo_type == "mesh":
         point_positions_attr_name = "{0}.vlist[{1}].vertex[0:{2}]".format(tweak_node, idx, point_count)
         point_positions = cmds.getAttr(point_positions_attr_name)
-    print "exporting tweak positions for ", shape, point_positions
     return point_positions
 
 
@@ -73,7 +70,6 @@ def set_points(shape, idx, point_positions):
         return
     tweak_node=tweak_node[0]
     if geo_type == "nurbsCurve" or geo_type == "nurbsSurface":
-        print "SETTING NURBS", shape, point_positions
         for i in range(point_count):
             cmds.setAttr("{0}.plist[{1}].controlPoints[{2}]".format(tweak_node, idx, i), *point_positions[i], typ="double3")
     if geo_type == "mesh":

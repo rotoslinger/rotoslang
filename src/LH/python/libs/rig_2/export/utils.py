@@ -2,6 +2,12 @@ import json,os,sys,importlib, ast
 
 from rig_2.guide import utils as guide_utils
 reload(guide_utils)
+
+from rig_2.filepath import utils as filepath_utils
+reload(filepath_utils)
+
+from rig_2.backup import utils as backup_utils
+reload(backup_utils)
     
     
 from rig_2.component import base as component_base
@@ -17,7 +23,22 @@ reload(attr_constants)
 import rig_2
 reload(rig_2)
 from rig_2 import decorator
-def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, guide_components=True, guide_geo=True):
+
+
+def export_all(asset_name,
+               filepath,
+               ctrl_shape=True,
+               guide=True,
+               guide_shape=True,
+               gimbal_shape=True,
+               guide_components=True,
+               guide_geo=True,
+               backup=True,
+               append=True):
+    
+    if backup:
+        backup_utils.backup_file(asset_name, filepath)
+
     export_dict = {}
     no_export_tag_dict = tag_utils.get_no_exports()
     export_dict["no_export_tag_dict"] = no_export_tag_dict
@@ -37,13 +58,23 @@ def export_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_s
         export_dict["guide_geo"] = guide_utils.get_guide_geo(no_export_tag_dict)
 
     # Make sure the path exists
-    path= os.path.dirname(os.path.normpath(filename))
+    path= os.path.dirname(os.path.normpath(filepath))
     if not os.path.exists(path):
         os.mkdir(path)
 
-
-    file = open(filename, "wb")
-    json.dump(export_dict, file, sort_keys = False, indent = 2)
+    if append and os.path.exists(filepath):
+        file = open(filepath, "rb")
+        original_dict = json.load(file)
+        # Add new entries to the original file.
+        # But also overwrite the original key values with new entries
+        for key in export_dict.keys():
+            for inner_key in export_dict[key]:
+                original_dict[key][inner_key] = export_dict[key][inner_key]
+        export_dict = original_dict
+    
+    file = open(filepath, "wb")
+    
+    json.dump(original_dict, file, sort_keys = False, indent = 2)
     file.close()
     return export_dict
 

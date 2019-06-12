@@ -50,20 +50,20 @@ guide_ui.openUI()
 '''
 
 
-def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
-    backup_arg = backup_checkbox[0].isChecked()
-    ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
-    export_dict = export_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
-    full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
-    backup_utils.generate_backup_file(full_backup_name, export_dict)
+# def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
+#     backup_arg = backup_checkbox[0].isChecked()
+#     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
+#     export_dict = export_utils.export_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+#     full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
+#     backup_utils.generate_backup_file(full_backup_name, export_dict)
 
-def import_all(file_dialog, checkboxes):
-    # cmds.undoInfo(state=False)
-    cmds.undoInfo(stateWithoutFlush = False)
-    ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
-    export_utils.import_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
-    cmds.undoInfo(stateWithoutFlush = True)
-    # cmds.flushUndo()
+# def import_all(file_dialog, checkboxes):
+#     # cmds.undoInfo(state=False)
+#     cmds.undoInfo(stateWithoutFlush = False)
+#     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
+#     export_utils.import_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+#     cmds.undoInfo(stateWithoutFlush = True)
+#     # cmds.flushUndo()
 
 def get_no_export_checkboxes(checkboxes):
     export_args = [checkbox.isChecked() for checkbox in checkboxes]

@@ -373,6 +373,13 @@ class Base(QtWidgets.QWidget):
             # In order to set the scroll you have to connect a range changed....
             self.scrollArea.verticalScrollBar().rangeChanged.connect(lambda: self.scrollArea.verticalScrollBar().setSliderPosition(self.scroll_val_y) )
             self.scrollArea.horizontalScrollBar().rangeChanged.connect(lambda: self.scrollArea.horizontalScrollBar().setSliderPosition(self.scroll_val_x) )
+       
+        #If save import/export path....
+        if self.settings_obj.value("importPath") and hasattr(self, "import_dialog"):
+            self.import_dialog.contents.setText(self.settings_obj.value("importPath"))
+        if self.settings_obj.value("exportPath") and hasattr(self, "export_dialog"):
+            self.export_dialog.contents.setText(self.settings_obj.value("exportPath"))
+
 
             
     def create_misc_utils(self):
@@ -409,9 +416,9 @@ class Base(QtWidgets.QWidget):
             self.settings_obj.setValue("scroll_val_x", scroll_val_x)
         self.mayaWin.removeEventFilter(self)
 
-        # If save import/export path....
-        # self.settings_obj.setValue("importPath", self.import_dialog.contents.text())
-        # self.settings_obj.setValue("exportPath", self.export_dialog.contents.text())
+        #If save import/export path....
+        self.settings_obj.setValue("importPath", self.import_dialog.contents.text())
+        self.settings_obj.setValue("exportPath", self.export_dialog.contents.text())
 
     # def set_window_flag_on(self, bla=False):
     #     self.setWindowFlags(QtCore.Qt.Window)
@@ -451,37 +458,16 @@ class Base(QtWidgets.QWidget):
         #     self.set_window_flag_on()
         # elif event.type()== QtCore.QEvent.WindowDeactivate:
         #     self.set_window_flag_off()
-
-        if event.type() == QtCore.QEvent.WindowActivate and not self.windowState() == QtCore.Qt.WindowMinimized:
-            # print "widget window has gained focus"
-            # self.activateWindow()
+        if event.type() == QtCore.QEvent.WindowActivate and not self.windowState() == QtCore.Qt.WindowMinimized and not self.windowState() == QtCore.Qt.WindowActive :
             self.raise_()
 
             QtWidgets.QApplication.setActiveWindow(self)
-            # return True
-            # self.set_window_flag_on()
+            # self.mayaWin.blockSignals(True) 
+            # QtWidgets.QApplication.setActiveWindow(self.mayaWin)
+            # self.mayaWin.blockSignals(False) 
         elif event.type()== QtCore.QEvent.WindowDeactivate:
             self.raise_()
             pass
-        #     return True
-        # return True
-
-            # QtWidgets.QApplication.setActiveWindow(self.mayaWin)
-            # print "widget window has gained focus"
-            # self.set_window_flag_off()
-        # elif event.type()== QtCore.QEvent.FocusIn:
-        #     print "widget has gained keyboard focus"
-        # elif event.type()== QtCore.QEvent.FocusOut:
-        #     print "widget has lost keyboard focus"
-
-# class FocusEventFilter(QtCore.QObject):
-    
-#     def eventFilter(self, obj, event):
-                     
-#         if event.type() == QtCore.QEvent.WindowActivate:
-#             print "widget window has gained focus"
-#         elif event.type()== QtCore.QEvent.WindowDeactivate:
-#             print "widget window has lost focus"
 
 
 

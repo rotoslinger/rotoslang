@@ -32,6 +32,7 @@ def build(asset_name="oldMan",
           attach_to="head_output"):
 
     guide_file = filepath_utils.get_file_by_asset_name(asset_name, file="guides")
+    # guide_file = filepath_utils.get_file_by_asset_name(asset_name, file="master_guides")
     get_file(asset_filepath, asset_name)
     
     
@@ -39,11 +40,11 @@ def build(asset_name="oldMan",
     mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
     mouth_jaw_guides.create()
     
-    lid_guides = face_guide.Lid_Guide(hide_on_build=True)
-    lid_guides.create()
+    # lid_guides = face_guide.Lid_Guide(hide_on_build=True)
+    # lid_guides.create()
 
-    brow_guides = face_guide.Brow_Guide(hide_on_build=True)
-    brow_guides.create()
+    # brow_guides = face_guide.Brow_Guide(hide_on_build=True)
+    # brow_guides.create()
     
     # Import guides for the guide components.
     # They need to be placed in the proper location before the rigs build to make thing simpler
@@ -65,10 +66,10 @@ def build(asset_name="oldMan",
 
     ### FINALIZE ### 
     # be sure to comment this out if you need to fit your guides!!!!!!!!!!!!!
-    guide_utils.bake_all_guides()
+    # guide_utils.bake_all_guides()
 
-    # cmds.select("C_bodyBind_GEO")
-    # cmds.viewFit()
+    cmds.select("C_bodyBind_GEO")
+    cmds.viewFit()
     
 def build_brow(brow_guides):
     brow_class = brow.Brow(guide_class=brow_guides,
