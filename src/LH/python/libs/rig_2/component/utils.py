@@ -3,15 +3,22 @@ from maya import cmds
 from rig_2.manipulator import elements as manip_elements
 
 from rig_2.mirror import utils as mirror_utils
-from rig_2.name import utils as name_utils
-from rig.rigComponents import simpleton
-from rig_2.tag import utils as tag_utils
-
-reload(tag_utils)
 reload(mirror_utils)
+from rig_2.name import utils as name_utils
 reload(name_utils)
+from rig.rigComponents import simpleton
 reload(simpleton)
+from rig_2.tag import utils as tag_utils
+reload(tag_utils)
 
+from rig.deformers import utils as deformerUtils
+reload(deformerUtils)
+
+from rig.rigComponents import meshRivetCtrl
+reload(meshRivetCtrl)
+
+from rig.utils import misc
+reload(misc)
 
 def safe_parent(objects_to_parent, parent):
     if not cmds.objExists(parent):
@@ -187,3 +194,91 @@ def cluster_lattice_sheet(lattice_name,
             if "L_" in control:
                 mirror_utils.add_dynamic_mirror_connection([control])
     return root_control, controls, clusters
+
+
+
+def autoposition_matrix_deformer_controls(weight_stack_node, threshold=.09, is_mesh_rivet_control=True, orientation_mesh=""):
+    # This will reposition matrix deformer
+    # Rivets
+    # Guides
+    
+    numElements = cmds.getAttr("{0}.inputs".format(weight_stack_node), mi=True)
+    weighted_mesh = cmds.listConnections(weight_stack_node + ".weightedMesh")
+    if not weighted_mesh:
+        return
+    weighted_mesh = weighted_mesh[0]
+    for idx in range(len(numElements)):
+        factor_attr =  "{0}.inputs[{1}].factor".format(weight_stack_node, idx)
+        position = getPositionsFromWeightsByIndex(weight_stack_node, weighted_mesh, idx, threshold)
+        connection = cmds.listConnections(factor_attr)
+        if not connection:
+            continue
+        connection = connection[0]
+        maya_object_type = str(cmds.objectType(connection))
+        if maya_object_type != "nullTransform" and maya_object_type != "transform":
+            continue
+        node_to_position = connection
+        rotation=None
+        if orientation_mesh:
+            rotation=get_rotation_from_nurbs()
+        if is_mesh_rivet_control:
+            position_mesh_rivet(node_to_position, position, rotation)
+            continue
+        misc.move(node_to_position, position, rotation)
+        
+
+def autoposition_weight_stack_controls(weight_stack_node, threshold=.09, is_mesh_rivet_control=True, orientation_mesh="", project_to_curve=None):
+    # THIS WILL NOT WORK if a transform is not connected to the factor, so be VERY CAREFUL when using this
+    numElements = cmds.getAttr("{0}.inputs".format(weight_stack_node), mi=True)
+    weighted_mesh = cmds.listConnections(weight_stack_node + ".weightedMesh")
+    if not weighted_mesh:
+        return
+    weighted_mesh = weighted_mesh[0]
+    for idx in range(len(numElements)):
+        factor_attr =  "{0}.inputs[{1}].factor".format(weight_stack_node, idx)
+        position = getPositionsFromWeightsByIndex(weight_stack_node, weighted_mesh, idx, threshold)
+        if project_to_curve:
+            position = misc.getClosestPointOnCurve(project_to_curve, position)
+        
+        connection = cmds.listConnections(factor_attr)
+        if not connection:
+            continue
+        connection = connection[0]
+        maya_object_type = str(cmds.objectType(connection))
+        if maya_object_type != "nullTransform" and maya_object_type != "transform":
+            continue
+        node_to_position = connection
+        rotation=None
+        if orientation_mesh:
+            rotation=get_rotation_from_nurbs()
+        if is_mesh_rivet_control:
+            position_mesh_rivet(node_to_position, position, rotation)
+            continue
+        misc.move(node_to_position, position, rotation)
+            
+
+def getPositionsFromWeightsByIndex(weight_stack_node, weighted_mesh, index=0, threshold=.09):
+    weightList =  "{0}.inputs[{1}].inputWeights".format(weight_stack_node, index)
+    weightList = cmds.getAttr(weightList)
+    height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, weighted_mesh, threshold=threshold)
+    return [center.x, center.y, center.z]
+
+def get_rotation_from_nurbs(position, nurbs, aimVector = [0,0,1], up_vector=[0,1,0], up_vec_mult=100):
+    # Based on a location, get an orientation from a nurbsSurface
+    tempLocation = position
+    temp_driven = cmds.createNode("transform")
+    cmds.xform(temp_driven, ws=True, t=tempLocation)
+    up_vector_object = cmds.createNode("transform")
+    normalCons = cmds.normalConstraint(nurbs, temp_driven, aimVector=aimVector, u=up_vector, wuo=up_vector_object, worldUpType="object")
+    misc.reorient_normal_constraint_up_vector_object(up_vector_object, temp_driven, up_vector, up_vec_mult=up_vec_mult)
+    rotate = cmds.xform(temp_driven, q=True, ws=True, ro=True)
+    cmds.delete(temp_driven, up_vector_object)
+    return rotate
+
+def position_mesh_rivet(rivet_control, position=None, rotation=None, do_auto_rotation=True, aimVector = [0,0,1]):
+    buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = meshRivetCtrl.getRivetParts(rivet_control)
+    if not rotation and do_auto_rotation:
+       rotation =  get_rotation_from_nurbs(position, normalConstraintGeo, aimVector)
+    misc.move(buffer2, position, rotation)
+    misc.updateGeoConstraint(offsetBuffer = buffer2, geoConstraint=geoConstraint)
+

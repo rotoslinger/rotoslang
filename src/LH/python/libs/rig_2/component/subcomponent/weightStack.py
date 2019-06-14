@@ -110,6 +110,15 @@ class Weight_Node(component_base.Component):
 
     def positionControls(self):
         return
+    
+    def getRotationOrientation(self, position, controlAutoOrientMesh):
+            tempLocation = position
+            temp = cmds.createNode("transform")
+            cmds.xform(temp, ws=True, t=tempLocation)
+            normalCons = cmds.normalConstraint(controlAutoOrientMesh, temp, aimVector=[0, 0, 1])
+            rotate = cmds.xform(temp, q=True, ws=True, ro=True)
+            cmds.delete(temp)
+            return rotate
 
     def create(self):
         self.check()
@@ -386,14 +395,14 @@ class AnimCurveWeight(Weight_Node):
             if self.controlAutoOrientMesh:
                 self.rotationsFromWeights.append(self.getRotationOrientation(self.positionsFromWeights[idx], self.controlAutoOrientMesh))
 
-    def getRotationOrientation(self, position, controlAutoOrientMesh):
-            tempLocation = position
-            temp = cmds.createNode("transform")
-            cmds.xform(temp, ws=True, t=tempLocation)
-            normalCons = cmds.normalConstraint(controlAutoOrientMesh, temp, aimVector=[0, 0, 1])
-            rotate = cmds.xform(temp, q=True, ws=True, ro=True)
-            cmds.delete(temp)
-            return rotate
+    # def getRotationOrientation(self, position, controlAutoOrientMesh):
+    #         tempLocation = position
+    #         temp = cmds.createNode("transform")
+    #         cmds.xform(temp, ws=True, t=tempLocation)
+    #         normalCons = cmds.normalConstraint(controlAutoOrientMesh, temp, aimVector=[0, 0, 1])
+    #         rotate = cmds.xform(temp, q=True, ws=True, ro=True)
+    #         cmds.delete(temp)
+    #         return rotate
 
     def setFalloffDefaults(self):
         self.getWorldLocationBasedOnWeights()
@@ -558,7 +567,7 @@ class WeightStack(Weight_Node):
         self.positionsFromWeights = []
         self.rotationsFromWeights = []
         self.startElem = 0
-
+        self.controls_weight_ordered = []
         # self.outputToBlendshape = outputToBlendshape
         # Don't support multiple geos right now
         if type(self.geoToWeight) == list:
@@ -690,13 +699,29 @@ class WeightStack(Weight_Node):
             positionsFromWeights.append([center.x, center.y, center.z])
         return positionsFromWeights
 
+    def getPositionsAndRotationsFromWeights(self):
+        self.elemCheck("{0}.inputs".format(self.node))
+        self.positionsFromWeights = []
+        self.rotationsFromWeights = []
+        numElements = cmds.getAttr("{0}.inputs".format(self.node), mi=True)
+        print numElements, self.controls
+        for idx in range(len(numElements)):
+            self.positionsFromWeights.append(self.getPositionsFromWeightsByIndex(idx))
+            self.rotationsFromWeights.append(self.getRotationOrientation(self.positionsFromWeights[idx], self.controlAutoOrientMesh))
+        return self.positionsFromWeights, self.rotationsFromWeights
+
     def getPositionsFromWeightsByIndex(self, index=0):
         weightList =  "{0}.inputs[{1}].inputWeights".format(self.node, index)
-        height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight)
-        positionsFromWeights.append([center.x, center.y, center.z])
-        return positionsFromWeights
+        weightList = cmds.getAttr(weightList)
+        height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, self.geoToWeight, threshold=self.controlPositionWeightsThreshold)
+        return [center.x, center.y, center.z]
 
-
+    def reposition_controls(self):
+        for idx, ctrl in enumerate(self.controls):
+            buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = meshRivetCtrl.getRivetParts(ctrl)
+            misc.move(buffer2, self.positionsFromWeights[idx], self.rotationsFromWeights[idx])
+            misc.updateGeoConstraint(offsetBuffer = buffer2, geoConstraint=geoConstraint)
+            
     def outputConnections(self):
         # Checks if the output type is kDoubleArray or a multiFloat (maya native deformer weights type)
         if not self.outputAttrs:
@@ -839,12 +864,14 @@ class WeightStack(Weight_Node):
                                                 
                                                 )
             tmpCtrl.create()
+
             if tmpCtrl.ctrl not in self.controls:
                 self.controls.append(tmpCtrl.ctrl)
 
     def positionControls(self):
         if not self.repositionRivetCtrls:
             return
+        
         for idx, ctrl in enumerate(self.controls):
             buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = meshRivetCtrl.getRivetParts(ctrl)
             misc.move(buffer2, self.positionsFromWeights[idx], self.rotationsFromWeights[idx])
@@ -889,4 +916,3 @@ def create_anim_curve_connection_attr(control_node, attr_name, curve_name, outpu
     connection_info_dict["geo_shape"] = None
     string_array_attr = attr_utils.create_string_array(control_node, attr_name)
     attr_utils.add_string_to_string_array(string_array_attr, str(connection_info_dict))
-    

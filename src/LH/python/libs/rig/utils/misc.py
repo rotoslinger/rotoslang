@@ -1213,6 +1213,18 @@ def getClosestPolygonToTransform(meshObject, transform):
     pointA, pointB, pointC = get3PointsFromPolyID(fnMesh, point_ids)
     return point_ids, closest_point, pointA, pointB, pointC
 
+def getClosestPointOnCurve(curve, position):
+    point_to_check = OpenMaya.MPoint(position[0], position[1], position[2])
+    fnCurve = getOMNurbsCurve(curve)
+    util = OpenMaya.MScriptUtil()
+    util.createFromInt(0)
+    util = OpenMaya.MScriptUtil()
+    param = util.asDoublePtr()
+    closest_point = fnCurve.closestPoint(point_to_check, param, OpenMaya.MSpace.kWorld)
+
+    return [closest_point.x, closest_point.y, closest_point.z]
+
+
 def get3PointsFromPolyID(fnMesh, intArray):
     pointA = OpenMaya.MPoint()
     pointB = OpenMaya.MPoint()
@@ -1273,7 +1285,7 @@ def getSetMaintainOffset(transform=None, offsetTransform=None, maintainOffsetT=T
 
 def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translate=True, rotate=True, scale=False,
                   offsetBuffer = None, maintainOffsetT=True, maintainOffsetR=True, maintainOffsetS=True, normalConstraintPatch=None,
-                  up_vector_object="", up_vector=[0,1,0], up_vec_mult=100):
+                  up_vector_object="", up_vector=[0,1,0], up_vec_mult=100, aim_vector=[0,0,1]):
     """
     suffix GCS
     """
@@ -1309,7 +1321,7 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
     if rotate and not normalConstraintPatch:
         cmds.connectAttr(decompose + ".outputRotate", driven + ".rotate" )
     elif normalConstraintPatch:
-        cmds.normalConstraint(normalConstraintPatch, driven, u=up_vector, wuo=up_vector_object, worldUpType="object")
+        cmds.normalConstraint(normalConstraintPatch, driven, u=up_vector, wuo=up_vector_object, worldUpType="object", aimVector=aim_vector)
         reorient_normal_constraint_up_vector_object(up_vector_object, driven, up_vector, up_vec_mult=up_vec_mult)
         # cmds.normalConstraint(normalConstraintPatch, driven)
 

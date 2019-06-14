@@ -37,53 +37,75 @@ def build(asset_name="oldMan",
     
     
     # Create Guides First
-    mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
-    mouth_jaw_guides.create()
+    # mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
+    # mouth_jaw_guides.create()
     
     # lid_guides = face_guide.Lid_Guide(hide_on_build=True)
     # lid_guides.create()
 
-    # brow_guides = face_guide.Brow_Guide(hide_on_build=True)
-    # brow_guides.create()
+    brow_guides = face_guide.Brow_Guide(hide_on_build=True)
+    brow_guides.create()
     
     # Import guides for the guide components.
     # They need to be placed in the proper location before the rigs build to make thing simpler
     # Because we have built the guide components in the file, we will not want to build components on import
     export_utils.import_all(filename=guide_file, build_components=False)
 
-    lip_class = build_lip(mouth_jaw_guides)
+    # lip_class = build_lip(mouth_jaw_guides)
     # mouth_class = build_mouth(mouth_jaw_guides) 
     # l_lids_class, r_lids_class = build_lids(lid_guides)
-    # brow_class = build_brow(brow_guides)
+    brow_class, brow_fit_class = build_brow(brow_guides)
 
     # The face class will be used to wire everything together... it contains the face_anchor
     face_class = face.Face(face_driver="head_output")
     face_class.create()
-    
+
     # # import the guides again, this time for all of the non guide components
     export_utils.import_all(filename=guide_file, build_components=False)
 
-
+    
     ### FINALIZE ### 
-    # be sure to comment this out if you need to fit your guides!!!!!!!!!!!!!
+    # DO NOT BAKE GUIDES IN THE BUILD, that should only be done as part of checking in your rig asset!!!
     # guide_utils.bake_all_guides()
 
     cmds.select("C_bodyBind_GEO")
     cmds.viewFit()
     
 def build_brow(brow_guides):
+    
     brow_class = brow.Brow(guide_class=brow_guides,
-                            leftBrowMesh = "C_brow_GEO",
-                            leftBrowBaseMesh = "C_browBase_GEO",
-                            rightBrowMesh = "C_brow_GEO",
-                            rightBrowBaseMesh = "C_browBase_GEO",
-                            slidePatch="C_browGuide_SLDE",
-                            slidePatchBase="C_browGuide_SLDEBASE",
-                            L_projectionMesh="L_brow_REF_PRJ",
-                            R_projectionMesh="R_brow_REF_PRJ",
+                            nameBrows="Brow",
+                            ctrlName = "brow", # VERY IMPORTANT that this is the same between the brow and the fit brow so controls can be reused!!!!
+                            # You can give args as the guides, or string values of the maya object names:
+                            # leftBrowMesh = "C_brow_GEO",
+                            # leftBrowBaseMesh = "C_browBase_GEO",
+                            # rightBrowMesh = "C_brow_GEO",
+                            # rightBrowBaseMesh = "C_browBase_GEO",
+                            # slidePatch="C_browGuide_SLDE",
+                            # slidePatchBase="C_browGuide_SLDEBASE",
+                            # L_projectionMesh="L_brow_REF_PRJ",
+                            # R_projectionMesh="R_brow_REF_PRJ",
                             )
     brow_class.create()
-    return brow_class
+    brow_fit_class = brow.Brow(guide_class=brow_guides,
+                               nameBrows="CurveBrow",
+                               ctrlName = "brow",
+                               ctrlAutoPositionThreshold=.001,
+                               fit_curve=True,)
+    brow_fit_class.create()
+    
+    # brow_class = brow.Unibrow(guide_class=brow_guides,
+    #                         nameBrows="Brow",
+    #                         ctrlName = "brow", # VERY IMPORTANT that this is the same between the brow and the fit brow so controls can be reused!!!!
+    #                         )
+    # brow_class.create()
+    # brow_fit_class = brow.Unibrow(guide_class=brow_guides,
+    #                            nameBrows="CurveBrow",
+    #                            ctrlName = "brow",
+    #                            ctrlAutoPositionThreshold=.001,
+    #                            fit_curve=True,)
+    # brow_fit_class.create()    
+    return brow_class, brow_fit_class
 
 def build_lids(lid_guides):
     l_lid_class = lid.Lid(guide_class=lid_guides,

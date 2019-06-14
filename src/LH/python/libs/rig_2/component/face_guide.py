@@ -621,11 +621,24 @@ class Brow_Guide(Base):
                                                     transform_suffix=None,
                                                     shape_suffix=None
                                                     )
-        
-            
-        [tag_utils.tag_guide_curves(curve) for curve in [self.l_curve, self.r_curve, self.c_curve]]
+        self.l_curve_base = self.create_base(self.l_curve)
+        self.r_curve_base = self.create_base(self.r_curve)
+        self.c_curve_base = self.create_base(self.c_curve)
 
-        self.guide_geo += [self.l_curve, self.r_curve, self.c_curve]
+            
+        [tag_utils.tag_guide_curves(curve) for curve in [self.l_curve,
+                                                         self.r_curve,
+                                                         self.c_curve,
+                                                         self.l_curve_base,
+                                                         self.r_curve_base,
+                                                         self.c_curve_base]]
+
+        self.guide_geo += [self.l_curve,
+                            self.r_curve,
+                            self.c_curve,
+                            self.l_curve_base,
+                            self.r_curve_base,
+                            self.c_curve_base]
 
         # Prepare data to be used later for fitting
         self.slide_fit_meshes = [self.l_brow, self.r_brow]
@@ -634,11 +647,27 @@ class Brow_Guide(Base):
         self.r_mesh_to_project= self.r_brow
         self.c_meshes_to_project= [self.l_brow, self.r_brow]
 
-        self.lattice_geo =  [self.l_brow, self.r_brow, self.l_curve, self.r_curve, self.c_curve]
+        self.lattice_geo =  [self.l_brow,
+                             self.r_brow,
+                             self.l_curve,
+                             self.r_curve,
+                             self.c_curve,
+                             self.l_curve_base,
+                             self.r_curve_base,
+                             self.c_curve_base                             
+                             ]
         
-        self.component_membership_nodes += [self.l_brow, self.r_brow, self.l_curve, self.r_curve, self.c_curve]
+        self.component_membership_nodes += [self.l_brow,
+                                            self.r_brow,
+                                            self.l_curve,
+                                            self.r_curve,
+                                            self.c_curve,
+                                            self.l_curve_base,
+                                            self.r_curve_base,
+                                            self.c_curve_base                             
+                                            ]
         
-        self.geo_to_be_base += [self.l_curve, self.r_curve, self.c_curve]
+        # self.geo_to_be_base += [self.l_curve, self.r_curve, self.c_curve]
         
     def create_projection_meshes(self):
         
@@ -687,7 +716,9 @@ class Brow_Guide(Base):
         cmds.DeleteHistory(self.slide_nurbs)
         cmds.makeIdentity(self.slide_nurbs, apply=True, t=1, r=1, s=1, n=0, pn=1)
 
-        self.geo_to_be_base += [self.slide_nurbs]
-        self.lattice_geo += [self.slide_nurbs]
+
+        self.slide_nurbs_base = self.create_base(self.slide_nurbs)
         
-        self.guide_geo += [self.slide_nurbs]
+        self.lattice_geo += [self.slide_nurbs, self.slide_nurbs_base]
+        self.component_membership_nodes += [self.slide_nurbs, self.slide_nurbs_base]
+        self.guide_geo +=  [self.slide_nurbs, self.slide_nurbs_base]
