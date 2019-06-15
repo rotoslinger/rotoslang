@@ -36,7 +36,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipMatrixDeformer301MatrixDefGimbal_CTL": [
+    "L_upperLipTertiaryROT00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
     "R_CurveBrowMatDef_CurveWeights": [
@@ -78,12 +78,21 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_browMatrixDeformer200MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_lowerLipCurveTertiaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_upperLipTertiary01Gimbal_CTL": [
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_upperLipMatrixDeformer3MatrixDef_CTL": [
@@ -143,7 +152,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_upperLipTertiaryROT00_BUF_SHPMain_None": [
+    "R_upperLipMatrixDeformer301MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
     "R_lowerLipTertiary0001_BUF": [
@@ -175,11 +184,6 @@
       "NO_EXPORT"
     ], 
     "C_lowerLipCurveSecondaryTrans_BUF": [
-      "NO_EXPORT", 
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "C_upperLipPrimary01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -250,6 +254,19 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_C_BrowMatDefTertiaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_lowerLipTertiary01_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_lidControlUpperTertiary01_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "upperLipTranslate_MatrixDef": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -262,7 +279,13 @@
     "C_upperLipMatrixDeformer2MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
-    "L_browRMatrixDeformer200MatrixDef_CTL": [
+    "C_R_BrowMatDefTertiaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_CurveBrowMatDefTertiaryTrans02_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -271,6 +294,11 @@
       "NO_EXPORT"
     ], 
     "L_middleL_llidslowermatdeftertiaryrot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_CurveBrowMatDefSecondaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -306,6 +334,15 @@
       "NO_EXPORT"
     ], 
     "R_middleLidcontrollowermatrixdeformer2MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browTertiary02_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_middleL_llidsuppermatdeftertiarytrans_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -353,7 +390,17 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_BrowMatDefTertiaryRot01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_browLSecondary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_CurveBrowMatDefTertiaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -370,7 +417,17 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_browTertiary01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "brow_CLASS": [
+      "NO_EXPORT"
+    ], 
+    "L_C_CurveBrowMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "upperLipCurveMatDef_AnimCurveWeight": [
@@ -399,6 +456,11 @@
       "NO_EXPORT"
     ], 
     "L_browRMatrixDeformer301MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_CurveBrowMatDefTertiaryTrans02_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -434,6 +496,11 @@
       "NO_EXPORT"
     ], 
     "L_upperLipCurveSecondaryROT00_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
+    "L_browTertiary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_lowerLipCurveTertiaryROT01_BUF_SHPMain_None": [
@@ -476,7 +543,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_BrowSlide_CurveWeights": [
+    "upperLipRoll_WeightStack": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -528,7 +595,9 @@
     "L_lowerLipSecondaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
-    "C_upperLipMatrixDeformer3MatrixDefGimbal_CTL": [
+    "L_browTertiary0301_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_lowerLipCurveSecondaryTrans_BUF_SHPMain_None": [
@@ -555,6 +624,11 @@
       "NO_EXPORT"
     ], 
     "upperLipCurveTranslate_MatrixDef": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowMatDefTertiaryRot02_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -592,6 +666,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_outerLidcontrollowersecondary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_R_CurveBrowMatDefSecondaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -608,8 +687,12 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_lowerLipPrimary01_BUF": [
+    "C_C_BrowMatDefSecondaryTrans_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_rLidsUpperMatDef_MatDefTranslate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -629,6 +712,14 @@
     ], 
     "L_outerLidcontroluppertertiary0001_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browSecondary00_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browTertiary00_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -674,12 +765,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_browTertiary00_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_innerLidcontroluppertertiary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_lowerLipSecondary0001_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browRMatrixDeformer200MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -697,7 +796,9 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_upperLipTertiary00Gimbal_CTL": [
+    "L_C_CurveBrowMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_lowerLipCurveTertiaryTrans00_BUF_SHPMain_None": [
@@ -724,7 +825,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_outerLidcontroluppersecondary00_CTL": [
+    "C_BrowMatDef_MatDefRotate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -738,6 +839,10 @@
       "NO_EXPORT"
     ], 
     "L_upperLipMatrixDeformer300MatrixDefGimbal_CTL": [
+      "NO_EXPORT"
+    ], 
+    "C_browPrimary_ACV": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_innerR_rlidsuppermatdeftertiaryrot00_BUF": [
@@ -771,10 +876,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_browTertiary0201_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipTertiaryROT00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
     "R_browRTertiary00_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_outerR_rlidslowermatdeftertiarytrans00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -790,10 +905,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_CurveBrowSlide": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
-    "R_rLidsUpperSlideWeightStack_UD": [
+    "R_C_BrowMatDefTertiaryTrans02_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -839,7 +959,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_CurveBrowSlide_WeightStack_LR": [
+    "R_upperLipCurveTertiaryROT00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -864,8 +985,19 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_CurveBrowSlide_WeightStack_LR": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_lLidsUpperSlideCurveWeights": [
       "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browSecondary00_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_upperLipTertiary00Gimbal_CTL": [
       "NO_EXPORT"
     ], 
     "L_innerLidcontrollowertertiary0101_BUF": [
@@ -906,6 +1038,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_CurveBrowMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_lowerLipCurveTertiaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -914,7 +1051,7 @@
     "C_upperLipCurvePrimaryTrans_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
-    "C_lowerLipCurveSecondaryROT_BUF": [
+    "R_lowerLipTertiaryROT00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -924,6 +1061,11 @@
       "NO_EXPORT"
     ], 
     "lowerLipThick_WeightStack": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -947,7 +1089,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browRMatrixDeformer300MatrixDef_CTL": [
+    "R_middleLidcontrollowertertiary_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -972,7 +1114,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_middleR_rlidsuppermatdeftertiarytrans_BUF": [
+    "C_L_CurveBrowMatDefPrimaryRot_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1019,11 +1161,23 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_CurveBrowSlide_WeightStack_LR": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_browTertiary_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "lowerLip_RollDef": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "lowerLipSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_lLidsLowerMatDef_MatDefTranslate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1048,6 +1202,11 @@
       "NO_EXPORT"
     ], 
     "L_CurveBrowSlide": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_middleR_rlidsuppermatdeftertiarytrans_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1105,6 +1264,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowMatDefTertiaryRot02_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_CurveBrowMatDef_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_lidControlLowerTertiary00_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1124,10 +1292,6 @@
       "NO_EXPORT"
     ], 
     "L_lLidsLowerSlide": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "L_lowerLipSecondary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1166,7 +1330,22 @@
     "R_upperLipCurveTertiaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "C_C_CurveBrowMatDefPrimaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_innerL_llidslowermatdefsecondarytrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowMatDefTertiaryRot03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browRTertiary0001_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1183,12 +1362,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_lLidsUpperSlide": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_middleR_rlidsuppermatdefsecondarytrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_LowerLipWireCurveDeformerNormalizeFalloff_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_browMatrixDeformer3MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1211,6 +1398,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_outerLidcontroluppersecondary00_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_outerLidcontrollowertertiary0001_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -1223,6 +1414,10 @@
     "L_lowerLidBase": [
       "NO_EXPORT"
     ], 
+    "C_BrowSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipCurveTertiaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -1233,6 +1428,11 @@
       "NO_EXPORT"
     ], 
     "L_browLSecondary00_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_CurveBrowMatDefTertiaryRot03_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1272,8 +1472,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipCurveTertiaryROT00_BUF": [
+    "L_CurveBrowSlide_WeightStack_LR": [
       "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_BrowSlide": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1281,12 +1484,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_lowerLipTertiaryROT00_BUF": [
+    "C_CurveBrowSlide_WeightStack_UD": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_lowerLipCurveSecondaryROT_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_middleLidcontrollowertertiary_CTL": [
+    "R_browRMatrixDeformer300MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browMatrixDeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1333,11 +1544,21 @@
     "R_lowerLipCurveTertiaryTrans01_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "L_C_CurveBrowMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_browRTertiary01_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_upperLipTertiary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_middleL_llidslowermatdefsecondaryrot_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1359,7 +1580,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lowerLipTertiary0101_BUF": [
+    "C_upperLipPrimary01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1411,6 +1632,7 @@
       "NO_EXPORT"
     ], 
     "C_bodyBind_GEO": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_outerR_rlidslowermatdefsecondarytrans00_BUF": [
@@ -1448,12 +1670,17 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_L_BrowMatDefSecondaryTrans00_BUF": [
+    "C_C_BrowMatDefSecondaryRot_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_lowerLipSecondaryTrans00_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
+    "L_C_CurveBrowMatDefTertiaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_lLidsUpperMatDef_MatDefRotate": [
@@ -1483,6 +1710,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_browPrimary01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_browBase_GEO": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1495,12 +1727,16 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_C_BrowMatDefPrimaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "upperLipRotate_MatrixDef": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipTertiary0101_BUF": [
-      "NO_EXPORT", 
+    "browRMatDefSingleFalloff_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1511,6 +1747,10 @@
     ], 
     "R_middleR_rlidslowermatdeftertiaryrot_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_rLidsUpperSlideWeightStack_UD": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1560,7 +1800,7 @@
     "R_upperLipSecondary00_GUIDEMain_None": [
       "NO_EXPORT"
     ], 
-    "L_innerLidcontroluppermatrixdeformer301MatrixDef_CTL": [
+    "C_browMatrixDeformer2MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1605,7 +1845,9 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_lowerLipCurveTertiaryTrans00_BUF_SHPMain_None": [
+    "L_lowerLipTertiary0101_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_lowerLipCurveSecondaryROT00_BUF": [
@@ -1616,7 +1858,7 @@
     "C_upperLipCurveTertiaryTrans_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
-    "lowerLipCurveSlide_WeightStack_UD": [
+    "R_browTertiary01_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1677,8 +1919,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_outerL_llidslowermatdeftertiaryrot00_BUF": [
-      "NO_EXPORT", 
+    "R_browTertiary01_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1697,12 +1938,7 @@
     "L_upperLipSecondary00_GUIDEMain_None": [
       "NO_EXPORT"
     ], 
-    "C_R_BrowMatDefTertiaryRot_BUF": [
-      "NO_EXPORT", 
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "L_middleL_llidsuppermatdeftertiarytrans_BUF": [
+    "R_browTertiary0301_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1714,6 +1950,9 @@
     ], 
     "C_lowerLipMatrixDeformer1MatrixDef_CTL": [
       "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_lowerLipTertiary00_GUIDEMain_None": [
       "NO_EXPORT"
     ], 
     "C_upperLipCurveTertiaryROT_BUF": [
@@ -1783,7 +2022,12 @@
     "L_lowerLipTertiaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
-    "R_lowerLipTertiary01_CTL": [
+    "L_browTertiary0201_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browMatrixDeformer303MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1799,11 +2043,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_BrowSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_upperLipMatrixDeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_R_BrowMatDefTertiaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_CurveBrowMatDefSecondaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1814,6 +2067,15 @@
       "NO_EXPORT"
     ], 
     "R_rLidsLowerMatDef_MatDefTranslate": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_BrowMatDef_CurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1834,7 +2096,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lLidsUpperSlide": [
+    "R_C_BrowMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1863,6 +2126,9 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_upperLipMatrixDeformer200MatrixDefGimbal_CTL": [
+      "NO_EXPORT"
+    ], 
     "R_BrowSlide": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1872,6 +2138,20 @@
       "NO_EXPORT"
     ], 
     "L_upperLipSecondary00Gimbal_CTL": [
+      "NO_EXPORT"
+    ], 
+    "L_browTertiary03_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowMatDefPrimaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_CurveBrowMatDefTertiaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_lowerLipTertiary01_ACV": [
@@ -1887,6 +2167,11 @@
       "NO_EXPORT"
     ], 
     "R_outerR_rlidsuppermatdefsecondaryrot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowMatDefSecondaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1921,6 +2206,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_browTertiary01_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_BrowSlide_CurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1942,12 +2231,24 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_lowerLipCurveTertiaryTrans00_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
+    "C_BrowMatDef_MatDefTranslate": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_L_CurveBrowMatDefTertiaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_CurveBrowMatDef_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowMatDefTertiaryRot_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1961,7 +2262,8 @@
     "L_lowerLipMatrixDeformer301MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
-    "R_middleLidcontrollowerprimary_CTL": [
+    "R_C_CurveBrowMatDefTertiaryRot01_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1991,7 +2293,12 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_L_CurveBrowMatDefTertiaryTrans01_BUF": [
+    "C_browSecondary01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browSecondary0001_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2010,7 +2317,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_middleLidcontroluppersecondary_CTL": [
+    "L_browTertiary02_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2024,12 +2331,25 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowMatDefTertiaryRot03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_middleLidcontrollowermatrixdeformer3MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_outerL_llidsuppermatdeftertiarytrans00_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browSecondary00_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browTertiary03_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2048,6 +2368,9 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_lowerLipCurvePrimaryTrans_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
     "R_innerLidcontrollowertertiary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2056,7 +2379,12 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "lowerLipCurveRotate_MatrixDef": [
+    "C_C_CurveBrowMatDefSecondaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_middleLidcontroluppersecondary_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2071,12 +2399,15 @@
     "R_lowerLipCurveTertiaryROT00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "R_middleLidcontroluppermatrixdeformer2MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_browLTertiary01_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lidControlUpperTertiary01_ACV": [
-      "NO_EXPORT", 
+    "R_lowerLid": [
       "NO_EXPORT"
     ], 
     "R_outerR_rlidslowermatdefsecondaryrot00_BUF": [
@@ -2140,7 +2471,9 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lowerLipTertiary00_GUIDEMain_None": [
+    "R_C_CurveBrowMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_upperLipMatrixDeformer300MatrixDef_CTL": [
@@ -2180,6 +2513,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_CurveBrowMatDef_MatDefRotate": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_outerLidcontroluppermatrixdeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2188,12 +2525,17 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_browSecondary00_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_middleL_llidsuppermatdefsecondarytrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_rLidsUpperMatDef_MatDefTranslate": [
+    "R_C_CurveBrowMatDefTertiaryRot02_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2204,6 +2546,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_L_BrowMatDefPrimaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "lidControlLowerMATDEFTESTFalloff_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2211,11 +2558,20 @@
     "C_lowerLipTertiaryROT_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "browMatDefSingleFalloff_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "lidControlLowerFalloff_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_upperLipSecondaryROT00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowMatDefTertiaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2233,7 +2589,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipTertiary00_CTL": [
+    "R_C_BrowMatDefTertiaryRot00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2260,9 +2617,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_L_CurveBrowMatDefPrimaryRot_BUF": [
-      "NO_EXPORT", 
-      "NO_EXPORT", 
+    "C_upperLipMatrixDeformer3MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
     "R_R_CurveBrowMatDefTertiaryTrans00_BUF": [
@@ -2270,7 +2625,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lLidsLowerMatDef_MatDefTranslate": [
+    "R_upperLipTertiary0101_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2285,16 +2641,25 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_CurveBrowSlide_WeightStack_LR": [
+    "R_middleLidcontrollowerprimary_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browRTertiary0001_BUF": [
+    "C_CurveBrowMatDef_MatDefTranslate": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_CurveBrowMatDefTertiaryRot02_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_outerLidcontroluppertertiary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_outerL_llidslowermatdeftertiaryrot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2334,6 +2699,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_C_CurveBrowMatDefSecondaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_lowerLipMatrixDeformer1MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
@@ -2369,6 +2739,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_lowerLipPrimary01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_L_CurveBrowMatDefTertiaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -2393,6 +2768,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_upperLipTertiary00_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_outerLidcontrollowertertiary0101_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -2407,7 +2786,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipMatrixDeformer200MatrixDefGimbal_CTL": [
+    "R_browMatrixDeformer302MatrixDef_CTL": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_lowerLipMatrixDeformer300MatrixDef_CTL": [
@@ -2428,6 +2808,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_CurveBrowMatDefTertiaryRot03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_lowerLipMatrixDeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2437,6 +2822,10 @@
       "NO_EXPORT"
     ], 
     "C_lowerLipCurveSecondaryROT_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
+    "C_browTertiary_ACV": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_UpperLipWireReverseCurveDeformerAnimCurveWeights": [
@@ -2451,7 +2840,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_browMatrixDeformer302MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_CurveBrowMatDefPrimaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_browRMatrixDeformer1MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browMatrixDeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2487,16 +2889,21 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_middleLidcontroluppermatrixdeformer2MatrixDef_CTL": [
+    "R_C_BrowMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browMatrixDeformer300MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowMatDefSecondaryRot00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_lidControlUpperSecondary00_ACV": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "R_L_CurveBrowMatDefTertiaryTrans00_BUF": [
-      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2509,7 +2916,14 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_lowerLipCurvePrimaryTrans_BUF_SHPMain_None": [
+    "L_browTertiary0101_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_CurveBrowMatDefSecondaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_outerLidcontrollowersecondary0001_BUF": [
@@ -2534,7 +2948,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_lidControlUpperPrimary_ACV": [
+    "R_browTertiary0001_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2555,7 +2970,21 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "lowerLipCurveRotate_MatrixDef": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_lowerLid": [
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_CurveBrowMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_middleLidcontroluppermatrixdeformer1MatrixDef_CTL": [
@@ -2567,15 +2996,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_browSecondary_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_innerLidcontroluppermatrixdeformer300MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipTertiary00_ACV": [
+    "L_L_CurveBrowMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "upperLipCurveSlide_CurveWeights": [
+    "L_innerLidcontroluppermatrixdeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2584,7 +3018,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "lowerLipCurveTranslate_MatrixDef": [
+    "C_BrowSlide_WeightStack_UD": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2601,6 +3035,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_browTertiary01_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_upperLipTertiary00_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2610,7 +3048,21 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_browMatrixDeformer1MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipTertiary00_GUIDEMain_None": [
+      "NO_EXPORT"
+    ], 
+    "R_browSecondary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_L_BrowMatDefSecondaryRot00_BUF": [
@@ -2626,8 +3078,21 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_C_CurveBrowMatDefTertiaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_browRTertiary0101_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browTertiary02_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browTertiary03_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2636,8 +3101,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_L_BrowMatDefPrimaryRot_BUF": [
-      "NO_EXPORT", 
+    "C_lidControlUpperPrimary_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2677,7 +3141,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_outerLidcontrollowersecondary0001_BUF": [
+    "L_C_BrowMatDefTertiaryRot01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2685,8 +3149,7 @@
     "R_lowerLipCurveSecondaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
-    "L_middleL_llidslowermatdefsecondaryrot_BUF": [
-      "NO_EXPORT", 
+    "R_browTertiary02_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2706,6 +3169,11 @@
       "NO_EXPORT"
     ], 
     "R_outerR_rlidsuppermatdeftertiaryrot01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browTertiary0101_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2743,6 +3211,10 @@
     "C_upperLipMatrixDeformer1MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
+    "R_browMatrixDeformer303MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_outerL_llidsuppermatdeftertiaryrot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -2774,7 +3246,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "upperLipRoll_WeightStack": [
+    "L_lowerLipSecondary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2815,7 +3287,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browLTertiary01_CTL": [
+    "L_browTertiary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2843,11 +3315,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_rLidsUpperSlide": [
+    "R_browLTertiary01_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_CurveBrowSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "lowerLipCurveSlide_WeightStack_UD": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2863,6 +3339,11 @@
     "R_lowerLipTertiaryTrans01_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "L_R_BrowMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_middleLidcontroluppertertiary01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -2871,7 +3352,17 @@
     "C_lowerLipCurvePrimaryROT_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "L_C_CurveBrowMatDefTertiaryRot01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_middleL_llidslowermatdefprimarytrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowMatDefTertiaryTrans02_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2926,16 +3417,24 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "browFalloff_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_middleLidcontroluppertertiary_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "upperLipSlide_CurveWeights": [
+    "C_browSecondary_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_middleR_rlidsuppermatdefsecondaryrot_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browTertiary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2985,6 +3484,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_browPrimary_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_outerLidcontroluppermatrixdeformer300MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2997,8 +3500,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_outerR_rlidslowermatdeftertiarytrans00_BUF": [
-      "NO_EXPORT", 
+    "R_upperLipTertiary00_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3011,7 +3513,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_browTertiary03_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_L_BrowMatDefTertiaryRot01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "upperLipCurveSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_L_BrowMatDefSecondaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -3019,9 +3534,11 @@
     "R_upperLidBase": [
       "NO_EXPORT"
     ], 
-    "L_outerL_llidslowermatdeftertiarytrans01_BUF": [
+    "R_rLidsUpperSlide": [
       "NO_EXPORT", 
-      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_upperLipTertiaryTrans01_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
     "L_browLMatrixDeformer300MatrixDef_CTL": [
@@ -3048,18 +3565,35 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_lidControlUpperTertiary_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "browRMatDefSingleFalloff_ACV": [
+    "lowerLipCurveTranslate_MatrixDef": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lowerLipTertiaryTrans01_BUF_SHPMain_None": [
+    "L_outerL_llidslowermatdeftertiarytrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_L_CurveBrowMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_CurveBrowSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_CurveBrowMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3076,12 +3610,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_R_BrowMatDefSecondaryTrans00_BUF": [
-      "NO_EXPORT", 
+    "C_CurveBrowSlide_CurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_rLidsLowerSlide": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browMatrixDeformer300MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3099,11 +3636,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_lowerLipTertiaryTrans01_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
     "L_BrowMatDef_MatDefTranslate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipTertiaryTrans00_BUF_SHPMain_None": [
+    "L_browMatrixDeformer200MatrixDef_CTL": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_outerLidcontroluppertertiary0101_BUF": [
@@ -3114,7 +3655,8 @@
     "R_lowerLipTertiary01Gimbal_CTL": [
       "NO_EXPORT"
     ], 
-    "R_lowerLid": [
+    "upperLipSlide_CurveWeights": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_innerL_llidsuppermatdeftertiaryrot01_BUF": [
@@ -3127,7 +3669,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_upperLipTertiaryTrans01_BUF_SHPMain_None": [
+    "C_BrowSlide_WeightStack_LR": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_upperLipPrimary_GUIDEMain_None": [
@@ -3144,6 +3687,9 @@
     "L_lowerLipTertiaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_upperLipTertiaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
     "C_R_BrowMatDefPrimaryTrans_BUF": [
@@ -3346,9 +3892,9 @@
     }, 
     "L_browGuideShaper00Row00_CTL": {
       "translation": [
-        7.376739677294939, 
+        7.376739677294937, 
         174.0542227887928, 
-        5.739959079719659
+        3.9948494232394296
       ], 
       "scale": [
         1.0, 
@@ -3431,9 +3977,9 @@
     }, 
     "L_browGuideShaper01Row03_CTL": {
       "translation": [
-        5.191529804064566, 
+        5.324146762194137, 
         184.0147739633356, 
-        5.699153120642902
+        4.033499512164016
       ], 
       "scale": [
         1.0, 
@@ -3688,7 +4234,7 @@
       "translation": [
         2.4088060061136822, 
         178.3316588276322, 
-        11.526026385773541
+        11.526026385773537
       ], 
       "scale": [
         1.0, 
@@ -3907,9 +4453,9 @@
     }, 
     "L_browGuideShaper00Row01_CTL": {
       "translation": [
-        7.376739677294935, 
+        7.376739677294934, 
         178.3316588276322, 
-        5.595874674236731
+        3.850765017756501
       ], 
       "scale": [
         1.0, 
@@ -3971,23 +4517,6 @@
         4.2811724797494906, 
         -2.4719306670267076, 
         -1.2435613424256593e-17
-      ]
-    }, 
-    "C_mouthTrans_BUF": {
-      "translation": [
-        0.0, 
-        164.029541015625, 
-        7.9109461307525635
-      ], 
-      "scale": [
-        1.0, 
-        1.0, 
-        1.0
-      ], 
-      "rotation": [
-        0.13073470580675906, 
-        -4.661386852190787e-06, 
-        0.0
       ]
     }, 
     "R_mouthGuideShaper03Row02_CTL": {
@@ -4194,21 +4723,21 @@
         -0.02955102014319869
       ]
     }, 
-    "R_cornerTwistRot_BUF": {
+    "R_browGuideShaper00Row00_CTL": {
       "translation": [
-        -2.4448719531313783, 
-        164.20393482340336, 
-        7.6356417786577175
+        -7.3767401576042175, 
+        174.0542227887928, 
+        3.994849293588052
       ], 
       "scale": [
-        0.9999999999999984, 
-        0.999999999999992, 
-        0.9999999999999994
+        1.0, 
+        1.2691345132066385, 
+        1.0
       ], 
       "rotation": [
-        179.96929152850234, 
-        -62.66633420248227, 
-        -3.382189116464318e-18
+        0.0, 
+        0.0, 
+        0.0
       ]
     }, 
     "C_lowerLipSecondary01_BUF": {
@@ -4436,7 +4965,7 @@
       "translation": [
         -2.384185834565698e-07, 
         178.3316588276322, 
-        11.109541382474546
+        11.109541382474543
       ], 
       "scale": [
         1.0, 
@@ -4672,9 +5201,9 @@
     }, 
     "L_browGuideShaper00Row03_CTL": {
       "translation": [
-        7.376739677294939, 
+        7.376739677294937, 
         184.01477396333573, 
-        0.5924879836710577
+        -1.1526216728091718
       ], 
       "scale": [
         1.0, 
@@ -4689,9 +5218,9 @@
     }, 
     "R_browGuideShaper01Row02_CTL": {
       "translation": [
-        -5.191530277331671, 
+        -5.324147244294485, 
         180.8925151314058, 
-        10.21199986255015
+        8.546346276162515
       ], 
       "scale": [
         1.0, 
@@ -4942,6 +5471,23 @@
         0.0
       ]
     }, 
+    "C_browRSecondary01_BUF": {
+      "translation": [
+        -3.7204778641024134, 
+        178.35069494399272, 
+        7.51383916946561
+      ], 
+      "scale": [
+        0.9999999999999996, 
+        0.9999999999999997, 
+        0.9999999999999991
+      ], 
+      "rotation": [
+        -196.6953083758523, 
+        214.44301143344188, 
+        179.87959857291384
+      ]
+    }, 
     "R_lowerLipSecondaryTrans00_BUF": {
       "translation": [
         1.524566411972046, 
@@ -4980,7 +5526,7 @@
       "translation": [
         -2.384185799038561e-07, 
         184.01477396333573, 
-        6.106154691908875
+        6.106154691908872
       ], 
       "scale": [
         1.0, 
@@ -5014,7 +5560,7 @@
       "translation": [
         -7.3767401576042175, 
         178.33165882231177, 
-        5.595874874947915
+        3.8507648400052883
       ], 
       "scale": [
         1.0, 
@@ -5435,21 +5981,21 @@
         0.0
       ]
     }, 
-    "C_browRSecondary01_BUF": {
+    "C_mouthTrans_BUF": {
       "translation": [
-        -3.7204778641024134, 
-        178.35069494399272, 
-        7.51383916946561
+        0.0, 
+        164.029541015625, 
+        7.9109461307525635
       ], 
       "scale": [
-        0.9999999999999996, 
-        0.9999999999999997, 
-        0.9999999999999991
+        1.0, 
+        1.0, 
+        1.0
       ], 
       "rotation": [
-        -196.6953083758523, 
-        214.44301143344188, 
-        179.87959857291384
+        0.13073470580675906, 
+        -4.661386852190787e-06, 
+        0.0
       ]
     }, 
     "R_cornerRot_BUF": {
@@ -5675,9 +6221,9 @@
     }, 
     "L_browGuideShaper01Row00_CTL": {
       "translation": [
-        5.191529804064566, 
+        5.324146762194137, 
         174.05422278879266, 
-        10.8466242166915
+        9.180970608212615
       ], 
       "scale": [
         1.0, 
@@ -6272,7 +6818,7 @@
       "translation": [
         2.408806006113686, 
         184.01477396333573, 
-        6.522639695207871
+        6.522639695207867
       ], 
       "scale": [
         1.0, 
@@ -7445,7 +7991,7 @@
       "translation": [
         2.408806006113686, 
         174.0542227887928, 
-        11.67011079125647
+        11.670110791256466
       ], 
       "scale": [
         1.0, 
@@ -7547,7 +8093,7 @@
       "translation": [
         -7.3767401576042175, 
         180.8925151314058, 
-        5.105334847329507
+        3.36022481238688
       ], 
       "scale": [
         1.0, 
@@ -7630,9 +8176,9 @@
     }, 
     "L_browGuideShaper01Row01_CTL": {
       "translation": [
-        5.1915298040645625, 
+        5.324146762194133, 
         178.3316588276321, 
-        10.702539811208572
+        9.036886202729686
       ], 
       "scale": [
         1.0, 
@@ -7647,9 +8193,9 @@
     }, 
     "L_browGuideShaper00Row02_CTL": {
       "translation": [
-        7.376739677294939, 
+        7.376739677294937, 
         180.8925151180008, 
-        5.105334700493629
+        3.3602250440134
       ], 
       "scale": [
         1.0, 
@@ -7768,7 +8314,7 @@
       "translation": [
         -7.3767401576042175, 
         184.01477403817722, 
-        0.5924883774503567
+        -1.1526221343294285
       ], 
       "scale": [
         1.0, 
@@ -7904,7 +8450,7 @@
       "translation": [
         -2.384185799038561e-07, 
         174.0542227887928, 
-        11.253625787957475
+        11.253625787957471
       ], 
       "scale": [
         1.0, 
@@ -7953,9 +8499,9 @@
     }, 
     "R_browGuideShaper01Row03_CTL": {
       "translation": [
-        -5.191530277331671, 
+        -5.324147244294485, 
         184.01477403817722, 
-        5.69915303504313
+        4.033499329446206
       ], 
       "scale": [
         1.0, 
@@ -8276,9 +8822,9 @@
     }, 
     "R_browGuideShaper01Row00_CTL": {
       "translation": [
-        -5.191530277331671, 
+        -5.324147244294485, 
         174.05422278879266, 
-        10.846624224542031
+        9.180970608352075
       ], 
       "scale": [
         1.0, 
@@ -8295,7 +8841,7 @@
       "translation": [
         2.408806006113686, 
         180.8925151180008, 
-        11.035486412030439
+        11.035486412030435
       ], 
       "scale": [
         1.0, 
@@ -8565,9 +9111,9 @@
     }, 
     "R_browGuideShaper01Row01_CTL": {
       "translation": [
-        -5.191530277331671, 
+        -5.324147244294485, 
         178.33165882231177, 
-        10.702539770959268
+        9.036886184571634
       ], 
       "scale": [
         1.0, 
@@ -9090,21 +9636,21 @@
         0.0
       ]
     }, 
-    "R_browGuideShaper00Row00_CTL": {
+    "R_cornerTwistRot_BUF": {
       "translation": [
-        -7.3767401576042175, 
-        174.0542227887928, 
-        5.7399590901121
+        -2.4448719531313783, 
+        164.20393482340336, 
+        7.6356417786577175
       ], 
       "scale": [
-        1.0, 
-        1.2691345132066385, 
-        1.0
+        0.9999999999999984, 
+        0.999999999999992, 
+        0.9999999999999994
       ], 
       "rotation": [
-        0.0, 
-        0.0, 
-        0.0
+        179.96929152850234, 
+        -62.66633420248227, 
+        -3.382189116464318e-18
       ]
     }, 
     "L_middleL_llidsuppermatdefprimarytrans_BUF": {
@@ -9755,9 +10301,9 @@
     }, 
     "L_browGuideShaper01Row02_CTL": {
       "translation": [
-        5.191529804064566, 
+        5.324146762194137, 
         180.89251511800077, 
-        10.211999837465472
+        8.546346228986586
       ], 
       "scale": [
         1.0, 
@@ -10131,7 +10677,7 @@
       "translation": [
         -2.384185799038561e-07, 
         180.8925151180008, 
-        10.619001408731446
+        10.619001408731442
       ], 
       "scale": [
         1.0, 
@@ -10662,16 +11208,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browLMatrixDeformer301MatrixDefGimbal_CTL", 
-          "name": "L_browLMatrixDeformer301MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browLMatrixDeformer301MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -2.4980018054066022e-15, 
@@ -10839,12 +11383,458 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browLMatrixDeformer301MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
       "name": "L_browLMatrixDeformer301MatrixDefGimbal_CTL", 
       "parent": "L_browLMatrixDeformer301MatrixDef_CTL"
+    }, 
+    "R_browMatrixDeformer300MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browMatrixDeformer300MatrixDefGimbal_CTL", 
+          "name": "R_browMatrixDeformer300MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              7.077671781985373e-16, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              7.077671781985373e-16, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              7.077671781985373e-16, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              7.077671781985373e-16, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              7.077671781985373e-16, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              7.077671781985373e-16, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362878, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258412, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362878, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362736, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258271, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527108, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.051938423091291, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.051938423091292416, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0899599457152725, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258412, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.0899599457152725, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.051938423091292416, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              7.077671781985373e-16, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.051938423091291, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527108, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258271, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362736, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              7.077671781985373e-16, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browMatrixDeformer300MatrixDefGimbal_CTL", 
+      "parent": "R_browMatrixDeformer300MatrixDef_CTL"
+    }, 
+    "L_browTertiary03Gimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_browTertiary03Gimbal_CTL", 
+          "name": "L_browTertiary03GimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browTertiary03Gimbal_CTL", 
+      "parent": "L_browTertiary03_CTL"
     }, 
     "R_upperLipMatrixDeformer200MatrixDefGimbal_CTL": {
       "shapes": [
@@ -12216,16 +13206,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browRPrimaryGimbal_CTL", 
-          "name": "C_browRPrimaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browRPrimaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -12393,7 +13381,9 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browRPrimaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -12843,6 +13833,228 @@
       "outliner_color": null, 
       "name": "R_upperLipTertiary01Gimbal_CTL", 
       "parent": "R_upperLipTertiary01_CTL"
+    }, 
+    "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbal_CTL", 
+          "controlVertices": [
+            [
+              3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              3.3306690738754696e-16, 
+              0.05193842309127039, 
+              0.08995994571527179
+            ], 
+            [
+              3.3306690738754696e-16, 
+              0.08995994571525047, 
+              0.05193842309129171
+            ], 
+            [
+              3.3306690738754696e-16, 
+              0.1038768461825621, 
+              0.0
+            ], 
+            [
+              3.3306690738754696e-16, 
+              0.08995994571525047, 
+              -0.05193842309129171
+            ], 
+            [
+              3.3306690738754696e-16, 
+              0.05193842309127039, 
+              -0.08995994571527179
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -0.051938423091313024, 
+              -0.08995994571527179
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -0.0899599457152931, 
+              -0.05193842309129171
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -0.10387684618260473, 
+              0.0
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -0.0899599457152931, 
+              0.05193842309129171
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -0.051938423091313024, 
+              0.08995994571527179
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              0.0734520450736284, 
+              -2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258375, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.0734520450736284, 
+              -2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362774, 
+              -2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258308, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.08995994571527145, 
+              0.05193842309127039, 
+              0.0
+            ], 
+            [
+              -0.051938423091291375, 
+              0.08995994571525047, 
+              0.0
+            ], 
+            [
+              3.3306690738754696e-16, 
+              0.1038768461825621, 
+              0.0
+            ], 
+            [
+              0.05193842309129204, 
+              0.08995994571525047, 
+              0.0
+            ], 
+            [
+              0.08995994571527212, 
+              0.05193842309127039, 
+              0.0
+            ], 
+            [
+              0.10387684618258375, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.08995994571527212, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              0.05193842309129204, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -0.10387684618260473, 
+              0.0
+            ], 
+            [
+              -0.051938423091291375, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
+              -0.08995994571527145, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              -0.10387684618258308, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.07345204507362774, 
+              -2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbalMain_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbal_CTL", 
+      "parent": "R_innerLidcontroluppermatrixdeformer301MatrixDef_CTL"
     }, 
     "R_cornerGimbal_CTL": {
       "shapes": [
@@ -13770,16 +14982,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browLMatrixDeformer200MatrixDefGimbal_CTL", 
-          "name": "R_browLMatrixDeformer200MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browLMatrixDeformer200MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -13947,7 +15157,9 @@
               0.19291414291052802
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browLMatrixDeformer200MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -15730,7 +16942,7 @@
       "name": "R_innerLidcontroluppermatrixdeformer200MatrixDefGimbal_CTL", 
       "parent": "R_innerLidcontroluppermatrixdeformer200MatrixDef_CTL"
     }, 
-    "C_upperLipMatrixDeformer1MatrixDefGimbal_CTL": {
+    "L_middleLidcontrollowersecondaryGimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -15771,186 +16983,186 @@
           "degree": 1, 
           "form": 1, 
           "color": 19, 
-          "color_b": 0.0, 
+          "color_b": 1.0, 
           "override_color": true, 
-          "color_g": 1.0, 
+          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "C_upperLipMatrixDeformer1MatrixDefGimbal_CTL", 
+          "parent": "L_middleLidcontrollowersecondaryGimbal_CTL", 
           "controlVertices": [
             [
-              6.352747104407253e-22, 
-              -4.263256414560601e-14, 
-              0.14839549454655304
+              0.0, 
+              0.0, 
+              0.19291414291051204
             ], 
             [
-              6.352747104407253e-22, 
-              0.07419774727323122, 
-              0.12851420816467932
+              0.0, 
+              0.09645707145525602, 
+              0.16706847061407618
             ], 
             [
-              6.352747104407253e-22, 
-              0.12851420816463135, 
-              0.07419774727327919
+              0.0, 
+              0.16706847061407618, 
+              0.09645707145525602
             ], 
             [
-              6.352747104407253e-22, 
-              0.14839549454650508, 
-              5.329070518200751e-15
+              0.0, 
+              0.19291414291051204, 
+              0.0
             ], 
             [
-              6.352747104407253e-22, 
-              0.12851420816463135, 
-              -0.07419774727326853
+              0.0, 
+              0.16706847061407618, 
+              -0.09645707145525602
             ], 
             [
-              6.352747104407253e-22, 
-              0.07419774727323122, 
-              -0.12851420816466866
+              0.0, 
+              0.09645707145525602, 
+              -0.16706847061407618
             ], 
             [
-              6.352747104407253e-22, 
-              -4.263256414560601e-14, 
-              -0.14839549454654238
+              0.0, 
+              0.0, 
+              -0.19291414291051204
             ], 
             [
-              6.352747104407253e-22, 
-              -0.07419774727331649, 
-              -0.12851420816466866
+              0.0, 
+              -0.09645707145525602, 
+              -0.16706847061407618
             ], 
             [
-              6.352747104407253e-22, 
-              -0.12851420816471662, 
-              -0.07419774727326853
+              0.0, 
+              -0.16706847061407618, 
+              -0.09645707145525602
             ], 
             [
-              6.352747104407253e-22, 
-              -0.14839549454659035, 
-              5.329070518200751e-15
+              0.0, 
+              -0.19291414291051204, 
+              0.0
             ], 
             [
-              6.352747104407253e-22, 
-              -0.12851420816471662, 
-              0.07419774727327919
+              0.0, 
+              -0.16706847061407618, 
+              0.09645707145525602
             ], 
             [
-              6.352747104407253e-22, 
-              -0.07419774727331649, 
-              0.12851420816467932
+              0.0, 
+              -0.09645707145525602, 
+              0.16706847061407618
             ], 
             [
-              6.352747104407253e-22, 
-              -4.263256414560601e-14, 
-              0.14839549454655304
+              0.0, 
+              0.0, 
+              0.19291414291051204
             ], 
             [
-              0.1049314929623258, 
-              -4.263256414560601e-14, 
-              0.10493149296233113
+              0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
             ], 
             [
-              0.1483954945465477, 
-              -4.263256414560601e-14, 
-              5.329070518200751e-15
+              0.19291414291051204, 
+              0.0, 
+              0.0
             ], 
             [
-              0.1049314929623258, 
-              -4.263256414560601e-14, 
-              -0.10493149296232047
+              0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
             ], 
             [
-              6.352747104407253e-22, 
-              -4.263256414560601e-14, 
-              -0.14839549454654238
+              0.0, 
+              0.0, 
+              -0.19291414291051204
             ], 
             [
-              -0.1049314929623258, 
-              -4.263256414560601e-14, 
-              -0.10493149296232047
+              -0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
             ], 
             [
-              -0.1483954945465477, 
-              -4.263256414560601e-14, 
-              5.329070518200751e-15
+              -0.19291414291051204, 
+              0.0, 
+              0.0
             ], 
             [
-              -0.128514208164674, 
-              0.07419774727323122, 
-              5.329070518200751e-15
+              -0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
             ], 
             [
-              -0.07419774727327386, 
-              0.12851420816463135, 
-              5.329070518200751e-15
+              -0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
             ], 
             [
-              6.352747104407253e-22, 
-              0.14839549454650508, 
-              5.329070518200751e-15
+              0.0, 
+              0.19291414291051204, 
+              0.0
             ], 
             [
-              0.07419774727327386, 
-              0.12851420816463135, 
-              5.329070518200751e-15
+              0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
             ], 
             [
-              0.128514208164674, 
-              0.07419774727323122, 
-              5.329070518200751e-15
+              0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
             ], 
             [
-              0.1483954945465477, 
-              -4.263256414560601e-14, 
-              5.329070518200751e-15
+              0.19291414291051204, 
+              0.0, 
+              0.0
             ], 
             [
-              0.128514208164674, 
-              -0.07419774727331649, 
-              5.329070518200751e-15
+              0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
             ], 
             [
-              0.07419774727327386, 
-              -0.12851420816471662, 
-              5.329070518200751e-15
+              0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
             ], 
             [
-              6.352747104407253e-22, 
-              -0.14839549454659035, 
-              5.329070518200751e-15
+              0.0, 
+              -0.19291414291051204, 
+              0.0
             ], 
             [
-              -0.07419774727327386, 
-              -0.12851420816471662, 
-              5.329070518200751e-15
+              -0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
             ], 
             [
-              -0.128514208164674, 
-              -0.07419774727331649, 
-              5.329070518200751e-15
+              -0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
             ], 
             [
-              -0.1483954945465477, 
-              -4.263256414560601e-14, 
-              5.329070518200751e-15
+              -0.19291414291051204, 
+              0.0, 
+              0.0
             ], 
             [
-              -0.1049314929623258, 
-              -4.263256414560601e-14, 
-              0.10493149296233113
+              -0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
             ], 
             [
-              6.352747104407253e-22, 
-              -4.263256414560601e-14, 
-              0.14839549454655304
+              0.0, 
+              0.0, 
+              0.19291414291051204
             ]
           ], 
           "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_upperLipMatrixDeformer1MatrixDefGimbalMain_SHP"
+          "color_r": 0.0, 
+          "name": "L_middleLidcontrollowersecondaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
-      "name": "C_upperLipMatrixDeformer1MatrixDefGimbal_CTL", 
-      "parent": "C_upperLipMatrixDeformer1MatrixDef_CTL"
+      "name": "L_middleLidcontrollowersecondaryGimbal_CTL", 
+      "parent": "L_middleLidcontrollowersecondary_CTL"
     }, 
     "C_jawMatrixDefGimbal_CTL": {
       "shapes": [
@@ -16434,16 +17646,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browRMatrixDeformer200MatrixDefGimbal_CTL", 
-          "name": "L_browRMatrixDeformer200MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browRMatrixDeformer200MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               5.620504062164855e-16, 
@@ -16611,7 +17821,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browRMatrixDeformer200MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -17062,6 +18274,228 @@
       "name": "L_innerLidcontrollowermatrixdeformer301MatrixDefGimbal_CTL", 
       "parent": "L_innerLidcontrollowermatrixdeformer301MatrixDef_CTL"
     }, 
+    "R_browMatrixDeformer302MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browMatrixDeformer302MatrixDefGimbal_CTL", 
+          "name": "R_browMatrixDeformer302MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -1.3322676295501878e-15, 
+              2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              0.051938423091313024, 
+              0.08995994571527179
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              0.0899599457152931, 
+              0.05193842309129171
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              0.10387684618260473, 
+              0.0
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              0.0899599457152931, 
+              -0.05193842309129171
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              0.051938423091313024, 
+              -0.08995994571527179
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              -0.05193842309127039, 
+              -0.08995994571527179
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              -0.08995994571525047, 
+              -0.05193842309129171
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              -0.1038768461825621, 
+              0.0
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              -0.08995994571525047, 
+              0.05193842309129171
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              -0.05193842309127039, 
+              0.08995994571527179
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362674, 
+              2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258208, 
+              2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.07345204507362674, 
+              2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.0734520450736294, 
+              2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258475, 
+              2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.08995994571527312, 
+              0.051938423091313024, 
+              0.0
+            ], 
+            [
+              -0.05193842309129304, 
+              0.0899599457152931, 
+              0.0
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              0.10387684618260473, 
+              0.0
+            ], 
+            [
+              0.051938423091290375, 
+              0.0899599457152931, 
+              0.0
+            ], 
+            [
+              0.08995994571527045, 
+              0.051938423091313024, 
+              0.0
+            ], 
+            [
+              0.10387684618258208, 
+              2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.08995994571527045, 
+              -0.05193842309127039, 
+              0.0
+            ], 
+            [
+              0.051938423091290375, 
+              -0.08995994571525047, 
+              0.0
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              -0.1038768461825621, 
+              0.0
+            ], 
+            [
+              -0.05193842309129304, 
+              -0.08995994571525047, 
+              0.0
+            ], 
+            [
+              -0.08995994571527312, 
+              -0.05193842309127039, 
+              0.0
+            ], 
+            [
+              -0.10387684618258475, 
+              2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.0734520450736294, 
+              2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              -1.3322676295501878e-15, 
+              2.1316282072803006e-14, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browMatrixDeformer302MatrixDefGimbal_CTL", 
+      "parent": "R_browMatrixDeformer302MatrixDef_CTL"
+    }, 
     "R_middleLidcontrollowermatrixdeformer2MatrixDefGimbal_CTL": {
       "shapes": [
         {
@@ -17322,16 +18756,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browRMatrixDeformer300MatrixDefGimbal_CTL", 
-          "name": "L_browRMatrixDeformer300MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browRMatrixDeformer300MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               1.8735013540549517e-16, 
@@ -17499,7 +18931,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browRMatrixDeformer300MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -18432,16 +19866,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browRTertiaryGimbal_CTL", 
-          "name": "C_browRTertiaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browRTertiaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -18609,12 +20041,458 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browRTertiaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
       "name": "C_browRTertiaryGimbal_CTL", 
       "parent": "C_browRTertiary_CTL"
+    }, 
+    "C_browLTertiaryGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browLTertiaryGimbal_CTL", 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browLTertiaryGimbalMain_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_browLTertiaryGimbal_CTL", 
+      "parent": "C_browLTertiary_CTL"
+    }, 
+    "C_browMatrixDeformer3MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_browMatrixDeformer3MatrixDefGimbal_CTL", 
+          "name": "C_browMatrixDeformer3MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "controlVertices": [
+            [
+              1.5146129380243427e-28, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              1.5146129380243427e-28, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              1.5146129380243427e-28, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              1.5146129380243427e-28, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              1.5146129380243427e-28, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              1.5146129380243427e-28, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              1.5146129380243427e-28, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              1.5146129380243427e-28, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_browMatrixDeformer3MatrixDefGimbal_CTL", 
+      "parent": "C_browMatrixDeformer3MatrixDef_CTL"
     }, 
     "R_middleLidcontroluppermatrixdeformer1MatrixDefGimbal_CTL": {
       "shapes": [
@@ -20170,6 +22048,228 @@
       "name": "R_outerLidcontroluppermatrixdeformer301MatrixDefGimbal_CTL", 
       "parent": "R_outerLidcontroluppermatrixdeformer301MatrixDef_CTL"
     }, 
+    "C_browTertiaryGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_browTertiaryGimbal_CTL", 
+          "name": "C_browTertiaryGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_browTertiaryGimbal_CTL", 
+      "parent": "C_browTertiary_CTL"
+    }, 
     "R_middleLidcontroluppersecondaryGimbal_CTL": {
       "shapes": [
         {
@@ -21058,6 +23158,450 @@
       "name": "L_innerLidcontrollowermatrixdeformer300MatrixDefGimbal_CTL", 
       "parent": "L_innerLidcontrollowermatrixdeformer300MatrixDef_CTL"
     }, 
+    "L_browSecondary00Gimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_browSecondary00Gimbal_CTL", 
+          "name": "L_browSecondary00GimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              0.0, 
+              0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              0.0, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              0.0, 
+              0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              0.0, 
+              -0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              0.0, 
+              -0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              0.0, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              0.0, 
+              -0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              -0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              -0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              -0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              -0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browSecondary00Gimbal_CTL", 
+      "parent": "L_browSecondary00_CTL"
+    }, 
+    "R_browMatrixDeformer303MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browMatrixDeformer303MatrixDefGimbal_CTL", 
+          "name": "R_browMatrixDeformer303MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -1.6653345369377348e-15, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              0.05193842309127039, 
+              0.08995994571527179
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              0.08995994571525047, 
+              0.05193842309129171
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              0.1038768461825621, 
+              0.0
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              0.08995994571525047, 
+              -0.05193842309129171
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              0.05193842309127039, 
+              -0.08995994571527179
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -0.051938423091313024, 
+              -0.08995994571527179
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -0.0899599457152931, 
+              -0.05193842309129171
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -0.10387684618260473, 
+              0.0
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -0.0899599457152931, 
+              0.05193842309129171
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -0.051938423091313024, 
+              0.08995994571527179
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              0.0734520450736264, 
+              -2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258175, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.0734520450736264, 
+              -2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362973, 
+              -2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258508, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.08995994571527345, 
+              0.05193842309127039, 
+              0.0
+            ], 
+            [
+              -0.05193842309129337, 
+              0.08995994571525047, 
+              0.0
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              0.1038768461825621, 
+              0.0
+            ], 
+            [
+              0.05193842309129004, 
+              0.08995994571525047, 
+              0.0
+            ], 
+            [
+              0.08995994571527012, 
+              0.05193842309127039, 
+              0.0
+            ], 
+            [
+              0.10387684618258175, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.08995994571527012, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              0.05193842309129004, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -0.10387684618260473, 
+              0.0
+            ], 
+            [
+              -0.05193842309129337, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
+              -0.08995994571527345, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              -0.10387684618258508, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.07345204507362973, 
+              -2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              -1.6653345369377348e-15, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browMatrixDeformer303MatrixDefGimbal_CTL", 
+      "parent": "R_browMatrixDeformer303MatrixDef_CTL"
+    }, 
     "L_upperLipSecondary00Gimbal_CTL": {
       "shapes": [
         {
@@ -21318,16 +23862,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browRTertiary00Gimbal_CTL", 
-          "name": "R_browRTertiary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browRTertiary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -21495,7 +24037,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browRTertiary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -21723,6 +24267,228 @@
       "outliner_color": null, 
       "name": "L_outerLidcontrollowermatrixdeformer200MatrixDefGimbal_CTL", 
       "parent": "L_outerLidcontrollowermatrixdeformer200MatrixDef_CTL"
+    }, 
+    "R_browTertiary02Gimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browTertiary02Gimbal_CTL", 
+          "name": "R_browTertiary02GimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browTertiary02Gimbal_CTL", 
+      "parent": "R_browTertiary02_CTL"
     }, 
     "L_middleLidcontroluppersecondaryGimbal_CTL": {
       "shapes": [
@@ -22206,16 +24972,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browLSecondary00Gimbal_CTL", 
-          "name": "L_browLSecondary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browLSecondary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -22383,7 +25147,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browLSecondary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -22650,16 +25416,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browRSecondaryGimbal_CTL", 
-          "name": "C_browRSecondaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browRSecondaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -22827,12 +25591,236 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browRSecondaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
       "name": "C_browRSecondaryGimbal_CTL", 
       "parent": "C_browRSecondary_CTL"
+    }, 
+    "L_browMatrixDeformer200MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_browMatrixDeformer200MatrixDefGimbal_CTL", 
+          "name": "L_browMatrixDeformer200MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -3.9968028886505635e-15, 
+              6.394884621840902e-14, 
+              0.19291414291051204
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              0.09645707145531997, 
+              0.16706847061407618
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              0.16706847061414012, 
+              0.09645707145525602
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              0.192914142910576, 
+              0.0
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              0.16706847061414012, 
+              -0.09645707145525602
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              0.09645707145531997, 
+              -0.16706847061407618
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              6.394884621840902e-14, 
+              -0.19291414291051204
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              -0.09645707145519207, 
+              -0.16706847061407618
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              -0.16706847061401223, 
+              -0.09645707145525602
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              -0.1929141429104481, 
+              0.0
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              -0.16706847061401223, 
+              0.09645707145525602
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              -0.09645707145519207, 
+              0.16706847061407618
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              6.394884621840902e-14, 
+              0.19291414291051204
+            ], 
+            [
+              0.13641094085101954, 
+              6.394884621840902e-14, 
+              0.13641094085102354
+            ], 
+            [
+              0.19291414291050804, 
+              6.394884621840902e-14, 
+              0.0
+            ], 
+            [
+              0.13641094085101954, 
+              6.394884621840902e-14, 
+              -0.13641094085102354
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              6.394884621840902e-14, 
+              -0.19291414291051204
+            ], 
+            [
+              -0.13641094085102753, 
+              6.394884621840902e-14, 
+              -0.13641094085102354
+            ], 
+            [
+              -0.19291414291051603, 
+              6.394884621840902e-14, 
+              0.0
+            ], 
+            [
+              -0.16706847061408017, 
+              0.09645707145531997, 
+              0.0
+            ], 
+            [
+              -0.09645707145526002, 
+              0.16706847061414012, 
+              0.0
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              0.192914142910576, 
+              0.0
+            ], 
+            [
+              0.09645707145525202, 
+              0.16706847061414012, 
+              0.0
+            ], 
+            [
+              0.16706847061407218, 
+              0.09645707145531997, 
+              0.0
+            ], 
+            [
+              0.19291414291050804, 
+              6.394884621840902e-14, 
+              0.0
+            ], 
+            [
+              0.16706847061407218, 
+              -0.09645707145519207, 
+              0.0
+            ], 
+            [
+              0.09645707145525202, 
+              -0.16706847061401223, 
+              0.0
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              -0.1929141429104481, 
+              0.0
+            ], 
+            [
+              -0.09645707145526002, 
+              -0.16706847061401223, 
+              0.0
+            ], 
+            [
+              -0.16706847061408017, 
+              -0.09645707145519207, 
+              0.0
+            ], 
+            [
+              -0.19291414291051603, 
+              6.394884621840902e-14, 
+              0.0
+            ], 
+            [
+              -0.13641094085102753, 
+              6.394884621840902e-14, 
+              0.13641094085102354
+            ], 
+            [
+              -3.9968028886505635e-15, 
+              6.394884621840902e-14, 
+              0.19291414291051204
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browMatrixDeformer200MatrixDefGimbal_CTL", 
+      "parent": "L_browMatrixDeformer200MatrixDef_CTL"
     }, 
     "L_middleLidcontrollowertertiaryGimbal_CTL": {
       "shapes": [
@@ -23500,7 +26488,7 @@
       "name": "C_upperLipMatrixDeformer2MatrixDefGimbal_CTL", 
       "parent": "C_upperLipMatrixDeformer2MatrixDef_CTL"
     }, 
-    "C_browLMatrixDeformer3MatrixDefGimbal_CTL": {
+    "R_browTertiary00Gimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -23544,185 +26532,185 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_browLMatrixDeformer3MatrixDefGimbal_CTL", 
-          "name": "C_browLMatrixDeformer3MatrixDefGimbalMain_SHP", 
+          "parent": "R_browTertiary00Gimbal_CTL", 
+          "name": "R_browTertiary00GimbalMain_SHP", 
           "override_color": true, 
-          "color_g": 1.0, 
+          "color_g": 0.0, 
           "controlVertices": [
             [
               0.0, 
               0.0, 
-              0.10387684618258874
+              0.10387684618258342
             ], 
             [
               0.0, 
               0.05193842309129171, 
-              0.08995994571527711
+              0.08995994571527179
             ], 
             [
               0.0, 
               0.08995994571527179, 
-              0.05193842309129704
+              0.05193842309129171
             ], 
             [
               0.0, 
               0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.0, 
               0.08995994571527179, 
-              -0.05193842309128638
+              -0.05193842309129171
             ], 
             [
               0.0, 
               0.05193842309129171, 
-              -0.08995994571526646
+              -0.08995994571527179
             ], 
             [
               0.0, 
               0.0, 
-              -0.10387684618257809
+              -0.10387684618258342
             ], 
             [
               0.0, 
               -0.05193842309129171, 
-              -0.08995994571526646
+              -0.08995994571527179
             ], 
             [
               0.0, 
               -0.08995994571527179, 
-              -0.05193842309128638
+              -0.05193842309129171
             ], 
             [
               0.0, 
               -0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.0, 
               -0.08995994571527179, 
-              0.05193842309129704
+              0.05193842309129171
             ], 
             [
               0.0, 
               -0.05193842309129171, 
-              0.08995994571527711
+              0.08995994571527179
             ], 
             [
               0.0, 
               0.0, 
-              0.10387684618258874
+              0.10387684618258342
             ], 
             [
               0.07345204507362807, 
               0.0, 
-              0.0734520450736334
+              0.07345204507362807
             ], 
             [
               0.10387684618258342, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.07345204507362807, 
               0.0, 
-              -0.07345204507362274
+              -0.07345204507362807
             ], 
             [
               0.0, 
               0.0, 
-              -0.10387684618257809
+              -0.10387684618258342
             ], 
             [
               -0.07345204507362807, 
               0.0, 
-              -0.07345204507362274
+              -0.07345204507362807
             ], 
             [
               -0.10387684618258342, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               -0.08995994571527179, 
               0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               -0.05193842309129171, 
               0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.0, 
               0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.05193842309129171, 
               0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.08995994571527179, 
               0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.10387684618258342, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.08995994571527179, 
               -0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.05193842309129171, 
               -0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               0.0, 
               -0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               -0.05193842309129171, 
               -0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               -0.08995994571527179, 
               -0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               -0.10387684618258342, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
               -0.07345204507362807, 
               0.0, 
-              0.0734520450736334
+              0.07345204507362807
             ], 
             [
               0.0, 
               0.0, 
-              0.10387684618258874
+              0.10387684618258342
             ]
           ], 
           "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
-      "name": "C_browLMatrixDeformer3MatrixDefGimbal_CTL", 
-      "parent": "C_browLMatrixDeformer3MatrixDef_CTL"
+      "name": "R_browTertiary00Gimbal_CTL", 
+      "parent": "R_browTertiary00_CTL"
     }, 
-    "L_browLMatrixDeformer300MatrixDefGimbal_CTL": {
+    "L_browMatrixDeformer302MatrixDefGimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -23766,10 +26754,230 @@
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_browLMatrixDeformer300MatrixDefGimbal_CTL", 
-          "name": "L_browLMatrixDeformer300MatrixDefGimbalMain_SHP", 
+          "parent": "L_browMatrixDeformer302MatrixDefGimbal_CTL", 
+          "name": "L_browMatrixDeformer302MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -2.3314683517128287e-15, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362574, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258108, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362574, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.0734520450736304, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258575, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527412, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129404, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.051938423091289376, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571526945, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258108, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571526945, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.051938423091289376, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129404, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527412, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258575, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.0734520450736304, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              -2.3314683517128287e-15, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browMatrixDeformer302MatrixDefGimbal_CTL", 
+      "parent": "L_browMatrixDeformer302MatrixDef_CTL"
+    }, 
+    "L_browLMatrixDeformer300MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browLMatrixDeformer300MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -1.6653345369377348e-16, 
@@ -23937,7 +27145,9 @@
               0.10387684618259407
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browLMatrixDeformer300MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -24166,6 +27376,228 @@
       "name": "L_innerLidcontroluppertertiary00Gimbal_CTL", 
       "parent": "L_innerLidcontroluppertertiary00_CTL"
     }, 
+    "C_browLMatrixDeformer3MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browLMatrixDeformer3MatrixDefGimbal_CTL", 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258874
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527711
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129704
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309128638
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571526646
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618257809
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571526646
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309128638
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129704
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527711
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258874
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.0734520450736334
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362274
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618257809
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362274
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.0734520450736334
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258874
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browLMatrixDeformer3MatrixDefGimbalMain_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_browLMatrixDeformer3MatrixDefGimbal_CTL", 
+      "parent": "C_browLMatrixDeformer3MatrixDef_CTL"
+    }, 
     "R_browRSecondary00Gimbal_CTL": {
       "shapes": [
         {
@@ -24204,16 +27636,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browRSecondary00Gimbal_CTL", 
-          "name": "R_browRSecondary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browRSecondary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -24381,7 +27811,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browRSecondary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -24832,6 +28264,228 @@
       "name": "R_outerLidcontroluppermatrixdeformer300MatrixDefGimbal_CTL", 
       "parent": "R_outerLidcontroluppermatrixdeformer300MatrixDef_CTL"
     }, 
+    "R_browMatrixDeformer200MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browMatrixDeformer200MatrixDefGimbal_CTL", 
+          "name": "R_browMatrixDeformer200MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              2.123301534595612e-15, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              2.123301534595612e-15, 
+              -0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              2.123301534595612e-15, 
+              -0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              2.123301534595612e-15, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              2.123301534595612e-15, 
+              -0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              2.123301534595612e-15, 
+              -0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              0.13641094085102567, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              0.19291414291051417, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.13641094085102567, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              -0.1364109408510214, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              -0.1929141429105099, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.16706847061407404, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.0964570714552539, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.09645707145525814, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.1670684706140783, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.19291414291051417, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.1670684706140783, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.09645707145525814, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              2.123301534595612e-15, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              -0.0964570714552539, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              -0.16706847061407404, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.1929141429105099, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.1364109408510214, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              2.123301534595612e-15, 
+              0.0, 
+              0.19291414291051204
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browMatrixDeformer200MatrixDefGimbal_CTL", 
+      "parent": "R_browMatrixDeformer200MatrixDef_CTL"
+    }, 
     "L_innerLidcontrollowermatrixdeformer200MatrixDefGimbal_CTL": {
       "shapes": [
         {
@@ -25092,14 +28746,236 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browLTertiary00Gimbal_CTL", 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browLTertiary00GimbalMain_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browLTertiary00Gimbal_CTL", 
+      "parent": "L_browLTertiary00_CTL"
+    }, 
+    "L_browTertiary01Gimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_browLTertiary00Gimbal_CTL", 
-          "name": "L_browLTertiary00GimbalMain_SHP", 
+          "parent": "L_browTertiary01Gimbal_CTL", 
+          "name": "L_browTertiary01GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -25273,8 +29149,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_browLTertiary00Gimbal_CTL", 
-      "parent": "L_browLTertiary00_CTL"
+      "name": "L_browTertiary01Gimbal_CTL", 
+      "parent": "L_browTertiary01_CTL"
     }, 
     "L_middleLidcontroluppermatrixdeformer1MatrixDefGimbal_CTL": {
       "shapes": [
@@ -25497,6 +29373,228 @@
       "outliner_color": null, 
       "name": "L_middleLidcontroluppermatrixdeformer1MatrixDefGimbal_CTL", 
       "parent": "L_middleLidcontroluppermatrixdeformer1MatrixDef_CTL"
+    }, 
+    "R_browTertiary01Gimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browTertiary01Gimbal_CTL", 
+          "name": "R_browTertiary01GimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browTertiary01Gimbal_CTL", 
+      "parent": "R_browTertiary01_CTL"
     }, 
     "L_lowerLipTertiary00Gimbal_CTL": {
       "shapes": [
@@ -26830,7 +30928,7 @@
       "name": "R_middleLidcontrollowersecondaryGimbal_CTL", 
       "parent": "R_middleLidcontrollowersecondary_CTL"
     }, 
-    "C_browRMatrixDeformer2MatrixDefGimbal_CTL": {
+    "L_browTertiary02Gimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -26870,14 +30968,234 @@
           ], 
           "form": 1, 
           "color": 19, 
-          "color_b": 0.0, 
+          "color_b": 1.0, 
           "override_enabled": true, 
-          "color_r": 1.0, 
+          "color_r": 0.0, 
           "degree": 1, 
-          "parent": "C_browRMatrixDeformer2MatrixDefGimbal_CTL", 
-          "name": "C_browRMatrixDeformer2MatrixDefGimbalMain_SHP", 
+          "parent": "L_browTertiary02Gimbal_CTL", 
+          "name": "L_browTertiary02GimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browTertiary02Gimbal_CTL", 
+      "parent": "L_browTertiary02_CTL"
+    }, 
+    "C_browRMatrixDeformer2MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browRMatrixDeformer2MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               6.2450045135165055e-15, 
@@ -27045,7 +31363,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browRMatrixDeformer2MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -27090,16 +31410,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browLMatrixDeformer301MatrixDefGimbal_CTL", 
-          "name": "R_browLMatrixDeformer301MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browLMatrixDeformer301MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -1.9984014443252818e-15, 
@@ -27267,12 +31585,236 @@
               0.10387684618257809
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browLMatrixDeformer301MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
       "name": "R_browLMatrixDeformer301MatrixDefGimbal_CTL", 
       "parent": "R_browLMatrixDeformer301MatrixDef_CTL"
+    }, 
+    "R_browMatrixDeformer301MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browMatrixDeformer301MatrixDefGimbal_CTL", 
+          "name": "R_browMatrixDeformer301MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -3.3306690738754696e-15, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362474, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258008, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362474, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.0734520450736314, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258675, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527512, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129504, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309128838, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571526846, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258008, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571526846, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309128838, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129504, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527512, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258675, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.0734520450736314, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              -3.3306690738754696e-15, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browMatrixDeformer301MatrixDefGimbal_CTL", 
+      "parent": "R_browMatrixDeformer301MatrixDef_CTL"
     }, 
     "L_upperLipTertiary00Gimbal_CTL": {
       "shapes": [
@@ -27534,16 +32076,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browLTertiary01Gimbal_CTL", 
-          "name": "L_browLTertiary01GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browLTertiary01Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -27711,7 +32251,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browLTertiary01GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -28200,16 +32742,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browRMatrixDeformer3MatrixDefGimbal_CTL", 
-          "name": "C_browRMatrixDeformer3MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browRMatrixDeformer3MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -1.6653345369377348e-16, 
@@ -28377,7 +32917,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browRMatrixDeformer3MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -29050,7 +33592,7 @@
       "name": "R_outerLidcontrollowermatrixdeformer300MatrixDefGimbal_CTL", 
       "parent": "R_outerLidcontrollowermatrixdeformer300MatrixDef_CTL"
     }, 
-    "L_middleLidcontrollowersecondaryGimbal_CTL": {
+    "C_upperLipMatrixDeformer1MatrixDefGimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -29091,186 +33633,186 @@
           "degree": 1, 
           "form": 1, 
           "color": 19, 
-          "color_b": 1.0, 
+          "color_b": 0.0, 
           "override_color": true, 
-          "color_g": 0.0, 
+          "color_g": 1.0, 
           "override_enabled": true, 
-          "parent": "L_middleLidcontrollowersecondaryGimbal_CTL", 
+          "parent": "C_upperLipMatrixDeformer1MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              0.0, 
-              0.0, 
-              0.19291414291051204
+              6.352747104407253e-22, 
+              -4.263256414560601e-14, 
+              0.14839549454655304
             ], 
             [
-              0.0, 
-              0.09645707145525602, 
-              0.16706847061407618
+              6.352747104407253e-22, 
+              0.07419774727323122, 
+              0.12851420816467932
             ], 
             [
-              0.0, 
-              0.16706847061407618, 
-              0.09645707145525602
+              6.352747104407253e-22, 
+              0.12851420816463135, 
+              0.07419774727327919
             ], 
             [
-              0.0, 
-              0.19291414291051204, 
-              0.0
+              6.352747104407253e-22, 
+              0.14839549454650508, 
+              5.329070518200751e-15
             ], 
             [
-              0.0, 
-              0.16706847061407618, 
-              -0.09645707145525602
+              6.352747104407253e-22, 
+              0.12851420816463135, 
+              -0.07419774727326853
             ], 
             [
-              0.0, 
-              0.09645707145525602, 
-              -0.16706847061407618
+              6.352747104407253e-22, 
+              0.07419774727323122, 
+              -0.12851420816466866
             ], 
             [
-              0.0, 
-              0.0, 
-              -0.19291414291051204
+              6.352747104407253e-22, 
+              -4.263256414560601e-14, 
+              -0.14839549454654238
             ], 
             [
-              0.0, 
-              -0.09645707145525602, 
-              -0.16706847061407618
+              6.352747104407253e-22, 
+              -0.07419774727331649, 
+              -0.12851420816466866
             ], 
             [
-              0.0, 
-              -0.16706847061407618, 
-              -0.09645707145525602
+              6.352747104407253e-22, 
+              -0.12851420816471662, 
+              -0.07419774727326853
             ], 
             [
-              0.0, 
-              -0.19291414291051204, 
-              0.0
+              6.352747104407253e-22, 
+              -0.14839549454659035, 
+              5.329070518200751e-15
             ], 
             [
-              0.0, 
-              -0.16706847061407618, 
-              0.09645707145525602
+              6.352747104407253e-22, 
+              -0.12851420816471662, 
+              0.07419774727327919
             ], 
             [
-              0.0, 
-              -0.09645707145525602, 
-              0.16706847061407618
+              6.352747104407253e-22, 
+              -0.07419774727331649, 
+              0.12851420816467932
             ], 
             [
-              0.0, 
-              0.0, 
-              0.19291414291051204
+              6.352747104407253e-22, 
+              -4.263256414560601e-14, 
+              0.14839549454655304
             ], 
             [
-              0.13641094085102354, 
-              0.0, 
-              0.13641094085102354
+              0.1049314929623258, 
+              -4.263256414560601e-14, 
+              0.10493149296233113
             ], 
             [
-              0.19291414291051204, 
-              0.0, 
-              0.0
+              0.1483954945465477, 
+              -4.263256414560601e-14, 
+              5.329070518200751e-15
             ], 
             [
-              0.13641094085102354, 
-              0.0, 
-              -0.13641094085102354
+              0.1049314929623258, 
+              -4.263256414560601e-14, 
+              -0.10493149296232047
             ], 
             [
-              0.0, 
-              0.0, 
-              -0.19291414291051204
+              6.352747104407253e-22, 
+              -4.263256414560601e-14, 
+              -0.14839549454654238
             ], 
             [
-              -0.13641094085102354, 
-              0.0, 
-              -0.13641094085102354
+              -0.1049314929623258, 
+              -4.263256414560601e-14, 
+              -0.10493149296232047
             ], 
             [
-              -0.19291414291051204, 
-              0.0, 
-              0.0
+              -0.1483954945465477, 
+              -4.263256414560601e-14, 
+              5.329070518200751e-15
             ], 
             [
-              -0.16706847061407618, 
-              0.09645707145525602, 
-              0.0
+              -0.128514208164674, 
+              0.07419774727323122, 
+              5.329070518200751e-15
             ], 
             [
-              -0.09645707145525602, 
-              0.16706847061407618, 
-              0.0
+              -0.07419774727327386, 
+              0.12851420816463135, 
+              5.329070518200751e-15
             ], 
             [
-              0.0, 
-              0.19291414291051204, 
-              0.0
+              6.352747104407253e-22, 
+              0.14839549454650508, 
+              5.329070518200751e-15
             ], 
             [
-              0.09645707145525602, 
-              0.16706847061407618, 
-              0.0
+              0.07419774727327386, 
+              0.12851420816463135, 
+              5.329070518200751e-15
             ], 
             [
-              0.16706847061407618, 
-              0.09645707145525602, 
-              0.0
+              0.128514208164674, 
+              0.07419774727323122, 
+              5.329070518200751e-15
             ], 
             [
-              0.19291414291051204, 
-              0.0, 
-              0.0
+              0.1483954945465477, 
+              -4.263256414560601e-14, 
+              5.329070518200751e-15
             ], 
             [
-              0.16706847061407618, 
-              -0.09645707145525602, 
-              0.0
+              0.128514208164674, 
+              -0.07419774727331649, 
+              5.329070518200751e-15
             ], 
             [
-              0.09645707145525602, 
-              -0.16706847061407618, 
-              0.0
+              0.07419774727327386, 
+              -0.12851420816471662, 
+              5.329070518200751e-15
             ], 
             [
-              0.0, 
-              -0.19291414291051204, 
-              0.0
+              6.352747104407253e-22, 
+              -0.14839549454659035, 
+              5.329070518200751e-15
             ], 
             [
-              -0.09645707145525602, 
-              -0.16706847061407618, 
-              0.0
+              -0.07419774727327386, 
+              -0.12851420816471662, 
+              5.329070518200751e-15
             ], 
             [
-              -0.16706847061407618, 
-              -0.09645707145525602, 
-              0.0
+              -0.128514208164674, 
+              -0.07419774727331649, 
+              5.329070518200751e-15
             ], 
             [
-              -0.19291414291051204, 
-              0.0, 
-              0.0
+              -0.1483954945465477, 
+              -4.263256414560601e-14, 
+              5.329070518200751e-15
             ], 
             [
-              -0.13641094085102354, 
-              0.0, 
-              0.13641094085102354
+              -0.1049314929623258, 
+              -4.263256414560601e-14, 
+              0.10493149296233113
             ], 
             [
-              0.0, 
-              0.0, 
-              0.19291414291051204
+              6.352747104407253e-22, 
+              -4.263256414560601e-14, 
+              0.14839549454655304
             ]
           ], 
           "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_middleLidcontrollowersecondaryGimbalMain_SHP"
+          "color_r": 1.0, 
+          "name": "C_upperLipMatrixDeformer1MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
-      "name": "L_middleLidcontrollowersecondaryGimbal_CTL", 
-      "parent": "L_middleLidcontrollowersecondary_CTL"
+      "name": "C_upperLipMatrixDeformer1MatrixDefGimbal_CTL", 
+      "parent": "C_upperLipMatrixDeformer1MatrixDef_CTL"
     }, 
     "L_upperLipMatrixDeformer200MatrixDefGimbal_CTL": {
       "shapes": [
@@ -29494,6 +34036,228 @@
       "name": "L_upperLipMatrixDeformer200MatrixDefGimbal_CTL", 
       "parent": "L_upperLipMatrixDeformer200MatrixDef_CTL"
     }, 
+    "R_browSecondary00Gimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browSecondary00Gimbal_CTL", 
+          "name": "R_browSecondary00GimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              0.0, 
+              0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              0.0, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              0.0, 
+              0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              0.0, 
+              -0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              0.0, 
+              -0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              0.0, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              0.0, 
+              -0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              -0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              -0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              -0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              -0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browSecondary00Gimbal_CTL", 
+      "parent": "R_browSecondary00_CTL"
+    }, 
     "L_cornerTwistMatrixDefGimbal_CTL": {
       "shapes": [
         {
@@ -29715,6 +34479,228 @@
       "outliner_color": null, 
       "name": "L_cornerTwistMatrixDefGimbal_CTL", 
       "parent": "L_cornerTwistMatrixDef_CTL"
+    }, 
+    "L_browMatrixDeformer303MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_browMatrixDeformer303MatrixDefGimbal_CTL", 
+          "name": "L_browMatrixDeformer303MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -1.1657341758564144e-15, 
+              0.0, 
+              0.10387684618258874
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.05193842309129171, 
+              0.08995994571527711
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.08995994571527179, 
+              0.05193842309129704
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.08995994571527179, 
+              -0.05193842309128638
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.05193842309129171, 
+              -0.08995994571526646
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.0, 
+              -0.10387684618257809
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              -0.05193842309129171, 
+              -0.08995994571526646
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              -0.08995994571527179, 
+              -0.05193842309128638
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              -0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              -0.08995994571527179, 
+              0.05193842309129704
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              -0.05193842309129171, 
+              0.08995994571527711
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.0, 
+              0.10387684618258874
+            ], 
+            [
+              0.0734520450736269, 
+              0.0, 
+              0.0734520450736334
+            ], 
+            [
+              0.10387684618258225, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0734520450736269, 
+              0.0, 
+              -0.07345204507362274
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.0, 
+              -0.10387684618257809
+            ], 
+            [
+              -0.07345204507362924, 
+              0.0, 
+              -0.07345204507362274
+            ], 
+            [
+              -0.10387684618258458, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.08995994571527295, 
+              0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.051938423091292873, 
+              0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.05193842309129054, 
+              0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.08995994571527062, 
+              0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.10387684618258225, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.08995994571527062, 
+              -0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.05193842309129054, 
+              -0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              -0.10387684618258342, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.051938423091292873, 
+              -0.08995994571527179, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.08995994571527295, 
+              -0.05193842309129171, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.10387684618258458, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.07345204507362924, 
+              0.0, 
+              0.0734520450736334
+            ], 
+            [
+              -1.1657341758564144e-15, 
+              0.0, 
+              0.10387684618258874
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browMatrixDeformer303MatrixDefGimbal_CTL", 
+      "parent": "L_browMatrixDeformer303MatrixDef_CTL"
     }, 
     "L_outerLidcontrollowermatrixdeformer301MatrixDefGimbal_CTL": {
       "shapes": [
@@ -29976,16 +34962,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browRTertiary00Gimbal_CTL", 
-          "name": "L_browRTertiary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browRTertiary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -30153,7 +35137,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browRTertiary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -33084,16 +38070,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browLMatrixDeformer300MatrixDefGimbal_CTL", 
-          "name": "R_browLMatrixDeformer300MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browLMatrixDeformer300MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -1.6653345369377348e-16, 
@@ -33261,12 +38245,236 @@
               0.10387684618257809
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browLMatrixDeformer300MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
       "name": "R_browLMatrixDeformer300MatrixDefGimbal_CTL", 
       "parent": "R_browLMatrixDeformer300MatrixDef_CTL"
+    }, 
+    "L_browMatrixDeformer301MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_browMatrixDeformer301MatrixDefGimbal_CTL", 
+          "name": "L_browMatrixDeformer301MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              0.05193842309127039, 
+              0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              0.08995994571525047, 
+              0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              0.1038768461825621, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              0.08995994571525047, 
+              -0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              0.05193842309127039, 
+              -0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -0.051938423091313024, 
+              -0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -0.0899599457152931, 
+              -0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -0.10387684618260473, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -0.0899599457152931, 
+              0.05193842309129171
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -0.051938423091313024, 
+              0.08995994571527179
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362774, 
+              -2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258308, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.07345204507362774, 
+              -2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.0734520450736284, 
+              -2.1316282072803006e-14, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258375, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.08995994571527212, 
+              0.05193842309127039, 
+              0.0
+            ], 
+            [
+              -0.05193842309129204, 
+              0.08995994571525047, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              0.1038768461825621, 
+              0.0
+            ], 
+            [
+              0.051938423091291375, 
+              0.08995994571525047, 
+              0.0
+            ], 
+            [
+              0.08995994571527145, 
+              0.05193842309127039, 
+              0.0
+            ], 
+            [
+              0.10387684618258308, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.08995994571527145, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              0.051938423091291375, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -0.10387684618260473, 
+              0.0
+            ], 
+            [
+              -0.05193842309129204, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
+              -0.08995994571527212, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              -0.10387684618258375, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.0734520450736284, 
+              -2.1316282072803006e-14, 
+              0.07345204507362807
+            ], 
+            [
+              -3.3306690738754696e-16, 
+              -2.1316282072803006e-14, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browMatrixDeformer301MatrixDefGimbal_CTL", 
+      "parent": "L_browMatrixDeformer301MatrixDef_CTL"
     }, 
     "L_outerLidcontroluppermatrixdeformer300MatrixDefGimbal_CTL": {
       "shapes": [
@@ -33972,16 +39180,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browRMatrixDeformer301MatrixDefGimbal_CTL", 
-          "name": "L_browRMatrixDeformer301MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browRMatrixDeformer301MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               2.0816681711721685e-15, 
@@ -34149,7 +39355,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browRMatrixDeformer301MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -34194,16 +39402,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browRTertiary01Gimbal_CTL", 
-          "name": "L_browRTertiary01GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browRTertiary01Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -34371,7 +39577,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browRTertiary01GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -35526,16 +40734,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browLTertiary01Gimbal_CTL", 
-          "name": "R_browLTertiary01GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browLTertiary01Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -35703,7 +40909,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browLTertiary01GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -36154,7 +41362,7 @@
       "name": "R_innerLidcontrollowermatrixdeformer200MatrixDefGimbal_CTL", 
       "parent": "R_innerLidcontrollowermatrixdeformer200MatrixDef_CTL"
     }, 
-    "C_browLTertiaryGimbal_CTL": {
+    "C_browMatrixDeformer2MatrixDefGimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -36198,183 +41406,183 @@
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_browLTertiaryGimbal_CTL", 
-          "name": "C_browLTertiaryGimbalMain_SHP", 
+          "parent": "C_browMatrixDeformer2MatrixDefGimbal_CTL", 
+          "name": "C_browMatrixDeformer2MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
             [
+              -9.992007221626409e-15, 
               0.0, 
-              0.0, 
-              0.10387684618258342
+              0.19291414291051204
             ], 
             [
-              0.0, 
-              0.05193842309129171, 
-              0.08995994571527179
+              -9.992007221626409e-15, 
+              0.09645707145525602, 
+              0.16706847061407618
             ], 
             [
-              0.0, 
-              0.08995994571527179, 
-              0.05193842309129171
+              -9.992007221626409e-15, 
+              0.16706847061407618, 
+              0.09645707145525602
             ], 
             [
-              0.0, 
-              0.10387684618258342, 
+              -9.992007221626409e-15, 
+              0.19291414291051204, 
               0.0
             ], 
             [
-              0.0, 
-              0.08995994571527179, 
-              -0.05193842309129171
+              -9.992007221626409e-15, 
+              0.16706847061407618, 
+              -0.09645707145525602
             ], 
             [
-              0.0, 
-              0.05193842309129171, 
-              -0.08995994571527179
+              -9.992007221626409e-15, 
+              0.09645707145525602, 
+              -0.16706847061407618
             ], 
             [
+              -9.992007221626409e-15, 
               0.0, 
-              0.0, 
-              -0.10387684618258342
+              -0.19291414291051204
             ], 
             [
-              0.0, 
-              -0.05193842309129171, 
-              -0.08995994571527179
+              -9.992007221626409e-15, 
+              -0.09645707145525602, 
+              -0.16706847061407618
             ], 
             [
-              0.0, 
-              -0.08995994571527179, 
-              -0.05193842309129171
+              -9.992007221626409e-15, 
+              -0.16706847061407618, 
+              -0.09645707145525602
             ], 
             [
-              0.0, 
-              -0.10387684618258342, 
+              -9.992007221626409e-15, 
+              -0.19291414291051204, 
               0.0
             ], 
             [
-              0.0, 
-              -0.08995994571527179, 
-              0.05193842309129171
+              -9.992007221626409e-15, 
+              -0.16706847061407618, 
+              0.09645707145525602
             ], 
             [
-              0.0, 
-              -0.05193842309129171, 
-              0.08995994571527179
+              -9.992007221626409e-15, 
+              -0.09645707145525602, 
+              0.16706847061407618
             ], 
             [
+              -9.992007221626409e-15, 
               0.0, 
-              0.0, 
-              0.10387684618258342
+              0.19291414291051204
             ], 
             [
-              0.07345204507362807, 
+              0.13641094085101355, 
               0.0, 
-              0.07345204507362807
+              0.13641094085102354
             ], 
             [
-              0.10387684618258342, 
-              0.0, 
-              0.0
-            ], 
-            [
-              0.07345204507362807, 
-              0.0, 
-              -0.07345204507362807
-            ], 
-            [
-              0.0, 
-              0.0, 
-              -0.10387684618258342
-            ], 
-            [
-              -0.07345204507362807, 
-              0.0, 
-              -0.07345204507362807
-            ], 
-            [
-              -0.10387684618258342, 
+              0.19291414291050205, 
               0.0, 
               0.0
             ], 
             [
-              -0.08995994571527179, 
-              0.05193842309129171, 
-              0.0
-            ], 
-            [
-              -0.05193842309129171, 
-              0.08995994571527179, 
-              0.0
-            ], 
-            [
+              0.13641094085101355, 
               0.0, 
-              0.10387684618258342, 
-              0.0
+              -0.13641094085102354
             ], 
             [
-              0.05193842309129171, 
-              0.08995994571527179, 
-              0.0
+              -9.992007221626409e-15, 
+              0.0, 
+              -0.19291414291051204
             ], 
             [
-              0.08995994571527179, 
-              0.05193842309129171, 
-              0.0
+              -0.13641094085103353, 
+              0.0, 
+              -0.13641094085102354
             ], 
             [
-              0.10387684618258342, 
+              -0.19291414291052203, 
               0.0, 
               0.0
             ], 
             [
-              0.08995994571527179, 
-              -0.05193842309129171, 
+              -0.16706847061408617, 
+              0.09645707145525602, 
               0.0
             ], 
             [
-              0.05193842309129171, 
-              -0.08995994571527179, 
+              -0.09645707145526601, 
+              0.16706847061407618, 
               0.0
             ], 
             [
+              -9.992007221626409e-15, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.09645707145524603, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.16706847061406618, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.19291414291050205, 
               0.0, 
-              -0.10387684618258342, 
               0.0
             ], 
             [
-              -0.05193842309129171, 
-              -0.08995994571527179, 
+              0.16706847061406618, 
+              -0.09645707145525602, 
               0.0
             ], 
             [
-              -0.08995994571527179, 
-              -0.05193842309129171, 
+              0.09645707145524603, 
+              -0.16706847061407618, 
               0.0
             ], 
             [
-              -0.10387684618258342, 
+              -9.992007221626409e-15, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              -0.09645707145526601, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              -0.16706847061408617, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.19291414291052203, 
               0.0, 
               0.0
             ], 
             [
-              -0.07345204507362807, 
+              -0.13641094085103353, 
               0.0, 
-              0.07345204507362807
+              0.13641094085102354
             ], 
             [
+              -9.992007221626409e-15, 
               0.0, 
-              0.0, 
-              0.10387684618258342
+              0.19291414291051204
             ]
           ], 
           "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
-      "name": "C_browLTertiaryGimbal_CTL", 
-      "parent": "C_browLTertiary_CTL"
+      "name": "C_browMatrixDeformer2MatrixDefGimbal_CTL", 
+      "parent": "C_browMatrixDeformer2MatrixDef_CTL"
     }, 
     "R_browLTertiary00Gimbal_CTL": {
       "shapes": [
@@ -36414,16 +41622,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browLTertiary00Gimbal_CTL", 
-          "name": "R_browLTertiary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browLTertiary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -36591,7 +41797,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browLTertiary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -36636,16 +41844,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browRSecondary00Gimbal_CTL", 
-          "name": "L_browRSecondary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browRSecondary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -36813,7 +42019,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browRSecondary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -36858,16 +42066,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browLPrimaryGimbal_CTL", 
-          "name": "C_browLPrimaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browLPrimaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -37035,7 +42241,9 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browLPrimaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -37080,16 +42288,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browLMatrixDeformer1MatrixDefGimbal_CTL", 
-          "name": "C_browLMatrixDeformer1MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browLMatrixDeformer1MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -5.551115123125783e-16, 
@@ -37257,7 +42463,9 @@
               0.20775369236520236
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browLMatrixDeformer1MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -38412,16 +43620,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browRMatrixDeformer1MatrixDefGimbal_CTL", 
-          "name": "C_browRMatrixDeformer1MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browRMatrixDeformer1MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               6.245004513516506e-16, 
@@ -38589,7 +43795,9 @@
               0.20775369236516683
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browRMatrixDeformer1MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -39040,6 +44248,228 @@
       "name": "L_cheekMassMatrixDefGimbal_CTL", 
       "parent": "L_cheekMassMatrixDef_CTL"
     }, 
+    "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL", 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.14839549454655304
+            ], 
+            [
+              0.0, 
+              0.07419774727327386, 
+              0.12851420816467932
+            ], 
+            [
+              0.0, 
+              0.128514208164674, 
+              0.07419774727327919
+            ], 
+            [
+              0.0, 
+              0.1483954945465477, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              0.128514208164674, 
+              -0.07419774727326853
+            ], 
+            [
+              0.0, 
+              0.07419774727327386, 
+              -0.12851420816466866
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.14839549454654238
+            ], 
+            [
+              0.0, 
+              -0.07419774727327386, 
+              -0.12851420816466866
+            ], 
+            [
+              0.0, 
+              -0.128514208164674, 
+              -0.07419774727326853
+            ], 
+            [
+              0.0, 
+              -0.1483954945465477, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              -0.128514208164674, 
+              0.07419774727327919
+            ], 
+            [
+              0.0, 
+              -0.07419774727327386, 
+              0.12851420816467932
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.14839549454655304
+            ], 
+            [
+              0.1049314929623258, 
+              0.0, 
+              0.10493149296233113
+            ], 
+            [
+              0.1483954945465477, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.1049314929623258, 
+              0.0, 
+              -0.10493149296232047
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.14839549454654238
+            ], 
+            [
+              -0.1049314929623258, 
+              0.0, 
+              -0.10493149296232047
+            ], 
+            [
+              -0.1483954945465477, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.128514208164674, 
+              0.07419774727327386, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.07419774727327386, 
+              0.128514208164674, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              0.1483954945465477, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.07419774727327386, 
+              0.128514208164674, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.128514208164674, 
+              0.07419774727327386, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.1483954945465477, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.128514208164674, 
+              -0.07419774727327386, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.07419774727327386, 
+              -0.128514208164674, 
+              5.329070518200751e-15
+            ], 
+            [
+              0.0, 
+              -0.1483954945465477, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.07419774727327386, 
+              -0.128514208164674, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.128514208164674, 
+              -0.07419774727327386, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.1483954945465477, 
+              0.0, 
+              5.329070518200751e-15
+            ], 
+            [
+              -0.1049314929623258, 
+              0.0, 
+              0.10493149296233113
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.14839549454655304
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_lowerLipMatrixDeformer301MatrixDefGimbalMain_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL", 
+      "parent": "R_lowerLipMatrixDeformer301MatrixDef_CTL"
+    }, 
     "R_middleLidcontroluppermatrixdeformer3MatrixDefGimbal_CTL": {
       "shapes": [
         {
@@ -39300,16 +44730,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browRMatrixDeformer200MatrixDefGimbal_CTL", 
-          "name": "R_browRMatrixDeformer200MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browRMatrixDeformer200MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -4.996003610813204e-16, 
@@ -39477,7 +44905,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browRMatrixDeformer200MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -39522,16 +44952,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browLSecondary00Gimbal_CTL", 
-          "name": "R_browLSecondary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browLSecondary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -39699,7 +45127,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browLSecondary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -39928,7 +45358,7 @@
       "name": "L_lowerLipSecondary00Gimbal_CTL", 
       "parent": "L_lowerLipSecondary00_CTL"
     }, 
-    "C_lowerLipPrimaryGimbal_CTL": {
+    "C_browPrimaryGimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -39966,14 +45396,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_browPrimaryGimbal_CTL", 
+          "name": "C_browPrimaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_lowerLipPrimaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -40141,14 +45573,12 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_lowerLipPrimaryGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
-      "name": "C_lowerLipPrimaryGimbal_CTL", 
-      "parent": "C_lowerLipPrimary_CTL"
+      "name": "C_browPrimaryGimbal_CTL", 
+      "parent": "C_browPrimary_CTL"
     }, 
     "L_lowerLipMatrixDeformer301MatrixDefGimbal_CTL": {
       "shapes": [
@@ -40410,16 +45840,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browRMatrixDeformer300MatrixDefGimbal_CTL", 
-          "name": "R_browRMatrixDeformer300MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browRMatrixDeformer300MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -3.3306690738754696e-16, 
@@ -40587,7 +46015,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browRMatrixDeformer300MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -40816,7 +46246,7 @@
       "name": "R_outerLidcontroluppertertiary01Gimbal_CTL", 
       "parent": "R_outerLidcontroluppertertiary01_CTL"
     }, 
-    "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbal_CTL": {
+    "C_browMatrixDeformer1MatrixDefGimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -40854,189 +46284,633 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbal_CTL", 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_browMatrixDeformer1MatrixDefGimbal_CTL", 
+          "name": "C_browMatrixDeformer1MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 1.0, 
           "controlVertices": [
             [
-              3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              2.3592239273284576e-15, 
+              0.0, 
+              0.20775369236516683
+            ], 
+            [
+              2.3592239273284576e-15, 
+              0.10387684618258342, 
+              0.17991989143054357
+            ], 
+            [
+              2.3592239273284576e-15, 
+              0.17991989143054357, 
               0.10387684618258342
             ], 
             [
-              3.3306690738754696e-16, 
-              0.05193842309127039, 
-              0.08995994571527179
-            ], 
-            [
-              3.3306690738754696e-16, 
-              0.08995994571525047, 
-              0.05193842309129171
-            ], 
-            [
-              3.3306690738754696e-16, 
-              0.1038768461825621, 
+              2.3592239273284576e-15, 
+              0.20775369236516683, 
               0.0
             ], 
             [
-              3.3306690738754696e-16, 
-              0.08995994571525047, 
-              -0.05193842309129171
-            ], 
-            [
-              3.3306690738754696e-16, 
-              0.05193842309127039, 
-              -0.08995994571527179
-            ], 
-            [
-              3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              2.3592239273284576e-15, 
+              0.17991989143054357, 
               -0.10387684618258342
             ], 
             [
-              3.3306690738754696e-16, 
-              -0.051938423091313024, 
-              -0.08995994571527179
+              2.3592239273284576e-15, 
+              0.10387684618258342, 
+              -0.17991989143054357
             ], 
             [
-              3.3306690738754696e-16, 
-              -0.0899599457152931, 
-              -0.05193842309129171
+              2.3592239273284576e-15, 
+              0.0, 
+              -0.20775369236516683
             ], 
             [
-              3.3306690738754696e-16, 
-              -0.10387684618260473, 
-              0.0
+              2.3592239273284576e-15, 
+              -0.10387684618258342, 
+              -0.17991989143054357
             ], 
             [
-              3.3306690738754696e-16, 
-              -0.0899599457152931, 
-              0.05193842309129171
-            ], 
-            [
-              3.3306690738754696e-16, 
-              -0.051938423091313024, 
-              0.08995994571527179
-            ], 
-            [
-              3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
-              0.10387684618258342
-            ], 
-            [
-              0.0734520450736284, 
-              -2.1316282072803006e-14, 
-              0.07345204507362807
-            ], 
-            [
-              0.10387684618258375, 
-              -2.1316282072803006e-14, 
-              0.0
-            ], 
-            [
-              0.0734520450736284, 
-              -2.1316282072803006e-14, 
-              -0.07345204507362807
-            ], 
-            [
-              3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              2.3592239273284576e-15, 
+              -0.17991989143054357, 
               -0.10387684618258342
             ], 
             [
-              -0.07345204507362774, 
-              -2.1316282072803006e-14, 
-              -0.07345204507362807
-            ], 
-            [
-              -0.10387684618258308, 
-              -2.1316282072803006e-14, 
+              2.3592239273284576e-15, 
+              -0.20775369236516683, 
               0.0
             ], 
             [
-              -0.08995994571527145, 
-              0.05193842309127039, 
-              0.0
-            ], 
-            [
-              -0.051938423091291375, 
-              0.08995994571525047, 
-              0.0
-            ], 
-            [
-              3.3306690738754696e-16, 
-              0.1038768461825621, 
-              0.0
-            ], 
-            [
-              0.05193842309129204, 
-              0.08995994571525047, 
-              0.0
-            ], 
-            [
-              0.08995994571527212, 
-              0.05193842309127039, 
-              0.0
-            ], 
-            [
-              0.10387684618258375, 
-              -2.1316282072803006e-14, 
-              0.0
-            ], 
-            [
-              0.08995994571527212, 
-              -0.051938423091313024, 
-              0.0
-            ], 
-            [
-              0.05193842309129204, 
-              -0.0899599457152931, 
-              0.0
-            ], 
-            [
-              3.3306690738754696e-16, 
-              -0.10387684618260473, 
-              0.0
-            ], 
-            [
-              -0.051938423091291375, 
-              -0.0899599457152931, 
-              0.0
-            ], 
-            [
-              -0.08995994571527145, 
-              -0.051938423091313024, 
-              0.0
-            ], 
-            [
-              -0.10387684618258308, 
-              -2.1316282072803006e-14, 
-              0.0
-            ], 
-            [
-              -0.07345204507362774, 
-              -2.1316282072803006e-14, 
-              0.07345204507362807
-            ], 
-            [
-              3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              2.3592239273284576e-15, 
+              -0.17991989143054357, 
               0.10387684618258342
+            ], 
+            [
+              2.3592239273284576e-15, 
+              -0.10387684618258342, 
+              0.17991989143054357
+            ], 
+            [
+              2.3592239273284576e-15, 
+              0.0, 
+              0.20775369236516683
+            ], 
+            [
+              0.1469040901472585, 
+              0.0, 
+              0.14690409014725614
+            ], 
+            [
+              0.2077536923651692, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.1469040901472585, 
+              0.0, 
+              -0.14690409014725614
+            ], 
+            [
+              2.3592239273284576e-15, 
+              0.0, 
+              -0.20775369236516683
+            ], 
+            [
+              -0.14690409014725378, 
+              0.0, 
+              -0.14690409014725614
+            ], 
+            [
+              -0.20775369236516447, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.1799198914305412, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.10387684618258106, 
+              0.17991989143054357, 
+              0.0
+            ], 
+            [
+              2.3592239273284576e-15, 
+              0.20775369236516683, 
+              0.0
+            ], 
+            [
+              0.10387684618258577, 
+              0.17991989143054357, 
+              0.0
+            ], 
+            [
+              0.17991989143054593, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.2077536923651692, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.17991989143054593, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.10387684618258577, 
+              -0.17991989143054357, 
+              0.0
+            ], 
+            [
+              2.3592239273284576e-15, 
+              -0.20775369236516683, 
+              0.0
+            ], 
+            [
+              -0.10387684618258106, 
+              -0.17991989143054357, 
+              0.0
+            ], 
+            [
+              -0.1799198914305412, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.20775369236516447, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.14690409014725378, 
+              0.0, 
+              0.14690409014725614
+            ], 
+            [
+              2.3592239273284576e-15, 
+              0.0, 
+              0.20775369236516683
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
-      "name": "R_innerLidcontroluppermatrixdeformer301MatrixDefGimbal_CTL", 
-      "parent": "R_innerLidcontroluppermatrixdeformer301MatrixDef_CTL"
+      "name": "C_browMatrixDeformer1MatrixDefGimbal_CTL", 
+      "parent": "C_browMatrixDeformer1MatrixDef_CTL"
+    }, 
+    "R_browTertiary03Gimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browTertiary03Gimbal_CTL", 
+          "name": "R_browTertiary03GimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              -0.08995994571527179
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              -0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.08995994571527179, 
+              0.05193842309129171
+            ], 
+            [
+              0.0, 
+              -0.05193842309129171, 
+              0.08995994571527179
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browTertiary03Gimbal_CTL", 
+      "parent": "R_browTertiary03_CTL"
+    }, 
+    "L_browMatrixDeformer300MatrixDefGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_browMatrixDeformer300MatrixDefGimbal_CTL", 
+          "name": "L_browMatrixDeformer300MatrixDefGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              -1.457167719820518e-15, 
+              2.1316282072803006e-14, 
+              0.10387684618257809
+            ], 
+            [
+              -1.457167719820518e-15, 
+              0.051938423091313024, 
+              0.08995994571526646
+            ], 
+            [
+              -1.457167719820518e-15, 
+              0.0899599457152931, 
+              0.05193842309128638
+            ], 
+            [
+              -1.457167719820518e-15, 
+              0.10387684618260473, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -1.457167719820518e-15, 
+              0.0899599457152931, 
+              -0.05193842309129704
+            ], 
+            [
+              -1.457167719820518e-15, 
+              0.051938423091313024, 
+              -0.08995994571527711
+            ], 
+            [
+              -1.457167719820518e-15, 
+              2.1316282072803006e-14, 
+              -0.10387684618258874
+            ], 
+            [
+              -1.457167719820518e-15, 
+              -0.05193842309127039, 
+              -0.08995994571527711
+            ], 
+            [
+              -1.457167719820518e-15, 
+              -0.08995994571525047, 
+              -0.05193842309129704
+            ], 
+            [
+              -1.457167719820518e-15, 
+              -0.1038768461825621, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -1.457167719820518e-15, 
+              -0.08995994571525047, 
+              0.05193842309128638
+            ], 
+            [
+              -1.457167719820518e-15, 
+              -0.05193842309127039, 
+              0.08995994571526646
+            ], 
+            [
+              -1.457167719820518e-15, 
+              2.1316282072803006e-14, 
+              0.10387684618257809
+            ], 
+            [
+              0.07345204507362661, 
+              2.1316282072803006e-14, 
+              0.07345204507362274
+            ], 
+            [
+              0.10387684618258196, 
+              2.1316282072803006e-14, 
+              -5.329070518200751e-15
+            ], 
+            [
+              0.07345204507362661, 
+              2.1316282072803006e-14, 
+              -0.0734520450736334
+            ], 
+            [
+              -1.457167719820518e-15, 
+              2.1316282072803006e-14, 
+              -0.10387684618258874
+            ], 
+            [
+              -0.07345204507362953, 
+              2.1316282072803006e-14, 
+              -0.0734520450736334
+            ], 
+            [
+              -0.10387684618258487, 
+              2.1316282072803006e-14, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -0.08995994571527324, 
+              0.051938423091313024, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -0.051938423091293165, 
+              0.0899599457152931, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -1.457167719820518e-15, 
+              0.10387684618260473, 
+              -5.329070518200751e-15
+            ], 
+            [
+              0.05193842309129025, 
+              0.0899599457152931, 
+              -5.329070518200751e-15
+            ], 
+            [
+              0.08995994571527033, 
+              0.051938423091313024, 
+              -5.329070518200751e-15
+            ], 
+            [
+              0.10387684618258196, 
+              2.1316282072803006e-14, 
+              -5.329070518200751e-15
+            ], 
+            [
+              0.08995994571527033, 
+              -0.05193842309127039, 
+              -5.329070518200751e-15
+            ], 
+            [
+              0.05193842309129025, 
+              -0.08995994571525047, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -1.457167719820518e-15, 
+              -0.1038768461825621, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -0.051938423091293165, 
+              -0.08995994571525047, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -0.08995994571527324, 
+              -0.05193842309127039, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -0.10387684618258487, 
+              2.1316282072803006e-14, 
+              -5.329070518200751e-15
+            ], 
+            [
+              -0.07345204507362953, 
+              2.1316282072803006e-14, 
+              0.07345204507362274
+            ], 
+            [
+              -1.457167719820518e-15, 
+              2.1316282072803006e-14, 
+              0.10387684618257809
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browMatrixDeformer300MatrixDefGimbal_CTL", 
+      "parent": "L_browMatrixDeformer300MatrixDef_CTL"
     }, 
     "L_lowerLipMatrixDeformer200MatrixDefGimbal_CTL": {
       "shapes": [
@@ -41259,6 +47133,228 @@
       "outliner_color": null, 
       "name": "L_lowerLipMatrixDeformer200MatrixDefGimbal_CTL", 
       "parent": "L_lowerLipMatrixDeformer200MatrixDef_CTL"
+    }, 
+    "C_browSecondaryGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_browSecondaryGimbal_CTL", 
+          "name": "C_browSecondaryGimbalMain_SHP", 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              0.0, 
+              0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              0.0, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              0.0, 
+              0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              0.0, 
+              -0.09645707145525602, 
+              -0.16706847061407618
+            ], 
+            [
+              0.0, 
+              -0.16706847061407618, 
+              -0.09645707145525602
+            ], 
+            [
+              0.0, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.16706847061407618, 
+              0.09645707145525602
+            ], 
+            [
+              0.0, 
+              -0.09645707145525602, 
+              0.16706847061407618
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ], 
+            [
+              0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.19291414291051204
+            ], 
+            [
+              -0.13641094085102354, 
+              0.0, 
+              -0.13641094085102354
+            ], 
+            [
+              -0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.19291414291051204, 
+              0.0
+            ], 
+            [
+              0.09645707145525602, 
+              0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.19291414291051204, 
+              0.0
+            ], 
+            [
+              -0.09645707145525602, 
+              -0.16706847061407618, 
+              0.0
+            ], 
+            [
+              -0.16706847061407618, 
+              -0.09645707145525602, 
+              0.0
+            ], 
+            [
+              -0.19291414291051204, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.13641094085102354, 
+              0.0, 
+              0.13641094085102354
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.19291414291051204
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_browSecondaryGimbal_CTL", 
+      "parent": "C_browSecondary_CTL"
     }, 
     "R_middleLidcontroluppertertiaryGimbal_CTL": {
       "shapes": [
@@ -42592,7 +48688,7 @@
       "name": "C_upperLipSecondaryGimbal_CTL", 
       "parent": "C_upperLipSecondary_CTL"
     }, 
-    "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL": {
+    "L_browTertiary00Gimbal_CTL": {
       "shapes": [
         {
           "knots": [
@@ -42630,189 +48726,189 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
-          "color_b": 0.0, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_browTertiary00Gimbal_CTL", 
+          "name": "L_browTertiary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
               0.0, 
-              0.14839549454655304
+              0.10387684618258342
             ], 
             [
               0.0, 
-              0.07419774727327386, 
-              0.12851420816467932
+              0.05193842309129171, 
+              0.08995994571527179
             ], 
             [
               0.0, 
-              0.128514208164674, 
-              0.07419774727327919
+              0.08995994571527179, 
+              0.05193842309129171
             ], 
             [
               0.0, 
-              0.1483954945465477, 
-              5.329070518200751e-15
+              0.10387684618258342, 
+              0.0
             ], 
             [
               0.0, 
-              0.128514208164674, 
-              -0.07419774727326853
+              0.08995994571527179, 
+              -0.05193842309129171
             ], 
             [
               0.0, 
-              0.07419774727327386, 
-              -0.12851420816466866
-            ], 
-            [
-              0.0, 
-              0.0, 
-              -0.14839549454654238
-            ], 
-            [
-              0.0, 
-              -0.07419774727327386, 
-              -0.12851420816466866
-            ], 
-            [
-              0.0, 
-              -0.128514208164674, 
-              -0.07419774727326853
-            ], 
-            [
-              0.0, 
-              -0.1483954945465477, 
-              5.329070518200751e-15
-            ], 
-            [
-              0.0, 
-              -0.128514208164674, 
-              0.07419774727327919
-            ], 
-            [
-              0.0, 
-              -0.07419774727327386, 
-              0.12851420816467932
+              0.05193842309129171, 
+              -0.08995994571527179
             ], 
             [
               0.0, 
               0.0, 
-              0.14839549454655304
-            ], 
-            [
-              0.1049314929623258, 
-              0.0, 
-              0.10493149296233113
-            ], 
-            [
-              0.1483954945465477, 
-              0.0, 
-              5.329070518200751e-15
-            ], 
-            [
-              0.1049314929623258, 
-              0.0, 
-              -0.10493149296232047
+              -0.10387684618258342
             ], 
             [
               0.0, 
-              0.0, 
-              -0.14839549454654238
-            ], 
-            [
-              -0.1049314929623258, 
-              0.0, 
-              -0.10493149296232047
-            ], 
-            [
-              -0.1483954945465477, 
-              0.0, 
-              5.329070518200751e-15
-            ], 
-            [
-              -0.128514208164674, 
-              0.07419774727327386, 
-              5.329070518200751e-15
-            ], 
-            [
-              -0.07419774727327386, 
-              0.128514208164674, 
-              5.329070518200751e-15
+              -0.05193842309129171, 
+              -0.08995994571527179
             ], 
             [
               0.0, 
-              0.1483954945465477, 
-              5.329070518200751e-15
-            ], 
-            [
-              0.07419774727327386, 
-              0.128514208164674, 
-              5.329070518200751e-15
-            ], 
-            [
-              0.128514208164674, 
-              0.07419774727327386, 
-              5.329070518200751e-15
-            ], 
-            [
-              0.1483954945465477, 
-              0.0, 
-              5.329070518200751e-15
-            ], 
-            [
-              0.128514208164674, 
-              -0.07419774727327386, 
-              5.329070518200751e-15
-            ], 
-            [
-              0.07419774727327386, 
-              -0.128514208164674, 
-              5.329070518200751e-15
+              -0.08995994571527179, 
+              -0.05193842309129171
             ], 
             [
               0.0, 
-              -0.1483954945465477, 
-              5.329070518200751e-15
+              -0.10387684618258342, 
+              0.0
             ], 
             [
-              -0.07419774727327386, 
-              -0.128514208164674, 
-              5.329070518200751e-15
-            ], 
-            [
-              -0.128514208164674, 
-              -0.07419774727327386, 
-              5.329070518200751e-15
-            ], 
-            [
-              -0.1483954945465477, 
               0.0, 
-              5.329070518200751e-15
+              -0.08995994571527179, 
+              0.05193842309129171
             ], 
             [
-              -0.1049314929623258, 
               0.0, 
-              0.10493149296233113
+              -0.05193842309129171, 
+              0.08995994571527179
             ], 
             [
               0.0, 
               0.0, 
-              0.14839549454655304
+              0.10387684618258342
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.10387684618258342
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              -0.07345204507362807
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.10387684618258342, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.10387684618258342, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.08995994571527179, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.05193842309129171, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              0.0, 
+              0.07345204507362807
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_lowerLipMatrixDeformer301MatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
-      "name": "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL", 
-      "parent": "R_lowerLipMatrixDeformer301MatrixDef_CTL"
+      "name": "L_browTertiary00Gimbal_CTL", 
+      "parent": "L_browTertiary00_CTL"
     }, 
     "R_middleLidcontrollowerprimaryGimbal_CTL": {
       "shapes": [
@@ -43296,16 +49392,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browLMatrixDeformer2MatrixDefGimbal_CTL", 
-          "name": "C_browLMatrixDeformer2MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browLMatrixDeformer2MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -7.494005416219807e-15, 
@@ -43473,7 +49567,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browLMatrixDeformer2MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -44184,16 +50280,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browLMatrixDeformer200MatrixDefGimbal_CTL", 
-          "name": "L_browLMatrixDeformer200MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browLMatrixDeformer200MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -4.996003610813204e-16, 
@@ -44361,7 +50455,9 @@
               0.192914142910544
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browLMatrixDeformer200MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -44589,6 +50685,228 @@
       "outliner_color": null, 
       "name": "C_lowerLipMatrixDeformer1MatrixDefGimbal_CTL", 
       "parent": "C_lowerLipMatrixDeformer1MatrixDef_CTL"
+    }, 
+    "C_lowerLipPrimaryGimbal_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 19, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_lowerLipPrimaryGimbal_CTL", 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.2967909890930954
+            ], 
+            [
+              0.0, 
+              0.1483954945465477, 
+              0.257028416329348
+            ], 
+            [
+              0.0, 
+              0.257028416329348, 
+              0.1483954945465477
+            ], 
+            [
+              0.0, 
+              0.2967909890930954, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.257028416329348, 
+              -0.1483954945465477
+            ], 
+            [
+              0.0, 
+              0.1483954945465477, 
+              -0.257028416329348
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.2967909890930954
+            ], 
+            [
+              0.0, 
+              -0.1483954945465477, 
+              -0.257028416329348
+            ], 
+            [
+              0.0, 
+              -0.257028416329348, 
+              -0.1483954945465477
+            ], 
+            [
+              0.0, 
+              -0.2967909890930954, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.257028416329348, 
+              0.1483954945465477
+            ], 
+            [
+              0.0, 
+              -0.1483954945465477, 
+              0.257028416329348
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.2967909890930954
+            ], 
+            [
+              0.2098629859246516, 
+              0.0, 
+              0.2098629859246516
+            ], 
+            [
+              0.2967909890930954, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.2098629859246516, 
+              0.0, 
+              -0.2098629859246516
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.2967909890930954
+            ], 
+            [
+              -0.2098629859246516, 
+              0.0, 
+              -0.2098629859246516
+            ], 
+            [
+              -0.2967909890930954, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.257028416329348, 
+              0.1483954945465477, 
+              0.0
+            ], 
+            [
+              -0.1483954945465477, 
+              0.257028416329348, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.2967909890930954, 
+              0.0
+            ], 
+            [
+              0.1483954945465477, 
+              0.257028416329348, 
+              0.0
+            ], 
+            [
+              0.257028416329348, 
+              0.1483954945465477, 
+              0.0
+            ], 
+            [
+              0.2967909890930954, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.257028416329348, 
+              -0.1483954945465477, 
+              0.0
+            ], 
+            [
+              0.1483954945465477, 
+              -0.257028416329348, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.2967909890930954, 
+              0.0
+            ], 
+            [
+              -0.1483954945465477, 
+              -0.257028416329348, 
+              0.0
+            ], 
+            [
+              -0.257028416329348, 
+              -0.1483954945465477, 
+              0.0
+            ], 
+            [
+              -0.2967909890930954, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.2098629859246516, 
+              0.0, 
+              0.2098629859246516
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.2967909890930954
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_lowerLipPrimaryGimbalMain_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_lowerLipPrimaryGimbal_CTL", 
+      "parent": "C_lowerLipPrimary_CTL"
     }, 
     "L_middleLidcontrollowerprimaryGimbal_CTL": {
       "shapes": [
@@ -45072,16 +51390,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browRMatrixDeformer301MatrixDefGimbal_CTL", 
-          "name": "R_browRMatrixDeformer301MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browRMatrixDeformer301MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -9.992007221626409e-16, 
@@ -45249,7 +51565,9 @@
               0.10387684618258874
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browRMatrixDeformer301MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -45294,16 +51612,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browLSecondaryGimbal_CTL", 
-          "name": "C_browLSecondaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browLSecondaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -45471,7 +51787,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browLSecondaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -45516,16 +51834,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browRTertiary01Gimbal_CTL", 
-          "name": "R_browRTertiary01GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browRTertiary01Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -45693,7 +52009,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browRTertiary01GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -46298,147 +52616,147 @@
       [
         0.0, 
         0.657573661162786, 
-        0.47086125375204624
+        1.2647926564007062
       ], 
       [
         0.0, 
         0.5076349561065285, 
-        0.4126340429136022
+        1.206565445562262
       ], 
       [
         0.0, 
         0.22279683717772514, 
-        0.2795930604825214
+        1.0735244631311813
       ], 
       [
         0.0, 
         -0.14521159004215178, 
-        0.031191420691926375
+        0.8251228233405863
       ], 
       [
         0.0, 
         -0.4204777216291973, 
-        -0.2816845499061307
+        0.5122468527425292
       ], 
       [
         0.0, 
         -0.5338023134177661, 
-        -0.6004127713278704
+        0.1935186313207895
       ], 
       [
         0.0, 
         -0.5882566596835659, 
-        -0.8702223361630974
+        -0.0762909335144375
       ], 
       [
         0.0, 
         -0.6088389558393317, 
-        -1.091168776181025
+        -0.297237373532365
       ], 
       [
         0.0, 
         -0.6234240402422984, 
-        -1.2668910430445681
+        -0.4729596403959082
       ], 
       [
         0.0, 
         -0.6294380744684531, 
-        -1.4019148540250157
+        -0.6079834513763558
       ], 
       [
         0.0, 
         -0.6287651755340562, 
-        -1.5052728294908224
+        -0.7113414268421625
       ], 
       [
         0.0, 
         -0.6338371512520666, 
-        -1.5815905666138104
+        -0.7876591639651505
       ], 
       [
         0.0, 
         -0.6371511785039274, 
-        -1.6282236276715665
+        -0.8342922250229066
       ], 
       [
         0.0, 
         -0.6479680288743168, 
-        -1.652699356522735
+        -0.8587679538740751
       ], 
       [
         0.0, 
         -0.657573661162786, 
-        -1.6609069075493466
+        -0.8669755049006866
       ], 
       [
         0.0, 
         -0.6479680288743168, 
-        -1.652699356522735
+        -0.8587679538740751
       ], 
       [
         0.0, 
         -0.6371511785039274, 
-        -1.6282236276715665
+        -0.8342922250229066
       ], 
       [
         0.0, 
         -0.6338371512520666, 
-        -1.5815905666138104
+        -0.7876591639651505
       ], 
       [
         0.0, 
         -0.6287651755340562, 
-        -1.5052728294908224
+        -0.7113414268421625
       ], 
       [
         0.0, 
         -0.6294380744684531, 
-        -1.4019148540250157
+        -0.6079834513763558
       ], 
       [
         0.0, 
         -0.6234240402422984, 
-        -1.2668910430445681
+        -0.4729596403959082
       ], 
       [
         0.0, 
         -0.6088389558393317, 
-        -1.0911682695355864
+        -0.2972368668869265
       ], 
       [
         0.0, 
         -0.5882566596835659, 
-        -0.8702222941064139
+        -0.07629089145775403
       ], 
       [
         0.0, 
         -0.5338023134177661, 
-        -0.6004127713278704
+        0.1935186313207895
       ], 
       [
         0.0, 
         -0.4204777216291973, 
-        -0.28168435441134765
+        0.5122470482373123
       ], 
       [
         0.0, 
         -0.14521159004215178, 
-        0.031191574130026822
+        0.8251229767786867
       ], 
       [
         0.0, 
         0.22279683717772514, 
-        0.27959323494896093
+        1.0735246375976208
       ], 
       [
         0.0, 
         0.5076349561065285, 
-        0.4126351518146407
+        1.2065665544633006
       ], 
       [
         0.0, 
         0.657573661162786, 
-        0.47086125375204624
+        1.2647926564007062
       ], 
       [
         0.0, 
@@ -48562,87 +54880,87 @@
       [
         0.0, 
         -0.6432325026235333, 
-        -1.6443915365712947
+        -0.8504601339226348
       ], 
       [
         0.0, 
         -0.6408521226431105, 
-        -1.637152358997941
+        -0.8432209563492812
       ], 
       [
         0.0, 
         -0.6367642616166904, 
-        -1.618402215287766
+        -0.824470812639106
       ], 
       [
         0.0, 
         -0.6325586432766954, 
-        -1.5762098853650812
+        -0.7822784827164213
       ], 
       [
         0.0, 
         -0.6302455531896953, 
-        -1.5139361692072502
+        -0.7200047665585902
       ], 
       [
         0.0, 
         -0.6285969508004996, 
-        -1.4320211061614572
+        -0.6380897035127973
       ], 
       [
         0.0, 
         -0.6263763843169272, 
-        -1.3306699870718894
+        -0.5367385844232295
       ], 
       [
         0.0, 
         -0.6197987972332726, 
-        -1.204392019322496
+        -0.41046061667383604
       ], 
       [
         0.0, 
         -0.6048688521264012, 
-        -1.047732098830192
+        -0.253800696181532
       ], 
       [
         0.0, 
         -0.5804930882280246, 
-        -0.8595586758555251
+        -0.06562727320686523
       ], 
       [
         0.0, 
         -0.5471593572654854, 
-        -0.6399751242462175
+        0.15395627840244241
       ], 
       [
         0.0, 
         -0.46296287809940395, 
-        -0.3851034869731045
+        0.40882791567555543
       ], 
       [
         0.0, 
         -0.28177642877733433, 
-        -0.11969863059572283
+        0.6742327720529371
       ], 
       [
         0.0, 
         -0.025023429122768448, 
-        0.12220140361093712
+        0.916132806259597
       ], 
       [
         0.0, 
         0.29447739616398394, 
-        0.31858792211740905
+        1.112519324766069
       ], 
       [
         0.0, 
         0.5330537133532403, 
-        0.4225067942710137
+        1.2164381969196736
       ], 
       [
         0.0, 
         0.657573661162786, 
-        0.47086074710660863
+        1.2647921497552685
       ], 
       [
         0.0, 
@@ -49016,87 +55334,87 @@
       [
         0.0, 
         -0.6432325026235333, 
-        -1.6443915365712964
+        -0.8504601339226365
       ], 
       [
         0.0, 
         -0.6408521226431105, 
-        -1.6371523589979446
+        -0.8432209563492847
       ], 
       [
         0.0, 
         -0.6367642616166904, 
-        -1.6184022152877713
+        -0.8244708126391114
       ], 
       [
         0.0, 
         -0.6325586432766954, 
-        -1.5762098853650865
+        -0.7822784827164266
       ], 
       [
         0.0, 
         -0.6302455531897522, 
-        -1.513936169207252
+        -0.720004766558592
       ], 
       [
         0.0, 
         -0.6285969508004712, 
-        -1.432021106161459
+        -0.638089703512799
       ], 
       [
         0.0, 
         -0.6263763843169841, 
-        -1.3306699870718877
+        -0.5367385844232277
       ], 
       [
         0.0, 
         -0.6197987972332726, 
-        -1.2043920193224924
+        -0.4104606166738325
       ], 
       [
         0.0, 
         -0.6048688521264012, 
-        -1.0477320988301901
+        -0.2538006961815302
       ], 
       [
         0.0, 
         -0.5804930882280246, 
-        -0.8595586758555189
+        -0.06562727320685902
       ], 
       [
         0.0, 
         -0.5471593572654854, 
-        -0.6399751242462157
+        0.1539562784024442
       ], 
       [
         0.0, 
         -0.4629628780994608, 
-        -0.38510348697310626
+        0.40882791567555365
       ], 
       [
         0.0, 
         -0.28177642877733433, 
-        -0.11969863059572106
+        0.6742327720529389
       ], 
       [
         0.0, 
         -0.025023429122768448, 
-        0.12220140361093801
+        0.9161328062595979
       ], 
       [
         0.0, 
         0.29447739616398394, 
-        0.31858792211740816
+        1.112519324766068
       ], 
       [
         0.0, 
         0.5330537133532403, 
-        0.4225067942710137
+        1.2164381969196736
       ], 
       [
         0.0, 
         0.657573661162786, 
-        0.47086074710660863
+        1.2647921497552685
       ], 
       [
         0.0, 
@@ -50757,147 +57075,147 @@
       [
         0.0, 
         0.657573661162786, 
-        0.47086125375204624
+        1.2647926564007062
       ], 
       [
         0.0, 
         0.5076349561065285, 
-        0.4126340429136022
+        1.206565445562262
       ], 
       [
         0.0, 
         0.22279683717772514, 
-        0.2795930604825214
+        1.0735244631311813
       ], 
       [
         0.0, 
         -0.14521159004215178, 
-        0.031191420691926375
+        0.8251228233405863
       ], 
       [
         0.0, 
         -0.4204777216291973, 
-        -0.2816845499061307
+        0.5122468527425292
       ], 
       [
         0.0, 
         -0.5338023134177661, 
-        -0.6004127713278704
+        0.1935186313207895
       ], 
       [
         0.0, 
         -0.5882566596835659, 
-        -0.8702223361630974
+        -0.0762909335144375
       ], 
       [
         0.0, 
         -0.6088389558393317, 
-        -1.091168776181025
+        -0.297237373532365
       ], 
       [
         0.0, 
         -0.6234240402422984, 
-        -1.2668910430445681
+        -0.4729596403959082
       ], 
       [
         0.0, 
         -0.6294380744684531, 
-        -1.4019148540250157
+        -0.6079834513763558
       ], 
       [
         0.0, 
         -0.6287651755340562, 
-        -1.5052728294908224
+        -0.7113414268421625
       ], 
       [
         0.0, 
         -0.6338371512520666, 
-        -1.5815905666138104
+        -0.7876591639651505
       ], 
       [
         0.0, 
         -0.6371511785039274, 
-        -1.6282236276715665
+        -0.8342922250229066
       ], 
       [
         0.0, 
         -0.6479680288743168, 
-        -1.652699356522735
+        -0.8587679538740751
       ], 
       [
         0.0, 
         -0.657573661162786, 
-        -1.6609069075493466
+        -0.8669755049006866
       ], 
       [
         0.0, 
         -0.6479680288743168, 
-        -1.652699356522735
+        -0.8587679538740751
       ], 
       [
         0.0, 
         -0.6371511785039274, 
-        -1.6282236276715665
+        -0.8342922250229066
       ], 
       [
         0.0, 
         -0.6338371512520666, 
-        -1.5815905666138104
+        -0.7876591639651505
       ], 
       [
         0.0, 
         -0.6287651755340562, 
-        -1.5052728294908224
+        -0.7113414268421625
       ], 
       [
         0.0, 
         -0.6294380744684531, 
-        -1.4019148540250157
+        -0.6079834513763558
       ], 
       [
         0.0, 
         -0.6234240402422984, 
-        -1.2668910430445681
+        -0.4729596403959082
       ], 
       [
         0.0, 
         -0.6088389558393317, 
-        -1.0911682695355864
+        -0.2972368668869265
       ], 
       [
         0.0, 
         -0.5882566596835659, 
-        -0.8702222941064139
+        -0.07629089145775403
       ], 
       [
         0.0, 
         -0.5338023134177661, 
-        -0.6004127713278704
+        0.1935186313207895
       ], 
       [
         0.0, 
         -0.4204777216291973, 
-        -0.28168435441134765
+        0.5122470482373123
       ], 
       [
         0.0, 
         -0.14521159004215178, 
-        0.031191574130026822
+        0.8251229767786867
       ], 
       [
         0.0, 
         0.22279683717772514, 
-        0.27959323494896093
+        1.0735246375976208
       ], 
       [
         0.0, 
         0.5076349561065285, 
-        0.4126351518146407
+        1.2065665544633006
       ], 
       [
         0.0, 
         0.657573661162786, 
-        0.47086125375204624
+        1.2647926564007062
       ], 
       [
         0.0, 
@@ -51587,87 +57905,87 @@
       [
         0.0, 
         -0.6432325026235333, 
-        -1.6443915365712947
+        -0.8504601339226348
       ], 
       [
         0.0, 
         -0.6408521226431105, 
-        -1.637152358997941
+        -0.8432209563492812
       ], 
       [
         0.0, 
         -0.6367642616166904, 
-        -1.6184022152877713
+        -0.8244708126391114
       ], 
       [
         0.0, 
         -0.6325586432766102, 
-        -1.5762093787196516
+        -0.7822779760709917
       ], 
       [
         0.0, 
         -0.6302455531896669, 
-        -1.5139361692072502
+        -0.7200047665585902
       ], 
       [
         0.0, 
         -0.6285969508004143, 
-        -1.4320211482181477
+        -0.6380897455694878
       ], 
       [
         0.0, 
         -0.6263763843169272, 
-        -1.3306700291285747
+        -0.5367386264799148
       ], 
       [
         0.0, 
         -0.6197987972332726, 
-        -1.2043915126770575
+        -0.41046011002839755
       ], 
       [
         0.0, 
         -0.604868852126458, 
-        -1.0477314765288828
+        -0.25380007388022285
       ], 
       [
         0.0, 
         -0.5804930882280246, 
-        -0.8595581271534041
+        -0.06562672450474416
       ], 
       [
         0.0, 
         -0.5471593572654854, 
-        -0.6399745755441009
+        0.15395682710455905
       ], 
       [
         0.0, 
         -0.46296287809951764, 
-        -0.3851035658293833
+        0.4088278368192766
       ], 
       [
         0.0, 
         -0.2817764287772775, 
-        -0.11969837727300714
+        0.6742330253756528
       ], 
       [
         0.0, 
         -0.025023429122768448, 
-        0.12220157807737841
+        0.9161329807260383
       ], 
       [
         0.0, 
         0.29447739616398394, 
-        0.31858803875591235
+        1.1125194414045723
       ], 
       [
         0.0, 
         0.5330537133532403, 
-        0.42250722206017244
+        1.2164386247088324
       ], 
       [
         0.0, 
         0.657573661162786, 
-        0.47086125375204535
+        1.2647926564007053
       ], 
       [
         0.0, 
@@ -58106,87 +64424,87 @@
       [
         0.0, 
         -0.6432325026235333, 
-        -1.6443915365712964
+        -0.8504601339226365
       ], 
       [
         0.0, 
         -0.6408521226431105, 
-        -1.6371523589979446
+        -0.8432209563492847
       ], 
       [
         0.0, 
         -0.6367642616166904, 
-        -1.6184022152877713
+        -0.8244708126391114
       ], 
       [
         0.0, 
         -0.6325586432766954, 
-        -1.5762093787196498
+        -0.7822779760709899
       ], 
       [
         0.0, 
         -0.6302455531897522, 
-        -1.513936169207252
+        -0.720004766558592
       ], 
       [
         0.0, 
         -0.6285969508004712, 
-        -1.4320211482181424
+        -0.6380897455694825
       ], 
       [
         0.0, 
         -0.6263763843169841, 
-        -1.3306700291285711
+        -0.5367386264799112
       ], 
       [
         0.0, 
         -0.6197987972332726, 
-        -1.2043915126770557
+        -0.4104601100283958
       ], 
       [
         0.0, 
         -0.6048688521264012, 
-        -1.047731476528881
+        -0.2538000738802211
       ], 
       [
         0.0, 
         -0.5804930882280246, 
-        -0.8595581271534023
+        -0.06562672450474238
       ], 
       [
         0.0, 
         -0.5471593572654854, 
-        -0.6399745755440991
+        0.15395682710456082
       ], 
       [
         0.0, 
         -0.4629628780994608, 
-        -0.3851035658293833
+        0.4088278368192766
       ], 
       [
         0.0, 
         -0.28177642877733433, 
-        -0.1196983772730027
+        0.6742330253756572
       ], 
       [
         0.0, 
         -0.025023429122768448, 
-        0.12220157807737841
+        0.9161329807260383
       ], 
       [
         0.0, 
         0.29447739616398394, 
-        0.31858803875591235
+        1.1125194414045723
       ], 
       [
         0.0, 
         0.5330537133532403, 
-        0.4225072220601742
+        1.2164386247088341
       ], 
       [
         0.0, 
         0.657573661162786, 
-        0.47086125375204624
+        1.2647926564007062
       ], 
       [
         0.0, 
@@ -84471,228 +90789,6 @@
       "name": "L_innerL_llidslowermatdeftertiaryrot00_BUF", 
       "parent": "L_lLidsLowerMatDef_MatDefRotate_DEFORM"
     }, 
-    "C_mouthTrans_BUF": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_color": false, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthTrans_BUF", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_mouthTrans_BUF_SHPMain_None"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "C_mouthTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
-    }, 
     "R_mouthGuideShaper03Row02_CTL": {
       "shapes": [
         {
@@ -87227,7 +93323,7 @@
       "name": "L_cheekMassMatrixDef01_BUF", 
       "parent": "L_cheekMassMatrixDef_LOC"
     }, 
-    "R_cornerTwistRot_BUF": {
+    "R_browGuideShaper00Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -87265,14 +93361,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_color": false, 
-          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "R_cornerTwistRot_BUF", 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_browGuideShaper00Row00_CTL", 
+          "name": "R_browGuideShaper00Row00Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -87440,14 +93538,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cornerTwistRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
-      "name": "R_cornerTwistRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "name": "R_browGuideShaper00Row00_CTL", 
+      "parent": "R_browGuideShaper00Row0000_BUF"
     }, 
     "C_lowerLipSecondary01_BUF": {
       "shapes": [
@@ -96995,6 +103091,228 @@
       "name": "L_lidGuideShaper02Row02_CTL", 
       "parent": "L_lidGuideShaper02Row0200_BUF"
     }, 
+    "C_browRSecondary01_BUF": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": false, 
+          "color_g": 0.0, 
+          "override_enabled": false, 
+          "parent": "C_browRSecondary01_BUF", 
+          "controlVertices": [
+            [
+              0.0, 
+              0.0, 
+              0.05935819781861909
+            ], 
+            [
+              0.0, 
+              0.029679098909309545, 
+              0.05140568326586959
+            ], 
+            [
+              0.0, 
+              0.05140568326586959, 
+              0.029679098909309545
+            ], 
+            [
+              0.0, 
+              0.05935819781861909, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.05140568326586959, 
+              -0.029679098909309545
+            ], 
+            [
+              0.0, 
+              0.029679098909309545, 
+              -0.05140568326586959
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.05935819781861909
+            ], 
+            [
+              0.0, 
+              -0.029679098909309545, 
+              -0.05140568326586959
+            ], 
+            [
+              0.0, 
+              -0.05140568326586959, 
+              -0.029679098909309545
+            ], 
+            [
+              0.0, 
+              -0.05935819781861909, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.05140568326586959, 
+              0.029679098909309545
+            ], 
+            [
+              0.0, 
+              -0.029679098909309545, 
+              0.05140568326586959
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.05935819781861909
+            ], 
+            [
+              0.04197259718493032, 
+              0.0, 
+              0.04197259718493032
+            ], 
+            [
+              0.05935819781861909, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.04197259718493032, 
+              0.0, 
+              -0.04197259718493032
+            ], 
+            [
+              0.0, 
+              0.0, 
+              -0.05935819781861909
+            ], 
+            [
+              -0.04197259718493032, 
+              0.0, 
+              -0.04197259718493032
+            ], 
+            [
+              -0.05935819781861909, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.05140568326586959, 
+              0.029679098909309545, 
+              0.0
+            ], 
+            [
+              -0.029679098909309545, 
+              0.05140568326586959, 
+              0.0
+            ], 
+            [
+              0.0, 
+              0.05935819781861909, 
+              0.0
+            ], 
+            [
+              0.029679098909309545, 
+              0.05140568326586959, 
+              0.0
+            ], 
+            [
+              0.05140568326586959, 
+              0.029679098909309545, 
+              0.0
+            ], 
+            [
+              0.05935819781861909, 
+              0.0, 
+              0.0
+            ], 
+            [
+              0.05140568326586959, 
+              -0.029679098909309545, 
+              0.0
+            ], 
+            [
+              0.029679098909309545, 
+              -0.05140568326586959, 
+              0.0
+            ], 
+            [
+              0.0, 
+              -0.05935819781861909, 
+              0.0
+            ], 
+            [
+              -0.029679098909309545, 
+              -0.05140568326586959, 
+              0.0
+            ], 
+            [
+              -0.05140568326586959, 
+              -0.029679098909309545, 
+              0.0
+            ], 
+            [
+              -0.05935819781861909, 
+              0.0, 
+              0.0
+            ], 
+            [
+              -0.04197259718493032, 
+              0.0, 
+              0.04197259718493032
+            ], 
+            [
+              0.0, 
+              0.0, 
+              0.05935819781861909
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "C_browRSecondary_GUIDEMain_None"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_browRSecondary01_BUF", 
+      "parent": "C_browRSecondary_LOC"
+    }, 
     "R_lowerLipSecondaryTrans00_BUF": {
       "shapes": [
         {
@@ -103433,7 +109751,7 @@
       "name": "R_browGuideShaper02Row02_CTL", 
       "parent": "R_browGuideShaper02Row0200_BUF"
     }, 
-    "C_browRSecondary01_BUF": {
+    "C_mouthTrans_BUF": {
       "shapes": [
         {
           "knots": [
@@ -103477,183 +109795,183 @@
           "color_b": 0.0, 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": false, 
-          "parent": "C_browRSecondary01_BUF", 
+          "override_enabled": true, 
+          "parent": "C_mouthTrans_BUF", 
           "controlVertices": [
             [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
               0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
               0.0, 
-              0.05935819781861909
+              0.2424868409420533
             ], 
             [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
               0.0, 
-              0.029679098909309545, 
-              0.05140568326586959
+              -0.24248684094205064
             ], 
             [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
               0.0, 
-              0.05140568326586959, 
-              0.029679098909309545
+              0.2424868409420533
             ], 
             [
-              0.0, 
-              0.05935819781861909, 
-              0.0
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
             ], 
             [
-              0.0, 
-              0.05140568326586959, 
-              -0.029679098909309545
-            ], 
-            [
-              0.0, 
-              0.029679098909309545, 
-              -0.05140568326586959
-            ], 
-            [
-              0.0, 
-              0.0, 
-              -0.05935819781861909
-            ], 
-            [
-              0.0, 
-              -0.029679098909309545, 
-              -0.05140568326586959
-            ], 
-            [
-              0.0, 
-              -0.05140568326586959, 
-              -0.029679098909309545
-            ], 
-            [
-              0.0, 
-              -0.05935819781861909, 
-              0.0
-            ], 
-            [
-              0.0, 
-              -0.05140568326586959, 
-              0.029679098909309545
-            ], 
-            [
-              0.0, 
-              -0.029679098909309545, 
-              0.05140568326586959
-            ], 
-            [
-              0.0, 
-              0.0, 
-              0.05935819781861909
-            ], 
-            [
-              0.04197259718493032, 
-              0.0, 
-              0.04197259718493032
-            ], 
-            [
-              0.05935819781861909, 
-              0.0, 
-              0.0
-            ], 
-            [
-              0.04197259718493032, 
-              0.0, 
-              -0.04197259718493032
-            ], 
-            [
-              0.0, 
-              0.0, 
-              -0.05935819781861909
-            ], 
-            [
-              -0.04197259718493032, 
-              0.0, 
-              -0.04197259718493032
-            ], 
-            [
-              -0.05935819781861909, 
-              0.0, 
-              0.0
-            ], 
-            [
-              -0.05140568326586959, 
-              0.029679098909309545, 
-              0.0
-            ], 
-            [
-              -0.029679098909309545, 
-              0.05140568326586959, 
-              0.0
-            ], 
-            [
-              0.0, 
-              0.05935819781861909, 
-              0.0
-            ], 
-            [
-              0.029679098909309545, 
-              0.05140568326586959, 
-              0.0
-            ], 
-            [
-              0.05140568326586959, 
-              0.029679098909309545, 
-              0.0
-            ], 
-            [
-              0.05935819781861909, 
-              0.0, 
-              0.0
-            ], 
-            [
-              0.05140568326586959, 
-              -0.029679098909309545, 
-              0.0
-            ], 
-            [
-              0.029679098909309545, 
-              -0.05140568326586959, 
-              0.0
-            ], 
-            [
-              0.0, 
-              -0.05935819781861909, 
-              0.0
-            ], 
-            [
-              -0.029679098909309545, 
-              -0.05140568326586959, 
-              0.0
-            ], 
-            [
-              -0.05140568326586959, 
-              -0.029679098909309545, 
-              0.0
-            ], 
-            [
-              -0.05935819781861909, 
-              0.0, 
-              0.0
-            ], 
-            [
-              -0.04197259718493032, 
-              0.0, 
-              0.04197259718493032
-            ], 
-            [
-              0.0, 
-              0.0, 
-              0.05935819781861909
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
             ]
           ], 
           "type": "nurbsCurve", 
           "color_r": 0.0, 
-          "name": "C_browRSecondary_GUIDEMain_None"
+          "name": "C_mouthTrans_BUF_SHPMain_None"
         }
       ], 
       "outliner_color": null, 
-      "name": "C_browRSecondary01_BUF", 
-      "parent": "C_browRSecondary_LOC"
+      "name": "C_mouthTrans_BUF", 
+      "parent": "jawTranslate_MatrixDef_DEFORM"
     }, 
     "R_cornerRot_BUF": {
       "shapes": [
@@ -150903,7 +157221,7 @@
       "name": "R_lidGuideShaper02Row02_CTL", 
       "parent": "R_lidGuideShaper02Row0200_BUF"
     }, 
-    "R_browGuideShaper00Row00_CTL": {
+    "R_cornerTwistRot_BUF": {
       "shapes": [
         {
           "knots": [
@@ -150941,16 +157259,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper00Row00_CTL", 
-          "name": "R_browGuideShaper00Row00Main_SHP", 
-          "override_color": true, 
+          "override_color": false, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_cornerTwistRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -151118,12 +157434,14 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "R_cornerTwistRot_BUF_SHPMain_None"
         }
       ], 
       "outliner_color": null, 
-      "name": "R_browGuideShaper00Row00_CTL", 
-      "parent": "R_browGuideShaper00Row0000_BUF"
+      "name": "R_cornerTwistRot_BUF", 
+      "parent": "jawRotate_MatrixDef_DEFORM"
     }, 
     "L_middleL_llidsuppermatdefprimarytrans_BUF": {
       "shapes": [

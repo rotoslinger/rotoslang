@@ -97,10 +97,15 @@ def print_weight_curves_data():
     # To retrieve dictionaries stored as strings:
     # ast.literal_eval("{"DICTIONARY_KEY":["thingA", "thingB"]}")
     for sel in cmds.ls(sl=True):
-        weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(sel + ".weight_curve_connection_dicts")]
-        falloff_weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(sel + ".falloff_weight_curve_connection_dicts")]        
-        print_control_weightcurve_connection("Weight Curves", weights_string_dict)
-        print_control_weightcurve_connection("Falloff Weight Curves", falloff_weights_string_dict)
+        if cmds.objExists(sel + ".weight_curve_connection_dicts"): 
+            weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(sel + ".weight_curve_connection_dicts")]
+            falloff_weights_string_dict = [ast.literal_eval(str(x)) for x in cmds.getAttr(sel + ".falloff_weight_curve_connection_dicts")]        
+            print_control_weightcurve_connection("Weight Curves", weights_string_dict)
+            print_control_weightcurve_connection("Falloff Weight Curves", falloff_weights_string_dict)
+            return
+        if cmds.objectType(sel) == "animCurveTU":
+            print animcurve_utils.getAnimCurve(sel)
+        
 
 @decorator.undo_chunk
 def weight_curves_to_point_weights():

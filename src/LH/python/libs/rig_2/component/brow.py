@@ -63,6 +63,7 @@ class Brow(base.Component):
                  l_brow_fit_curve_base = "L_brow_CRVBASE",
                  r_brow_fit_curve_base = "R_brow_CRVBASE",
                  c_brow_fit_curve_base = "C_brow_CRVBASE",
+                 control_rivet_mesh = "C_bodyBind_GEO",
                  order_before_deformer = None,
                  primaryBrowShapeAnimCurveDict = elements.BROW_PRIMARY_ANIM_CURVE,
                  ctrlAutoPositionThreshold=.09,
@@ -81,8 +82,9 @@ class Brow(base.Component):
                  matDefCtrlShapeOffset1=[0,-2.0,.2],
                  matDefCtrlShapeOffset2=[0,-2.0,.1],
                  matDefCtrlShapeOffset3=[0,-2.0,.1],
-
                  tierDefaultVisibility = [True, True, True],
+                 auto_create_reverse = True,
+
                  fit_curve=False,
                  **kw
     ):
@@ -109,6 +111,7 @@ class Brow(base.Component):
         self.R_projectionMesh=R_projectionMesh
         self.C_projectionMesh=C_projectionMesh
         self.rivet_orient_patch = rivet_orient_patch
+        self.control_rivet_mesh = control_rivet_mesh
         self.l_brow_fit_curve = l_brow_fit_curve
         self.r_brow_fit_curve = r_brow_fit_curve
         self.c_brow_fit_curve = c_brow_fit_curve
@@ -116,8 +119,7 @@ class Brow(base.Component):
         self.r_brow_fit_curve_base = r_brow_fit_curve_base
         self.c_brow_fit_curve_base = c_brow_fit_curve_base
         self.order_before_deformer = order_before_deformer
-                  
-        
+        self.auto_create_reverse = auto_create_reverse   
         self.primaryBrowShapeAnimCurveDict = primaryBrowShapeAnimCurveDict
         self.ctrlAutoPositionThreshold=ctrlAutoPositionThreshold
         self.slideIconShapeDict = slideIconShapeDict
@@ -266,8 +268,9 @@ class Brow(base.Component):
                                                                       outputAttrs = outputAttrs,
                                                                       outputAttrs_LR = outputAttrs_LR,
                                                                       autoCreate=True,
+                                                                      auto_create_reverse = self.auto_create_reverse,
                                                                       controlPositionWeightsThreshold=self.ctrlAutoPositionThreshold,
-                                                                      controlRivetMesh = self.controlRivetMeshes[posIdx],
+                                                                      controlRivetMesh = self.control_rivet_mesh,
                                                                       controlAutoOrientMesh=self.rivet_orient_patch,
                                                                       controlRivetAimMesh=self.rivet_orient_patch,
                                                                       controlSpeedDefaults = self.slideControlSpeedDefaults,
@@ -341,7 +344,8 @@ class Brow(base.Component):
                                                                                  reverseDeformerOrder = True,
                                                                                  locatorName=currName + self.tierNames[idx] + "Trans",  # Primary, Secondary, Or Tertiatry
                                                                                  curveWeightsNode=self.matDefCurveWeights[side].node,
-                                                                                 control_rivet_mesh=self.deformMeshes[posIdx],
+                                                                                 control_rivet_mesh=self.control_rivet_mesh,
+                                                                                 auto_create_reverse = self.auto_create_reverse,
                                                                                  curveWeightsConnectionIdx=self.tierAddAtIndex[idx],
                                                                                  translations = self.ctrlPositions[side][idx],
                                                                                  rotations = self.ctrlRotations[side][idx],
@@ -367,7 +371,7 @@ class Brow(base.Component):
                                                                               reverseDeformerOrder = True,
                                                                               locatorName=currName + self.tierNames[idx] + "Rot",  # Primary, Secondary, Or Tertiatry
                                                                               curveWeightsNode=self.matDefCurveWeights[side].node,
-                                                                              control_rivet_mesh=self.deformMeshes[posIdx],
+                                                                              control_rivet_mesh=self.control_rivet_mesh,
                                                                               curveWeightsConnectionIdx=self.tierAddAtIndex[idx],
                                                                               translations = self.ctrlPositions[side][idx],
                                                                               rotations = self.ctrlRotations[side][idx],
@@ -381,6 +385,7 @@ class Brow(base.Component):
                                                                               connectScale = True,
                                                                               controlShapeDict=self.matDefIconShapeDicts[idx],
                                                                               component_name=self.component_name,
+                                                                              auto_create_reverse = self.auto_create_reverse,
                                                                               )
                 self.matDeformersRotate[side].create()
                 weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate[side], self.matDefCurveWeights[side])
@@ -419,15 +424,15 @@ class Brow(base.Component):
 
 class Unibrow(Brow):
     def __init__(self,
-                 tierCounts=[1,3,10],
-                 primaryBrowShapeAnimCurveDict = elements.BROW_PRIMARY_ANIM_CURVE,
+                 tierCounts=[1,3,9],
+                 primaryBrowShapeAnimCurveDict = elements.UNIBROW_PRIMARY_ANIM_CURVE,
                  c_secondary_anim_curve_dict=None,
                  l_secondary_anim_curve_dict=None,
                  r_secondary_anim_curve_dict=None,
-                 browSlideFalloffDict = elements.L_BROW_SLIDE_FALLOFF,
-                 browMatDefFalloffDict = elements.L_BROW_SLIDE_FALLOFF,
-                 deform_mesh="",
-                 base_deform_mesh = "",
+                 slideFalloffDict = elements.UNIBROW_SLIDE_FALLOFF,
+                 matDefFalloffDict = elements.UNIBROW_SLIDE_FALLOFF,
+                 deform_mesh="C_brow_GEO",
+                 base_deform_mesh = "C_browBase_GEO",
                  **kw
     ):
         super(Unibrow, self).__init__(tierCounts=tierCounts, primaryBrowShapeAnimCurveDict=primaryBrowShapeAnimCurveDict, **kw)
@@ -440,8 +445,8 @@ class Unibrow(Brow):
         self.c_secondary_anim_curve_dict = c_secondary_anim_curve_dict
         self.l_secondary_anim_curve_dict = l_secondary_anim_curve_dict
         self.r_secondary_anim_curve_dict = r_secondary_anim_curve_dict
-        self.browSlideFalloffDict = browSlideFalloffDict
-        self.browMatDefFalloffDict = browMatDefFalloffDict
+        self.slideFalloffDict = slideFalloffDict
+        self.matDefFalloffDict = matDefFalloffDict
         self.deform_mesh = deform_mesh
         self.base_deform_mesh = base_deform_mesh
 
@@ -451,13 +456,8 @@ class Unibrow(Brow):
         if self.fit_curve:
             self.deform_mesh =  self.c_brow_fit_curve
             self.repositionRivetCtrls = True
-            
-        # Eventually this will need to be dynamic so we can rivet to the final mesh
-        self.base_deform_mesh = [self.leftBrowBaseMesh, self.rightBrowBaseMesh]
-        if self.fit_curve:
             self.base_deform_mesh = self.c_brow_fit_curve_base
-        self.projectionMeshes = [self.L_projectionMesh, self.R_projectionMesh]
-        self.slideFalloffDicts = [self.leftBrowSlideFalloffDict, self.rightBrowSlideFalloffDict]
+            
         self.slideCtrlShapeOffsets = [self.slideCtrlShapeOffset1, self.slideCtrlShapeOffset2, self.slideCtrlShapeOffset3]
         self.tierCounts = [self.tierCounts[0], self.tierCounts[1], self.tierCounts[2]]
         self.tierStartElemIdxs = [0, self.tierCounts[0], self.tierCounts[1] + self.tierCounts[0]]
@@ -468,8 +468,8 @@ class Unibrow(Brow):
         self.connectFalloffs = [False, True, True]
         self.matDefNames = ["MatrixDeformer1", "MatrixDeformer2", "MatrixDeformer3"]
         self.curveOverrideDict = [self.primaryBrowShapeAnimCurveDict, None, None]
-        # falloffCurveWeightNodes= [None, self.name + "CurveWeights", self.name + "CurveWeights"]
-        currName = side + "_" + self.nameBrows + "Slide"
+
+        currName = "C_" + self.nameBrows + "Slide"
         self.slideDeformer = slideSimple.SlideSimple(name = currName,
                                             geoToDeform=self.deform_mesh,
                                             slidePatch=self.slidePatch,
@@ -490,14 +490,14 @@ class Unibrow(Brow):
             self.slideCurveWeights = weightStack.AnimCurveWeight(name=currName + "_CurveWeights",
                                                                         baseGeo=self.base_deform_mesh,
                                                                         ctrlNode=self.control,
-                                                                        projectionGeo=self.projectionMeshes[posIdx],
+                                                                        projectionGeo=self.C_projectionMesh,
                                                                         weightCurveNames=[],
                                                                         addNewElem=self.isAddingNewElems[idx],
                                                                         autoCreateAnimCurves = True,
-                                                                        autoCreateName = self.ctrlName + side + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
-                                                                        singleFalloffName = self.ctrlName + side,
+                                                                        autoCreateName = self.ctrlName + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                                        singleFalloffName = self.ctrlName ,
                                                                         autoCreateNum = self.tierCounts[idx],
-                                                                        falloffCurveDict = self.slideFalloffDicts[posIdx],
+                                                                        falloffCurveDict = self.slideFalloffDict,
                                                                         curveOverrideDict = self.curveOverrideDict[idx],
                                                                         centerWeight = elements.BROW_CENTER_WEIGHTS[idx],
                                                                         outerWeight = elements.OUTER_WEIGHTS[idx],
@@ -507,9 +507,7 @@ class Unibrow(Brow):
                                                                         component_name=self.component_name,
                                                                         )
             self.slideCurveWeights.create()
-            currFalloffCurveWeightNode = None
-            if posIdx > 0:
-                currFalloffCurveWeightNode = currName + "CurveWeights"
+
             self.slideWeightStack = weightStack.WeightStack(name=currName + "_WeightStack",
                                                                     geoToWeight=self.deform_mesh,
                                                                     ctrlNode=self.control,
@@ -519,15 +517,17 @@ class Unibrow(Brow):
                                                                     outputAttrs_LR = outputAttrs_LR,
                                                                     autoCreate=True,
                                                                     controlPositionWeightsThreshold=self.ctrlAutoPositionThreshold,
+                                                                    
+                                                                    controlRivetMesh = self.control_rivet_mesh,
+                                                                    auto_create_reverse = self.auto_create_reverse,
                                                                     controlAutoOrientMesh=self.rivet_orient_patch,
                                                                     controlRivetAimMesh=self.rivet_orient_patch,
                                                                     controlSpeedDefaults = self.slideControlSpeedDefaults,
                                                                     controlParent = self.control_parent,
                                                                     connectFalloff = self.connectFalloffs[idx],
                                                                     isOutputKDoubleArray=True,
-                                                                    falloffCurveWeightNode=currFalloffCurveWeightNode,  # If a weight node already exists, use it
                                                                     # falloffCurveWeightNode="TestCurveWeights",
-                                                                    autoCreateName = self.ctrlName + side + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                                    autoCreateName = self.ctrlName + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
                                                                     controlSize = self.slideCtrlSizes[idx],
                                                                     controlShapeOffset = self.slideCtrlShapeOffsets[idx],
                                                                     controlShape = self.slideIconShapeDict,
@@ -555,107 +555,108 @@ class Unibrow(Brow):
                                         self.matDefCtrlShapeOffset3]
 
         self.matDefIconShapeDicts = [manipulator_elements.primary_plus, manipulator_elements.secondary_plus, manipulator_elements.tertiary_plus]
-        self.matDefFalloffDicts = [self.leftBrowMatDefFalloffDict, self.rightBrowMatDefFalloffDict]
 
-        for posIdx, side in enumerate(["L", "R"]):
-            currName = side + "_" + self.nameBrows + "MatDef"
-            for idx in range(3):
-                ################################## MATRIX DEFORMER #####################################################################
-                self.matDefCurveWeights[side] = weightStack.AnimCurveWeight(name=currName + "_CurveWeights",
-                                                                            baseGeo=self.base_deform_mesh,
-                                                                            ctrlNode=self.control,
-                                                                            projectionGeo=self.projectionMeshes[posIdx],
-                                                                            weightCurveNames=[],
-                                                                            addNewElem=self.isAddingNewElems[idx],
-                                                                            autoCreateAnimCurves = True,
-                                                                            autoCreateName = self.ctrlName + side + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
-                                                                            singleFalloffName = self.ctrlName + side + "MatDefSingle",
-                                                                            autoCreateNum = self.tierCounts[idx],
-                                                                            falloffCurveDict = self.matDefFalloffDicts[posIdx],
-                                                                            curveOverrideDict = self.curveOverrideDict[idx],
-                                                                            centerWeight = elements.BROW_CENTER_WEIGHTS[idx],
-                                                                            outerWeight = elements.OUTER_WEIGHTS[idx],
-                                                                            angle = elements.BROW_ANGLES[idx],
-                                                                            nudge = elements.NUDGES[idx],
-                                                                            lastAngle=elements.LAST_ANGLES[idx],
+        currName = "C_" + self.nameBrows + "MatDef"
+        for idx in range(3):
+            ################################## MATRIX DEFORMER #####################################################################
+            self.matDefCurveWeights = weightStack.AnimCurveWeight(name=currName + "_CurveWeights",
+                                                                        baseGeo=self.base_deform_mesh,
+                                                                        ctrlNode=self.control,
+                                                                        projectionGeo=self.C_projectionMesh,
+                                                                        weightCurveNames=[],
+                                                                        addNewElem=self.isAddingNewElems[idx],
+                                                                        autoCreateAnimCurves = True,
+                                                                        autoCreateName = self.ctrlName + self.tierNames[idx],  # Primary, Secondary, Or Tertiatry
+                                                                        singleFalloffName = self.ctrlName + "MatDefSingle",
+                                                                        autoCreateNum = self.tierCounts[idx],
+                                                                        falloffCurveDict = self.matDefFalloffDict,
+                                                                        curveOverrideDict = self.curveOverrideDict[idx],
+                                                                        centerWeight = elements.BROW_CENTER_WEIGHTS[idx],
+                                                                        outerWeight = elements.OUTER_WEIGHTS[idx],
+                                                                        angle = elements.BROW_ANGLES[idx],
+                                                                        nudge = elements.NUDGES[idx],
+                                                                        lastAngle=elements.LAST_ANGLES[idx],
+                                                                        component_name=self.component_name,
+                                                                        )
+            self.matDefCurveWeights.create()
+
+            # Create a single matrix deformer (rotation order issues)
+            self.matDeformersTranslate = matrixDeformer.MatrixDeformer(name=currName + "_MatDefTranslate",
+                                                                                geoToDeform=self.deform_mesh,
+                                                                                ctrlName=self.ctrlName + self.matDefNames[idx],
+                                                                                centerToParent=True,
+                                                                                addAtIndex=self.tierAddAtIndex[idx],
+                                                                                numToAdd=self.tierCounts[idx],
+                                                                                reverseDeformerOrder = True,
+                                                                                locatorName=currName + self.tierNames[idx] + "Trans",  # Primary, Secondary, Or Tertiatry
+                                                                                curveWeightsNode=self.matDefCurveWeights.node,
+                                                                                control_rivet_mesh=self.control_rivet_mesh,
+                                                                                curveWeightsConnectionIdx=self.tierAddAtIndex[idx],
+                                                                                translations = self.ctrlPositions[idx],
+                                                                                rotations = self.ctrlRotations[idx],
+                                                                                controlParent = self.slideWeightStack.controls,
+                                                                                rigParent = self.rig,
+                                                                                offset = self.matDefCtrlShapeOffsets[idx],
+                                                                                size = self.matDefCtrlSizes[idx],
+                                                                                hide = True,
+                                                                                 auto_create_reverse = self.auto_create_reverse,
+                                                                                connectTranslate = True,
+                                                                                connectRotate = False,
+                                                                                connectScale = False,
+                                                                                controlShapeDict=self.matDefIconShapeDicts[idx],
+                                                                                component_name=self.component_name,
+                                                                                )
+            self.matDeformersTranslate.create()
+
+            self.matDeformersRotate = matrixDeformer.MatrixDeformer(name=currName + "_MatDefRotate",
+                                                                            geoToDeform=self.deform_mesh,
+                                                                            ctrlName=self.ctrlName + self.matDefNames[idx],
+                                                                            centerToParent=True,
+                                                                            addAtIndex=self.tierAddAtIndex[idx],
+                                                                            numToAdd=self.tierCounts[idx],
+                                                                            reverseDeformerOrder = True,
+                                                                            locatorName=currName + self.tierNames[idx] + "Rot",  # Primary, Secondary, Or Tertiatry
+                                                                            curveWeightsNode=self.matDefCurveWeights.node,
+                                                                            control_rivet_mesh=self.control_rivet_mesh,
+                                                                            curveWeightsConnectionIdx=self.tierAddAtIndex[idx],
+                                                                            translations = self.ctrlPositions[idx],
+                                                                            rotations = self.ctrlRotations[idx],
+                                                                            controlParent = self.slideWeightStack.controls,
+                                                                            rigParent = self.rig,
+                                                                            offset = self.matDefCtrlShapeOffsets[idx],
+                                                                            size = self.matDefCtrlSizes[idx],
+                                                                            hide = True,
+                                                                            connectTranslate = False,
+                                                                            connectRotate = True,
+                                                                            connectScale = True,
+                                                                            auto_create_reverse = self.auto_create_reverse,
+                                                                            controlShapeDict=self.matDefIconShapeDicts[idx],
                                                                             component_name=self.component_name,
                                                                             )
-                self.matDefCurveWeights[side].create()
-
-                # Create a single matrix deformer (rotation order issues)
-                self.matDeformersTranslate[side] = matrixDeformer.MatrixDeformer(name=currName + "_MatDefTranslate",
-                                                                                 geoToDeform=self.deform_mesh,
-                                                                                 ctrlName=self.ctrlName + side + self.matDefNames[idx],
-                                                                                 centerToParent=True,
-                                                                                 addAtIndex=self.tierAddAtIndex[idx],
-                                                                                 numToAdd=self.tierCounts[idx],
-                                                                                 reverseDeformerOrder = True,
-                                                                                 locatorName=currName + self.tierNames[idx] + "Trans",  # Primary, Secondary, Or Tertiatry
-                                                                                 curveWeightsNode=self.matDefCurveWeights[side].node,
-                                                                                 control_rivet_mesh=self.deform_mesh,
-                                                                                 curveWeightsConnectionIdx=self.tierAddAtIndex[idx],
-                                                                                 translations = self.ctrlPositions[idx],
-                                                                                 rotations = self.ctrlRotations[idx],
-                                                                                 controlParent = self.slideWeightStack.controls,
-                                                                                 rigParent = self.rig,
-                                                                                 offset = self.matDefCtrlShapeOffsets[idx],
-                                                                                 size = self.matDefCtrlSizes[idx],
-                                                                                 hide = True,
-                                                                                 connectTranslate = True,
-                                                                                 connectRotate = False,
-                                                                                 connectScale = False,
-                                                                                 controlShapeDict=self.matDefIconShapeDicts[idx],
-                                                                                 component_name=self.component_name,
-                                                                                 )
-                self.matDeformersTranslate[side].create()
-
-                self.matDeformersRotate[side] = matrixDeformer.MatrixDeformer(name=currName + "_MatDefRotate",
-                                                                              geoToDeform=self.deform_mesh,
-                                                                              ctrlName=self.ctrlName + side + self.matDefNames[idx],
-                                                                              centerToParent=True,
-                                                                              addAtIndex=self.tierAddAtIndex[idx],
-                                                                              numToAdd=self.tierCounts[idx],
-                                                                              reverseDeformerOrder = True,
-                                                                              locatorName=currName + self.tierNames[idx] + "Rot",  # Primary, Secondary, Or Tertiatry
-                                                                              curveWeightsNode=self.matDefCurveWeights[side].node,
-                                                                              control_rivet_mesh=self.deform_mesh,
-                                                                              curveWeightsConnectionIdx=self.tierAddAtIndex[idx],
-                                                                              translations = self.ctrlPositions[idx],
-                                                                              rotations = self.ctrlRotations[idx],
-                                                                              controlParent = self.slideWeightStack.controls,
-                                                                              rigParent = self.rig,
-                                                                              offset = self.matDefCtrlShapeOffsets[idx],
-                                                                              size = self.matDefCtrlSizes[idx],
-                                                                              hide = True,
-                                                                              connectTranslate = False,
-                                                                              connectRotate = True,
-                                                                              connectScale = True,
-                                                                              controlShapeDict=self.matDefIconShapeDicts[idx],
-                                                                              component_name=self.component_name,
-                                                                              )
-                self.matDeformersRotate[side].create()
-                weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate[side], self.matDefCurveWeights[side])
-                weightStack.connect_weight_stack_anim_curve(self.matDeformersTranslate[side], self.matDefCurveWeights[side])
+            self.matDeformersRotate.create()
+            weightStack.connect_weight_stack_anim_curve(self.matDeformersRotate, self.matDefCurveWeights)
+            weightStack.connect_weight_stack_anim_curve(self.matDeformersTranslate, self.matDefCurveWeights)
 
     def reorder_deformers(self):
+        return
         if self.order_before_deformer:
             for posIdx, side in enumerate(["L", "R"]):
                 deform_mesh = misc.getShape(self.deform_mesh)
                 
                 # print deform_mesh, "deform_mesh", self.slideDeformer.deformer, "deformer",self.order_before_deformer, "orderBefore Deformer"
                 cmds.reorderDeformers( self.slideDeformer.deformer, self.order_before_deformer, deform_mesh)
-                cmds.reorderDeformers( self.matDeformersTranslate[side].deformer, self.order_before_deformer, deform_mesh)
-                cmds.reorderDeformers( self.matDeformersRotate[side].deformer, self.order_before_deformer, deform_mesh)
+                cmds.reorderDeformers( self.matDeformersTranslate.deformer, self.order_before_deformer, deform_mesh)
+                cmds.reorderDeformers( self.matDeformersRotate.deformer, self.order_before_deformer, deform_mesh)
         
     def reposition_controls_by_weights(self):
         component_utils.autoposition_weight_stack_controls(self.slideWeightStack.node, project_to_curve=self.brow_curves["C"])
 
-    def create(self):
-        super(Unibrow, self).create()
-        self.prepare()
-        self.unpack_args_from_guide()
-        self.browSlide()
-        # self.browMatDef()
-        # self.reorder_deformers()
-        self.post_create()
-        self.reposition_controls_by_weights()
+    # def create(self):
+    #     super(Unibrow, self).create()
+    #     self.prepare()
+    #     self.unpack_args_from_guide()
+    #     self.browSlide()
+    #     # self.browMatDef()
+    #     # self.reorder_deformers()
+    #     self.post_create()
+    #     self.reposition_controls_by_weights()

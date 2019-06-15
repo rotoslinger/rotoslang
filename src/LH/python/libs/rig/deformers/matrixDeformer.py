@@ -75,6 +75,7 @@ class MatrixDeformer(base.Deformer):
                  # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
                  # instead they will be named L_leftEye, L_centerEye, L_rightEye and the right controls will be named R_leftEye, R_centerEye, R_rightEye
                  auto_create_name_side=False,
+                 auto_create_reverse = False,
                  hide=True,
                  reverseDeformerOrder = False,
                  connectTranslate=True,
@@ -85,6 +86,7 @@ class MatrixDeformer(base.Deformer):
                  controlAutoOrientMesh="",
                  customControlShapes = [],
                  guide = False,
+                 
                  # inherited args
                  # orderFrontOfChain=True,
                  # orderParallel=False,
@@ -119,6 +121,7 @@ class MatrixDeformer(base.Deformer):
         self.curveWeightsConnectionIdx = curveWeightsConnectionIdx
         self.autoNameWithSide = autoNameWithSide
         self.auto_create_name_side = auto_create_name_side
+        self.auto_create_reverse = auto_create_reverse
 
 
         self.hide = hide
@@ -149,7 +152,12 @@ class MatrixDeformer(base.Deformer):
         self.deformerParent = node_utils.get_node_agnostic("transform", name = self.name + "_DEFORM", parent = self.rigParent)
         self.locatorNames = self.manualLocatorNames
         if not self.manualLocatorNames:
-            self.locatorNames = name_utils.name_based_on_range(count=self.numToAdd, name=self.locatorName, suffixSeperator="", side_name=self.auto_create_name_side)
+            self.locatorNames = name_utils.name_based_on_range(count=self.numToAdd,
+                                                               name=self.locatorName,
+                                                               suffixSeperator="",
+                                                               side_name=self.auto_create_name_side,
+                                                               reverse_side=self.auto_create_reverse,
+                                                               )
         for idx in range(self.numToAdd):
             locatorName = self.locatorNames[idx]
             if not self.autoNameWithSide and not self.manualLocatorNames:
@@ -277,7 +285,12 @@ class MatrixDeformer(base.Deformer):
         locatorNames = self.locatorNames
 
         if self.ctrlName and not self.manualLocatorNames and not type(self.ctrlName) == list:
-            locatorNames = name_utils.name_based_on_range(count=self.numToAdd, name=self.ctrlName, suffixSeperator="", side_name=self.auto_create_name_side)
+            locatorNames = name_utils.name_based_on_range(count=self.numToAdd,
+                                                          name=self.ctrlName,
+                                                          suffixSeperator="",
+                                                          side_name=self.auto_create_name_side,
+                                                          reverse_side=self.auto_create_reverse,
+                                                          )
 
         if type(self.ctrlName) == list:
             locatorNames = self.ctrlName

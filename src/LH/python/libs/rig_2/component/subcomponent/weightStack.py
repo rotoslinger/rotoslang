@@ -146,6 +146,7 @@ class AnimCurveWeight(Weight_Node):
                  animCurveSuffix = "ACV",
                  autoCreateAnimCurves = False,
                  autoCreateName = "lip",
+                 auto_create_reverse=False,
                  # name side is when you want to have the ctrls mirrored
                  # for example you have a left eye and a right eye
                  # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
@@ -192,6 +193,7 @@ class AnimCurveWeight(Weight_Node):
         self.auto_create_name_side=auto_create_name_side
         self.autoCreateNum = autoCreateNum
         self.autoCreateTimeRange =autoCreateTimeRange
+        self.auto_create_reverse=auto_create_reverse
         self.createSingleFalloff =createSingleFalloff
         self.uKeyframesAllOnes =uKeyframesAllOnes
         self.falloffCurveDict =falloffCurveDict
@@ -250,7 +252,12 @@ class AnimCurveWeight(Weight_Node):
                                            attrType=None,
                                            weightmap=True)[0]
         if self.autoCreateAnimCurves:
-            self.factorAttrNames = name_utils.name_based_on_range(count=self.autoCreateNum, name="falloff", suffixSeperator="", side_name=self.auto_create_name_side)
+            self.factorAttrNames = name_utils.name_based_on_range(count=self.autoCreateNum,
+                                                                  name="falloff",
+                                                                  suffixSeperator="",
+                                                                  side_name=self.auto_create_name_side,
+                                                                  reverse_side=self.auto_create_reverse,
+                                                                  )
 
             defaultVals = [0.0 for x in range(self.autoCreateNum)]
 
@@ -465,6 +472,7 @@ class WeightStack(Weight_Node):
                  # controls will not be able to be named "L_eye", "C_eye", "R_eye" because you have to make them twice once for each eye
                  # instead they will be named L_leftEye, L_centerEye, L_rightEye and the right controls will be named R_leftEye, R_centerEye, R_rightEye
                  auto_create_name_side=False,
+                 auto_create_reverse=False,
                  autoCreateOperationVal = 0,
                  createControl = True,
                  controlSize = 1,
@@ -552,6 +560,7 @@ class WeightStack(Weight_Node):
         self.repositionRivetCtrls=repositionRivetCtrls
         self.inputWeightAttrs_UD=inputWeightAttrs_UD
         self.inputWeightAttrs_LR=inputWeightAttrs_LR
+        self.auto_create_reverse=auto_create_reverse
 
         # instance attrs
         self.factorAttrNamesLR = []
@@ -631,7 +640,13 @@ class WeightStack(Weight_Node):
 
         if self.autoCreate:
             self.weightMapAttrs = self.inputWeightAttrs
-            self.factorAttrNames = name_utils.name_based_on_range(count=len(self.inputWeightAttrs), name=self.autoCreateName, suffixSeperator="", side_name=self.auto_create_name_side)
+            self.factorAttrNames = name_utils.name_based_on_range(count=len(self.inputWeightAttrs),
+                                                                  name=self.autoCreateName,
+                                                                  suffixSeperator="",
+                                                                  side_name=self.auto_create_name_side,
+                                                                  reverse_side=self.auto_create_reverse,
+                                                                  
+                                                                  )
             self.operationVals = [self.autoCreateOperationVal for x in range(len(self.inputWeightAttrs))]
 
         # If the given weight map already exists in maya

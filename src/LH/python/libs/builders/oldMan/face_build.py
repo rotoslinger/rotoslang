@@ -73,38 +73,40 @@ def build(asset_name="oldMan",
     
 def build_brow(brow_guides):
     
-    brow_class = brow.Brow(guide_class=brow_guides,
-                            nameBrows="Brow",
-                            ctrlName = "brow", # VERY IMPORTANT that this is the same between the brow and the fit brow so controls can be reused!!!!
-                            # You can give args as the guides, or string values of the maya object names:
-                            # leftBrowMesh = "C_brow_GEO",
-                            # leftBrowBaseMesh = "C_browBase_GEO",
-                            # rightBrowMesh = "C_brow_GEO",
-                            # rightBrowBaseMesh = "C_browBase_GEO",
-                            # slidePatch="C_browGuide_SLDE",
-                            # slidePatchBase="C_browGuide_SLDEBASE",
-                            # L_projectionMesh="L_brow_REF_PRJ",
-                            # R_projectionMesh="R_brow_REF_PRJ",
-                            )
-    brow_class.create()
-    brow_fit_class = brow.Brow(guide_class=brow_guides,
-                               nameBrows="CurveBrow",
-                               ctrlName = "brow",
-                               ctrlAutoPositionThreshold=.001,
-                               fit_curve=True,)
-    brow_fit_class.create()
-    
-    # brow_class = brow.Unibrow(guide_class=brow_guides,
+    # brow_class = brow.Brow(guide_class=brow_guides,
     #                         nameBrows="Brow",
     #                         ctrlName = "brow", # VERY IMPORTANT that this is the same between the brow and the fit brow so controls can be reused!!!!
+    #                         # You can give args as the guides, or string values of the maya object names:
+    #                         # leftBrowMesh = "C_brow_GEO",
+    #                         # leftBrowBaseMesh = "C_browBase_GEO",
+    #                         # rightBrowMesh = "C_brow_GEO",
+    #                         # rightBrowBaseMesh = "C_browBase_GEO",
+    #                         # slidePatch="C_browGuide_SLDE",
+    #                         # slidePatchBase="C_browGuide_SLDEBASE",
+    #                         # L_projectionMesh="L_brow_REF_PRJ",
+    #                         # R_projectionMesh="R_brow_REF_PRJ",
     #                         )
     # brow_class.create()
-    # brow_fit_class = brow.Unibrow(guide_class=brow_guides,
+    # brow_fit_class = brow.Brow(guide_class=brow_guides,
     #                            nameBrows="CurveBrow",
     #                            ctrlName = "brow",
     #                            ctrlAutoPositionThreshold=.001,
     #                            fit_curve=True,)
-    # brow_fit_class.create()    
+    # brow_fit_class.create()
+    
+    brow_class = brow.Unibrow(guide_class=brow_guides,
+                            nameBrows="Brow",
+                            deform_mesh="C_brow_GEO",
+                            base_deform_mesh = "C_browBase_GEO",
+                            ctrlName = "brow", # VERY IMPORTANT that this is the same between the brow and the fit brow so controls can be reused!!!!
+                            )
+    brow_class.create()
+    brow_fit_class = brow.Unibrow(guide_class=brow_guides,
+                               nameBrows="CurveBrow",
+                               ctrlName = "brow",
+                               ctrlAutoPositionThreshold=.001,
+                               fit_curve=True,)
+    brow_fit_class.create()    
     return brow_class, brow_fit_class
 
 def build_lids(lid_guides):
