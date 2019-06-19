@@ -61,7 +61,9 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                                 itts=["linear","linear","linear","linear"],
                                 otts=["linear","linear","linear","linear"],
                                 falloffCurveDict=None,
-                                component_name=""
+                                component_name="",
+                                auto_create_reverse = False,
+
 
 ):
 
@@ -74,6 +76,8 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
     for idx in range(num):
         count = idx
         side = "L"
+        if auto_create_reverse:
+            side = "R"
         formatName = "{0}_{1}{2:02}_{3}"
         formatNameFalloff = "{0}_{1}Falloff{2:02}_{3}"
         if idx == midpoint:
@@ -83,6 +87,8 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
             formatNameFalloff = "{0}_{1}Falloff{2}_{3}"
         if idx > midpoint:
             side = "R"
+            if auto_create_reverse:
+                side = "L"
             count = num -1 - idx
         generatedName = formatName.format(side, name, count, suffix)
 
@@ -210,6 +216,9 @@ def createNormalizedAnimWeights(name="Temp", num=9, timeRange=20.0, suffix="ACV"
                      itts=itts,
                      otts=otts
                      )
+        if createSingleFalloff:
+            # make sure same number of falloffs as other curves
+            falloffKeyframes = [falloffName for x in range(num)]
         return keyframes, falloffKeyframes
     #################################################################################################################
 
@@ -375,7 +384,6 @@ def getWeightStackElemIndexFromCtrl(ctrl=None, attrConnectionToCheck=".txOut"):
     if not ctrl:
         ctrl = cmds.ls(sl=True, typ="transform")[0]
     connection = cmds.listConnections(ctrl + attrConnectionToCheck, plugs=True)
-    print "CONNETION", connection
     if not connection:
         return
     connection= connection[0]
@@ -518,7 +526,7 @@ def rebuildSlideWeightOverrides(weightDict):
 
 def getAllAnimCurveWeightNodeCurves():
     # need to write a filter so you can only save out anim curve weights per component if you so choose...
-    nodes = cmds.ls(type="LHCurveWeightNode")
+    nodes = cmds.ls(type="LHCurveWeightNode_2")
     animCurves = []
     for node in nodes:
         elemLength = cmds.getAttr(node + ".inputs", s=True)
@@ -541,7 +549,7 @@ def get_all_weight_anim_curves(no_export_check=True):
     falloff_weight_curves = tag_utils.remove_nodes_with_tags_from_list("NO_EXPORT", falloff_weight_curves)
     return weight_curves, falloff_weight_curves
 
-def get_weight_curves_dict(do_weight_curves=True, do_falloff_weight_curves=True):
+def get_weight_curves_dict(no_export_dict, do_weight_curves=True, do_falloff_weight_curves=True,):
     # get all animCurveWeightsNodes
     weight_curves, falloff_weight_curves = get_all_weight_anim_curves()
     # put all animCurves in a dict
@@ -549,27 +557,45 @@ def get_weight_curves_dict(do_weight_curves=True, do_falloff_weight_curves=True)
     falloff_weight_curve_dict = {}
     if do_weight_curves:
         for curve in weight_curves:
+            if curve in no_export_dict.keys():
+                continue
             weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
 
     if do_falloff_weight_curves:
         for curve in falloff_weight_curves:
+            if curve in no_export_dict.keys():
+                continue
             falloff_weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
     
     return weight_curve_dict, falloff_weight_curve_dict
 
 
-def rebuildAnimCurveWeightsCurves(weight_curve_dict, falloff_weight_curve_dict, weight_curves=True, falloff_weight_curves=True):
+def rebuildAnimCurveWeightsCurves(no_export_tag_dict,
+                                  weight_curve_dict,
+                                  falloff_weight_curve_dict,
+                                  weight_curves=True,
+                                  falloff_weight_curves=True):
 
     if weight_curves and weight_curve_dict:
         for curve in weight_curve_dict.keys():
+            if curve in no_export_tag_dict.keys():
+                continue
+            if not cmds.objExists(curve):
+                print curve + " Does not exist anymore, will not be able to set it"
+                continue
             animcurve_utils.setAnimCurveShape(curve, weight_curve_dict[curve])
 
     if falloff_weight_curves and falloff_weight_curve_dict:
         for curve in falloff_weight_curve_dict.keys():
+            if curve in no_export_tag_dict.keys():
+                continue
+            if not cmds.objExists(curve):
+                print curve + " Does not exist anymore, will not be able to set it"
+                continue
             animcurve_utils.setAnimCurveShape(curve, falloff_weight_curve_dict[curve])
 
 def removeAllCurveWeightsNodes():
-    nodes = cmds.ls(type="LHCurveWeightNode")
+    nodes = cmds.ls(type="LHCurveWeightNode_2")
     animCurves = []
     for node in nodes:
         cmds.delete(node)
@@ -611,20 +637,31 @@ def get_hand_painted_weight_dict():
     return hand_painted_weights_dict
 
 def rebuild_hand_painted_weights(weight_dict):
-    print weight_dict
     for full_name_attr in weight_dict.keys():
-        print full_name_attr
+        # if not cmds.objExists(full_name_attr):
+        #     print "The final connection for the weights attribute "+ full_name_attr + " Does not exist, unable to add hand weights."
+        #     continue
+
         mesh_dict = weight_dict[full_name_attr]
         # full_name_attr=mesh_dict["full_name_attr"]
-        print mesh_dict
         connections = mesh_dict["connects"]
+        
+        if not cmds.objExists(mesh_dict["node"]):
+            print "Geo named " + mesh_dict["node"] + " Does not exist, unable to add hand weights."
+            continue
+        
         attr_utils.get_attr(node=mesh_dict["node"], attr=mesh_dict["attr"], weightmap=True)
         # Make sure no incoming connections before setting the weight values
         if not cmds.listConnections(full_name_attr, s=True, d=False):
             cmds.setAttr(full_name_attr, mesh_dict["weight_values"], typ="doubleArray")
         # Have the appropriate connections been made?
         # if cmds.listConnections(full_name_attr, p=True, d=True) != connections:
+        if not connections:
+            continue
         for connection in connections:
+            if not cmds.objExists(connection):
+                print "The connecting attribute " + connection + " does not exist.  The connection of " + full_name_attr + " to " + connection + " could not be made."
+                continue
             cmds.connectAttr(full_name_attr, connection, f=True)
 
         
@@ -753,7 +790,7 @@ def get_weight_data_from_ctrl(ctrl, elemIndex, weight_stack):
     return weightValues, weightConnectionObjectType, weightedMesh, weightPlug, weightAttribute
 
 def cache_all_curve_weights(cache=True):
-    nodes = cmds.ls(type="LHCurveWeightNode")
+    nodes = cmds.ls(type="LHCurveWeightNode_2")
     for node in nodes:
         cmds.setAttr(node + ".cacheWeightMesh", cache)
 

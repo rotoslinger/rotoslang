@@ -1,6 +1,7 @@
 // #include <maya/MCppCompat.h>
 #define _MApiVersion
 #include "formatErrorMacros.h"
+#include "LHCurveWeightUtils.h"
 
 #include <maya/MFnPlugin.h>
 // #include "LHRepulsorDeformer.h"
@@ -35,6 +36,7 @@
 #include "LHVectorDeformerSimple.h"
 #include "LHCurveRollSimple.h"
 #include "LHCurveTransform.h"
+#include "LHCurveWeightNode_2.h"
 
 static bool sUseLegacyDraw = (getenv("MAYA_ENABLE_VP2_PLUGIN_LOCATOR_LEGACY_DRAW") != NULL);
 
@@ -137,6 +139,9 @@ MStatus initializePlugin(MObject obj) {
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode("LHCurveWeightNode", LHCurveWeightNode::id, LHCurveWeightNode::creator, LHCurveWeightNode::initialize);
+  CHECK_MSTATUS_AND_RETURN_IT(status);
+
+  status = plugin.registerNode("LHCurveWeightNode_2", LHCurveWeightNode_2::id, LHCurveWeightNode_2::creator, LHCurveWeightNode_2::initialize);
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
   status = plugin.registerNode("LHCurveRollDeformer", LHCurveRollDeformer::id, LHCurveRollDeformer::creator,
@@ -284,6 +289,9 @@ MStatus uninitializePlugin(MObject obj) {
   CHECK_MSTATUS_AND_RETURN_IT(status);
 
  status = plugin.deregisterNode(LHCurveWeightNode::id);
+ CHECK_MSTATUS_AND_RETURN_IT(status);
+
+ status = plugin.deregisterNode(LHCurveWeightNode_2::id);
  CHECK_MSTATUS_AND_RETURN_IT(status);
 
 

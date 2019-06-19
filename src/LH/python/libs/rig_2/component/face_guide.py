@@ -621,24 +621,39 @@ class Brow_Guide(Base):
                                                     transform_suffix=None,
                                                     shape_suffix=None
                                                     )
+        self.c_curve_aim, dummy = nurbscurve.safe_create_curve(face_guide_elements.C_BROW_AIM_CRV,
+                                                    face_guide_elements.C_BROW_AIM_CRV["name"],
+                                                    parent=self.geo,
+                                                    transform_suffix=None,
+                                                    shape_suffix=None
+                                                    )
         self.l_curve_base = self.create_base(self.l_curve)
         self.r_curve_base = self.create_base(self.r_curve)
         self.c_curve_base = self.create_base(self.c_curve)
+        self.c_curve_aim_base = self.create_base(self.c_curve_aim)
 
             
         [tag_utils.tag_guide_curves(curve) for curve in [self.l_curve,
                                                          self.r_curve,
                                                          self.c_curve,
+                                                         self.c_curve_aim,
+                                                         
                                                          self.l_curve_base,
                                                          self.r_curve_base,
-                                                         self.c_curve_base]]
+                                                         self.c_curve_base,
+                                                         self.c_curve_aim_base,
+                                                         
+                                                         ]]
 
         self.guide_geo += [self.l_curve,
                             self.r_curve,
                             self.c_curve,
+                            self.c_curve_aim,
                             self.l_curve_base,
                             self.r_curve_base,
-                            self.c_curve_base]
+                            self.c_curve_base,
+                            self.c_curve_aim_base,
+                            ]
 
         # Prepare data to be used later for fitting
         self.slide_fit_meshes = [self.l_brow, self.r_brow]
@@ -652,9 +667,12 @@ class Brow_Guide(Base):
                              self.l_curve,
                              self.r_curve,
                              self.c_curve,
+                             self.c_curve,
+                             self.c_curve_aim,
                              self.l_curve_base,
                              self.r_curve_base,
-                             self.c_curve_base                             
+                             self.c_curve_base,
+                             self.c_curve_aim_base,
                              ]
         
         self.component_membership_nodes += [self.l_brow,
@@ -662,9 +680,12 @@ class Brow_Guide(Base):
                                             self.l_curve,
                                             self.r_curve,
                                             self.c_curve,
+                                            self.c_curve_aim,
+
                                             self.l_curve_base,
                                             self.r_curve_base,
-                                            self.c_curve_base                             
+                                            self.c_curve_base,
+                                            self.c_curve_aim_base,
                                             ]
         
         # self.geo_to_be_base += [self.l_curve, self.r_curve, self.c_curve]

@@ -75,14 +75,14 @@ def export_all(file_dialog, checkboxes, backup_checkbox, ):
     # backup_filename = self.export_dialog.get_filename()
     # backup_path = self.export_dialog.default_backup_path
 
-    export_dict = export_utils.export_all(asset_name=file_dialog.asset_name,
-                                          filepath=file_dialog.contents.text(),
-                                          ctrl_shape=ctrl_shape,
-                                          guide=guide,
-                                          guide_shape=guide_shape,
-                                          gimbal_shape=gimbal_shape,
-                                          backup=backup_arg
-                                          )
+    export_dict = export_utils.export_all_guides(asset_name=file_dialog.asset_name,
+                                                 filepath=file_dialog.contents.text(),
+                                                 ctrl_shape=ctrl_shape,
+                                                 guide=guide,
+                                                 guide_shape=guide_shape,
+                                                 gimbal_shape=gimbal_shape,
+                                                 backup=backup_arg
+                                                 )
     # full_backup_name = backup_utils.generate_backup_filename(backup_filename, backup_path)
     # backup_utils.generate_backup_file(full_backup_name, export_dict)
 
@@ -90,7 +90,7 @@ def export_all(file_dialog, checkboxes, backup_checkbox, ):
 @decorator.undo_ignore
 def import_all(file_dialog, checkboxes):
     ctrl_shape, guide, guide_shape, gimbal_shape = get_no_export_checkboxes(checkboxes)
-    export_utils.import_all(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
+    export_utils.import_all_guides(file_dialog.contents.text(), ctrl_shape=ctrl_shape, guide=guide, guide_shape=guide_shape, gimbal_shape=gimbal_shape)
 
 def get_no_export_checkboxes(checkboxes):
     export_args = [checkbox.isChecked() for checkbox in checkboxes]

@@ -1,6 +1,7 @@
 #ifndef _LHCURVEWEIGHTNODE_H
 #define _LHCURVEWEIGHTNODE_H
 #include "formatErrorMacros.h"
+#include "LHCurveWeightUtils.h"
 
 #include <string.h>
 #include <maya/MIOStream.h>
@@ -49,8 +50,6 @@ class LHCurveWeightNode : public MPxNode
     MStatus getWeightMeshData(MObject oProjectionMesh, MFnMesh *mInputMesh, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
     MStatus getWeightMeshDataFromPoints(MObject oProjectionMesh, MPointArray allPoints, MFnMesh *mProjectionMesh, MFloatArray &uCoords, MFloatArray &vCoords, int numVerts, int iCacheWeightMesh);
 
-    virtual MStatus getWeightsFromInputs(MDataBlock &data, MDoubleArray &finalWeights, std::vector<MDoubleArray>& finalWeightsArray);
-    virtual MStatus getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray &rWeights, int numVerts, int currentElem);
 
     virtual MStatus computeDoubleArray(MDataBlock &data);
     virtual MStatus computeFloatArray(MDataBlock &data);
@@ -58,7 +57,10 @@ class LHCurveWeightNode : public MPxNode
     virtual SchedulingType schedulingType() const { return kParallel; }
     virtual MStatus getAnimCurveInfo(MFnAnimCurve *fnAnimCurve, float &timeOffset, float &timeLength);
     virtual MStatus getAnimCurvePlug(int currentElem, MPlug& rPCurve, MObject curveObject);
+    MDoubleArray getMembershipWeights(MDataBlock& data, MDoubleArray membershipWeights, int numVerts, int iCacheMemberWeights);
 
+    virtual MStatus getWeightsFromInputs(MDataBlock &data, MDoubleArray &finalWeights, std::vector<MDoubleArray>& finalWeightsArray);
+    virtual MStatus getAnimCurveWeights(MArrayDataHandle inputsArrayHandle, MDoubleArray &rWeights, int numVerts, int currentElem);
 
 
     static void *creator();

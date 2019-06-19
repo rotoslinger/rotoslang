@@ -111,14 +111,13 @@ class Component(base.Component):
     def createGuide(self):
         # The guide is really just the buffer above the rivet.  This creates a shape for that buffer for easier selection
         self.guide_transform, self.guideShapes = nurbscurve.create_curve(manipulator_elements.sphere_small,
-                                                  "{0}_{1}_GUIDE".format(self.side, self.name),
+                                                                            self.buffer2,
                                                                          self.buffer2,
                                                                          transform_suffix=None,
                                                                          check_existing=False,
                                                                          outliner_color = False,
                                                                          color = False,
-                                                                         shape_suffix=None,
-                                                                         shape_name = "{0}_{1}_GUIDE".format(self.side, self.name))
+                                                                         shape_name = "{0}_{1}".format(self.side, self.name))
 
         tag_utils.tag_guide(self.guide_transform)
         tag_utils.create_component_tag(self.guide_transform, self.component_name)

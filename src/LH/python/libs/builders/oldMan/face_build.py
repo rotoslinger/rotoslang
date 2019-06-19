@@ -17,11 +17,12 @@ reload(lid)
 from rig.rigComponents import mouthJaw
 reload(mouthJaw)
 
-from rig_2.component import lip, mouth, brow, face
+from rig_2.component import lip, mouth, brow, face, teeth
 reload(mouth)
 reload(lip)
 reload(brow)
 reload(face)
+reload(teeth)
 
 DEBUG = False
 
@@ -32,16 +33,16 @@ def build(asset_name="oldMan",
           attach_to="head_output"):
 
     guide_file = filepath_utils.get_file_by_asset_name(asset_name, file="guides")
+    weight_file = filepath_utils.get_file_by_asset_name(asset_name, file="weights")
     # guide_file = filepath_utils.get_file_by_asset_name(asset_name, file="master_guides")
     get_file(asset_filepath, asset_name)
     
-    
     # Create Guides First
-    # mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
-    # mouth_jaw_guides.create()
+    mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
+    mouth_jaw_guides.create()
     
-    # lid_guides = face_guide.Lid_Guide(hide_on_build=True)
-    # lid_guides.create()
+    lid_guides = face_guide.Lid_Guide(hide_on_build=True)
+    lid_guides.create()
 
     brow_guides = face_guide.Brow_Guide(hide_on_build=True)
     brow_guides.create()
@@ -49,19 +50,21 @@ def build(asset_name="oldMan",
     # Import guides for the guide components.
     # They need to be placed in the proper location before the rigs build to make thing simpler
     # Because we have built the guide components in the file, we will not want to build components on import
-    export_utils.import_all(filename=guide_file, build_components=False)
+    export_utils.import_all_guides(filename=guide_file, build_components=False)
 
-    # lip_class = build_lip(mouth_jaw_guides)
-    # mouth_class = build_mouth(mouth_jaw_guides) 
-    # l_lids_class, r_lids_class = build_lids(lid_guides)
-    brow_class, brow_fit_class = build_brow(brow_guides)
+    lip_class = build_lip(mouth_jaw_guides)
+    mouth_class = build_mouth(mouth_jaw_guides) 
+    teeth_class = build_jaw()
+    l_lids_class, r_lids_class = build_lids(lid_guides)
+    brow_class = build_brow(brow_guides)
 
     # The face class will be used to wire everything together... it contains the face_anchor
     face_class = face.Face(face_driver="head_output")
     face_class.create()
 
     # # import the guides again, this time for all of the non guide components
-    export_utils.import_all(filename=guide_file, build_components=False)
+    export_utils.import_all_weights(filename=weight_file, weight_curves=True, falloff_weight_curves=True, hand_painted_weights=True)
+    export_utils.import_all_guides(filename=guide_file, build_components=False)
 
     
     ### FINALIZE ### 
@@ -70,6 +73,11 @@ def build(asset_name="oldMan",
 
     cmds.select("C_bodyBind_GEO")
     cmds.viewFit()
+
+def build_jaw():
+    teeth_class = teeth.TeethTongue()
+    teeth_class.create()
+    return teeth_class
     
 def build_brow(brow_guides):
     
@@ -94,20 +102,20 @@ def build_brow(brow_guides):
     #                            fit_curve=True,)
     # brow_fit_class.create()
     
-    brow_class = brow.Unibrow(guide_class=brow_guides,
-                            nameBrows="Brow",
-                            deform_mesh="C_brow_GEO",
-                            base_deform_mesh = "C_browBase_GEO",
-                            ctrlName = "brow", # VERY IMPORTANT that this is the same between the brow and the fit brow so controls can be reused!!!!
-                            )
+    brow_class = brow.Brow(guide_class=brow_guides,
+                                nameBrows="Brow",
+                                deform_mesh="C_brow_GEO",
+                                base_deform_mesh = "C_browBase_GEO",
+                                ctrlName = "brow", # VERY IMPORTANT that this is the same between the brow and the fit brow so controls can be reused!!!!
+                                )
     brow_class.create()
-    brow_fit_class = brow.Unibrow(guide_class=brow_guides,
-                               nameBrows="CurveBrow",
-                               ctrlName = "brow",
-                               ctrlAutoPositionThreshold=.001,
-                               fit_curve=True,)
-    brow_fit_class.create()    
-    return brow_class, brow_fit_class
+    # brow_fit_class = brow.Unibrow(guide_class=brow_guides,
+    #                            nameBrows="CurveBrow",
+    #                            ctrlName = "brow",
+    #                            ctrlAutoPositionThreshold=.001,
+    #                            fit_curve=True,)
+    # brow_fit_class.create()    
+    return brow_class
 
 def build_lids(lid_guides):
     l_lid_class = lid.Lid(guide_class=lid_guides,

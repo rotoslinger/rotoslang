@@ -44,6 +44,7 @@ class Lip(component_base.Component):
                 self,
                 component_name="lip",
                 name="lowerLip",
+                position_name="lower",
                 characterName = "character",
                 order_before_deformer=None,
                 upperLip = False,
@@ -60,9 +61,9 @@ class Lip(component_base.Component):
                 slideCtrlSize1=1,
                 slideCtrlSize2=.65,
                 slideCtrlSize3=.35,
-                slideCtrlShapeOffset1=[0,0.0,2],
-                slideCtrlShapeOffset2=[0,0.0,2],
-                slideCtrlShapeOffset3=[0,0.0,2],
+                slideCtrlShapeOffset1=[0, 2, 0],
+                slideCtrlShapeOffset2=[0, 2, 0],
+                slideCtrlShapeOffset3=[0, 2, 0],
                 slideCtrlPosOffset1=[0, 0.0, 0],
                 slideCtrlPosOffset2=[0, 0.0, 0],
                 slideCtrlPosOffset3=[0, 0.0, 0],
@@ -123,6 +124,7 @@ class Lip(component_base.Component):
         self.characterName = characterName
         self.order_before_deformer=order_before_deformer
         self.upperLip = upperLip
+        self.position_name = position_name
         self.ctrlName =ctrlName
         self.containerName = containerName
         self.multiSlideForBaseCurve=multiSlideForBaseCurve
@@ -214,8 +216,14 @@ class Lip(component_base.Component):
         # if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):
         #     misc.create_rig_hier(char_name=self.characterName)
 
-        self.control_node = cmds.circle(n=self.name + "Control", nr=[0, 1, 0])[0]
-        cmds.parent(self.control_node, self.control_parent)
+        # self.control_node = cmds.circle(n=self.name + "Control", nr=[0, 1, 0])[0]
+        if cmds.objExists(self.ctrlName + "Control"):
+            self.control_node = self.ctrlName + "Control"
+        else:
+            self.control_node = cmds.circle(n=self.ctrlName + "Control", nr=[0, 1, 0])[0]
+            cmds.parent(self.control_node, self.control_parent)
+            
+            
         self.slide_ud = slideSimple.SlideSimple(self.name + "_SlideDef",
                                           geoToDeform=self.deformMesh,
                                           slidePatch=self.slidePatch,
@@ -348,7 +356,6 @@ class Lip(component_base.Component):
             self.slide_weight_stack.create()
             
             weightStack.connect_weight_stack_anim_curve(self.slide_weight_stack, self.slide_curve_weights)
-
             ################################## MATRIX DEFORMER #####################################################################
             curveWeights = weightStack.AnimCurveWeight(name=self.name + "MatDef_AnimCurveWeight",
                                                        baseGeo=self.base,
@@ -381,11 +388,13 @@ class Lip(component_base.Component):
                                                                    geoToDeform=self.deformMesh,
                                                                    ctrlName=self.ctrlName + matDefNames[idx],
                                                                    centerToParent=True,
+                                                                    position=self.position_name,
                                                                    addAtIndex=tierAddAtIndex[idx],
                                                                    numToAdd=tierCounts[idx],
+                                                                   type_name="Trans",
                                                                    # offset=[0,0,1],
                                                                    reverseDeformerOrder = True,
-                                                                   locatorName=self.name + tierNames[idx] + "Trans",  # Primary, Secondary, Or Tertiatry
+                                                                   locatorName= self.position_name + self.component_name + tierNames[idx] + "Trans",  # Primary, Secondary, Or Tertiatry
                                                                    curveWeightsNode=curveWeights.node,
                                                                    control_rivet_mesh=self.deformMesh,
                                                                    curveWeightsConnectionIdx=tierAddAtIndex[idx],
@@ -416,8 +425,10 @@ class Lip(component_base.Component):
                                                                 addAtIndex=tierAddAtIndex[idx],
                                                                 numToAdd=tierCounts[idx],
                                                                 # offset=[0,0,1],
+                                                                type_name="Rot",
                                                                 reverseDeformerOrder = True,
-                                                                locatorName=self.name + tierNames[idx] + "ROT",  # Primary, Secondary, Or Tertiatry
+                                                                position=self.position_name,
+                                                                locatorName=self.position_name + self.component_name + tierNames[idx] + "Rot",  # Primary, Secondary, Or Tertiatry
                                                                 # rotationTranforms=self.slide_weight_stack.controls,
                                                                 curveWeightsNode=curveWeights.node,
                                                                 control_rivet_mesh=self.deformMesh,

@@ -19,22 +19,91 @@ reload(tag_utils)
 from rig_2.attr import constants as attr_constants
 reload(attr_constants)
 
+from rig_2.weights import utils as weight_utils
+reload(weight_utils)
+
 # this is important for the dynamic builds which will use relative module path names
 import rig_2
 reload(rig_2)
 from rig_2 import decorator
 
 
-def export_all(asset_name,
-               filepath,
-               ctrl_shape=True,
-               guide=True,
-               guide_shape=True,
-               gimbal_shape=True,
-               guide_components=True,
-               guide_geo=True,
-               backup=True,
-               append=True):
+def export_all_weights(asset_name,
+                       filepath,
+                       weight_curves=True,
+                       falloff_weight_curves=True,
+                       hand_painted_weights=True,
+                       backup=True,
+                       append=True):
+
+    if backup:
+        backup_utils.backup_file(asset_name, filepath)
+
+    export_dict = {}
+    no_export_tag_dict = tag_utils.get_no_exports()
+    export_dict["no_export_tag_dict"] = no_export_tag_dict
+    
+    weight_curve_dict, falloff_weight_curve_dict = weight_utils.get_weight_curves_dict(no_export_tag_dict, do_weight_curves=weight_curves, do_falloff_weight_curves=falloff_weight_curves)
+
+    export_dict["weight_curves"] = weight_curve_dict
+    export_dict["falloff_weight_curves"] = falloff_weight_curve_dict
+
+    export_dict["hand_painted_weights"] = {}
+    if hand_painted_weights:
+        export_dict["hand_painted_weights"] = weight_utils.get_hand_painted_weight_dict()
+
+    # Make sure the path exists
+    path= os.path.dirname(os.path.normpath(filepath))
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+    if append and os.path.exists(filepath):
+        file = open(filepath, "rb")
+        original_dict = json.load(file)
+        # Add new entries to the original file.
+        # But also overwrite the original key values with new entries
+        for key in export_dict.keys():
+            for inner_key in export_dict[key]:
+                original_dict[key][inner_key] = export_dict[key][inner_key]
+        export_dict = original_dict
+    
+    file = open(filepath, "wb")
+    
+    json.dump(original_dict, file, sort_keys = False, indent = 2)
+    file.close()
+    return export_dict
+
+
+def import_all_weights(filename, weight_curves=True, falloff_weight_curves=True, hand_painted_weights=True):
+    file = open(filename, "rb")
+    import_dict = json.load(file)
+    file.close()
+
+    no_export_tag_dict = import_dict["no_export_tag_dict"]
+
+    # Set NO_EXPORT tags
+    tag_utils.set_tags_from_dict(no_export_tag_dict)
+    weight_utils.rebuildAnimCurveWeightsCurves(no_export_tag_dict,
+                                               weight_curve_dict=import_dict["weight_curves"],
+                                               falloff_weight_curve_dict=import_dict["falloff_weight_curves"],
+                                               weight_curves=weight_curves,
+                                               falloff_weight_curves=falloff_weight_curves)
+
+    if hand_painted_weights:
+        weight_utils.rebuild_hand_painted_weights(import_dict["hand_painted_weights"])
+
+
+
+def export_all_guides(asset_name,
+                      filepath,
+                      ctrl_shape=True,
+                      guide=True,
+                      guide_shape=True,
+                      gimbal_shape=True,
+                      guide_components=True,
+                      guide_geo=True,
+                      backup=True,
+                      append=True):
     
     if backup:
         backup_utils.backup_file(asset_name, filepath)
@@ -79,7 +148,7 @@ def export_all(asset_name,
     return export_dict
 
 
-def import_all(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=False, guide_geo=True):
+def import_all_guides(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=False, guide_geo=True):
     file = open(filename, "rb")
     import_dict = json.load(file)
     file.close()
@@ -140,25 +209,7 @@ def create_class_from_dict(components_dict):
         component_dict = components_dict[component_name]
         for key in component_dict.keys():
             component_dict[key] = convert_value_to_literals(component_dict[key])
-            
-            # print type(component_dict[key]), "type of the entry"
-            # if type(component_dict[key]) == unicode or type(component_dict[key]) == str:
-            #     test_val = str(component_dict[key])
-            #     print "THIS IS THE TESTING VALUE", test_val
-            #     print key, component_dict[key]
-            #     litteral_val = literal_eval(test_val)
-            #     if not litteral_val:
-            #         continue
-            #     for attr_instance in attr_constants.SUPPORTED_TYPES:
-            #         if not isinstance(litteral_val, attr_instance):
-            #             continue
-            #         print "THJS IS WORKING", litteral_val, type(litteral_val)
-                    
-            #         component_dict[key] = litteral_val
-                        
-                    
-                    
-                    
+                                
         # getattr(component_dict["class_name"], **component_dict)
         class_name = component_dict["class_name"].split(".")[-1]
         module_name = component_dict["class_name"].replace("."+ class_name, "")

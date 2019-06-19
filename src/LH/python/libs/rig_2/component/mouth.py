@@ -106,7 +106,11 @@ class Mouth(base.Component):
                                 "C_jaw",
                                 "C_jawSecondary"],
 
-
+                manual_no_rivet_names = [ "C_jaw",
+                                        "C_jawSecondary"],
+                manual_constraint_dict = {"C_jaw":"head_control",
+                                          "C_jawSecondary":"head_control"},
+        
                  matDefCustomControlShapes=elements.JAW_MOUTH_MATDEF_CTRL_SHAPES,
 
                  matDefWeightCurves = [
@@ -166,6 +170,9 @@ class Mouth(base.Component):
         self.slideWeightCurves_LR =slideWeightCurves_LR
         self.slideWeightCurvesFalloff_LR = slideWeightCurvesFalloff_LR
         self.matDefAttrs = matDefAttrs
+        self.manual_no_rivet_names = manual_no_rivet_names
+        self.manual_constraint_dict = manual_constraint_dict
+        
         self.matDefCustomControlShapes=matDefCustomControlShapes
         self.matDefWeightCurves = matDefWeightCurves
         self.matDefWeightCurvesFalloff =matDefWeightCurvesFalloff
@@ -326,11 +333,12 @@ class Mouth(base.Component):
         if self.matDefCustomControlShapes:
             matDefCtrlShapeOffsets =  [0,0,0]
             matDefCtrlShapeSizes = 1
-
         self.mat_def_translate = matrixDeformer.MatrixDeformer(name=self.nameJaw + "Translate_MatrixDef",
                                                                geoToDeform=self.deformMesh,
                                                                ctrlName=self.matDefAttrs,
                                                                manualLocatorNames = transLocatorNames,
+                                                               manual_no_rivet_names = self.manual_no_rivet_names,
+                                                               manual_constraint_dict = self.manual_constraint_dict,
                                                                centerToParent=True,
                                                                addAtIndex=0,
                                                                numToAdd=False,
@@ -369,6 +377,8 @@ class Mouth(base.Component):
                                                             geoToDeform=self.deformMesh,
                                                             ctrlName=self.matDefAttrs,
                                                             manualLocatorNames = rotLocatorNames,
+                                                            manual_no_rivet_names = self.manual_no_rivet_names,
+                                                            manual_constraint_dict = self.manual_constraint_dict,
                                                             centerToParent=True,
                                                             addAtIndex=0,
                                                             numToAdd=False,
@@ -390,7 +400,7 @@ class Mouth(base.Component):
                                                             hide = True,
                                                             connectTranslate = False,
                                                             connectRotate = True,
-                                                            connectScale = True,
+                                                            connectScale = False,
                                                             controlShapeDict=manipulator_elements.primary_plus,
                                                             controlAutoOrientMesh = self.rivet_orient_patch,
                                                             controlType=1,

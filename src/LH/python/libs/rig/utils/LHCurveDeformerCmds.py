@@ -20,6 +20,9 @@ class curveDeformerCmd():
                  ihi = 0,
                  lockAttrs = 1,
                  side='C',
+                 aimCurveBase=None,
+                 driverCurveBase=None,
+                 
                  name=''):
         """
         @type  driverCurve:          string
@@ -56,14 +59,16 @@ class curveDeformerCmd():
         self.driverCurve             = driverCurve
         self.aimCurve                = aimCurve
         self.geom                    = geom
+        self.aimCurveBase            = aimCurveBase
+        self.driverCurveBase         = driverCurveBase
 
         #----vars
         self.driverCurveShape        = ''
         self.aimCurveShape           = ''
         self.driverBaseName          = ''
         self.aimBaseName             = ''
-        self.driverCurveBase         = ''
-        self.aimCurveBase            = ''
+        # self.driverCurveBase         = ''
+        # self.aimCurveBase            = ''
         self.driverCurveBaseShape    = ''
         self.aimCurveBaseShape       = ''
         
@@ -123,7 +128,11 @@ class curveDeformerCmd():
 
     def __createBaseCurves(self):
         """creates base curves based on the names of the driver curves"""
-
+        if  self.driverCurveBase and self.aimCurveBase:
+            self.driverCurveBaseShape = misc.getShape(self.driverCurveBase)
+            self.aimCurveBaseShape = misc.getShape(self.aimCurveBase)
+            return 
+        # If you don't get the base and aim as args then create them here
         self.driverBaseName = self.__nameBase(self.driverCurve)
         self.aimBaseName = self.__nameBase(self.aimCurve)
         if not cmds.objExists(self.driverBaseName):

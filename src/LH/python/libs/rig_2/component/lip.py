@@ -1,11 +1,15 @@
 import inspect
 from collections import OrderedDict
 from rig_2.component.subcomponent import lip_sub
+reload(lip_sub)
+
 from rig.rigComponents import elements 
 from rig_2.component import base
-
 reload(base) 
-reload(lip_sub)
+
+from rig_2.component import utils as component_utils
+reload(component_utils) 
+
 
 
 class Lip(base.Component):
@@ -118,9 +122,9 @@ class Lip(base.Component):
 
         self.thickToPoint = (0, -0.97, 0.244)
 
-        self.slideCtrlShapeOffset1=[0,0.0,1]
-        self.slideCtrlShapeOffset2=[0,0.0,1]
-        self.slideCtrlShapeOffset3=[0,0.0,1]
+        self.slideCtrlShapeOffset1=[0, 1.0, 0]
+        self.slideCtrlShapeOffset2=[0, 1.0, 0]
+        self.slideCtrlShapeOffset3=[0, 1.0, 0]
 
         self.slideCtrlPosOffset1=[0, 0.0, 0]
         self.slideCtrlPosOffset2=[0, 0.0, 0]
@@ -167,7 +171,9 @@ class Lip(base.Component):
     def create_upper_lip(self):
         self.upperLipClass = lip_sub.Lip(name="upperLip",
                                          component_name=self.component_name,
-                                        controlRivetMesh = self.rivet_mesh_upper,
+                                         position_name="upper",
+                                         ctrlName = "upperLip",
+                                         controlRivetMesh = self.rivet_mesh_upper,
                                          upperLip=True,
                                          tierCount1=self.tierCount1,
                                          tierCount2=self.tierCount2,
@@ -224,6 +230,7 @@ class Lip(base.Component):
         self.upperLipCurveClass = lip_sub.Lip(name="upperLipCurve",
                                               component_name=self.component_name,
                                               ctrlName = "upperLip",
+                                                position_name="upper",
                                               order_before_deformer=self.order_before_deformer,
 
                                               upperLip=True,
@@ -295,6 +302,8 @@ class Lip(base.Component):
         self.lowerLipClass = lip_sub.Lip(name="lowerLip",
                                          component_name=self.component_name,
                                         controlRivetMesh = self.rivet_mesh_lower,
+                                        position_name="lower",
+
                                          upperLip=False,
                                          tierCount1=self.tierCount1,
                                          tierCount2=self.tierCount2,
@@ -352,6 +361,8 @@ class Lip(base.Component):
         self.lowerLipCurveClass = lip_sub.Lip(name="lowerLipCurve",
                                               component_name=self.component_name,
                                               ctrlName = "lowerLip",
+                                              position_name="lower",
+
                                               order_before_deformer=self.order_before_deformer,
                                               controlRivetMesh = self.rivet_mesh_lower,
                                               doLipThick = False,
@@ -419,6 +430,12 @@ class Lip(base.Component):
                                                                   curve_base=self.baseLowerCurve,
                                                                   component_name = self.component_name)
         
+        
+    def reposition_controls_by_weights(self):
+        component_utils.autoposition_weight_stack_controls(self.lowerLipCurveClass.slide_weight_stack.node, project_to_curve=self.low_lip_volume_curve)
+        component_utils.autoposition_weight_stack_controls(self.upperLipCurveClass.slide_weight_stack.node, project_to_curve=self.up_lip_volume_curve)
+
+        
 
     def create(self):
         super(Lip, self).create()
@@ -426,5 +443,6 @@ class Lip(base.Component):
         self.unpack_constants()
         self.create_upper_lip()  
         self.create_lower_lip()
+        self.reposition_controls_by_weights()
 
 

@@ -73,6 +73,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_BrowCurveAimMatDef_MatDefTranslate": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipCurveSecondaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -88,6 +92,11 @@
       "NO_EXPORT"
     ], 
     "R_upperLipTertiary01Gimbal_CTL": [
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowCurveMatDefTertiaryRot02_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_C_BrowMatDefTertiaryTrans03_BUF": [
@@ -140,6 +149,11 @@
     "C_lowerLipMatrixDeformer2MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveAimMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_lowerLipCurveTertiaryROT_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
@@ -188,6 +202,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_upperLipPrimary01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_middleL_llidslowermatdeftertiarytrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -201,7 +220,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_outerLidcontrollowermatrixdeformer301MatrixDef_CTL": [
+    "R_outerLidcontrollowertertiary0001_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -224,11 +244,6 @@
       "NO_EXPORT"
     ], 
     "C_R_CurveBrowMatDefPrimaryRot_BUF": [
-      "NO_EXPORT", 
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "L_upperLipSecondaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -256,10 +271,6 @@
     ], 
     "C_C_BrowMatDefTertiaryTrans_BUF": [
       "NO_EXPORT", 
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "R_lowerLipTertiary01_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -293,12 +304,12 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_middleL_llidslowermatdeftertiaryrot_BUF": [
+    "C_C_BrowCurveAimMatDefSecondaryRot_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_C_CurveBrowMatDefSecondaryRot00_BUF": [
+    "L_middleL_llidslowermatdeftertiaryrot_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -318,6 +329,11 @@
       "NO_EXPORT"
     ], 
     "C_lowerLipSecondary_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowCurveMatDefPrimaryRot_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -351,6 +367,11 @@
       "NO_EXPORT"
     ], 
     "L_browLTertiary0101_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_L_CurveBrowMatDefPrimaryRot_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -408,6 +429,11 @@
     "R_upperLipCurveSecondaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "L_L_CurveBrowMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_lowerLipCurveTertiaryTrans01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -455,6 +481,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_BrowCurveSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowCurveAimMatDefTertiaryRot02_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_browRMatrixDeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -469,7 +504,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_lowerLipMatrixDeformer200MatrixDef_CTL": [
+    "L_innerLidcontroluppermatrixdeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -543,7 +578,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "upperLipRoll_WeightStack": [
+    "R_C_BrowCurveAimMatDefTertiaryRot01_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -600,6 +636,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_BrowCurveAimSlide": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_lowerLipCurveSecondaryTrans_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
@@ -609,6 +649,10 @@
       "NO_EXPORT"
     ], 
     "C_upperLipSecondaryROT_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
+    "C_BrowCurveAimSlide_WeightStack_UD": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_lowerLipSecondaryROT_BUF": [
@@ -687,6 +731,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_lowerLipTertiaryROT01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_C_BrowMatDefSecondaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -715,7 +764,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browSecondary00_CTL": [
+    "C_BrowCurveAimMatDef_MatDefRotate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -765,15 +814,16 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_browTertiary00_ACV": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
     "L_innerLidcontroluppertertiary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_lowerLipSecondary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowCurveMatDefTertiaryRot03_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -791,8 +841,12 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_browLTertiary01_BUF": [
+    "C_C_BrowCurveAimMatDefTertiaryRot_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_browTertiary00_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -825,11 +879,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_BrowMatDef_MatDefRotate": [
+    "R_outerLidcontroluppersecondary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_lowerLipMatrixDeformer301MatrixDef_CTL": [
+    "C_BrowSlide_CurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -871,7 +925,17 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_BrowCurveAimMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_upperLipTertiary0001_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowCurveMatDefTertiaryRot01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -885,11 +949,6 @@
       "NO_EXPORT"
     ], 
     "R_browRTertiary00_ACV": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "R_outerR_rlidslowermatdeftertiarytrans00_BUF": [
-      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -909,11 +968,19 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_BrowCurveMatDef_MatDefTranslate": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_lowerLipMatrixDeformer301MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
     "R_C_BrowMatDefTertiaryTrans02_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_middleLidcontroluppermatrixdeformer2MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -959,6 +1026,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_browLTertiary01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipCurveTertiaryROT00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -982,10 +1054,6 @@
       "NO_EXPORT"
     ], 
     "R_innerLidcontrollowermatrixdeformer200MatrixDef_CTL": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "R_CurveBrowSlide_WeightStack_LR": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1085,6 +1153,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_CurveBrowSlide_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_upperLipTertiary01_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1114,7 +1186,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_L_CurveBrowMatDefPrimaryRot_BUF": [
+    "R_middleR_rlidsuppermatdeftertiarytrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1177,10 +1249,6 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lLidsLowerMatDef_MatDefTranslate": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
     "C_browRPrimary_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1195,6 +1263,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipCurveTertiaryTrans01_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
@@ -1202,11 +1275,6 @@
       "NO_EXPORT"
     ], 
     "L_CurveBrowSlide": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "R_middleR_rlidsuppermatdeftertiarytrans_BUF": [
-      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1295,6 +1363,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_C_BrowCurveMatDefPrimaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "upperLipFalloff_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1354,6 +1427,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_BrowSlide_WeightStack_LR": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipSecondaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
@@ -1398,12 +1475,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_outerLidcontroluppersecondary00_CTL": [
+    "C_BrowMatDef_MatDefRotate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_outerLidcontrollowertertiary0001_BUF": [
-      "NO_EXPORT", 
+    "L_outerLidcontrollowermatrixdeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1414,7 +1490,7 @@
     "L_lowerLidBase": [
       "NO_EXPORT"
     ], 
-    "C_BrowSlide_CurveWeights": [
+    "R_lowerLipMatrixDeformer301MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1437,6 +1513,11 @@
       "NO_EXPORT"
     ], 
     "C_lowerLipPrimaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowCurveMatDefSecondaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1464,6 +1545,10 @@
       "NO_EXPORT"
     ], 
     "C_brow_GEO": [
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowCurveMatDefSecondaryRot_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1477,6 +1562,11 @@
       "NO_EXPORT"
     ], 
     "C_BrowSlide": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowCurveMatDefSecondaryRot00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1541,10 +1631,19 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_BrowCurveMatDef_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_lowerLipCurveTertiaryTrans01_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
     "L_C_CurveBrowMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowCurveMatDefTertiaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1558,8 +1657,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_upperLipTertiaryTrans01_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
     "L_middleL_llidslowermatdefsecondaryrot_BUF": [
       "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_BrowCurveAimSlide_WeightStack_LR": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1576,11 +1682,16 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveAimMatDefTertiaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_rLidsLowerSlideWeightStack_UD": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_upperLipPrimary01_BUF": [
+    "L_C_BrowCurveMatDefTertiaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1594,7 +1705,16 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_upperLipPrimaryGimbal_CTL": [
+    "L_lowerLipMatrixDeformer200MatrixDefGimbal_CTL": [
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowCurveAimMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_BrowCurveSlide_WeightStack_LR": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_upperLipCurveSecondaryROT00_BUF": [
@@ -1602,7 +1722,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lowerLipMatrixDeformer200MatrixDefGimbal_CTL": [
+    "C_BrowCurveSlide_WeightStack_UD": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_R_BrowMatDefTertiaryTrans01_BUF": [
@@ -1623,7 +1744,9 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_upperLipTertiaryROT_BUF_SHPMain_None": [
+    "L_upperLipSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_R_CurveBrowMatDefSecondaryRot00_BUF": [
@@ -1632,7 +1755,6 @@
       "NO_EXPORT"
     ], 
     "C_bodyBind_GEO": [
-      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_outerR_rlidslowermatdefsecondarytrans00_BUF": [
@@ -1716,14 +1838,14 @@
       "NO_EXPORT"
     ], 
     "C_browBase_GEO": [
-      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_browLSecondary_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browLTertiary00_ACV": [
+    "L_C_BrowCurveAimMatDefTertiaryRot01_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1745,6 +1867,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_outerR_rlidslowermatdefsecondaryrot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_middleR_rlidslowermatdeftertiaryrot_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -1758,11 +1885,20 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_middleLidcontroluppermatrixdeformer2MatrixDef_CTL": [
+    "R_CurveBrowSlide_WeightStack_LR": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_BrowCurveAimSlide_CurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_R_CurveBrowMatDefSecondaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowCurveAimMatDefTertiaryTrans02_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1850,12 +1986,22 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_C_BrowCurveAimMatDefPrimaryTrans_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_lowerLipCurveSecondaryROT00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_upperLipCurveTertiaryTrans_BUF_SHPMain_None": [
+    "C_BrowCurveAimMatDef_CurveWeights": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browSecondary00_CTL": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_browTertiary01_ACV": [
@@ -1892,7 +2038,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "upperLipMatDef_AnimCurveWeight": [
+    "L_C_BrowCurveAimMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -1919,8 +2066,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browTertiary01_CTL": [
-      "NO_EXPORT", 
+    "C_upperLipPrimaryGimbal_CTL": [
       "NO_EXPORT"
     ], 
     "R_upperLipTertiaryTrans00_BUF": [
@@ -1964,6 +2110,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_BrowCurveMatDefTertiaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_browLPrimary_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -1982,7 +2133,7 @@
     "L_upperLipTertiary00_GUIDEMain_None": [
       "NO_EXPORT"
     ], 
-    "R_lowerLipTertiaryROT01_BUF": [
+    "L_C_BrowCurveMatDefTertiaryTrans01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2010,6 +2161,11 @@
     "C_upperLipTertiary_GUIDEMain_None": [
       "NO_EXPORT"
     ], 
+    "C_C_BrowCurveMatDefTertiaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_rLidsUpperMatDef_AnimCurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2027,7 +2183,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_browMatrixDeformer303MatrixDef_CTL": [
+    "R_lowerLipTertiary01_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2040,10 +2196,6 @@
       "NO_EXPORT"
     ], 
     "C_LowerLipWireCurveDeformerNormalize_ACV": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "L_BrowSlide_CurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2070,7 +2222,17 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveMatDefTertiaryRot03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_C_BrowMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browTertiary0001_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2088,6 +2250,10 @@
       "NO_EXPORT"
     ], 
     "L_browLMatrixDeformer301MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_browTertiary01_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2176,6 +2342,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_BrowCurveSlide": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_BrowSlide": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2187,7 +2357,17 @@
     "C_lowerLipBase": [
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveAimMatDefTertiaryRot02_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_R_BrowMatDefPrimaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowCurveMatDefTertiaryTrans02_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2226,6 +2406,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_BrowCurveMatDefTertiaryTrans02_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_upperLipTertiaryROT01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -2259,6 +2444,11 @@
     "L_upperLipCurveSecondaryTrans00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "R_C_BrowCurveAimMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_lowerLipMatrixDeformer301MatrixDefGimbal_CTL": [
       "NO_EXPORT"
     ], 
@@ -2279,6 +2469,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveAimMatDefSecondaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_upperLipTertiaryROT01_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
@@ -2286,7 +2481,9 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLid": [
+    "L_C_BrowCurveAimMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_outerLidcontroluppertertiary01_CTL": [
@@ -2399,10 +2596,6 @@
     "R_lowerLipCurveTertiaryROT00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
-    "R_middleLidcontroluppermatrixdeformer2MatrixDef_CTL": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
     "R_browLTertiary01_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2410,7 +2603,12 @@
     "R_lowerLid": [
       "NO_EXPORT"
     ], 
-    "R_outerR_rlidslowermatdefsecondaryrot00_BUF": [
+    "R_C_BrowCurveMatDefSecondaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowCurveAimMatDefSecondaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2458,7 +2656,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_BrowSlide_WeightStack_LR": [
+    "L_innerL_llidsuppermatdefsecondarytrans00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2539,15 +2738,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipTertiary01_GUIDEMain_None": [
+    "R_browLTertiary00_ACV": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "C_upperLipSecondary_CTL": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "C_L_BrowMatDefPrimaryRot_BUF": [
-      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2584,7 +2779,17 @@
     "L_upperLid": [
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveAimMatDefTertiaryRot03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_L_CurveBrowMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowCurveMatDefTertiaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2625,8 +2830,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_upperLipTertiary0101_BUF": [
-      "NO_EXPORT", 
+    "L_lLidsLowerMatDef_MatDefTranslate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2645,6 +2849,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_BrowCurveAimMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_CurveBrowMatDef_MatDefTranslate": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2659,7 +2868,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_outerL_llidslowermatdeftertiaryrot00_BUF": [
+    "C_L_CurveBrowMatDefSecondaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2678,7 +2887,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_middleLidcontroluppermatrixdeformer3MatrixDef_CTL": [
+    "R_upperLipTertiary0101_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2713,6 +2923,11 @@
       "NO_EXPORT"
     ], 
     "L_lLidsLowerSlideWeightStack_LR": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowCurveMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2763,8 +2978,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_R_CurveBrowMatDefTertiaryRot01_BUF": [
-      "NO_EXPORT", 
+    "L_browMatrixDeformer303MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2828,6 +3042,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_lowerLipTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_UpperLipWireReverseCurveDeformerAnimCurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -2870,14 +3089,17 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_BrowCurveAimMatDefTertiaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_R_CurveBrowMatDefSecondaryTrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_L_CurveBrowMatDefSecondaryTrans_BUF": [
-      "NO_EXPORT", 
-      "NO_EXPORT", 
+    "C_upperLipTertiaryROT_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
     "L_BrowMatDef_MatDefRotate": [
@@ -2894,7 +3116,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_browMatrixDeformer300MatrixDef_CTL": [
+    "R_middleLidcontroluppermatrixdeformer2MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2912,7 +3134,15 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browLTertiary00_CTL": [
+    "L_browMatrixDeformer300MatrixDef_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_upperLid": [
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowCurveMatDefTertiaryRot02_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -2939,6 +3169,11 @@
     "R_upperLipCurveTertiaryROT00_BUF_SHPMain_None": [
       "NO_EXPORT"
     ], 
+    "L_C_BrowCurveAimMatDefTertiaryTrans02_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "C_upperLipSecondaryROT_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -2948,7 +3183,21 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_browTertiary0001_BUF": [
+    "R_C_BrowCurveMatDefTertiaryTrans03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_lidControlUpperPrimary_ACV": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowCurveAimMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_C_BrowCurveAimMatDefTertiaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -3004,12 +3253,12 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_L_CurveBrowMatDefTertiaryTrans01_BUF": [
+    "R_outerR_rlidslowermatdeftertiarytrans00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_innerLidcontroluppermatrixdeformer301MatrixDef_CTL": [
+    "upperLipCurveSlide_CurveWeights": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3027,6 +3276,11 @@
       "NO_EXPORT"
     ], 
     "L_outerL_llidsuppermatdefsecondaryrot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_R_CurveBrowMatDefTertiaryRot01_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -3065,6 +3319,13 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "upperLipMatDef_AnimCurveWeight": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_upperLipCurveTertiaryTrans_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
     "R_L_BrowMatDefSecondaryRot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -3101,7 +3362,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_lidControlUpperPrimary_ACV": [
+    "C_L_BrowMatDefPrimaryRot_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3120,7 +3382,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_lowerLipPrimaryTrans_BUF_SHPMain_None": [
+    "L_BrowSlide_CurveWeights": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "R_outerLidcontrollowertertiary0101_BUF": [
@@ -3133,11 +3396,6 @@
       "NO_EXPORT"
     ], 
     "L_outerLidcontroluppermatrixdeformer300MatrixDef_CTL": [
-      "NO_EXPORT", 
-      "NO_EXPORT"
-    ], 
-    "C_lowerLipTertiaryTrans_BUF": [
-      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3178,6 +3436,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "C_C_BrowCurveAimMatDefPrimaryRot_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "L_outerLidcontroluppermatrixdeformer200MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -3205,6 +3468,10 @@
       "NO_EXPORT"
     ], 
     "upperLipCurveRotate_MatrixDef": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_lowerLipMatrixDeformer200MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3246,7 +3513,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_lowerLipSecondary00_CTL": [
+    "upperLipRoll_WeightStack": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3267,6 +3534,9 @@
       "NO_EXPORT"
     ], 
     "C_upperLipTertiaryGimbal_CTL": [
+      "NO_EXPORT"
+    ], 
+    "R_upperLipTertiary01_GUIDEMain_None": [
       "NO_EXPORT"
     ], 
     "C_upperLipPrimary_CTL": [
@@ -3292,6 +3562,11 @@
       "NO_EXPORT"
     ], 
     "L_lLidsUpperMatDef_MatDefTranslate": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_C_BrowCurveMatDefTertiaryRot01_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3324,6 +3599,10 @@
       "NO_EXPORT"
     ], 
     "lowerLipCurveSlide_WeightStack_UD": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_lowerLipSecondary00_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3398,8 +3677,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_outerR_rlidsuppermatdeftertiarytrans01_BUF": [
-      "NO_EXPORT", 
+    "R_middleLidcontroluppermatrixdeformer3MatrixDef_CTL": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3464,6 +3742,10 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_browLTertiary00_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_innerLidcontrollowertertiary0101_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
@@ -3500,6 +3782,11 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
+    "R_C_BrowCurveMatDefTertiaryTrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_upperLipTertiary00_ACV": [
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -3522,7 +3809,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "upperLipCurveSlide_CurveWeights": [
+    "R_C_CurveBrowMatDefSecondaryRot00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3534,11 +3822,20 @@
     "R_upperLidBase": [
       "NO_EXPORT"
     ], 
+    "C_lowerLipPrimaryTrans_BUF_SHPMain_None": [
+      "NO_EXPORT"
+    ], 
+    "R_outerR_rlidsuppermatdeftertiarytrans01_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
     "R_rLidsUpperSlide": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_upperLipTertiaryTrans01_BUF_SHPMain_None": [
+    "C_BrowSlide_WeightStack_LR": [
+      "NO_EXPORT", 
       "NO_EXPORT"
     ], 
     "L_browLMatrixDeformer300MatrixDef_CTL": [
@@ -3546,6 +3843,15 @@
       "NO_EXPORT"
     ], 
     "L_innerLidcontroluppersecondary00_CTL": [
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "R_C_BrowCurveAimMatDefTertiaryRot03_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "C_BrowCurveMatDef_MatDefRotate": [
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3560,7 +3866,12 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_lowerLipTertiaryTrans00_BUF": [
+    "R_C_BrowCurveAimMatDefSecondaryRot00_BUF": [
+      "NO_EXPORT", 
+      "NO_EXPORT", 
+      "NO_EXPORT"
+    ], 
+    "L_outerL_llidslowermatdeftertiaryrot00_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -3588,7 +3899,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "R_CurveBrowSlide_CurveWeights": [
+    "R_C_BrowCurveMatDefTertiaryTrans00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3627,7 +3939,7 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "L_innerL_llidsuppermatdefsecondarytrans00_BUF": [
+    "C_lowerLipTertiaryTrans_BUF": [
       "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
@@ -3669,7 +3981,8 @@
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
-    "C_BrowSlide_WeightStack_LR": [
+    "R_C_BrowCurveMatDefSecondaryTrans00_BUF": [
+      "NO_EXPORT", 
       "NO_EXPORT", 
       "NO_EXPORT"
     ], 
@@ -3860,7 +4173,7 @@
       "translation": [
         4.942554133976785, 
         166.4645629097278, 
-        3.9279256508436973
+        3.92792565084369
       ], 
       "scale": [
         0.642666471476619, 
@@ -3892,9 +4205,9 @@
     }, 
     "L_browGuideShaper00Row00_CTL": {
       "translation": [
-        7.376739677294937, 
+        7.376739677294933, 
         174.0542227887928, 
-        3.9948494232394296
+        3.9948494232394207
       ], 
       "scale": [
         1.0, 
@@ -3928,7 +4241,7 @@
       "translation": [
         2.220830864643114, 
         165.69033870719812, 
-        6.99196612582219
+        6.991966125822183
       ], 
       "scale": [
         0.642666471476619, 
@@ -3979,7 +4292,7 @@
       "translation": [
         5.324146762194137, 
         184.0147739633356, 
-        4.033499512164016
+        4.033499512164007
       ], 
       "scale": [
         1.0, 
@@ -4115,7 +4428,7 @@
       "translation": [
         4.755698040879711, 
         165.69033870719818, 
-        2.076112906544223
+        2.0761129065442177
       ], 
       "scale": [
         0.642666471476619, 
@@ -4200,7 +4513,7 @@
       "translation": [
         4.942554133976785, 
         160.3477251825713, 
-        4.175186932589865
+        4.175186932589859
       ], 
       "scale": [
         0.642666471476619, 
@@ -4234,7 +4547,7 @@
       "translation": [
         2.4088060061136822, 
         178.3316588276322, 
-        11.526026385773537
+        11.526026385773529
       ], 
       "scale": [
         1.0, 
@@ -4404,7 +4717,7 @@
       "translation": [
         0.0, 
         163.20325566423173, 
-        12.679575842994343
+        12.679575842994335
       ], 
       "scale": [
         0.642666471476619, 
@@ -4453,9 +4766,9 @@
     }, 
     "L_browGuideShaper00Row01_CTL": {
       "translation": [
-        7.376739677294934, 
+        7.376739677294929, 
         178.3316588276322, 
-        3.850765017756501
+        3.8507650177564923
       ], 
       "scale": [
         1.0, 
@@ -4472,7 +4785,7 @@
       "translation": [
         2.554640426984527, 
         163.20325566423173, 
-        11.30847848771472
+        11.308478487714712
       ], 
       "scale": [
         0.642666471476619, 
@@ -4556,8 +4869,8 @@
     "L_mouthGuideShaper02Row00_CTL": {
       "translation": [
         2.2208308646431165, 
-        158.96386540101528, 
-        4.936800426449208
+        158.96386540101523, 
+        4.936800426449202
       ], 
       "scale": [
         0.642666471476619, 
@@ -4691,36 +5004,36 @@
     }, 
     "R_corner01_BUF": {
       "translation": [
-        -3.9854406522566608, 
-        164.19530261530355, 
+        -3.985440652256665, 
+        164.19530261530343, 
         6.771202101141181
       ], 
       "scale": [
         0.9999999999999994, 
-        0.9999999999999963, 
-        0.9999999999999996
+        0.9999999999999957, 
+        0.9999999999999991
       ], 
       "rotation": [
-        0.019230120061986385, 
+        0.01923012006198991, 
         -68.58977387415257, 
-        -0.0956080498222843
+        -0.09560804982228682
       ]
     }, 
     "L_cheekMassMatrixDef01_BUF": {
       "translation": [
-        4.8578628362486755, 
-        164.60430420125894, 
-        6.405630789145643
+        4.857862836248676, 
+        164.60430420125883, 
+        6.405630789145646
       ], 
       "scale": [
-        0.9999999999999989, 
-        0.9999999999999983, 
-        0.9999999999999994
+        0.9999999999999988, 
+        0.9999999999999986, 
+        0.9999999999999997
       ], 
       "rotation": [
-        1.9936823635923155, 
-        67.52604248576728, 
-        -0.02955102014319869
+        1.9936823635923273, 
+        67.52604248576732, 
+        -0.029551020143193007
       ]
     }, 
     "R_browGuideShaper00Row00_CTL": {
@@ -4759,19 +5072,19 @@
     }, 
     "R_cornerTwistMatrixDef01_BUF": {
       "translation": [
-        -3.1029808081822394, 
-        164.87042844517816, 
-        7.986231728057615
+        -3.102980808182233, 
+        164.8704284451781, 
+        7.9862317280576125
       ], 
       "scale": [
-        1.0000000000000178, 
+        1.000000000000018, 
         1.0000000000000007, 
         1.0000000000000024
       ], 
       "rotation": [
-        -0.08305946613487036, 
+        -0.08305946613488215, 
         -65.06023442148731, 
-        -0.6465927722972995
+        -0.6465927722972917
       ]
     }, 
     "L_innerLidcontroluppertertiary0001_BUF": {
@@ -4812,7 +5125,7 @@
       "translation": [
         4.942554133976785, 
         162.04950155733368, 
-        4.69002616000471
+        4.690026160004704
       ], 
       "scale": [
         0.642666471476619, 
@@ -4895,13 +5208,13 @@
     }, 
     "L_cornerTwistMatrixDef01_BUF": {
       "translation": [
-        3.1023972206694124, 
-        164.86920623335553, 
-        7.986553258848739
+        3.1023972206694204, 
+        164.86920623335547, 
+        7.986553258848745
       ], 
       "scale": [
-        1.0000000000000009, 
-        0.9999999999999992, 
+        1.0000000000000004, 
+        0.999999999999999, 
         1.000000000000007
       ], 
       "rotation": [
@@ -4940,7 +5253,7 @@
       ], 
       "rotation": [
         0.0, 
-        -4.94152324626724e-06, 
+        0.0, 
         0.0
       ]
     }, 
@@ -4965,7 +5278,7 @@
       "translation": [
         -2.384185834565698e-07, 
         178.3316588276322, 
-        11.109541382474543
+        11.109541382474534
       ], 
       "scale": [
         1.0, 
@@ -5067,7 +5380,7 @@
       "translation": [
         2.2208308646431165, 
         159.72556882392942, 
-        5.286325283113898
+        5.286325283113891
       ], 
       "scale": [
         0.642666471476619, 
@@ -5099,19 +5412,19 @@
     }, 
     "C_mouthMatrixDef01_BUF": {
       "translation": [
-        0.0052623983093200745, 
-        164.75846583465682, 
-        9.483714359829383
+        0.005262398309319297, 
+        164.75846583465687, 
+        9.483714359829408
       ], 
       "scale": [
-        1.0000000000000049, 
-        0.9999999999999996, 
-        1.0000000000000029
+        1.0000000000000047, 
+        0.9999999999999993, 
+        1.000000000000003
       ], 
       "rotation": [
-        3.5555665770570926, 
-        0.2109119240203025, 
-        -0.10334700661279725
+        3.5555665770570988, 
+        0.21091192402030515, 
+        -0.10334700661279693
       ]
     }, 
     "R_lowerLipSecondary0001_BUF": {
@@ -5201,9 +5514,9 @@
     }, 
     "L_browGuideShaper00Row03_CTL": {
       "translation": [
-        7.376739677294937, 
+        7.376739677294933, 
         184.01477396333573, 
-        -1.1526216728091718
+        -1.1526216728091807
       ], 
       "scale": [
         1.0, 
@@ -5305,7 +5618,7 @@
       "translation": [
         2.134203729971994, 
         169.10642266959206, 
-        9.671152380439848
+        9.67115238043984
       ], 
       "scale": [
         0.642666471476619, 
@@ -5424,7 +5737,7 @@
       "translation": [
         4.7556980408797145, 
         162.04950155733374, 
-        1.6100178380003065
+        1.6100178380003012
       ], 
       "scale": [
         0.642666471476619, 
@@ -5526,7 +5839,7 @@
       "translation": [
         -2.384185799038561e-07, 
         184.01477396333573, 
-        6.106154691908872
+        6.106154691908863
       ], 
       "scale": [
         1.0, 
@@ -5592,19 +5905,19 @@
     }, 
     "R_cornerMatrixDef01_BUF": {
       "translation": [
-        -4.010909401800604, 
-        164.22053445462566, 
-        6.721921152955027
+        -4.010909401800605, 
+        164.2205344546256, 
+        6.721921152955026
       ], 
       "scale": [
         0.9999999999999999, 
-        0.9999999999999979, 
-        0.9999999999999991
+        0.9999999999999978, 
+        0.9999999999999986
       ], 
       "rotation": [
-        -0.13308502063048402, 
+        -0.13308502063045713, 
         -66.98798112144068, 
-        -0.08919401355542633
+        -0.08919401355544448
       ]
     }, 
     "R_lowerLipTertiaryROT00_BUF": {
@@ -5678,8 +5991,8 @@
     "L_mouthGuideShaper01Row00_CTL": {
       "translation": [
         4.942554133976785, 
-        158.96386540101534, 
-        3.1009555291756357
+        158.96386540101528, 
+        3.1009555291756286
       ], 
       "scale": [
         0.642666471476619, 
@@ -5764,7 +6077,7 @@
       "translation": [
         0.0, 
         160.3477251825713, 
-        11.01817965053543
+        11.018179650535423
       ], 
       "scale": [
         0.642666471476619, 
@@ -6121,7 +6434,7 @@
       "translation": [
         4.7556980408797145, 
         163.2032556642317, 
-        2.553698079725569
+        2.553698079725562
       ], 
       "scale": [
         0.642666471476619, 
@@ -6146,16 +6459,16 @@
         0.9999999999999997
       ], 
       "rotation": [
-        21.96247261822365, 
-        -4.94152324626724e-06, 
-        -1.8957583197733928e-22
+        0.0, 
+        0.0, 
+        0.0
       ]
     }, 
     "L_mouthGuideShaper02Row02_CTL": {
       "translation": [
         2.2208308646431165, 
         160.34772518257125, 
-        6.011031829863433
+        6.011031829863426
       ], 
       "scale": [
         0.642666471476619, 
@@ -6223,7 +6536,7 @@
       "translation": [
         5.324146762194137, 
         174.05422278879266, 
-        9.180970608212615
+        9.180970608212606
       ], 
       "scale": [
         1.0, 
@@ -6255,19 +6568,19 @@
     }, 
     "R_cheekMassMatrixDef01_BUF": {
       "translation": [
-        -4.858107443986623, 
-        164.60792491750868, 
-        6.406506735466581
+        -4.858107443986628, 
+        164.60792491750874, 
+        6.40650673546658
       ], 
       "scale": [
-        1.0000000000000024, 
-        0.9999999999999993, 
-        1.000000000000001
+        1.0000000000000022, 
+        1.0, 
+        1.0000000000000009
       ], 
       "rotation": [
-        1.9892887434199455, 
-        -67.52619719707286, 
-        0.02898460646070671
+        1.9892887434199436, 
+        -67.52619719707285, 
+        0.028984606460704092
       ]
     }, 
     "C_lowerLipPrimaryTrans_BUF": {
@@ -6306,19 +6619,19 @@
     }, 
     "C_mouth01_BUF": {
       "translation": [
-        0.0005682917219116622, 
-        164.92906755757667, 
-        9.731378191574313
+        0.0005682917219066813, 
+        164.92906755757662, 
+        9.731378191574324
       ], 
       "scale": [
-        1.0000000000000004, 
+        1.0, 
         0.9999999999999974, 
         1.0000000000000029
       ], 
       "rotation": [
-        -0.23245905840974057, 
-        -0.08013911413986963, 
-        -0.2325121008485819
+        -0.2324590584097461, 
+        -0.08013911413987013, 
+        -0.2325121008485826
       ]
     }, 
     "R_upperLipCurveTertiaryROT00_BUF": {
@@ -6578,19 +6891,19 @@
     }, 
     "L_cornerMatrixDef01_BUF": {
       "translation": [
-        4.011230945883906, 
-        164.22058960633507, 
-        6.72091181832796
+        4.011230945883912, 
+        164.22058960633512, 
+        6.720911818327965
       ], 
       "scale": [
-        0.9999999999999989, 
-        0.9999999999999996, 
-        0.9999999999999931
+        0.9999999999999987, 
+        0.9999999999999993, 
+        0.999999999999993
       ], 
       "rotation": [
-        -0.12695212248315105, 
-        66.99205062812824, 
-        0.0954718073397708
+        -0.12695212248316742, 
+        66.99205062812813, 
+        0.09547180733975405
       ]
     }, 
     "L_innerL_llidslowermatdefsecondaryrot00_BUF": {
@@ -6818,7 +7131,7 @@
       "translation": [
         2.408806006113686, 
         184.01477396333573, 
-        6.522639695207867
+        6.522639695207858
       ], 
       "scale": [
         1.0, 
@@ -6920,7 +7233,7 @@
       "translation": [
         -2.2832099641214364e-15, 
         165.69033870719824, 
-        12.201990669813007
+        12.201990669813
       ], 
       "scale": [
         0.642666471476619, 
@@ -6936,8 +7249,8 @@
     "L_mouthGuideShaper00Row00_CTL": {
       "translation": [
         4.7556980408797145, 
-        158.96386540101534, 
-        0.02094720717122911
+        158.96386540101528, 
+        0.02094720717122378
       ], 
       "scale": [
         0.642666471476619, 
@@ -7022,7 +7335,7 @@
       "translation": [
         2.554640426984527, 
         166.4645629097278, 
-        9.39982101350963
+        9.399821013509623
       ], 
       "scale": [
         0.642666471476619, 
@@ -7209,7 +7522,7 @@
       "translation": [
         0.0, 
         166.4645629097278, 
-        10.77091836878927
+        10.770918368789262
       ], 
       "scale": [
         0.642666471476619, 
@@ -7264,7 +7577,7 @@
       ], 
       "scale": [
         1.0, 
-        0.9999999999999973, 
+        0.9999999999999971, 
         1.0
       ], 
       "rotation": [
@@ -7328,7 +7641,7 @@
       "translation": [
         4.942554133976772, 
         165.69033870719818, 
-        5.156121228548616
+        5.15612122854861
       ], 
       "scale": [
         0.642666471476619, 
@@ -7362,7 +7675,7 @@
       "translation": [
         4.7556980408797145, 
         159.72556882392942, 
-        0.37047206383592446
+        0.37047206383591913
       ], 
       "scale": [
         0.642666471476619, 
@@ -7379,7 +7692,7 @@
       "translation": [
         2.2208308646431165, 
         163.20325566423165, 
-        7.46955129900354
+        7.469551299003533
       ], 
       "scale": [
         0.642666471476619, 
@@ -7480,8 +7793,8 @@
     "L_mouthGuideShaper03Row00_CTL": {
       "translation": [
         2.554640426984527, 
-        158.96386540101534, 
-        8.572850891841572
+        158.96386540101528, 
+        8.572850891841565
       ], 
       "scale": [
         0.642666471476619, 
@@ -7498,7 +7811,7 @@
       "translation": [
         4.7556980408797145, 
         161.52637511358293, 
-        1.1717379932221643
+        1.1717379932221572
       ], 
       "scale": [
         0.642666471476619, 
@@ -7513,19 +7826,19 @@
     }, 
     "L_corner01_BUF": {
       "translation": [
-        3.9852414933010465, 
-        164.1949468490808, 
-        6.77106164956705
+        3.9852414933010523, 
+        164.19494684908074, 
+        6.771061649567054
       ], 
       "scale": [
         0.9999999999999978, 
-        0.999999999999997, 
-        0.9999999999999971
+        0.9999999999999977, 
+        0.9999999999999972
       ], 
       "rotation": [
-        0.022429764691275455, 
+        0.0224297646912761, 
         68.59028931645572, 
-        0.09723976842672945
+        0.09723976842672966
       ]
     }, 
     "L_innerL_llidslowermatdeftertiarytrans00_BUF": {
@@ -7634,7 +7947,7 @@
       "translation": [
         2.554640426984527, 
         159.72556882392942, 
-        8.922375748506257
+        8.92237574850625
       ], 
       "scale": [
         0.642666471476619, 
@@ -7813,7 +8126,7 @@
       ], 
       "rotation": [
         0.0, 
-        -4.94152324626724e-06, 
+        0.0, 
         0.0
       ]
     }, 
@@ -7872,7 +8185,7 @@
       "translation": [
         2.2208308646431165, 
         166.4645629097278, 
-        5.763770548117268
+        5.763770548117261
       ], 
       "scale": [
         0.642666471476619, 
@@ -7923,7 +8236,7 @@
       "translation": [
         4.942554133976785, 
         169.10642266959212, 
-        4.199257017773919
+        4.1992570177739115
       ], 
       "scale": [
         0.642666471476619, 
@@ -7991,7 +8304,7 @@
       "translation": [
         2.408806006113686, 
         174.0542227887928, 
-        11.670110791256466
+        11.670110791256457
       ], 
       "scale": [
         1.0, 
@@ -8058,8 +8371,8 @@
     "C_mouthGuideShaperRow00_CTL": {
       "translation": [
         0.0, 
-        158.96386540101534, 
-        9.943948247121195
+        158.96386540101528, 
+        9.943948247121188
       ], 
       "scale": [
         0.642666471476619, 
@@ -8178,7 +8491,7 @@
       "translation": [
         5.324146762194133, 
         178.3316588276321, 
-        9.036886202729686
+        9.036886202729677
       ], 
       "scale": [
         1.0, 
@@ -8193,9 +8506,9 @@
     }, 
     "L_browGuideShaper00Row02_CTL": {
       "translation": [
-        7.376739677294937, 
+        7.376739677294933, 
         180.8925151180008, 
-        3.3602250440134
+        3.360225044013391
       ], 
       "scale": [
         1.0, 
@@ -8297,7 +8610,7 @@
       "translation": [
         2.2208308646431165, 
         161.52637511358293, 
-        6.087591212500146
+        6.087591212500139
       ], 
       "scale": [
         0.642666471476619, 
@@ -8450,7 +8763,7 @@
       "translation": [
         -2.384185799038561e-07, 
         174.0542227887928, 
-        11.253625787957471
+        11.253625787957462
       ], 
       "scale": [
         1.0, 
@@ -8467,7 +8780,7 @@
       "translation": [
         4.7556980408797145, 
         169.10642266959212, 
-        1.1192486957695102
+        1.1192486957695031
       ], 
       "scale": [
         0.642666471476619, 
@@ -8552,7 +8865,7 @@
       "translation": [
         4.942554133976785, 
         159.72556882392942, 
-        3.4504803858403257
+        3.4504803858403195
       ], 
       "scale": [
         0.642666471476619, 
@@ -8841,7 +9154,7 @@
       "translation": [
         2.408806006113686, 
         180.8925151180008, 
-        11.035486412030435
+        11.035486412030426
       ], 
       "scale": [
         1.0, 
@@ -8892,7 +9205,7 @@
       "translation": [
         4.942554133976785, 
         163.20325566423168, 
-        5.633706401729957
+        5.63370640172995
       ], 
       "scale": [
         0.642666471476619, 
@@ -8909,7 +9222,7 @@
       "translation": [
         2.5546404269845238, 
         165.69033870719824, 
-        10.83089331453338
+        10.830893314533373
       ], 
       "scale": [
         0.642666471476619, 
@@ -9079,7 +9392,7 @@
       "translation": [
         2.2208308646431165, 
         169.10642266959206, 
-        6.035101915047489
+        6.035101915047482
       ], 
       "scale": [
         0.642666471476619, 
@@ -9147,7 +9460,7 @@
       "translation": [
         2.554640426984527, 
         161.52637511358293, 
-        9.723641677892505
+        9.723641677892498
       ], 
       "scale": [
         0.642666471476619, 
@@ -9179,9 +9492,9 @@
     }, 
     "C_jawMatrixDef01_BUF": {
       "translation": [
-        0.01710959963305075, 
-        156.92323499867413, 
-        6.6507597488429955
+        -0.07545010815330055, 
+        164.64036532963223, 
+        0.20392663461319938
       ], 
       "scale": [
         0.9999999999999925, 
@@ -9189,8 +9502,8 @@
         0.9999999999999986
       ], 
       "rotation": [
-        -0.8548599688632563, 
-        0.49228902369169897, 
+        -0.8548599688632454, 
+        0.492289023691699, 
         0.27593729370922443
       ]
     }, 
@@ -9236,7 +9549,7 @@
       ], 
       "scale": [
         1.0, 
-        0.9999999999999973, 
+        0.9999999999999971, 
         0.9999999999999994
       ], 
       "rotation": [
@@ -9325,9 +9638,9 @@
         0.9999999999999997
       ], 
       "rotation": [
-        21.96247261822365, 
-        -4.94152324626724e-06, 
-        -1.8957583197733928e-22
+        0.0, 
+        0.0, 
+        0.0
       ]
     }, 
     "R_outerR_rlidslowermatdeftertiarytrans00_BUF": {
@@ -9402,7 +9715,7 @@
       "translation": [
         4.942554133976785, 
         161.52637511358293, 
-        4.251746315226575
+        4.251746315226569
       ], 
       "scale": [
         0.642666471476619, 
@@ -9436,7 +9749,7 @@
       "translation": [
         2.2208308646431165, 
         162.04950155733368, 
-        6.525871057278285
+        6.525871057278278
       ], 
       "scale": [
         0.642666471476619, 
@@ -9470,7 +9783,7 @@
       "translation": [
         2.554640426984527, 
         162.04950155733368, 
-        10.161921522670642
+        10.161921522670635
       ], 
       "scale": [
         0.642666471476619, 
@@ -9504,7 +9817,7 @@
       "translation": [
         -0.007476571683099422, 
         158.06931304093624, 
-        7.430052093484328
+        7.430052093484343
       ], 
       "scale": [
         0.9999999999999925, 
@@ -9512,9 +9825,9 @@
         0.9999999999999987
       ], 
       "rotation": [
-        0.14551601302441594, 
-        -0.2992689690552098, 
-        0.11063942570406293
+        0.1455160130244163, 
+        -0.29926896905520983, 
+        0.11063942570406297
       ]
     }, 
     "L_middleLidcontrollowersecondary01_BUF": {
@@ -9644,7 +9957,7 @@
       ], 
       "scale": [
         0.9999999999999984, 
-        0.999999999999992, 
+        0.9999999999999913, 
         0.9999999999999994
       ], 
       "rotation": [
@@ -9742,7 +10055,7 @@
       "translation": [
         0.0, 
         159.72556882392942, 
-        10.293473103785889
+        10.293473103785884
       ], 
       "scale": [
         0.642666471476619, 
@@ -9861,7 +10174,7 @@
       "translation": [
         2.554640426984527, 
         160.3477251825713, 
-        9.647082295255794
+        9.647082295255787
       ], 
       "scale": [
         0.642666471476619, 
@@ -9895,7 +10208,7 @@
       "translation": [
         4.7556980408797145, 
         160.3477251825713, 
-        1.0951786105854548
+        1.0951786105854495
       ], 
       "scale": [
         0.642666471476619, 
@@ -10303,7 +10616,7 @@
       "translation": [
         5.324146762194137, 
         180.89251511800077, 
-        8.546346228986586
+        8.546346228986577
       ], 
       "scale": [
         1.0, 
@@ -10337,7 +10650,7 @@
       "translation": [
         0.0, 
         169.10642266959212, 
-        11.04224973571949
+        11.042249735719484
       ], 
       "scale": [
         0.642666471476619, 
@@ -10371,7 +10684,7 @@
       "translation": [
         0.0, 
         162.04950155733368, 
-        11.533018877950278
+        11.533018877950271
       ], 
       "scale": [
         0.642666471476619, 
@@ -10490,7 +10803,7 @@
       "translation": [
         4.7556980408797145, 
         166.46456290972782, 
-        0.8479173288392889
+        0.8479173288392818
       ], 
       "scale": [
         0.642666471476619, 
@@ -10677,7 +10990,7 @@
       "translation": [
         -2.384185799038561e-07, 
         180.8925151180008, 
-        10.619001408731442
+        10.619001408731434
       ], 
       "scale": [
         1.0, 
@@ -10694,7 +11007,7 @@
       "translation": [
         0.0, 
         161.52637511358293, 
-        11.094739033172143
+        11.094739033172136
       ], 
       "scale": [
         0.642666471476619, 
@@ -11430,184 +11743,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browMatrixDeformer300MatrixDefGimbal_CTL", 
-          "name": "R_browMatrixDeformer300MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browMatrixDeformer300MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              7.077671781985373e-16, 
               0.0, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
-              7.077671781985373e-16, 
-              0.05193842309129171, 
+              0.0, 
+              0.05193842309127039, 
               0.08995994571527179
             ], 
             [
-              7.077671781985373e-16, 
-              0.08995994571527179, 
+              0.0, 
+              0.08995994571525047, 
               0.05193842309129171
             ], 
             [
-              7.077671781985373e-16, 
-              0.10387684618258342, 
+              0.0, 
+              0.1038768461825621, 
               0.0
             ], 
             [
-              7.077671781985373e-16, 
-              0.08995994571527179, 
+              0.0, 
+              0.08995994571525047, 
               -0.05193842309129171
             ], 
             [
-              7.077671781985373e-16, 
-              0.05193842309129171, 
+              0.0, 
+              0.05193842309127039, 
               -0.08995994571527179
             ], 
             [
-              7.077671781985373e-16, 
               0.0, 
+              -2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
-              7.077671781985373e-16, 
-              -0.05193842309129171, 
+              0.0, 
+              -0.051938423091313024, 
               -0.08995994571527179
             ], 
             [
-              7.077671781985373e-16, 
-              -0.08995994571527179, 
+              0.0, 
+              -0.0899599457152931, 
               -0.05193842309129171
             ], 
             [
-              7.077671781985373e-16, 
-              -0.10387684618258342, 
+              0.0, 
+              -0.10387684618260473, 
               0.0
             ], 
             [
-              7.077671781985373e-16, 
-              -0.08995994571527179, 
+              0.0, 
+              -0.0899599457152931, 
               0.05193842309129171
             ], 
             [
-              7.077671781985373e-16, 
-              -0.05193842309129171, 
+              0.0, 
+              -0.051938423091313024, 
               0.08995994571527179
             ], 
             [
-              7.077671781985373e-16, 
               0.0, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
-              0.07345204507362878, 
-              0.0, 
+              0.07345204507362807, 
+              -2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
-              0.10387684618258412, 
-              0.0, 
+              0.10387684618258342, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
-              0.07345204507362878, 
-              0.0, 
+              0.07345204507362807, 
+              -2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
-              7.077671781985373e-16, 
               0.0, 
+              -2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
-              -0.07345204507362736, 
-              0.0, 
+              -0.07345204507362807, 
+              -2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
-              -0.10387684618258271, 
-              0.0, 
-              0.0
-            ], 
-            [
-              -0.08995994571527108, 
-              0.05193842309129171, 
-              0.0
-            ], 
-            [
-              -0.051938423091291, 
-              0.08995994571527179, 
-              0.0
-            ], 
-            [
-              7.077671781985373e-16, 
-              0.10387684618258342, 
-              0.0
-            ], 
-            [
-              0.051938423091292416, 
-              0.08995994571527179, 
-              0.0
-            ], 
-            [
-              0.0899599457152725, 
-              0.05193842309129171, 
-              0.0
-            ], 
-            [
-              0.10387684618258412, 
-              0.0, 
-              0.0
-            ], 
-            [
-              0.0899599457152725, 
-              -0.05193842309129171, 
-              0.0
-            ], 
-            [
-              0.051938423091292416, 
-              -0.08995994571527179, 
-              0.0
-            ], 
-            [
-              7.077671781985373e-16, 
               -0.10387684618258342, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
-              -0.051938423091291, 
               -0.08995994571527179, 
+              0.05193842309127039, 
               0.0
             ], 
             [
-              -0.08995994571527108, 
               -0.05193842309129171, 
+              0.08995994571525047, 
               0.0
             ], 
             [
-              -0.10387684618258271, 
               0.0, 
+              0.1038768461825621, 
               0.0
             ], 
             [
-              -0.07345204507362736, 
+              0.05193842309129171, 
+              0.08995994571525047, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              0.05193842309127039, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              0.08995994571527179, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              0.05193842309129171, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
               0.0, 
+              -0.10387684618260473, 
+              0.0
+            ], 
+            [
+              -0.05193842309129171, 
+              -0.0899599457152931, 
+              0.0
+            ], 
+            [
+              -0.08995994571527179, 
+              -0.051938423091313024, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              -2.1316282072803006e-14, 
+              0.0
+            ], 
+            [
+              -0.07345204507362807, 
+              -2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
-              7.077671781985373e-16, 
               0.0, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browMatrixDeformer300MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -11652,16 +11965,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browTertiary03Gimbal_CTL", 
-          "name": "L_browTertiary03GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browTertiary03Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -11829,7 +12140,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browTertiary03GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -12540,16 +12853,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browGuideRootGimbal_CTL", 
-          "name": "C_browGuideRootGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browGuideRootGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -12717,7 +13028,9 @@
               2.9679098909309545
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browGuideRootGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -12984,14 +13297,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthMatrixDefGimbal_CTL", 
+          "name": "C_mouthMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -13159,9 +13474,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -14094,14 +14407,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_cornerGimbal_CTL", 
+          "name": "R_cornerGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -14269,9 +14584,7 @@
               0.8903729672792864
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cornerGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -16314,14 +16627,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerMatrixDefGimbal_CTL", 
+          "name": "L_cornerMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -16489,9 +16804,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -17202,14 +17515,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_jawMatrixDefGimbal_CTL", 
+          "name": "C_jawMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_jawMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -17377,9 +17692,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_jawMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -18312,184 +18625,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browMatrixDeformer302MatrixDefGimbal_CTL", 
-          "name": "R_browMatrixDeformer302MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browMatrixDeformer302MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -1.3322676295501878e-15, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
               -1.3322676295501878e-15, 
-              0.051938423091313024, 
+              0.05193842309127039, 
               0.08995994571527179
             ], 
             [
               -1.3322676295501878e-15, 
-              0.0899599457152931, 
+              0.08995994571525047, 
               0.05193842309129171
             ], 
             [
               -1.3322676295501878e-15, 
-              0.10387684618260473, 
+              0.1038768461825621, 
               0.0
             ], 
             [
               -1.3322676295501878e-15, 
-              0.0899599457152931, 
+              0.08995994571525047, 
               -0.05193842309129171
             ], 
             [
               -1.3322676295501878e-15, 
-              0.051938423091313024, 
+              0.05193842309127039, 
               -0.08995994571527179
             ], 
             [
               -1.3322676295501878e-15, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
               -1.3322676295501878e-15, 
-              -0.05193842309127039, 
+              -0.051938423091313024, 
               -0.08995994571527179
             ], 
             [
               -1.3322676295501878e-15, 
-              -0.08995994571525047, 
+              -0.0899599457152931, 
               -0.05193842309129171
             ], 
             [
               -1.3322676295501878e-15, 
-              -0.1038768461825621, 
+              -0.10387684618260473, 
               0.0
             ], 
             [
               -1.3322676295501878e-15, 
-              -0.08995994571525047, 
+              -0.0899599457152931, 
               0.05193842309129171
             ], 
             [
               -1.3322676295501878e-15, 
-              -0.05193842309127039, 
+              -0.051938423091313024, 
               0.08995994571527179
             ], 
             [
               -1.3322676295501878e-15, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
               0.07345204507362674, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
               0.10387684618258208, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
               0.07345204507362674, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
               -1.3322676295501878e-15, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
               -0.0734520450736294, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
               -0.10387684618258475, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
               -0.08995994571527312, 
-              0.051938423091313024, 
+              0.05193842309127039, 
               0.0
             ], 
             [
               -0.05193842309129304, 
-              0.0899599457152931, 
+              0.08995994571525047, 
               0.0
             ], 
             [
               -1.3322676295501878e-15, 
-              0.10387684618260473, 
+              0.1038768461825621, 
               0.0
             ], 
             [
               0.051938423091290375, 
-              0.0899599457152931, 
+              0.08995994571525047, 
               0.0
             ], 
             [
               0.08995994571527045, 
-              0.051938423091313024, 
+              0.05193842309127039, 
               0.0
             ], 
             [
               0.10387684618258208, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
               0.08995994571527045, 
-              -0.05193842309127039, 
+              -0.051938423091313024, 
               0.0
             ], 
             [
               0.051938423091290375, 
-              -0.08995994571525047, 
+              -0.0899599457152931, 
               0.0
             ], 
             [
               -1.3322676295501878e-15, 
-              -0.1038768461825621, 
+              -0.10387684618260473, 
               0.0
             ], 
             [
               -0.05193842309129304, 
-              -0.08995994571525047, 
+              -0.0899599457152931, 
               0.0
             ], 
             [
               -0.08995994571527312, 
-              -0.05193842309127039, 
+              -0.051938423091313024, 
               0.0
             ], 
             [
               -0.10387684618258475, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
               -0.0734520450736294, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
               -1.3322676295501878e-15, 
-              2.1316282072803006e-14, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browMatrixDeformer302MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -20310,79 +20623,77 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browMatrixDeformer3MatrixDefGimbal_CTL", 
-          "name": "C_browMatrixDeformer3MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browMatrixDeformer3MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.0, 
               0.10387684618258342
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.05193842309129171, 
               0.08995994571527179
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.08995994571527179, 
               0.05193842309129171
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.10387684618258342, 
               0.0
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.08995994571527179, 
               -0.05193842309129171
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.05193842309129171, 
               -0.08995994571527179
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.0, 
               -0.10387684618258342
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               -0.05193842309129171, 
               -0.08995994571527179
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               -0.08995994571527179, 
               -0.05193842309129171
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               -0.10387684618258342, 
               0.0
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               -0.08995994571527179, 
               0.05193842309129171
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               -0.05193842309129171, 
               0.08995994571527179
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.0, 
               0.10387684618258342
             ], 
@@ -20402,7 +20713,7 @@
               -0.07345204507362807
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.0, 
               -0.10387684618258342
             ], 
@@ -20427,7 +20738,7 @@
               0.0
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.10387684618258342, 
               0.0
             ], 
@@ -20457,7 +20768,7 @@
               0.0
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               -0.10387684618258342, 
               0.0
             ], 
@@ -20482,12 +20793,14 @@
               0.07345204507362807
             ], 
             [
-              1.5146129380243427e-28, 
+              -9.466330862652142e-30, 
               0.0, 
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browMatrixDeformer3MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -22086,16 +22399,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browTertiaryGimbal_CTL", 
-          "name": "C_browTertiaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browTertiaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -22263,7 +22574,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browTertiaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -22530,14 +22843,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGimbal_CTL", 
+          "name": "C_mouthGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -22705,9 +23020,7 @@
               0.8903729672792864
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -23196,16 +23509,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browSecondary00Gimbal_CTL", 
-          "name": "L_browSecondary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browSecondary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -23373,7 +23684,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browSecondary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -23418,184 +23731,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browMatrixDeformer303MatrixDefGimbal_CTL", 
-          "name": "R_browMatrixDeformer303MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browMatrixDeformer303MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -2.1316282072803006e-14, 
-              0.10387684618258342
+              0.10387684618258874
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               0.05193842309127039, 
-              0.08995994571527179
+              0.08995994571527711
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               0.08995994571525047, 
-              0.05193842309129171
+              0.05193842309129704
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               0.1038768461825621, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               0.08995994571525047, 
-              -0.05193842309129171
+              -0.05193842309128638
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               0.05193842309127039, 
-              -0.08995994571527179
+              -0.08995994571526646
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -2.1316282072803006e-14, 
-              -0.10387684618258342
+              -0.10387684618257809
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -0.051938423091313024, 
-              -0.08995994571527179
+              -0.08995994571526646
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -0.0899599457152931, 
-              -0.05193842309129171
+              -0.05193842309128638
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -0.10387684618260473, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -0.0899599457152931, 
-              0.05193842309129171
+              0.05193842309129704
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -0.051938423091313024, 
-              0.08995994571527179
+              0.08995994571527711
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -2.1316282072803006e-14, 
-              0.10387684618258342
+              0.10387684618258874
             ], 
             [
-              0.0734520450736264, 
+              0.07345204507362757, 
               -2.1316282072803006e-14, 
-              0.07345204507362807
+              0.0734520450736334
             ], 
             [
-              0.10387684618258175, 
+              0.10387684618258292, 
               -2.1316282072803006e-14, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              0.0734520450736264, 
+              0.07345204507362757, 
               -2.1316282072803006e-14, 
-              -0.07345204507362807
+              -0.07345204507362274
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -2.1316282072803006e-14, 
-              -0.10387684618258342
+              -0.10387684618257809
             ], 
             [
-              -0.07345204507362973, 
+              -0.07345204507362857, 
               -2.1316282072803006e-14, 
-              -0.07345204507362807
+              -0.07345204507362274
             ], 
             [
-              -0.10387684618258508, 
+              -0.10387684618258392, 
               -2.1316282072803006e-14, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -0.08995994571527345, 
+              -0.08995994571527229, 
               0.05193842309127039, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -0.05193842309129337, 
+              -0.05193842309129221, 
               0.08995994571525047, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               0.1038768461825621, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              0.05193842309129004, 
+              0.05193842309129121, 
               0.08995994571525047, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              0.08995994571527012, 
+              0.08995994571527129, 
               0.05193842309127039, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              0.10387684618258175, 
+              0.10387684618258292, 
               -2.1316282072803006e-14, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              0.08995994571527012, 
+              0.08995994571527129, 
               -0.051938423091313024, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              0.05193842309129004, 
+              0.05193842309129121, 
               -0.0899599457152931, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -0.10387684618260473, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -0.05193842309129337, 
+              -0.05193842309129221, 
               -0.0899599457152931, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -0.08995994571527345, 
+              -0.08995994571527229, 
               -0.051938423091313024, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -0.10387684618258508, 
+              -0.10387684618258392, 
               -2.1316282072803006e-14, 
-              0.0
+              5.329070518200751e-15
             ], 
             [
-              -0.07345204507362973, 
+              -0.07345204507362857, 
               -2.1316282072803006e-14, 
-              0.07345204507362807
+              0.0734520450736334
             ], 
             [
-              -1.6653345369377348e-15, 
+              -4.996003610813204e-16, 
               -2.1316282072803006e-14, 
-              0.10387684618258342
+              0.10387684618258874
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browMatrixDeformer303MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -24306,16 +24619,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browTertiary02Gimbal_CTL", 
-          "name": "R_browTertiary02GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browTertiary02Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -24483,7 +24794,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browTertiary02GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -24750,14 +25063,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_cheekMassMatrixDefGimbal_CTL", 
+          "name": "R_cheekMassMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cheekMassMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -24925,9 +25240,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cheekMassMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -25638,184 +25951,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browMatrixDeformer200MatrixDefGimbal_CTL", 
-          "name": "L_browMatrixDeformer200MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browMatrixDeformer200MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -3.9968028886505635e-15, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ], 
             [
               -3.9968028886505635e-15, 
-              0.09645707145531997, 
+              0.09645707145519207, 
               0.16706847061407618
             ], 
             [
               -3.9968028886505635e-15, 
-              0.16706847061414012, 
+              0.16706847061401223, 
               0.09645707145525602
             ], 
             [
               -3.9968028886505635e-15, 
-              0.192914142910576, 
+              0.1929141429104481, 
               0.0
             ], 
             [
               -3.9968028886505635e-15, 
-              0.16706847061414012, 
+              0.16706847061401223, 
               -0.09645707145525602
             ], 
             [
               -3.9968028886505635e-15, 
-              0.09645707145531997, 
+              0.09645707145519207, 
               -0.16706847061407618
             ], 
             [
               -3.9968028886505635e-15, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               -0.19291414291051204
             ], 
             [
               -3.9968028886505635e-15, 
-              -0.09645707145519207, 
+              -0.09645707145531997, 
               -0.16706847061407618
             ], 
             [
               -3.9968028886505635e-15, 
-              -0.16706847061401223, 
+              -0.16706847061414012, 
               -0.09645707145525602
             ], 
             [
               -3.9968028886505635e-15, 
-              -0.1929141429104481, 
+              -0.192914142910576, 
               0.0
             ], 
             [
               -3.9968028886505635e-15, 
-              -0.16706847061401223, 
+              -0.16706847061414012, 
               0.09645707145525602
             ], 
             [
               -3.9968028886505635e-15, 
-              -0.09645707145519207, 
+              -0.09645707145531997, 
               0.16706847061407618
             ], 
             [
               -3.9968028886505635e-15, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ], 
             [
               0.13641094085101954, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.13641094085102354
             ], 
             [
               0.19291414291050804, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
               0.13641094085101954, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               -0.13641094085102354
             ], 
             [
               -3.9968028886505635e-15, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               -0.19291414291051204
             ], 
             [
               -0.13641094085102753, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               -0.13641094085102354
             ], 
             [
               -0.19291414291051603, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
               -0.16706847061408017, 
-              0.09645707145531997, 
+              0.09645707145519207, 
               0.0
             ], 
             [
               -0.09645707145526002, 
-              0.16706847061414012, 
+              0.16706847061401223, 
               0.0
             ], 
             [
               -3.9968028886505635e-15, 
-              0.192914142910576, 
+              0.1929141429104481, 
               0.0
             ], 
             [
               0.09645707145525202, 
-              0.16706847061414012, 
+              0.16706847061401223, 
               0.0
             ], 
             [
               0.16706847061407218, 
-              0.09645707145531997, 
+              0.09645707145519207, 
               0.0
             ], 
             [
               0.19291414291050804, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
               0.16706847061407218, 
-              -0.09645707145519207, 
+              -0.09645707145531997, 
               0.0
             ], 
             [
               0.09645707145525202, 
-              -0.16706847061401223, 
+              -0.16706847061414012, 
               0.0
             ], 
             [
               -3.9968028886505635e-15, 
-              -0.1929141429104481, 
+              -0.192914142910576, 
               0.0
             ], 
             [
               -0.09645707145526002, 
-              -0.16706847061401223, 
+              -0.16706847061414012, 
               0.0
             ], 
             [
               -0.16706847061408017, 
-              -0.09645707145519207, 
+              -0.09645707145531997, 
               0.0
             ], 
             [
               -0.19291414291051603, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
               -0.13641094085102753, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.13641094085102354
             ], 
             [
               -3.9968028886505635e-15, 
-              6.394884621840902e-14, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browMatrixDeformer200MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -26526,16 +26839,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browTertiary00Gimbal_CTL", 
-          "name": "R_browTertiary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browTertiary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -26703,7 +27014,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browTertiary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -26748,184 +27061,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browMatrixDeformer302MatrixDefGimbal_CTL", 
-          "name": "L_browMatrixDeformer302MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browMatrixDeformer302MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               -2.3314683517128287e-15, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
               -2.3314683517128287e-15, 
-              0.05193842309129171, 
+              0.051938423091313024, 
               0.08995994571527179
             ], 
             [
               -2.3314683517128287e-15, 
-              0.08995994571527179, 
+              0.0899599457152931, 
               0.05193842309129171
             ], 
             [
               -2.3314683517128287e-15, 
-              0.10387684618258342, 
+              0.10387684618260473, 
               0.0
             ], 
             [
               -2.3314683517128287e-15, 
-              0.08995994571527179, 
+              0.0899599457152931, 
               -0.05193842309129171
             ], 
             [
               -2.3314683517128287e-15, 
-              0.05193842309129171, 
+              0.051938423091313024, 
               -0.08995994571527179
             ], 
             [
               -2.3314683517128287e-15, 
-              0.0, 
+              2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
               -2.3314683517128287e-15, 
-              -0.05193842309129171, 
+              -0.05193842309127039, 
               -0.08995994571527179
             ], 
             [
               -2.3314683517128287e-15, 
-              -0.08995994571527179, 
+              -0.08995994571525047, 
               -0.05193842309129171
             ], 
             [
               -2.3314683517128287e-15, 
-              -0.10387684618258342, 
+              -0.1038768461825621, 
               0.0
             ], 
             [
               -2.3314683517128287e-15, 
-              -0.08995994571527179, 
+              -0.08995994571525047, 
               0.05193842309129171
             ], 
             [
               -2.3314683517128287e-15, 
-              -0.05193842309129171, 
+              -0.05193842309127039, 
               0.08995994571527179
             ], 
             [
               -2.3314683517128287e-15, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
               0.07345204507362574, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
               0.10387684618258108, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.0
             ], 
             [
               0.07345204507362574, 
-              0.0, 
+              2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
               -2.3314683517128287e-15, 
-              0.0, 
+              2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
               -0.0734520450736304, 
-              0.0, 
+              2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
               -0.10387684618258575, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.0
             ], 
             [
               -0.08995994571527412, 
-              0.05193842309129171, 
+              0.051938423091313024, 
               0.0
             ], 
             [
               -0.05193842309129404, 
-              0.08995994571527179, 
+              0.0899599457152931, 
               0.0
             ], 
             [
               -2.3314683517128287e-15, 
-              0.10387684618258342, 
+              0.10387684618260473, 
               0.0
             ], 
             [
               0.051938423091289376, 
-              0.08995994571527179, 
+              0.0899599457152931, 
               0.0
             ], 
             [
               0.08995994571526945, 
-              0.05193842309129171, 
+              0.051938423091313024, 
               0.0
             ], 
             [
               0.10387684618258108, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.0
             ], 
             [
               0.08995994571526945, 
-              -0.05193842309129171, 
+              -0.05193842309127039, 
               0.0
             ], 
             [
               0.051938423091289376, 
-              -0.08995994571527179, 
+              -0.08995994571525047, 
               0.0
             ], 
             [
               -2.3314683517128287e-15, 
-              -0.10387684618258342, 
+              -0.1038768461825621, 
               0.0
             ], 
             [
               -0.05193842309129404, 
-              -0.08995994571527179, 
+              -0.08995994571525047, 
               0.0
             ], 
             [
               -0.08995994571527412, 
-              -0.05193842309129171, 
+              -0.05193842309127039, 
               0.0
             ], 
             [
               -0.10387684618258575, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.0
             ], 
             [
               -0.0734520450736304, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
               -2.3314683517128287e-15, 
-              0.0, 
+              2.1316282072803006e-14, 
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browMatrixDeformer302MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -28302,184 +28615,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browMatrixDeformer200MatrixDefGimbal_CTL", 
-          "name": "R_browMatrixDeformer200MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browMatrixDeformer200MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              2.123301534595612e-15, 
               0.0, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ], 
             [
-              2.123301534595612e-15, 
-              0.09645707145525602, 
+              0.0, 
+              0.09645707145519207, 
               0.16706847061407618
             ], 
             [
-              2.123301534595612e-15, 
-              0.16706847061407618, 
+              0.0, 
+              0.16706847061401223, 
               0.09645707145525602
             ], 
             [
-              2.123301534595612e-15, 
-              0.19291414291051204, 
+              0.0, 
+              0.1929141429104481, 
               0.0
             ], 
             [
-              2.123301534595612e-15, 
-              0.16706847061407618, 
+              0.0, 
+              0.16706847061401223, 
               -0.09645707145525602
             ], 
             [
-              2.123301534595612e-15, 
-              0.09645707145525602, 
+              0.0, 
+              0.09645707145519207, 
               -0.16706847061407618
             ], 
             [
-              2.123301534595612e-15, 
               0.0, 
+              -6.394884621840902e-14, 
               -0.19291414291051204
             ], 
             [
-              2.123301534595612e-15, 
-              -0.09645707145525602, 
+              0.0, 
+              -0.09645707145531997, 
               -0.16706847061407618
             ], 
             [
-              2.123301534595612e-15, 
-              -0.16706847061407618, 
+              0.0, 
+              -0.16706847061414012, 
               -0.09645707145525602
             ], 
             [
-              2.123301534595612e-15, 
-              -0.19291414291051204, 
+              0.0, 
+              -0.192914142910576, 
               0.0
             ], 
             [
-              2.123301534595612e-15, 
-              -0.16706847061407618, 
+              0.0, 
+              -0.16706847061414012, 
               0.09645707145525602
             ], 
             [
-              2.123301534595612e-15, 
-              -0.09645707145525602, 
+              0.0, 
+              -0.09645707145531997, 
               0.16706847061407618
             ], 
             [
-              2.123301534595612e-15, 
               0.0, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ], 
             [
-              0.13641094085102567, 
-              0.0, 
+              0.13641094085102354, 
+              -6.394884621840902e-14, 
               0.13641094085102354
             ], 
             [
-              0.19291414291051417, 
-              0.0, 
+              0.19291414291051204, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
-              0.13641094085102567, 
-              0.0, 
+              0.13641094085102354, 
+              -6.394884621840902e-14, 
               -0.13641094085102354
             ], 
             [
-              2.123301534595612e-15, 
               0.0, 
+              -6.394884621840902e-14, 
               -0.19291414291051204
             ], 
             [
-              -0.1364109408510214, 
-              0.0, 
+              -0.13641094085102354, 
+              -6.394884621840902e-14, 
               -0.13641094085102354
             ], 
             [
-              -0.1929141429105099, 
-              0.0, 
-              0.0
-            ], 
-            [
-              -0.16706847061407404, 
-              0.09645707145525602, 
-              0.0
-            ], 
-            [
-              -0.0964570714552539, 
-              0.16706847061407618, 
-              0.0
-            ], 
-            [
-              2.123301534595612e-15, 
-              0.19291414291051204, 
-              0.0
-            ], 
-            [
-              0.09645707145525814, 
-              0.16706847061407618, 
-              0.0
-            ], 
-            [
-              0.1670684706140783, 
-              0.09645707145525602, 
-              0.0
-            ], 
-            [
-              0.19291414291051417, 
-              0.0, 
-              0.0
-            ], 
-            [
-              0.1670684706140783, 
-              -0.09645707145525602, 
-              0.0
-            ], 
-            [
-              0.09645707145525814, 
-              -0.16706847061407618, 
-              0.0
-            ], 
-            [
-              2.123301534595612e-15, 
               -0.19291414291051204, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
-              -0.0964570714552539, 
               -0.16706847061407618, 
+              0.09645707145519207, 
               0.0
             ], 
             [
-              -0.16706847061407404, 
               -0.09645707145525602, 
+              0.16706847061401223, 
               0.0
             ], 
             [
-              -0.1929141429105099, 
               0.0, 
+              0.1929141429104481, 
               0.0
             ], 
             [
-              -0.1364109408510214, 
+              0.09645707145525602, 
+              0.16706847061401223, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              0.09645707145519207, 
+              0.0
+            ], 
+            [
+              0.19291414291051204, 
+              -6.394884621840902e-14, 
+              0.0
+            ], 
+            [
+              0.16706847061407618, 
+              -0.09645707145531997, 
+              0.0
+            ], 
+            [
+              0.09645707145525602, 
+              -0.16706847061414012, 
+              0.0
+            ], 
+            [
               0.0, 
+              -0.192914142910576, 
+              0.0
+            ], 
+            [
+              -0.09645707145525602, 
+              -0.16706847061414012, 
+              0.0
+            ], 
+            [
+              -0.16706847061407618, 
+              -0.09645707145531997, 
+              0.0
+            ], 
+            [
+              -0.19291414291051204, 
+              -6.394884621840902e-14, 
+              0.0
+            ], 
+            [
+              -0.13641094085102354, 
+              -6.394884621840902e-14, 
               0.13641094085102354
             ], 
             [
-              2.123301534595612e-15, 
               0.0, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browMatrixDeformer200MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -28968,16 +29281,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browTertiary01Gimbal_CTL", 
-          "name": "L_browTertiary01GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browTertiary01Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -29145,7 +29456,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browTertiary01GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -29412,16 +29725,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browTertiary01Gimbal_CTL", 
-          "name": "R_browTertiary01GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browTertiary01Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -29589,7 +29900,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browTertiary01GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -30522,14 +30835,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_jawSecondaryMatrixDefGimbal_CTL", 
+          "name": "C_jawSecondaryMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_jawSecondaryMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -30697,9 +31012,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_jawSecondaryMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -30966,16 +31279,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browTertiary02Gimbal_CTL", 
-          "name": "L_browTertiary02GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browTertiary02Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -31143,7 +31454,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browTertiary02GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -31632,184 +31945,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browMatrixDeformer301MatrixDefGimbal_CTL", 
-          "name": "R_browMatrixDeformer301MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browMatrixDeformer301MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              -3.3306690738754696e-15, 
-              0.0, 
+              -1.3322676295501878e-15, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.05193842309129171, 
+              -1.3322676295501878e-15, 
+              0.05193842309127039, 
               0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.08995994571527179, 
+              -1.3322676295501878e-15, 
+              0.08995994571525047, 
               0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.10387684618258342, 
+              -1.3322676295501878e-15, 
+              0.1038768461825621, 
               0.0
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.08995994571527179, 
+              -1.3322676295501878e-15, 
+              0.08995994571525047, 
               -0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.05193842309129171, 
+              -1.3322676295501878e-15, 
+              0.05193842309127039, 
               -0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.0, 
+              -1.3322676295501878e-15, 
+              -2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
-              -3.3306690738754696e-15, 
-              -0.05193842309129171, 
+              -1.3322676295501878e-15, 
+              -0.051938423091313024, 
               -0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-15, 
-              -0.08995994571527179, 
+              -1.3322676295501878e-15, 
+              -0.0899599457152931, 
               -0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-15, 
-              -0.10387684618258342, 
+              -1.3322676295501878e-15, 
+              -0.10387684618260473, 
               0.0
             ], 
             [
-              -3.3306690738754696e-15, 
-              -0.08995994571527179, 
+              -1.3322676295501878e-15, 
+              -0.0899599457152931, 
               0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-15, 
-              -0.05193842309129171, 
+              -1.3322676295501878e-15, 
+              -0.051938423091313024, 
               0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.0, 
+              -1.3322676295501878e-15, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ], 
             [
-              0.07345204507362474, 
-              0.0, 
+              0.07345204507362674, 
+              -2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
-              0.10387684618258008, 
-              0.0, 
+              0.10387684618258208, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
-              0.07345204507362474, 
-              0.0, 
+              0.07345204507362674, 
+              -2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.0, 
+              -1.3322676295501878e-15, 
+              -2.1316282072803006e-14, 
               -0.10387684618258342
             ], 
             [
-              -0.0734520450736314, 
-              0.0, 
+              -0.0734520450736294, 
+              -2.1316282072803006e-14, 
               -0.07345204507362807
             ], 
             [
-              -0.10387684618258675, 
-              0.0, 
+              -0.10387684618258475, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
-              -0.08995994571527512, 
-              0.05193842309129171, 
+              -0.08995994571527312, 
+              0.05193842309127039, 
               0.0
             ], 
             [
-              -0.05193842309129504, 
-              0.08995994571527179, 
+              -0.05193842309129304, 
+              0.08995994571525047, 
               0.0
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.10387684618258342, 
+              -1.3322676295501878e-15, 
+              0.1038768461825621, 
               0.0
             ], 
             [
-              0.05193842309128838, 
-              0.08995994571527179, 
+              0.051938423091290375, 
+              0.08995994571525047, 
               0.0
             ], 
             [
-              0.08995994571526846, 
-              0.05193842309129171, 
+              0.08995994571527045, 
+              0.05193842309127039, 
               0.0
             ], 
             [
-              0.10387684618258008, 
-              0.0, 
+              0.10387684618258208, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
-              0.08995994571526846, 
-              -0.05193842309129171, 
+              0.08995994571527045, 
+              -0.051938423091313024, 
               0.0
             ], 
             [
-              0.05193842309128838, 
-              -0.08995994571527179, 
+              0.051938423091290375, 
+              -0.0899599457152931, 
               0.0
             ], 
             [
-              -3.3306690738754696e-15, 
-              -0.10387684618258342, 
+              -1.3322676295501878e-15, 
+              -0.10387684618260473, 
               0.0
             ], 
             [
-              -0.05193842309129504, 
-              -0.08995994571527179, 
+              -0.05193842309129304, 
+              -0.0899599457152931, 
               0.0
             ], 
             [
-              -0.08995994571527512, 
-              -0.05193842309129171, 
+              -0.08995994571527312, 
+              -0.051938423091313024, 
               0.0
             ], 
             [
-              -0.10387684618258675, 
-              0.0, 
+              -0.10387684618258475, 
+              -2.1316282072803006e-14, 
               0.0
             ], 
             [
-              -0.0734520450736314, 
-              0.0, 
+              -0.0734520450736294, 
+              -2.1316282072803006e-14, 
               0.07345204507362807
             ], 
             [
-              -3.3306690738754696e-15, 
-              0.0, 
+              -1.3322676295501878e-15, 
+              -2.1316282072803006e-14, 
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browMatrixDeformer301MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -34074,16 +34387,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browSecondary00Gimbal_CTL", 
-          "name": "R_browSecondary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browSecondary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -34251,7 +34562,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browSecondary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -34296,14 +34609,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerTwistMatrixDefGimbal_CTL", 
+          "name": "L_cornerTwistMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerTwistMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -34471,9 +34786,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerTwistMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -34518,184 +34831,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browMatrixDeformer303MatrixDefGimbal_CTL", 
-          "name": "L_browMatrixDeformer303MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browMatrixDeformer303MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.0, 
-              0.10387684618258874
+              0.10387684618258342
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.05193842309129171, 
-              0.08995994571527711
+              0.08995994571527179
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.08995994571527179, 
-              0.05193842309129704
+              0.05193842309129171
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.08995994571527179, 
-              -0.05193842309128638
+              -0.05193842309129171
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.05193842309129171, 
-              -0.08995994571526646
+              -0.08995994571527179
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.0, 
-              -0.10387684618257809
+              -0.10387684618258342
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               -0.05193842309129171, 
-              -0.08995994571526646
+              -0.08995994571527179
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               -0.08995994571527179, 
-              -0.05193842309128638
+              -0.05193842309129171
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               -0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               -0.08995994571527179, 
-              0.05193842309129704
+              0.05193842309129171
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               -0.05193842309129171, 
-              0.08995994571527711
+              0.08995994571527179
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.0, 
-              0.10387684618258874
+              0.10387684618258342
             ], 
             [
-              0.0734520450736269, 
+              0.07345204507362924, 
               0.0, 
-              0.0734520450736334
+              0.07345204507362807
             ], 
             [
-              0.10387684618258225, 
+              0.10387684618258458, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              0.0734520450736269, 
+              0.07345204507362924, 
               0.0, 
-              -0.07345204507362274
+              -0.07345204507362807
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.0, 
-              -0.10387684618257809
+              -0.10387684618258342
             ], 
             [
-              -0.07345204507362924, 
+              -0.0734520450736269, 
               0.0, 
-              -0.07345204507362274
+              -0.07345204507362807
             ], 
             [
-              -0.10387684618258458, 
+              -0.10387684618258225, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -0.08995994571527295, 
+              -0.08995994571527062, 
               0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -0.051938423091292873, 
+              -0.05193842309129054, 
               0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              0.05193842309129054, 
+              0.051938423091292873, 
               0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              0.08995994571527062, 
+              0.08995994571527295, 
               0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              0.10387684618258225, 
+              0.10387684618258458, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              0.08995994571527062, 
+              0.08995994571527295, 
               -0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              0.05193842309129054, 
+              0.051938423091292873, 
               -0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               -0.10387684618258342, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -0.051938423091292873, 
+              -0.05193842309129054, 
               -0.08995994571527179, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -0.08995994571527295, 
+              -0.08995994571527062, 
               -0.05193842309129171, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -0.10387684618258458, 
+              -0.10387684618258225, 
               0.0, 
-              5.329070518200751e-15
+              0.0
             ], 
             [
-              -0.07345204507362924, 
+              -0.0734520450736269, 
               0.0, 
-              0.0734520450736334
+              0.07345204507362807
             ], 
             [
-              -1.1657341758564144e-15, 
+              1.1657341758564144e-15, 
               0.0, 
-              0.10387684618258874
+              0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browMatrixDeformer303MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -36960,14 +37273,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideRootGimbal_CTL", 
+          "name": "C_mouthGuideRootGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideRootGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -37135,9 +37450,7 @@
               2.9679098909309545
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideRootGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -37626,14 +37939,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_cornerTwistMatrixDefGimbal_CTL", 
+          "name": "R_cornerTwistMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerTwistMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -37801,9 +38116,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cornerTwistMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -38292,184 +38605,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browMatrixDeformer301MatrixDefGimbal_CTL", 
-          "name": "L_browMatrixDeformer301MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browMatrixDeformer301MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              -3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              -2.3314683517128287e-15, 
+              0.0, 
               0.10387684618258342
             ], 
             [
-              -3.3306690738754696e-16, 
-              0.05193842309127039, 
+              -2.3314683517128287e-15, 
+              0.05193842309129171, 
               0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-16, 
-              0.08995994571525047, 
+              -2.3314683517128287e-15, 
+              0.08995994571527179, 
               0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-16, 
-              0.1038768461825621, 
+              -2.3314683517128287e-15, 
+              0.10387684618258342, 
               0.0
             ], 
             [
-              -3.3306690738754696e-16, 
-              0.08995994571525047, 
+              -2.3314683517128287e-15, 
+              0.08995994571527179, 
               -0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-16, 
-              0.05193842309127039, 
+              -2.3314683517128287e-15, 
+              0.05193842309129171, 
               -0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              -2.3314683517128287e-15, 
+              0.0, 
               -0.10387684618258342
             ], 
             [
-              -3.3306690738754696e-16, 
-              -0.051938423091313024, 
+              -2.3314683517128287e-15, 
+              -0.05193842309129171, 
               -0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-16, 
-              -0.0899599457152931, 
+              -2.3314683517128287e-15, 
+              -0.08995994571527179, 
               -0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-16, 
-              -0.10387684618260473, 
+              -2.3314683517128287e-15, 
+              -0.10387684618258342, 
               0.0
             ], 
             [
-              -3.3306690738754696e-16, 
-              -0.0899599457152931, 
+              -2.3314683517128287e-15, 
+              -0.08995994571527179, 
               0.05193842309129171
             ], 
             [
-              -3.3306690738754696e-16, 
-              -0.051938423091313024, 
+              -2.3314683517128287e-15, 
+              -0.05193842309129171, 
               0.08995994571527179
             ], 
             [
-              -3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              -2.3314683517128287e-15, 
+              0.0, 
               0.10387684618258342
             ], 
             [
-              0.07345204507362774, 
-              -2.1316282072803006e-14, 
+              0.07345204507362574, 
+              0.0, 
               0.07345204507362807
             ], 
             [
-              0.10387684618258308, 
-              -2.1316282072803006e-14, 
+              0.10387684618258108, 
+              0.0, 
               0.0
             ], 
             [
-              0.07345204507362774, 
-              -2.1316282072803006e-14, 
+              0.07345204507362574, 
+              0.0, 
               -0.07345204507362807
             ], 
             [
-              -3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              -2.3314683517128287e-15, 
+              0.0, 
               -0.10387684618258342
             ], 
             [
-              -0.0734520450736284, 
-              -2.1316282072803006e-14, 
+              -0.0734520450736304, 
+              0.0, 
               -0.07345204507362807
             ], 
             [
-              -0.10387684618258375, 
-              -2.1316282072803006e-14, 
+              -0.10387684618258575, 
+              0.0, 
               0.0
             ], 
             [
-              -0.08995994571527212, 
-              0.05193842309127039, 
+              -0.08995994571527412, 
+              0.05193842309129171, 
               0.0
             ], 
             [
-              -0.05193842309129204, 
-              0.08995994571525047, 
+              -0.05193842309129404, 
+              0.08995994571527179, 
               0.0
             ], 
             [
-              -3.3306690738754696e-16, 
-              0.1038768461825621, 
+              -2.3314683517128287e-15, 
+              0.10387684618258342, 
               0.0
             ], 
             [
-              0.051938423091291375, 
-              0.08995994571525047, 
+              0.051938423091289376, 
+              0.08995994571527179, 
               0.0
             ], 
             [
-              0.08995994571527145, 
-              0.05193842309127039, 
+              0.08995994571526945, 
+              0.05193842309129171, 
               0.0
             ], 
             [
-              0.10387684618258308, 
-              -2.1316282072803006e-14, 
+              0.10387684618258108, 
+              0.0, 
               0.0
             ], 
             [
-              0.08995994571527145, 
-              -0.051938423091313024, 
+              0.08995994571526945, 
+              -0.05193842309129171, 
               0.0
             ], 
             [
-              0.051938423091291375, 
-              -0.0899599457152931, 
+              0.051938423091289376, 
+              -0.08995994571527179, 
               0.0
             ], 
             [
-              -3.3306690738754696e-16, 
-              -0.10387684618260473, 
+              -2.3314683517128287e-15, 
+              -0.10387684618258342, 
               0.0
             ], 
             [
-              -0.05193842309129204, 
-              -0.0899599457152931, 
+              -0.05193842309129404, 
+              -0.08995994571527179, 
               0.0
             ], 
             [
-              -0.08995994571527212, 
-              -0.051938423091313024, 
+              -0.08995994571527412, 
+              -0.05193842309129171, 
               0.0
             ], 
             [
-              -0.10387684618258375, 
-              -2.1316282072803006e-14, 
+              -0.10387684618258575, 
+              0.0, 
               0.0
             ], 
             [
-              -0.0734520450736284, 
-              -2.1316282072803006e-14, 
+              -0.0734520450736304, 
+              0.0, 
               0.07345204507362807
             ], 
             [
-              -3.3306690738754696e-16, 
-              -2.1316282072803006e-14, 
+              -2.3314683517128287e-15, 
+              0.0, 
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browMatrixDeformer301MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -40956,14 +41269,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerGimbal_CTL", 
+          "name": "L_cornerGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -41131,9 +41446,7 @@
               0.8903729672792864
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -41400,184 +41713,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browMatrixDeformer2MatrixDefGimbal_CTL", 
-          "name": "C_browMatrixDeformer2MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browMatrixDeformer2MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              -9.992007221626409e-15, 
-              0.0, 
+              -3.9968028886505635e-15, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ], 
             [
-              -9.992007221626409e-15, 
-              0.09645707145525602, 
+              -3.9968028886505635e-15, 
+              0.09645707145519207, 
               0.16706847061407618
             ], 
             [
-              -9.992007221626409e-15, 
-              0.16706847061407618, 
+              -3.9968028886505635e-15, 
+              0.16706847061401223, 
               0.09645707145525602
             ], 
             [
-              -9.992007221626409e-15, 
-              0.19291414291051204, 
+              -3.9968028886505635e-15, 
+              0.1929141429104481, 
               0.0
             ], 
             [
-              -9.992007221626409e-15, 
-              0.16706847061407618, 
+              -3.9968028886505635e-15, 
+              0.16706847061401223, 
               -0.09645707145525602
             ], 
             [
-              -9.992007221626409e-15, 
-              0.09645707145525602, 
+              -3.9968028886505635e-15, 
+              0.09645707145519207, 
               -0.16706847061407618
             ], 
             [
-              -9.992007221626409e-15, 
-              0.0, 
+              -3.9968028886505635e-15, 
+              -6.394884621840902e-14, 
               -0.19291414291051204
             ], 
             [
-              -9.992007221626409e-15, 
-              -0.09645707145525602, 
+              -3.9968028886505635e-15, 
+              -0.09645707145531997, 
               -0.16706847061407618
             ], 
             [
-              -9.992007221626409e-15, 
-              -0.16706847061407618, 
+              -3.9968028886505635e-15, 
+              -0.16706847061414012, 
               -0.09645707145525602
             ], 
             [
-              -9.992007221626409e-15, 
-              -0.19291414291051204, 
+              -3.9968028886505635e-15, 
+              -0.192914142910576, 
               0.0
             ], 
             [
-              -9.992007221626409e-15, 
-              -0.16706847061407618, 
+              -3.9968028886505635e-15, 
+              -0.16706847061414012, 
               0.09645707145525602
             ], 
             [
-              -9.992007221626409e-15, 
-              -0.09645707145525602, 
+              -3.9968028886505635e-15, 
+              -0.09645707145531997, 
               0.16706847061407618
             ], 
             [
-              -9.992007221626409e-15, 
-              0.0, 
+              -3.9968028886505635e-15, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ], 
             [
-              0.13641094085101355, 
-              0.0, 
+              0.13641094085101954, 
+              -6.394884621840902e-14, 
               0.13641094085102354
             ], 
             [
-              0.19291414291050205, 
-              0.0, 
+              0.19291414291050804, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
-              0.13641094085101355, 
-              0.0, 
+              0.13641094085101954, 
+              -6.394884621840902e-14, 
               -0.13641094085102354
             ], 
             [
-              -9.992007221626409e-15, 
-              0.0, 
+              -3.9968028886505635e-15, 
+              -6.394884621840902e-14, 
               -0.19291414291051204
             ], 
             [
-              -0.13641094085103353, 
-              0.0, 
+              -0.13641094085102753, 
+              -6.394884621840902e-14, 
               -0.13641094085102354
             ], 
             [
-              -0.19291414291052203, 
-              0.0, 
+              -0.19291414291051603, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
-              -0.16706847061408617, 
-              0.09645707145525602, 
+              -0.16706847061408017, 
+              0.09645707145519207, 
               0.0
             ], 
             [
-              -0.09645707145526601, 
-              0.16706847061407618, 
+              -0.09645707145526002, 
+              0.16706847061401223, 
               0.0
             ], 
             [
-              -9.992007221626409e-15, 
-              0.19291414291051204, 
+              -3.9968028886505635e-15, 
+              0.1929141429104481, 
               0.0
             ], 
             [
-              0.09645707145524603, 
-              0.16706847061407618, 
+              0.09645707145525202, 
+              0.16706847061401223, 
               0.0
             ], 
             [
-              0.16706847061406618, 
-              0.09645707145525602, 
+              0.16706847061407218, 
+              0.09645707145519207, 
               0.0
             ], 
             [
-              0.19291414291050205, 
-              0.0, 
+              0.19291414291050804, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
-              0.16706847061406618, 
-              -0.09645707145525602, 
+              0.16706847061407218, 
+              -0.09645707145531997, 
               0.0
             ], 
             [
-              0.09645707145524603, 
-              -0.16706847061407618, 
+              0.09645707145525202, 
+              -0.16706847061414012, 
               0.0
             ], 
             [
-              -9.992007221626409e-15, 
-              -0.19291414291051204, 
+              -3.9968028886505635e-15, 
+              -0.192914142910576, 
               0.0
             ], 
             [
-              -0.09645707145526601, 
-              -0.16706847061407618, 
+              -0.09645707145526002, 
+              -0.16706847061414012, 
               0.0
             ], 
             [
-              -0.16706847061408617, 
-              -0.09645707145525602, 
+              -0.16706847061408017, 
+              -0.09645707145531997, 
               0.0
             ], 
             [
-              -0.19291414291052203, 
-              0.0, 
+              -0.19291414291051603, 
+              -6.394884621840902e-14, 
               0.0
             ], 
             [
-              -0.13641094085103353, 
-              0.0, 
+              -0.13641094085102753, 
+              -6.394884621840902e-14, 
               0.13641094085102354
             ], 
             [
-              -9.992007221626409e-15, 
-              0.0, 
+              -3.9968028886505635e-15, 
+              -6.394884621840902e-14, 
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browMatrixDeformer2MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -42954,14 +43267,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_cornerMatrixDefGimbal_CTL", 
+          "name": "R_cornerMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -43129,9 +43444,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cornerMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -44064,14 +44377,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cheekMassMatrixDefGimbal_CTL", 
+          "name": "L_cheekMassMatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cheekMassMatrixDefGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -44239,9 +44554,7 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cheekMassMatrixDefGimbalMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -45396,16 +45709,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browPrimaryGimbal_CTL", 
-          "name": "C_browPrimaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browPrimaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -45573,7 +45884,9 @@
               0.2967909890930954
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browPrimaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -46284,184 +46597,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browMatrixDeformer1MatrixDefGimbal_CTL", 
-          "name": "C_browMatrixDeformer1MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browMatrixDeformer1MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              2.3592239273284576e-15, 
               0.0, 
+              -7.105427357601002e-14, 
               0.20775369236516683
             ], 
             [
-              2.3592239273284576e-15, 
-              0.10387684618258342, 
+              0.0, 
+              0.10387684618251236, 
               0.17991989143054357
             ], 
             [
-              2.3592239273284576e-15, 
-              0.17991989143054357, 
+              0.0, 
+              0.17991989143047252, 
               0.10387684618258342
             ], 
             [
-              2.3592239273284576e-15, 
-              0.20775369236516683, 
+              0.0, 
+              0.20775369236509578, 
               0.0
             ], 
             [
-              2.3592239273284576e-15, 
-              0.17991989143054357, 
+              0.0, 
+              0.17991989143047252, 
               -0.10387684618258342
             ], 
             [
-              2.3592239273284576e-15, 
-              0.10387684618258342, 
+              0.0, 
+              0.10387684618251236, 
               -0.17991989143054357
             ], 
             [
-              2.3592239273284576e-15, 
               0.0, 
+              -7.105427357601002e-14, 
               -0.20775369236516683
             ], 
             [
-              2.3592239273284576e-15, 
-              -0.10387684618258342, 
+              0.0, 
+              -0.10387684618265447, 
               -0.17991989143054357
             ], 
             [
-              2.3592239273284576e-15, 
-              -0.17991989143054357, 
+              0.0, 
+              -0.17991989143061463, 
               -0.10387684618258342
             ], 
             [
-              2.3592239273284576e-15, 
-              -0.20775369236516683, 
+              0.0, 
+              -0.20775369236523789, 
               0.0
             ], 
             [
-              2.3592239273284576e-15, 
-              -0.17991989143054357, 
+              0.0, 
+              -0.17991989143061463, 
               0.10387684618258342
             ], 
             [
-              2.3592239273284576e-15, 
-              -0.10387684618258342, 
+              0.0, 
+              -0.10387684618265447, 
               0.17991989143054357
             ], 
             [
-              2.3592239273284576e-15, 
               0.0, 
+              -7.105427357601002e-14, 
               0.20775369236516683
             ], 
             [
-              0.1469040901472585, 
-              0.0, 
+              0.14690409014725614, 
+              -7.105427357601002e-14, 
               0.14690409014725614
             ], 
             [
-              0.2077536923651692, 
-              0.0, 
+              0.20775369236516683, 
+              -7.105427357601002e-14, 
               0.0
             ], 
             [
-              0.1469040901472585, 
-              0.0, 
+              0.14690409014725614, 
+              -7.105427357601002e-14, 
               -0.14690409014725614
             ], 
             [
-              2.3592239273284576e-15, 
               0.0, 
+              -7.105427357601002e-14, 
               -0.20775369236516683
             ], 
             [
-              -0.14690409014725378, 
-              0.0, 
+              -0.14690409014725614, 
+              -7.105427357601002e-14, 
               -0.14690409014725614
             ], 
             [
-              -0.20775369236516447, 
-              0.0, 
-              0.0
-            ], 
-            [
-              -0.1799198914305412, 
-              0.10387684618258342, 
-              0.0
-            ], 
-            [
-              -0.10387684618258106, 
-              0.17991989143054357, 
-              0.0
-            ], 
-            [
-              2.3592239273284576e-15, 
-              0.20775369236516683, 
-              0.0
-            ], 
-            [
-              0.10387684618258577, 
-              0.17991989143054357, 
-              0.0
-            ], 
-            [
-              0.17991989143054593, 
-              0.10387684618258342, 
-              0.0
-            ], 
-            [
-              0.2077536923651692, 
-              0.0, 
-              0.0
-            ], 
-            [
-              0.17991989143054593, 
-              -0.10387684618258342, 
-              0.0
-            ], 
-            [
-              0.10387684618258577, 
-              -0.17991989143054357, 
-              0.0
-            ], 
-            [
-              2.3592239273284576e-15, 
               -0.20775369236516683, 
+              -7.105427357601002e-14, 
               0.0
             ], 
             [
-              -0.10387684618258106, 
               -0.17991989143054357, 
+              0.10387684618251236, 
               0.0
             ], 
             [
-              -0.1799198914305412, 
               -0.10387684618258342, 
+              0.17991989143047252, 
               0.0
             ], 
             [
-              -0.20775369236516447, 
               0.0, 
+              0.20775369236509578, 
               0.0
             ], 
             [
-              -0.14690409014725378, 
+              0.10387684618258342, 
+              0.17991989143047252, 
+              0.0
+            ], 
+            [
+              0.17991989143054357, 
+              0.10387684618251236, 
+              0.0
+            ], 
+            [
+              0.20775369236516683, 
+              -7.105427357601002e-14, 
+              0.0
+            ], 
+            [
+              0.17991989143054357, 
+              -0.10387684618265447, 
+              0.0
+            ], 
+            [
+              0.10387684618258342, 
+              -0.17991989143061463, 
+              0.0
+            ], 
+            [
               0.0, 
+              -0.20775369236523789, 
+              0.0
+            ], 
+            [
+              -0.10387684618258342, 
+              -0.17991989143061463, 
+              0.0
+            ], 
+            [
+              -0.17991989143054357, 
+              -0.10387684618265447, 
+              0.0
+            ], 
+            [
+              -0.20775369236516683, 
+              -7.105427357601002e-14, 
+              0.0
+            ], 
+            [
+              -0.14690409014725614, 
+              -7.105427357601002e-14, 
               0.14690409014725614
             ], 
             [
-              2.3592239273284576e-15, 
               0.0, 
+              -7.105427357601002e-14, 
               0.20775369236516683
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browMatrixDeformer1MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -46506,16 +46819,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browTertiary03Gimbal_CTL", 
-          "name": "R_browTertiary03GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browTertiary03Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -46683,7 +46994,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browTertiary03GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -46728,184 +47041,184 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browMatrixDeformer300MatrixDefGimbal_CTL", 
-          "name": "L_browMatrixDeformer300MatrixDefGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browMatrixDeformer300MatrixDefGimbal_CTL", 
           "controlVertices": [
             [
-              -1.457167719820518e-15, 
-              2.1316282072803006e-14, 
-              0.10387684618257809
+              8.743006318923108e-16, 
+              0.0, 
+              0.10387684618258342
             ], 
             [
-              -1.457167719820518e-15, 
-              0.051938423091313024, 
-              0.08995994571526646
+              8.743006318923108e-16, 
+              0.05193842309129171, 
+              0.08995994571527179
             ], 
             [
-              -1.457167719820518e-15, 
-              0.0899599457152931, 
-              0.05193842309128638
+              8.743006318923108e-16, 
+              0.08995994571527179, 
+              0.05193842309129171
             ], 
             [
-              -1.457167719820518e-15, 
-              0.10387684618260473, 
-              -5.329070518200751e-15
+              8.743006318923108e-16, 
+              0.10387684618258342, 
+              0.0
             ], 
             [
-              -1.457167719820518e-15, 
-              0.0899599457152931, 
-              -0.05193842309129704
+              8.743006318923108e-16, 
+              0.08995994571527179, 
+              -0.05193842309129171
             ], 
             [
-              -1.457167719820518e-15, 
-              0.051938423091313024, 
-              -0.08995994571527711
+              8.743006318923108e-16, 
+              0.05193842309129171, 
+              -0.08995994571527179
             ], 
             [
-              -1.457167719820518e-15, 
-              2.1316282072803006e-14, 
-              -0.10387684618258874
+              8.743006318923108e-16, 
+              0.0, 
+              -0.10387684618258342
             ], 
             [
-              -1.457167719820518e-15, 
-              -0.05193842309127039, 
-              -0.08995994571527711
+              8.743006318923108e-16, 
+              -0.05193842309129171, 
+              -0.08995994571527179
             ], 
             [
-              -1.457167719820518e-15, 
-              -0.08995994571525047, 
-              -0.05193842309129704
+              8.743006318923108e-16, 
+              -0.08995994571527179, 
+              -0.05193842309129171
             ], 
             [
-              -1.457167719820518e-15, 
-              -0.1038768461825621, 
-              -5.329070518200751e-15
+              8.743006318923108e-16, 
+              -0.10387684618258342, 
+              0.0
             ], 
             [
-              -1.457167719820518e-15, 
-              -0.08995994571525047, 
-              0.05193842309128638
+              8.743006318923108e-16, 
+              -0.08995994571527179, 
+              0.05193842309129171
             ], 
             [
-              -1.457167719820518e-15, 
-              -0.05193842309127039, 
-              0.08995994571526646
+              8.743006318923108e-16, 
+              -0.05193842309129171, 
+              0.08995994571527179
             ], 
             [
-              -1.457167719820518e-15, 
-              2.1316282072803006e-14, 
-              0.10387684618257809
+              8.743006318923108e-16, 
+              0.0, 
+              0.10387684618258342
             ], 
             [
-              0.07345204507362661, 
-              2.1316282072803006e-14, 
-              0.07345204507362274
+              0.07345204507362894, 
+              0.0, 
+              0.07345204507362807
             ], 
             [
-              0.10387684618258196, 
-              2.1316282072803006e-14, 
-              -5.329070518200751e-15
+              0.10387684618258429, 
+              0.0, 
+              0.0
             ], 
             [
-              0.07345204507362661, 
-              2.1316282072803006e-14, 
-              -0.0734520450736334
+              0.07345204507362894, 
+              0.0, 
+              -0.07345204507362807
             ], 
             [
-              -1.457167719820518e-15, 
-              2.1316282072803006e-14, 
-              -0.10387684618258874
+              8.743006318923108e-16, 
+              0.0, 
+              -0.10387684618258342
             ], 
             [
-              -0.07345204507362953, 
-              2.1316282072803006e-14, 
-              -0.0734520450736334
+              -0.0734520450736272, 
+              0.0, 
+              -0.07345204507362807
             ], 
             [
-              -0.10387684618258487, 
-              2.1316282072803006e-14, 
-              -5.329070518200751e-15
+              -0.10387684618258254, 
+              0.0, 
+              0.0
             ], 
             [
-              -0.08995994571527324, 
-              0.051938423091313024, 
-              -5.329070518200751e-15
+              -0.08995994571527091, 
+              0.05193842309129171, 
+              0.0
             ], 
             [
-              -0.051938423091293165, 
-              0.0899599457152931, 
-              -5.329070518200751e-15
+              -0.05193842309129083, 
+              0.08995994571527179, 
+              0.0
             ], 
             [
-              -1.457167719820518e-15, 
-              0.10387684618260473, 
-              -5.329070518200751e-15
+              8.743006318923108e-16, 
+              0.10387684618258342, 
+              0.0
             ], 
             [
-              0.05193842309129025, 
-              0.0899599457152931, 
-              -5.329070518200751e-15
+              0.05193842309129258, 
+              0.08995994571527179, 
+              0.0
             ], 
             [
-              0.08995994571527033, 
-              0.051938423091313024, 
-              -5.329070518200751e-15
+              0.08995994571527266, 
+              0.05193842309129171, 
+              0.0
             ], 
             [
-              0.10387684618258196, 
-              2.1316282072803006e-14, 
-              -5.329070518200751e-15
+              0.10387684618258429, 
+              0.0, 
+              0.0
             ], 
             [
-              0.08995994571527033, 
-              -0.05193842309127039, 
-              -5.329070518200751e-15
+              0.08995994571527266, 
+              -0.05193842309129171, 
+              0.0
             ], 
             [
-              0.05193842309129025, 
-              -0.08995994571525047, 
-              -5.329070518200751e-15
+              0.05193842309129258, 
+              -0.08995994571527179, 
+              0.0
             ], 
             [
-              -1.457167719820518e-15, 
-              -0.1038768461825621, 
-              -5.329070518200751e-15
+              8.743006318923108e-16, 
+              -0.10387684618258342, 
+              0.0
             ], 
             [
-              -0.051938423091293165, 
-              -0.08995994571525047, 
-              -5.329070518200751e-15
+              -0.05193842309129083, 
+              -0.08995994571527179, 
+              0.0
             ], 
             [
-              -0.08995994571527324, 
-              -0.05193842309127039, 
-              -5.329070518200751e-15
+              -0.08995994571527091, 
+              -0.05193842309129171, 
+              0.0
             ], 
             [
-              -0.10387684618258487, 
-              2.1316282072803006e-14, 
-              -5.329070518200751e-15
+              -0.10387684618258254, 
+              0.0, 
+              0.0
             ], 
             [
-              -0.07345204507362953, 
-              2.1316282072803006e-14, 
-              0.07345204507362274
+              -0.0734520450736272, 
+              0.0, 
+              0.07345204507362807
             ], 
             [
-              -1.457167719820518e-15, 
-              2.1316282072803006e-14, 
-              0.10387684618257809
+              8.743006318923108e-16, 
+              0.0, 
+              0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browMatrixDeformer300MatrixDefGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -47172,16 +47485,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browSecondaryGimbal_CTL", 
-          "name": "C_browSecondaryGimbalMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browSecondaryGimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -47349,7 +47660,9 @@
               0.19291414291051204
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browSecondaryGimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -48726,16 +49039,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 19, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browTertiary00Gimbal_CTL", 
-          "name": "L_browTertiary00GimbalMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browTertiary00Gimbal_CTL", 
           "controlVertices": [
             [
               0.0, 
@@ -48903,7 +49214,9 @@
               0.10387684618258342
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browTertiary00GimbalMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -52615,148 +52928,148 @@
     "C_unibrow_CRVBASEShape": [
       [
         0.0, 
-        0.657573661162786, 
-        1.2647926564007062
+        -0.27470530571778795, 
+        1.2763464148638315
       ], 
       [
         0.0, 
-        0.5076349561065285, 
-        1.206565445562262
+        -0.42464401077404546, 
+        1.1978059620460106
       ], 
       [
         0.0, 
-        0.22279683717772514, 
-        1.0735244631311813
+        -0.7094821297028489, 
+        1.0178399715513349
       ], 
       [
         0.0, 
-        -0.14521159004215178, 
-        0.8251228233405863
+        -0.9986800459354868, 
+        0.6834086969475575
       ], 
       [
         0.0, 
-        -0.4204777216291973, 
-        0.5122468527425292
+        -1.0495133239719223, 
+        0.3201172459136359
       ], 
       [
         0.0, 
-        -0.5338023134177661, 
-        0.1935186313207895
+        -0.9861310807840766, 
+        0.025301729117845895
       ], 
       [
         0.0, 
-        -0.5882566596835659, 
-        -0.0762909335144375
+        -0.9128608650813703, 
+        -0.20798135156795716
       ], 
       [
         0.0, 
-        -0.6088389558393317, 
-        -0.297237373532365
+        -0.9058408710686194, 
+        -0.4479393536046299
       ], 
       [
         0.0, 
-        -0.6234240402422984, 
-        -0.4729596403959082
+        -0.9190472730325894, 
+        -0.7002585748025485
       ], 
       [
         0.0, 
-        -0.6294380744684531, 
-        -0.6079834513763558
+        -0.9250613072587441, 
+        -0.9062219803273255
       ], 
       [
         0.0, 
-        -0.6287651755340562, 
-        -0.7113414268421625
+        -0.9243884083243472, 
+        -1.0667527904452303
       ], 
       [
         0.0, 
-        -0.6338371512520666, 
-        -0.7876591639651505
+        -0.9294603840423576, 
+        -1.1871078853757187
       ], 
       [
         0.0, 
-        -0.6371511785039274, 
-        -0.8342922250229066
+        -0.9327744112942185, 
+        -1.263271113512733
       ], 
       [
         0.0, 
-        -0.6479680288743168, 
-        -0.8587679538740751
+        -0.9435912616646078, 
+        -1.304606377453938
       ], 
       [
         0.0, 
-        -0.657573661162786, 
-        -0.8669755049006866
+        -0.953196893953077, 
+        -1.3184909166295302
       ], 
       [
         0.0, 
-        -0.6479680288743168, 
-        -0.8587679538740751
+        -0.9435912616646078, 
+        -1.3046046908929014
       ], 
       [
         0.0, 
-        -0.6371511785039274, 
-        -0.8342922250229066
+        -0.9327744112942185, 
+        -1.2632719422621026
       ], 
       [
         0.0, 
-        -0.6338371512520666, 
-        -0.7876591639651505
+        -0.9294603840423576, 
+        -1.1871078853757187
       ], 
       [
         0.0, 
-        -0.6287651755340562, 
-        -0.7113414268421625
+        -0.9243884083243472, 
+        -1.0667529277478724
       ], 
       [
         0.0, 
-        -0.6294380744684531, 
-        -0.6079834513763558
+        -0.9250613072587441, 
+        -0.9062207418741348
       ], 
       [
         0.0, 
-        -0.6234240402422984, 
-        -0.4729596403959082
+        -0.9190472730325894, 
+        -0.700258311246051
       ], 
       [
         0.0, 
-        -0.6088389558393317, 
-        -0.2972368668869265
+        -0.9058408710686194, 
+        -0.44793873220784164
       ], 
       [
         0.0, 
-        -0.5882566596835659, 
-        -0.07629089145775403
+        -0.9128608279774539, 
+        -0.20798233190991855
       ], 
       [
         0.0, 
-        -0.5338023134177661, 
-        0.1935186313207895
+        -0.9861308810417881, 
+        0.02530265166289869
       ], 
       [
         0.0, 
-        -0.4204777216291973, 
-        0.5122470482373123
+        -1.049513227100789, 
+        0.3201165703655411
       ], 
       [
         0.0, 
-        -0.14521159004215178, 
-        0.8251229767786867
+        -0.9986800857461162, 
+        0.6834085347023633
       ], 
       [
         0.0, 
-        0.22279683717772514, 
-        1.0735246375976208
+        -0.7094821297028489, 
+        1.0178401084221225
       ], 
       [
         0.0, 
-        0.5076349561065285, 
-        1.2065665544633006
+        -0.42464401077404546, 
+        1.1978074992640417
       ], 
       [
         0.0, 
-        0.657573661162786, 
-        1.2647926564007062
+        -0.27470530571778795, 
+        1.2763467147248742
       ], 
       [
         0.0, 
@@ -54879,88 +55192,88 @@
     "R_brow_CRVShape": [
       [
         0.0, 
-        -0.6432325026235333, 
-        -0.8504601339226348
+        -0.9388557354138243, 
+        -1.2905367885240082
       ], 
       [
         0.0, 
-        -0.6408521226431105, 
-        -0.8432209563492812
+        -0.9364753554334015, 
+        -1.2783997393031008
       ], 
       [
         0.0, 
-        -0.6367642616166904, 
-        -0.824470812639106
+        -0.9323874944069814, 
+        -1.2471772552109677
       ], 
       [
         0.0, 
-        -0.6325586432766954, 
-        -0.7822784827164213
+        -0.9281818760669864, 
+        -1.1786828909035894
       ], 
       [
         0.0, 
-        -0.6302455531896953, 
-        -0.7200047665585902
+        -0.9258687859799863, 
+        -1.0802872581174707
       ], 
       [
         0.0, 
-        -0.6285969508004996, 
-        -0.6380897035127973
+        -0.9242201835907906, 
+        -0.9528753447900282
       ], 
       [
         0.0, 
-        -0.6263763843169272, 
-        -0.5367385844232295
+        -0.9219996171072182, 
+        -0.7971103018538326
       ], 
       [
         0.0, 
-        -0.6197987972332726, 
-        -0.41046061667383604
+        -0.9154220300235636, 
+        -0.6064437430138572
       ], 
       [
         0.0, 
-        -0.6048688521264012, 
-        -0.253800696181532
+        -0.901568812411, 
+        -0.3820605431975661
       ], 
       [
         0.0, 
-        -0.5804930882280246, 
-        -0.06562727320686523
+        -0.8977816368888512, 
+        -0.1673089145938258
       ], 
       [
         0.0, 
-        -0.5471593572654854, 
-        0.15395627840244241
+        -0.9581946007725435, 
+        0.033155226258672954
       ], 
       [
         0.0, 
-        -0.46296287809940395, 
-        0.40882791567555543
+        -1.0160296780076692, 
+        0.25383663064119144
       ], 
       [
         0.0, 
-        -0.28177642877733433, 
-        0.6742327720529371
+        -0.9959505460308549, 
+        0.515575110030575
       ], 
       [
         0.0, 
-        -0.025023429122768448, 
-        0.916132806259597
+        -0.9069407387393937, 
+        0.8062618754200361
       ], 
       [
         0.0, 
-        0.29447739616398394, 
-        1.112519324766069
+        -0.63780157071659, 
+        1.0708507545060515
       ], 
       [
         0.0, 
-        0.5330537133532403, 
-        1.2164381969196736
+        -0.39922525352733373, 
+        1.2111386922630842
       ], 
       [
         0.0, 
-        0.657573661162786, 
-        1.2647921497552685
+        -0.27470530571778795, 
+        1.2763449215706535
       ], 
       [
         0.0, 
@@ -55333,88 +55646,88 @@
     "R_brow_CRVBASEShape": [
       [
         0.0, 
-        -0.6432325026235333, 
-        -0.8504601339226365
+        -0.9388557354138243, 
+        -1.29053678852401
       ], 
       [
         0.0, 
-        -0.6408521226431105, 
-        -0.8432209563492847
+        -0.9364753554334015, 
+        -1.2783997393031044
       ], 
       [
         0.0, 
-        -0.6367642616166904, 
-        -0.8244708126391114
+        -0.9323874944069814, 
+        -1.247177255210973
       ], 
       [
         0.0, 
-        -0.6325586432766954, 
-        -0.7822784827164266
+        -0.9281818760669864, 
+        -1.1786828909035947
       ], 
       [
         0.0, 
-        -0.6302455531897522, 
-        -0.720004766558592
+        -0.9258687859800432, 
+        -1.0802872581174725
       ], 
       [
         0.0, 
-        -0.6285969508004712, 
-        -0.638089703512799
+        -0.9242201835907622, 
+        -0.95287534479003
       ], 
       [
         0.0, 
-        -0.6263763843169841, 
-        -0.5367385844232277
+        -0.9219996171072751, 
+        -0.7971103018538308
       ], 
       [
         0.0, 
-        -0.6197987972332726, 
-        -0.4104606166738325
+        -0.9154220300235636, 
+        -0.6064437430138536
       ], 
       [
         0.0, 
-        -0.6048688521264012, 
-        -0.2538006961815302
+        -0.901568812411, 
+        -0.38206054319756433
       ], 
       [
         0.0, 
-        -0.5804930882280246, 
-        -0.06562727320685902
+        -0.8977816368888512, 
+        -0.16730891459381958
       ], 
       [
         0.0, 
-        -0.5471593572654854, 
-        0.1539562784024442
+        -0.9581946007725435, 
+        0.03315522625867473
       ], 
       [
         0.0, 
-        -0.4629628780994608, 
-        0.40882791567555365
+        -1.016029678007726, 
+        0.25383663064118966
       ], 
       [
         0.0, 
-        -0.28177642877733433, 
-        0.6742327720529389
+        -0.9959505460308549, 
+        0.5155751100305768
       ], 
       [
         0.0, 
-        -0.025023429122768448, 
-        0.9161328062595979
+        -0.9069407387393937, 
+        0.806261875420037
       ], 
       [
         0.0, 
-        0.29447739616398394, 
-        1.112519324766068
+        -0.63780157071659, 
+        1.0708507545060506
       ], 
       [
         0.0, 
-        0.5330537133532403, 
-        1.2164381969196736
+        -0.39922525352733373, 
+        1.2111386922630842
       ], 
       [
         0.0, 
-        0.657573661162786, 
-        1.2647921497552685
+        -0.27470530571778795, 
+        1.2763449215706535
       ], 
       [
         0.0, 
@@ -56609,6 +56922,7 @@
     "R_upperLid_CRVBASEShapeOrig": null, 
     "R_upperLid_CRVShapeOrig": null, 
     "upperLip_RollDefRollCurveShapeOrig": null, 
+    "C_unibrowAim_CRVBASEShapeOrig": null, 
     "C_upLipSimplePkg_PRJShape": [
       [
         0.0, 
@@ -57074,148 +57388,148 @@
     "C_unibrow_CRVShape": [
       [
         0.0, 
-        0.657573661162786, 
-        1.2647926564007062
+        -0.27470530571778795, 
+        1.2763464148638315
       ], 
       [
         0.0, 
-        0.5076349561065285, 
-        1.206565445562262
+        -0.42464401077404546, 
+        1.1978059620460106
       ], 
       [
         0.0, 
-        0.22279683717772514, 
-        1.0735244631311813
+        -0.7094821297028489, 
+        1.0178399715513349
       ], 
       [
         0.0, 
-        -0.14521159004215178, 
-        0.8251228233405863
+        -0.9986800459354868, 
+        0.6834086969475575
       ], 
       [
         0.0, 
-        -0.4204777216291973, 
-        0.5122468527425292
+        -1.0495133239719223, 
+        0.3201172459136359
       ], 
       [
         0.0, 
-        -0.5338023134177661, 
-        0.1935186313207895
+        -0.9861310807840766, 
+        0.025301729117845895
       ], 
       [
         0.0, 
-        -0.5882566596835659, 
-        -0.0762909335144375
+        -0.9128608650813703, 
+        -0.20798135156795716
       ], 
       [
         0.0, 
-        -0.6088389558393317, 
-        -0.297237373532365
+        -0.9058408710686194, 
+        -0.4479393536046299
       ], 
       [
         0.0, 
-        -0.6234240402422984, 
-        -0.4729596403959082
+        -0.9190472730325894, 
+        -0.7002585748025485
       ], 
       [
         0.0, 
-        -0.6294380744684531, 
-        -0.6079834513763558
+        -0.9250613072587441, 
+        -0.9062219803273255
       ], 
       [
         0.0, 
-        -0.6287651755340562, 
-        -0.7113414268421625
+        -0.9243884083243472, 
+        -1.0667527904452303
       ], 
       [
         0.0, 
-        -0.6338371512520666, 
-        -0.7876591639651505
+        -0.9294603840423576, 
+        -1.1871078853757187
       ], 
       [
         0.0, 
-        -0.6371511785039274, 
-        -0.8342922250229066
+        -0.9327744112942185, 
+        -1.263271113512733
       ], 
       [
         0.0, 
-        -0.6479680288743168, 
-        -0.8587679538740751
+        -0.9435912616646078, 
+        -1.304606377453938
       ], 
       [
         0.0, 
-        -0.657573661162786, 
-        -0.8669755049006866
+        -0.953196893953077, 
+        -1.3184909166295302
       ], 
       [
         0.0, 
-        -0.6479680288743168, 
-        -0.8587679538740751
+        -0.9435912616646078, 
+        -1.3046046908929014
       ], 
       [
         0.0, 
-        -0.6371511785039274, 
-        -0.8342922250229066
+        -0.9327744112942185, 
+        -1.2632719422621026
       ], 
       [
         0.0, 
-        -0.6338371512520666, 
-        -0.7876591639651505
+        -0.9294603840423576, 
+        -1.1871078853757187
       ], 
       [
         0.0, 
-        -0.6287651755340562, 
-        -0.7113414268421625
+        -0.9243884083243472, 
+        -1.0667529277478724
       ], 
       [
         0.0, 
-        -0.6294380744684531, 
-        -0.6079834513763558
+        -0.9250613072587441, 
+        -0.9062207418741348
       ], 
       [
         0.0, 
-        -0.6234240402422984, 
-        -0.4729596403959082
+        -0.9190472730325894, 
+        -0.700258311246051
       ], 
       [
         0.0, 
-        -0.6088389558393317, 
-        -0.2972368668869265
+        -0.9058408710686194, 
+        -0.44793873220784164
       ], 
       [
         0.0, 
-        -0.5882566596835659, 
-        -0.07629089145775403
+        -0.9128608279774539, 
+        -0.20798233190991855
       ], 
       [
         0.0, 
-        -0.5338023134177661, 
-        0.1935186313207895
+        -0.9861308810417881, 
+        0.02530265166289869
       ], 
       [
         0.0, 
-        -0.4204777216291973, 
-        0.5122470482373123
+        -1.049513227100789, 
+        0.3201165703655411
       ], 
       [
         0.0, 
-        -0.14521159004215178, 
-        0.8251229767786867
+        -0.9986800857461162, 
+        0.6834085347023633
       ], 
       [
         0.0, 
-        0.22279683717772514, 
-        1.0735246375976208
+        -0.7094821297028489, 
+        1.0178401084221225
       ], 
       [
         0.0, 
-        0.5076349561065285, 
-        1.2065665544633006
+        -0.42464401077404546, 
+        1.1978074992640417
       ], 
       [
         0.0, 
-        0.657573661162786, 
-        1.2647926564007062
+        -0.27470530571778795, 
+        1.2763467147248742
       ], 
       [
         0.0, 
@@ -57224,6 +57538,158 @@
       ]
     ], 
     "C_lowerLipVolume_CRVBASEShapeOrig": null, 
+    "C_unibrowAim_CRVBASEShape": [
+      [
+        0.0, 
+        -1.2850432284957378, 
+        2.100981424518505
+      ], 
+      [
+        0.0, 
+        -1.3726987323377102, 
+        2.0628349910892787
+      ], 
+      [
+        0.0, 
+        -1.5408384492936023, 
+        1.969582737859736
+      ], 
+      [
+        0.0, 
+        -1.7616462894049505, 
+        1.7632515251725085
+      ], 
+      [
+        0.0, 
+        -1.9297975172609085, 
+        1.4286682371385275
+      ], 
+      [
+        0.0, 
+        -1.9998413440341665, 
+        0.9803349841191817
+      ], 
+      [
+        0.0, 
+        -2.033683390166175, 
+        0.5591564096740766
+      ], 
+      [
+        0.0, 
+        -2.046500777366191, 
+        0.18241762705833864
+      ], 
+      [
+        0.0, 
+        -2.0556001438516773, 
+        -0.13197629676198108
+      ], 
+      [
+        0.0, 
+        -2.0593584527163387, 
+        -0.3888448705304146
+      ], 
+      [
+        0.0, 
+        -2.058932549414692, 
+        -0.5958550995357177
+      ], 
+      [
+        0.0, 
+        -2.0621038023770666, 
+        -0.7494922834360196
+      ], 
+      [
+        0.0, 
+        -2.0641700089350934, 
+        -0.8501740695407403
+      ], 
+      [
+        0.0, 
+        -2.07092690726148, 
+        -0.9007137388157878
+      ], 
+      [
+        0.0, 
+        -2.076935597084912, 
+        -0.9137813745920003
+      ], 
+      [
+        0.0, 
+        -2.07092690726148, 
+        -0.9007137388157878
+      ], 
+      [
+        0.0, 
+        -2.0641700089350934, 
+        -0.850173526436306
+      ], 
+      [
+        0.0, 
+        -2.0621038023770666, 
+        -0.7494922834360196
+      ], 
+      [
+        0.0, 
+        -2.058932549414692, 
+        -0.5958556426401511
+      ], 
+      [
+        0.0, 
+        -2.0593584527163387, 
+        -0.3888448705304146
+      ], 
+      [
+        0.0, 
+        -2.0556001438516773, 
+        -0.13197656831419735
+      ], 
+      [
+        0.0, 
+        -2.046500777366191, 
+        0.18241762705833864
+      ], 
+      [
+        0.0, 
+        -2.033683390166175, 
+        0.5591564096740766
+      ], 
+      [
+        0.0, 
+        -1.9998413440341665, 
+        0.9803349841191817
+      ], 
+      [
+        0.0, 
+        -1.9297975172609085, 
+        1.4286682371385275
+      ], 
+      [
+        0.0, 
+        -1.7616462894049505, 
+        1.7632515251725085
+      ], 
+      [
+        0.0, 
+        -1.5408384492936023, 
+        1.9695832809641693
+      ], 
+      [
+        0.0, 
+        -1.3726987323377102, 
+        2.06283662040258
+      ], 
+      [
+        0.0, 
+        -1.2850432284957378, 
+        2.100981424518505
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ]
+    ], 
     "C_mouthJawPkg_PRJShapeOrig": null, 
     "L_upperLid_REF_PRJShape": [
       [
@@ -57904,88 +58370,88 @@
     "L_brow_CRVShape": [
       [
         0.0, 
-        -0.6432325026235333, 
-        -0.8504601339226348
+        -0.9388557354138243, 
+        -1.2905372501655634
       ], 
       [
         0.0, 
-        -0.6408521226431105, 
-        -0.8432209563492812
+        -0.9364753554334015, 
+        -1.2783995398135044
       ], 
       [
         0.0, 
-        -0.6367642616166904, 
-        -0.8244708126391114
+        -0.9323874944069814, 
+        -1.2471773511492472
       ], 
       [
         0.0, 
-        -0.6325586432766102, 
-        -0.7822779760709917
+        -0.9281818760669012, 
+        -1.1786820495727355
       ], 
       [
         0.0, 
-        -0.6302455531896669, 
-        -0.7200047665585902
+        -0.9258687859799579, 
+        -1.080287394793464
       ], 
       [
         0.0, 
-        -0.6285969508004143, 
-        -0.6380897455694878
+        -0.9242201835907053, 
+        -0.9528749039827922
       ], 
       [
         0.0, 
-        -0.6263763843169272, 
-        -0.5367386264799148
+        -0.9219996171072182, 
+        -0.7971115518212546
       ], 
       [
         0.0, 
-        -0.6197987972332726, 
-        -0.41046011002839755
+        -0.9154220300235636, 
+        -0.6064430581011937
       ], 
       [
         0.0, 
-        -0.604868852126458, 
-        -0.25380007388022285
+        -0.9015688124110568, 
+        -0.38205960580179976
       ], 
       [
         0.0, 
-        -0.5804930882280246, 
-        -0.06562672450474416
+        -0.8977816444432563, 
+        -0.16730901101879603
       ], 
       [
         0.0, 
-        -0.5471593572654854, 
-        0.15395682710455905
+        -0.9581946007725435, 
+        0.03315575976518481
       ], 
       [
         0.0, 
-        -0.46296287809951764, 
-        0.4088278368192766
+        -1.0160298830817283, 
+        0.25383662862989453
       ], 
       [
         0.0, 
-        -0.2817764287772775, 
-        0.6742330253756528
+        -0.9959504839168005, 
+        0.5155752862281586
       ], 
       [
         0.0, 
-        -0.025023429122768448, 
-        0.9161329807260383
+        -0.9069407629572197, 
+        0.8062628093956965
       ], 
       [
         0.0, 
-        0.29447739616398394, 
-        1.1125194414045723
+        -0.63780157071659, 
+        1.070851556640143
       ], 
       [
         0.0, 
-        0.5330537133532403, 
-        1.2164386247088324
+        -0.39922525352733373, 
+        1.2111401141887645
       ], 
       [
         0.0, 
-        0.657573661162786, 
-        1.2647926564007053
+        -0.27470530571778795, 
+        1.2763467147248733
       ], 
       [
         0.0, 
@@ -57996,598 +58462,6 @@
     "C_lowerLipRoll_CRVBASEShapeOrig": null, 
     "lowerLip_RollDefRollCurveShapeOrig": null, 
     "browGuide_RivetOrientPatchShapeOrig": null, 
-    "L_lidGuide_SLDEBASEShape": [
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ], 
-      [
-        0.0, 
-        0.0, 
-        0.0
-      ]
-    ], 
     "C_upperLipVolume_CRVBaseWireShape": null, 
     "R_upperLid_REF_PRJShapeOrig": null, 
     "R_lidGuide_RivetOrientPatchShape": [
@@ -60801,6 +60675,158 @@
         0.0
       ]
     ], 
+    "C_unibrowAim_CRVShape": [
+      [
+        0.0, 
+        -1.2850432284957378, 
+        2.10098142451851
+      ], 
+      [
+        0.0, 
+        -1.3726987323377102, 
+        2.062834991089295
+      ], 
+      [
+        0.0, 
+        -1.5408384492935738, 
+        1.9695827378597426
+      ], 
+      [
+        0.0, 
+        -1.761646289404922, 
+        1.7632515251725023
+      ], 
+      [
+        0.0, 
+        -1.9297975172609085, 
+        1.4286682371385293
+      ], 
+      [
+        0.0, 
+        -1.999841344034138, 
+        0.9803349841191897
+      ], 
+      [
+        0.0, 
+        -2.033683390166175, 
+        0.5591564096740891
+      ], 
+      [
+        0.0, 
+        -2.0465007773661625, 
+        0.18241762705835107
+      ], 
+      [
+        0.0, 
+        -2.0556001438516773, 
+        -0.13197629676198108
+      ], 
+      [
+        0.0, 
+        -2.0593584527163387, 
+        -0.3888448705304075
+      ], 
+      [
+        0.0, 
+        -2.058932549414635, 
+        -0.5958550995357106
+      ], 
+      [
+        0.0, 
+        -2.062103802377038, 
+        -0.7494922834360134
+      ], 
+      [
+        0.0, 
+        -2.0641700089350934, 
+        -0.8501740695407376
+      ], 
+      [
+        0.0, 
+        -2.070926907261452, 
+        -0.9007137388157771
+      ], 
+      [
+        0.0, 
+        -2.0769355970848835, 
+        -0.9137813745919949
+      ], 
+      [
+        0.0, 
+        -2.070926907261452, 
+        -0.9007137388157833
+      ], 
+      [
+        0.0, 
+        -2.0641700089350934, 
+        -0.8501735264362615
+      ], 
+      [
+        0.0, 
+        -2.0621038023770666, 
+        -0.7494922834359938
+      ], 
+      [
+        0.0, 
+        -2.058932549414692, 
+        -0.5958556426401502
+      ], 
+      [
+        0.0, 
+        -2.0593584527163387, 
+        -0.3888448705304155
+      ], 
+      [
+        0.0, 
+        -2.0556001438517058, 
+        -0.13197656831418136
+      ], 
+      [
+        0.0, 
+        -2.046500777366191, 
+        0.18241762705833864
+      ], 
+      [
+        0.0, 
+        -2.0336833901662033, 
+        0.5591564096740846
+      ], 
+      [
+        0.0, 
+        -1.9998413440341665, 
+        0.9803349841191888
+      ], 
+      [
+        0.0, 
+        -1.9297975172609085, 
+        1.4286682371385293
+      ], 
+      [
+        0.0, 
+        -1.7616462894050073, 
+        1.7632515251725183
+      ], 
+      [
+        0.0, 
+        -1.5408384492936023, 
+        1.969583280964184
+      ], 
+      [
+        0.0, 
+        -1.3726987323377102, 
+        2.0628366204025816
+      ], 
+      [
+        0.0, 
+        -1.2850432284957378, 
+        2.1009814245185137
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ]
+    ], 
     "C_browGuide_SLDEBASEShape": [
       [
         0.0, 
@@ -62325,337 +62351,338 @@
         0.0
       ]
     ], 
+    "C_unibrow_CRVBaseWireShape": null, 
     "L_upperLid_REF_PRJShapeOrig": null, 
     "L_upperLid_CRVBASEShapeOrig": null, 
     "L_lowerLid_CRVShapeOrig": null, 
     "C_brow_PRJShape": [
       [
+        -0.1371602863073349, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.11937889456748962, 
         0.0, 
         0.0
       ], 
       [
+        0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.08981204032897949, 
         0.0, 
         0.0
       ], 
       [
+        0.345234751701355, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -1.2054958631324553e-07, 
         0.0, 
         0.0
       ], 
       [
+        -0.34523478150367737, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.08981209993362427, 
         0.0, 
         0.0
       ], 
       [
+        -0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.11937889456748962, 
         0.0, 
         0.0
       ], 
       [
+        0.1371602863073349, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.1371602863073349, 
         0.0, 
         0.0
       ], 
       [
+        0.11937889456748962, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.047951847314834595, 
         0.0, 
         0.0
       ], 
       [
+        0.08981204032897949, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.345234751701355, 
         0.0, 
         0.0
       ], 
       [
+        -1.2054958631324553e-07, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.34523478150367737, 
         0.0, 
         0.0
       ], 
       [
+        -0.08981209993362427, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.047951847314834595, 
         0.0, 
         0.0
       ], 
       [
+        -0.11937889456748962, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.1371602863073349, 
         0.0, 
         0.0
       ], 
       [
+        -0.1371602863073349, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.11937889456748962, 
         0.0, 
         0.0
       ], 
       [
+        0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.08981204032897949, 
         0.0, 
         0.0
       ], 
       [
+        0.345234751701355, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -1.2054958631324553e-07, 
         0.0, 
         0.0
       ], 
       [
+        -0.34523478150367737, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.08981209993362427, 
         0.0, 
         0.0
       ], 
       [
+        -0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
+        -0.11937889456748962, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.1371602863073349, 
         0.0, 
         0.0
       ], 
       [
+        -0.1371602863073349, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.11937889456748962, 
         0.0, 
         0.0
       ], 
       [
+        0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.08981204032897949, 
         0.0, 
         0.0
       ], 
       [
+        0.345234751701355, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -1.2054958631324553e-07, 
         0.0, 
         0.0
       ], 
       [
+        -0.34523478150367737, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.08981209993362427, 
         0.0, 
         0.0
       ], 
       [
+        -0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.11937889456748962, 
         0.0, 
         0.0
       ], 
       [
+        0.1371602863073349, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.1371602863073349, 
         0.0, 
         0.0
       ], 
       [
+        0.11937889456748962, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.047951847314834595, 
         0.0, 
         0.0
       ], 
       [
+        0.08981204032897949, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.345234751701355, 
         0.0, 
         0.0
       ], 
       [
+        -1.2054958631324553e-07, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.34523478150367737, 
         0.0, 
         0.0
       ], 
       [
+        -0.08981209993362427, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.047951847314834595, 
         0.0, 
         0.0
       ], 
       [
+        -0.11937889456748962, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.1371602863073349, 
         0.0, 
         0.0
       ], 
       [
+        -0.1371602863073349, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.11937889456748962, 
         0.0, 
         0.0
       ], 
       [
+        0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.08981204032897949, 
         0.0, 
         0.0
       ], 
       [
+        0.345234751701355, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -1.2054958631324553e-07, 
         0.0, 
         0.0
       ], 
       [
+        -0.34523478150367737, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        -0.08981209993362427, 
         0.0, 
         0.0
       ], 
       [
+        -0.047951847314834595, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
+        -0.11937889456748962, 
         0.0, 
-        0.0, 
         0.0
       ], 
       [
-        0.0, 
+        0.1371602863073349, 
         0.0, 
         0.0
       ], 
@@ -63827,7 +63854,599 @@
         0.0
       ]
     ], 
-    "C_lowerLipVolume_CRVShapeOrig": null, 
+    "C_unibrowAim_CRVShapeOrig": null, 
+    "L_lidGuide_SLDEBASEShape": [
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      [
+        0.0, 
+        0.0, 
+        0.0
+      ]
+    ], 
     "mouthGuide_RivetOrientPatchShape": [
       [
         0.0, 
@@ -64423,88 +65042,88 @@
     "L_brow_CRVBASEShape": [
       [
         0.0, 
-        -0.6432325026235333, 
-        -0.8504601339226365
+        -0.9388557354138243, 
+        -1.2905372501655652
       ], 
       [
         0.0, 
-        -0.6408521226431105, 
-        -0.8432209563492847
+        -0.9364753554334015, 
+        -1.278399539813508
       ], 
       [
         0.0, 
-        -0.6367642616166904, 
-        -0.8244708126391114
+        -0.9323874944069814, 
+        -1.2471773511492472
       ], 
       [
         0.0, 
-        -0.6325586432766954, 
-        -0.7822779760709899
+        -0.9281818760669864, 
+        -1.1786820495727337
       ], 
       [
         0.0, 
-        -0.6302455531897522, 
-        -0.720004766558592
+        -0.9258687859800432, 
+        -1.0802873947934657
       ], 
       [
         0.0, 
-        -0.6285969508004712, 
-        -0.6380897455694825
+        -0.9242201835907622, 
+        -0.9528749039827868
       ], 
       [
         0.0, 
-        -0.6263763843169841, 
-        -0.5367386264799112
+        -0.9219996171072751, 
+        -0.797111551821251
       ], 
       [
         0.0, 
-        -0.6197987972332726, 
-        -0.4104601100283958
+        -0.9154220300235636, 
+        -0.6064430581011919
       ], 
       [
         0.0, 
-        -0.6048688521264012, 
-        -0.2538000738802211
+        -0.901568812411, 
+        -0.382059605801798
       ], 
       [
         0.0, 
-        -0.5804930882280246, 
-        -0.06562672450474238
+        -0.8977816444432563, 
+        -0.16730901101879425
       ], 
       [
         0.0, 
-        -0.5471593572654854, 
-        0.15395682710456082
+        -0.9581946007725435, 
+        0.03315575976518659
       ], 
       [
         0.0, 
-        -0.4629628780994608, 
-        0.4088278368192766
+        -1.0160298830816714, 
+        0.25383662862989453
       ], 
       [
         0.0, 
-        -0.28177642877733433, 
-        0.6742330253756572
+        -0.9959504839168574, 
+        0.5155752862281631
       ], 
       [
         0.0, 
-        -0.025023429122768448, 
-        0.9161329807260383
+        -0.9069407629572197, 
+        0.8062628093956965
       ], 
       [
         0.0, 
-        0.29447739616398394, 
-        1.1125194414045723
+        -0.63780157071659, 
+        1.070851556640143
       ], 
       [
         0.0, 
-        0.5330537133532403, 
-        1.2164386247088341
+        -0.39922525352733373, 
+        1.2111401141887663
       ], 
       [
         0.0, 
-        0.657573661162786, 
-        1.2647926564007062
+        -0.27470530571778795, 
+        1.2763467147248742
       ], 
       [
         0.0, 
@@ -64512,6 +65131,7 @@
         0.0
       ]
     ], 
+    "C_unibrow_CRVBaseWireShapeOrig": null, 
     "R_lowerLid_CRVShape": [
       [
         0.0, 
@@ -64752,6 +65372,7 @@
     "C_lowerLipRoll_CRVShapeOrig": null, 
     "L_upperLid_CRVShapeOrig": null, 
     "R_brow_REF_PRJShapeOrig": null, 
+    "C_lowerLipVolume_CRVShapeOrig": null, 
     "R_lowerLid_REF_PRJShape": [
       [
         0.0, 
@@ -66699,14 +67320,16 @@
             9.0, 
             10.0
           ], 
-          "degree": 3, 
           "form": 3, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 3, 
+          "parent": "R_corner_CTL", 
+          "name": "R_cornerMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_corner_CTL", 
           "controlVertices": [
             [
               0.6816906942380037, 
@@ -66764,9 +67387,7 @@
               1.5419210499232745
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cornerMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -67077,14 +67698,16 @@
             9.0, 
             10.0
           ], 
-          "degree": 3, 
           "form": 3, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 3, 
+          "parent": "L_corner_CTL", 
+          "name": "L_cornerMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_corner_CTL", 
           "controlVertices": [
             [
               -0.6816906942380054, 
@@ -67142,9 +67765,7 @@
               1.5419210499232745
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -68109,14 +68730,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerMatrixDef_CTL", 
+          "name": "L_cornerMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerMatrixDef_CTL", 
           "controlVertices": [
             [
               -0.060527652686900094, 
@@ -68184,9 +68807,7 @@
               0.40603255555998646
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -68415,14 +69036,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_cheekMassMatrixDef_CTL", 
+          "name": "R_cheekMassMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cheekMassMatrixDef_CTL", 
           "controlVertices": [
             [
               0.7979104537571584, 
@@ -68490,9 +69113,7 @@
               3.2682000621778484
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cheekMassMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -71233,14 +71854,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_cornerTwistMatrixDef_CTL", 
+          "name": "R_cornerTwistMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerTwistMatrixDef_CTL", 
           "controlVertices": [
             [
               0.46360419209845555, 
@@ -71308,9 +71931,7 @@
               0.6247315998089635
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cornerTwistMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -71529,14 +72150,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerTwistMatrixDef_CTL", 
+          "name": "L_cornerTwistMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerTwistMatrixDef_CTL", 
           "controlVertices": [
             [
               -0.46360419209845377, 
@@ -71604,9 +72227,7 @@
               0.6247315998089635
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerTwistMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -74837,14 +75458,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cheekMassMatrixDef_CTL", 
+          "name": "L_cheekMassMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cheekMassMatrixDef_CTL", 
           "controlVertices": [
             [
               -0.7979104537571593, 
@@ -74912,9 +75535,7 @@
               3.2682000621778484
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cheekMassMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -75919,14 +76540,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_cornerMatrixDef_CTL", 
+          "name": "R_cornerMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerMatrixDef_CTL", 
           "controlVertices": [
             [
               0.060527652686900094, 
@@ -75994,9 +76617,7 @@
               0.40603255555998646
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_cornerMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -76501,14 +77122,16 @@
             9.0, 
             10.0
           ], 
-          "degree": 3, 
           "form": 3, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 3, 
+          "parent": "C_mouth_CTL", 
+          "name": "C_mouthMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouth_CTL", 
           "controlVertices": [
             [
               0.3498026949410804, 
@@ -76566,9 +77189,7 @@
               1.495425753416165
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -78401,14 +79022,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthMatrixDef_CTL", 
+          "name": "C_mouthMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthMatrixDef_CTL", 
           "controlVertices": [
             [
               0.46729522963421694, 
@@ -78476,9 +79099,7 @@
               3.2238028170386976
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -78605,14 +79226,16 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_jawSecondaryMatrixDef_CTL", 
+          "name": "C_jawSecondaryMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_jawSecondaryMatrixDef_CTL", 
           "controlVertices": [
             [
               0.522813780942564, 
@@ -78680,9 +79303,7 @@
               2.1938437506262534
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_jawSecondaryMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -79983,84 +80604,84 @@
             11.0, 
             12.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_jawMatrixDef_CTL", 
+          "name": "C_jawMatrixDefMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_jawMatrixDef_CTL", 
           "controlVertices": [
             [
-              0.8171865916768448, 
-              0.11637023333284524, 
-              2.4059101272841374
+              3.921663279925604, 
+              -6.470472622311612, 
+              6.767437984505322
             ], 
             [
-              0.8171865916768448, 
-              -0.4585438393790041, 
-              2.241754921992359
+              6.061655038615098, 
+              -2.4635761008663124, 
+              1.410260231626853
             ], 
             [
-              0.2989454963920387, 
-              -0.4585438393790041, 
-              2.241754921992359
+              -2.919237324864607, 
+              -2.4635761008663124, 
+              1.410260231626853
             ], 
             [
-              0.2989454963920387, 
-              -0.9463881664612436, 
-              2.102460739672435
+              -2.919237324864607, 
+              -0.7030050503126671, 
+              -2.3937319722361448
             ], 
             [
-              -0.29894506418448663, 
-              -0.9463881664612436, 
-              2.102460739672435
+              2.9097315358146867, 
+              -0.7030050503126689, 
+              -2.3937319722361448
             ], 
             [
-              -0.29894506418448663, 
-              -0.4585438393790041, 
-              2.241754921992359
+              2.9097315358146867, 
+              -2.4635761008663133, 
+              1.410260231626853
             ], 
             [
-              -0.8171861594692927, 
-              -0.4585438393790041, 
-              2.241754921992359
+              -6.071160827665016, 
+              -2.4635761008663106, 
+              1.410260231626853
             ], 
             [
-              -0.8171861594692927, 
-              0.11637023333284524, 
-              2.4059101272841374
+              -3.9266415463404547, 
+              -6.470472622311612, 
+              6.767437984505321
             ], 
             [
-              -0.29894506418448663, 
-              0.11637023333284524, 
-              2.4059101272841374
+              -3.313101799705816, 
+              -6.904503801365342, 
+              8.070850358729583
             ], 
             [
-              -0.29894506418448663, 
-              0.604214560415085, 
-              2.5452043096040615
+              -2.0085887847606223, 
+              -7.0252108328159695, 
+              9.358920442865543
             ], 
             [
-              0.2989454963920387, 
-              0.604214560415085, 
-              2.5452043096040615
+              1.9813479457777639, 
+              -7.0252108328159695, 
+              9.358920442865543
             ], 
             [
-              0.2989454963920387, 
-              0.11637023333284524, 
-              2.4059101272841374
+              3.285860960722956, 
+              -6.904503801365338, 
+              8.07085035872958
             ], 
             [
-              0.8171865916768448, 
-              0.11637023333284524, 
-              2.4059101272841374
+              3.921663279925604, 
+              -6.470472622311612, 
+              6.767437984505322
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_jawMatrixDefMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -82057,14 +82678,16 @@
             9.0, 
             10.0
           ], 
-          "degree": 3, 
           "form": 3, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 3, 
+          "parent": "C_mouthGuideRoot_CTL", 
+          "name": "C_mouthGuideRootMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideRoot_CTL", 
           "controlVertices": [
             [
               3.9180581244561252, 
@@ -82122,9 +82745,7 @@
               -6.553311583671285
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideRootMain_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -82169,14 +82790,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row07_CTL", 
+          "name": "L_mouthGuideShaper01Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -82344,9 +82967,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -82613,16 +83234,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper00Row00_CTL", 
-          "name": "L_browGuideShaper00Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper00Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -82790,7 +83409,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper00Row00Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -83057,14 +83678,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row06_CTL", 
+          "name": "L_mouthGuideShaper02Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row06_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -83232,9 +83855,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row06Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -83501,236 +84122,14 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row03_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
           "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row03Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper00Row03_CTL", 
-      "parent": "R_mouthGuideShaper00Row0300_BUF"
-    }, 
-    "L_browGuideShaper01Row03_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_browGuideShaper01Row03_CTL", 
-          "name": "L_browGuideShaper01Row03Main_SHP", 
+          "parent": "R_mouthGuideShaper00Row03_CTL", 
+          "name": "R_mouthGuideShaper00Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -83901,6 +84300,228 @@
             ]
           ], 
           "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_mouthGuideShaper00Row03_CTL", 
+      "parent": "R_mouthGuideShaper00Row0300_BUF"
+    }, 
+    "L_browGuideShaper01Row03_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 1.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper01Row03_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper01Row03Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -85499,14 +86120,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row06_CTL", 
+          "name": "L_mouthGuideShaper00Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row06_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -85674,9 +86297,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row06Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -86165,14 +86786,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerTrans_BUF", 
+          "name": "L_cornerTrans_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerTrans_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -86340,14 +86963,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerTrans_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "L_cornerTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "L_innerL_llidslowermatdeftertiaryrot01_BUF": {
       "shapes": [
@@ -86609,14 +87230,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row02_CTL", 
+          "name": "L_mouthGuideShaper01Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -86784,9 +87407,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -87053,16 +87674,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper02Row01_CTL", 
-          "name": "L_browGuideShaper02Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper02Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -87230,7 +87849,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper02Row01Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -87719,14 +88340,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row05_CTL", 
+          "name": "R_mouthGuideShaper00Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row05_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -87894,9 +88517,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row05Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -89273,14 +89894,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow05_CTL", 
+          "name": "C_mouthGuideShaperRow05Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow05_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -89448,9 +90071,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow05Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -89495,14 +90116,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row07_CTL", 
+          "name": "R_mouthGuideShaper02Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -89670,9 +90293,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -89939,14 +90560,236 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 1.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper00Row01_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper00Row01Main_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browGuideShaper00Row01_CTL", 
+      "parent": "L_browGuideShaper00Row0100_BUF"
+    }, 
+    "L_mouthGuideShaper03Row05_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_browGuideShaper00Row01_CTL", 
-          "name": "L_browGuideShaper00Row01Main_SHP", 
+          "parent": "L_mouthGuideShaper03Row05_CTL", 
+          "name": "L_mouthGuideShaper03Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -90117,228 +90960,6 @@
             ]
           ], 
           "type": "nurbsCurve"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "L_browGuideShaper00Row01_CTL", 
-      "parent": "L_browGuideShaper00Row0100_BUF"
-    }, 
-    "L_mouthGuideShaper03Row05_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 1.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row05_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row05Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -90827,14 +91448,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row02_CTL", 
+          "name": "R_mouthGuideShaper03Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -91002,9 +91625,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -91271,14 +91892,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row00_CTL", 
+          "name": "L_mouthGuideShaper02Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -91446,9 +92069,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -92917,14 +93538,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_corner01_BUF", 
+          "name": "R_corner_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_corner01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -93092,9 +93715,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_corner_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -93139,14 +93760,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cheekMassMatrixDef01_BUF", 
+          "name": "L_cheekMassMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cheekMassMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -93314,9 +93937,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cheekMassMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -93361,16 +93982,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper00Row00_CTL", 
-          "name": "R_browGuideShaper00Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper00Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -93538,7 +94157,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper00Row00Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -93805,14 +94426,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cornerTwistMatrixDef01_BUF", 
+          "name": "R_cornerTwistMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerTwistMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -93980,9 +94603,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cornerTwistMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -94471,14 +95092,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row04_CTL", 
+          "name": "L_mouthGuideShaper01Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -94646,9 +95269,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -95581,14 +96202,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerTwistMatrixDef01_BUF", 
+          "name": "L_cornerTwistMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerTwistMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -95756,9 +96379,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerTwistMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -96025,460 +96646,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_jawSecondaryRot_BUF", 
+          "name": "C_jawSecondaryRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_jawSecondaryRot_BUF", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_jawSecondaryRot_BUF_SHPMain_None"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "C_jawSecondaryRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
-    }, 
-    "R_mouthGuideShaper01Row00_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper01Row00_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row00Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper01Row00_CTL", 
-      "parent": "R_mouthGuideShaper01Row0000_BUF"
-    }, 
-    "C_browGuideShaperRow01_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browGuideShaperRow01_CTL", 
-          "name": "C_browGuideShaperRow01Main_SHP", 
-          "override_color": true, 
-          "color_g": 1.0, 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -96647,6 +96824,450 @@
             ]
           ], 
           "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_jawSecondaryRot_BUF", 
+      "parent": "MouthTrans_DEFORM"
+    }, 
+    "R_mouthGuideShaper01Row00_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper01Row00_CTL", 
+          "name": "R_mouthGuideShaper01Row00Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_mouthGuideShaper01Row00_CTL", 
+      "parent": "R_mouthGuideShaper01Row0000_BUF"
+    }, 
+    "C_browGuideShaperRow01_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browGuideShaperRow01_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browGuideShaperRow01Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -97801,14 +98422,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row01_CTL", 
+          "name": "L_mouthGuideShaper02Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -97976,9 +98599,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -98023,14 +98644,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cheekMassRot_BUF", 
+          "name": "R_cheekMassRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cheekMassRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -98198,14 +98821,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cheekMassRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "R_cheekMassRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "C_mouthMatrixDef01_BUF": {
       "shapes": [
@@ -98245,14 +98866,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_mouthMatrixDef01_BUF", 
+          "name": "C_mouthMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -98420,9 +99043,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_mouthMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -99133,14 +99754,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row00_CTL", 
+          "name": "R_mouthGuideShaper02Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -99308,9 +99931,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -99355,6 +99976,450 @@
             31.0, 
             32.0
           ], 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row08_CTL", 
+          "name": "R_mouthGuideShaper00Row08Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_mouthGuideShaper00Row08_CTL", 
+      "parent": "R_mouthGuideShaper00Row0800_BUF"
+    }, 
+    "L_browGuideShaper00Row03_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 1.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper00Row03_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper00Row03Main_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browGuideShaper00Row03_CTL", 
+      "parent": "L_browGuideShaper00Row0300_BUF"
+    }, 
+    "R_browGuideShaper01Row02_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
           "degree": 1, 
           "form": 1, 
           "color": 0, 
@@ -99362,7 +100427,7 @@
           "override_color": true, 
           "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row08_CTL", 
+          "parent": "R_browGuideShaper01Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -99532,451 +100597,7 @@
           ], 
           "type": "nurbsCurve", 
           "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row08Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper00Row08_CTL", 
-      "parent": "R_mouthGuideShaper00Row0800_BUF"
-    }, 
-    "L_browGuideShaper00Row03_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper00Row03_CTL", 
-          "name": "L_browGuideShaper00Row03Main_SHP", 
-          "override_color": true, 
-          "color_g": 0.0, 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "L_browGuideShaper00Row03_CTL", 
-      "parent": "L_browGuideShaper00Row0300_BUF"
-    }, 
-    "R_browGuideShaper01Row02_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper01Row02_CTL", 
-          "name": "R_browGuideShaper01Row02Main_SHP", 
-          "override_color": true, 
-          "color_g": 0.0, 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve"
+          "name": "R_browGuideShaper01Row02Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -100909,14 +101530,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row08_CTL", 
+          "name": "L_mouthGuideShaper03Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row08_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -101084,9 +101707,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row08Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -102463,14 +103084,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row04_CTL", 
+          "name": "L_mouthGuideShaper00Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -102638,9 +103261,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -103573,14 +104194,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row06_CTL", 
+          "name": "R_mouthGuideShaper03Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row06_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -103748,9 +104371,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row06Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -103795,236 +104416,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browGuideShaperRow03_CTL", 
-          "name": "C_browGuideShaperRow03Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "C_browGuideShaperRow03_CTL", 
-      "parent": "C_browGuideShaperRow0300_BUF"
-    }, 
-    "L_cornerRot_BUF": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_color": false, 
-          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "L_cornerRot_BUF", 
+          "parent": "C_browGuideShaperRow03_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -104193,15 +104592,15 @@
             ]
           ], 
           "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerRot_BUF_SHPMain_None"
+          "color_r": 1.0, 
+          "name": "C_browGuideShaperRow03Main_SHP"
         }
       ], 
       "outliner_color": null, 
-      "name": "L_cornerRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "name": "C_browGuideShaperRow03_CTL", 
+      "parent": "C_browGuideShaperRow0300_BUF"
     }, 
-    "R_browGuideShaper00Row01_CTL": {
+    "L_cornerRot_BUF": {
       "shapes": [
         {
           "knots": [
@@ -104243,11 +104642,11 @@
           "color": 0, 
           "color_b": 0.0, 
           "override_enabled": true, 
-          "color_r": 1.0, 
+          "color_r": 0.0, 
           "degree": 1, 
-          "parent": "R_browGuideShaper00Row01_CTL", 
-          "name": "R_browGuideShaper00Row01Main_SHP", 
-          "override_color": true, 
+          "parent": "L_cornerRot_BUF", 
+          "name": "L_cornerRot_BUF_SHPMain_None", 
+          "override_color": false, 
           "color_g": 0.0, 
           "controlVertices": [
             [
@@ -104417,6 +104816,228 @@
             ]
           ], 
           "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_cornerRot_BUF", 
+      "parent": "MouthTrans_DEFORM"
+    }, 
+    "R_browGuideShaper00Row01_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper00Row01_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper00Row01Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -104683,14 +105304,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cornerMatrixDef01_BUF", 
+          "name": "R_cornerMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -104858,9 +105481,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cornerMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -105793,14 +106414,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row00_CTL", 
+          "name": "L_mouthGuideShaper01Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -105968,9 +106591,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -106015,14 +106636,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row02_CTL", 
+          "name": "R_mouthGuideShaper00Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -106190,9 +106813,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -106459,14 +107080,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row07_CTL", 
+          "name": "R_mouthGuideShaper03Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -106634,9 +107257,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -106903,14 +107524,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow02_CTL", 
+          "name": "C_mouthGuideShaperRow02Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -107078,9 +107701,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -109567,15 +110188,237 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper02Row02_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper02Row02Main_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browGuideShaper02Row02_CTL", 
+      "parent": "R_browGuideShaper02Row0200_BUF"
+    }, 
+    "C_mouthTrans_BUF": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
           "override_enabled": true, 
-          "color_r": 1.0, 
+          "color_r": 0.0, 
           "degree": 1, 
-          "parent": "R_browGuideShaper02Row02_CTL", 
-          "name": "R_browGuideShaper02Row02Main_SHP", 
-          "override_color": true, 
+          "parent": "C_mouthTrans_BUF", 
+          "name": "C_mouthTrans_BUF_SHPMain_None", 
+          "override_color": false, 
           "color_g": 0.0, 
           "controlVertices": [
             [
@@ -109748,230 +110591,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_browGuideShaper02Row02_CTL", 
-      "parent": "R_browGuideShaper02Row0200_BUF"
-    }, 
-    "C_mouthTrans_BUF": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_color": false, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthTrans_BUF", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_mouthTrans_BUF_SHPMain_None"
-        }
-      ], 
-      "outliner_color": null, 
       "name": "C_mouthTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_cornerRot_BUF": {
       "shapes": [
@@ -110011,14 +110632,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cornerRot_BUF", 
+          "name": "R_cornerRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -110186,14 +110809,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cornerRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "R_cornerRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_outerR_rlidslowermatdeftertiaryrot01_BUF": {
       "shapes": [
@@ -110455,14 +111076,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper01Row04_CTL", 
+          "name": "R_mouthGuideShaper01Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper01Row04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -110630,9 +111253,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -111565,14 +112186,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row05_CTL", 
+          "name": "L_mouthGuideShaper00Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row05_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -111740,9 +112363,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row05Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -111787,14 +112408,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_jawTrans_BUF", 
+          "name": "C_jawTrans_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_jawTrans_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -111962,14 +112585,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_jawTrans_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "C_jawTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "L_mouthGuideShaper02Row02_CTL": {
       "shapes": [
@@ -112009,14 +112630,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row02_CTL", 
+          "name": "L_mouthGuideShaper02Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -112184,9 +112807,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -112675,236 +113296,14 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "R_mouthGuideShaper01Row05_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
           "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row05Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper01Row05_CTL", 
-      "parent": "R_mouthGuideShaper01Row0500_BUF"
-    }, 
-    "L_browGuideShaper01Row00_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_browGuideShaper01Row00_CTL", 
-          "name": "L_browGuideShaper01Row00Main_SHP", 
+          "parent": "R_mouthGuideShaper01Row05_CTL", 
+          "name": "R_mouthGuideShaper01Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -113075,6 +113474,228 @@
             ]
           ], 
           "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_mouthGuideShaper01Row05_CTL", 
+      "parent": "R_mouthGuideShaper01Row0500_BUF"
+    }, 
+    "L_browGuideShaper01Row00_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 1.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper01Row00_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper01Row00Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -113341,14 +113962,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cheekMassMatrixDef01_BUF", 
+          "name": "R_cheekMassMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cheekMassMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -113516,9 +114139,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cheekMassMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -114007,14 +114628,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_mouth01_BUF", 
+          "name": "C_mouth_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_mouth01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -114182,9 +114805,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_mouth_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -115783,14 +116404,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row04_CTL", 
+          "name": "R_mouthGuideShaper02Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -115958,9 +116581,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -117559,14 +118180,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerMatrixDef01_BUF", 
+          "name": "L_cornerMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -117734,9 +118357,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -120667,16 +121288,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper02Row03_CTL", 
-          "name": "L_browGuideShaper02Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper02Row03_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -120844,7 +121463,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper02Row03Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -121777,14 +122398,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row00_CTL", 
+          "name": "R_mouthGuideShaper03Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -121952,9 +122575,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -121999,14 +122620,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow06_CTL", 
+          "name": "C_mouthGuideShaperRow06Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow06_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -122174,9 +122797,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow06Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -122221,14 +122842,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row00_CTL", 
+          "name": "L_mouthGuideShaper00Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -122396,9 +123019,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -122443,14 +123064,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row05_CTL", 
+          "name": "R_mouthGuideShaper03Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row05_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -122618,9 +123241,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row05Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -122645,16 +123266,14 @@
             9.0, 
             10.0
           ], 
+          "degree": 3, 
           "form": 3, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 3, 
-          "parent": "C_browGuideRoot_CTL", 
-          "name": "C_browGuideRootMain_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browGuideRoot_CTL", 
           "controlVertices": [
             [
               3.918057886037546, 
@@ -122712,7 +123331,9 @@
               -3.9234392317864435
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browGuideRootMain_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -123201,14 +123822,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row07_CTL", 
+          "name": "L_mouthGuideShaper03Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -123376,9 +123999,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -123645,236 +124266,14 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
           "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
           "parent": "R_mouthGuideShaper01Row08_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row08Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper01Row08_CTL", 
-      "parent": "R_mouthGuideShaper01Row0800_BUF"
-    }, 
-    "R_browGuideShaper02Row03_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper02Row03_CTL", 
-          "name": "R_browGuideShaper02Row03Main_SHP", 
+          "name": "R_mouthGuideShaper01Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -124045,6 +124444,228 @@
             ]
           ], 
           "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_mouthGuideShaper01Row08_CTL", 
+      "parent": "R_mouthGuideShaper01Row0800_BUF"
+    }, 
+    "R_browGuideShaper02Row03_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper02Row03_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper02Row03Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -124533,14 +125154,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row03_CTL", 
+          "name": "R_mouthGuideShaper03Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row03_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -124708,9 +125331,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row03Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -125643,14 +126264,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow07_CTL", 
+          "name": "C_mouthGuideShaperRow07Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -125818,9 +126441,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -126309,14 +126930,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cheekMassRot_BUF", 
+          "name": "L_cheekMassRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cheekMassRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -126484,14 +127107,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cheekMassRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "L_cheekMassRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_lowerLipCurveTertiaryROT00_BUF": {
       "shapes": [
@@ -127067,14 +127688,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row06_CTL", 
+          "name": "L_mouthGuideShaper01Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row06_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -127242,9 +127865,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row06Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -127289,14 +127910,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row02_CTL", 
+          "name": "R_mouthGuideShaper02Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -127464,9 +128087,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -127511,14 +128132,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row01_CTL", 
+          "name": "L_mouthGuideShaper00Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -127686,9 +128309,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -127733,14 +128354,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row05_CTL", 
+          "name": "L_mouthGuideShaper02Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row05_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -127908,9 +128531,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row05Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -128177,14 +128798,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper01Row02_CTL", 
+          "name": "R_mouthGuideShaper01Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper01Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -128352,9 +128975,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -129065,14 +129686,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row00_CTL", 
+          "name": "L_mouthGuideShaper03Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -129240,9 +129863,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -129287,14 +129908,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row03_CTL", 
+          "name": "L_mouthGuideShaper00Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row03_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -129462,9 +130085,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row03Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -129509,14 +130130,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_corner01_BUF", 
+          "name": "L_corner_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_corner01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -129684,9 +130307,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_corner_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -130175,14 +130796,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper01Row01_CTL", 
+          "name": "R_mouthGuideShaper01Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper01Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -130350,9 +130973,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -130619,14 +131240,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_mouthRot_BUF", 
+          "name": "C_mouthRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -130794,14 +131417,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_mouthRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "C_mouthRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "C_L_BrowSlideSecondaryTrans_BUF": {
       "shapes": [
@@ -131063,14 +131684,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row01_CTL", 
+          "name": "L_mouthGuideShaper03Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -131238,9 +131861,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -132395,14 +133016,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row08_CTL", 
+          "name": "R_mouthGuideShaper02Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row08_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -132570,9 +133193,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row08Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -132839,14 +133460,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cornerTwistRot_BUF", 
+          "name": "L_cornerTwistRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerTwistRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -133014,14 +133637,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerTwistRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "L_cornerTwistRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_mouthGuideShaper02Row03_CTL": {
       "shapes": [
@@ -133061,14 +133682,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row03_CTL", 
+          "name": "R_mouthGuideShaper02Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row03_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -133236,9 +133859,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row03Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -133283,14 +133904,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_jawSecondaryTrans_BUF", 
+          "name": "C_jawSecondaryTrans_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_jawSecondaryTrans_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -133458,14 +134081,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_jawSecondaryTrans_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "C_jawSecondaryTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_cornerTrans_BUF": {
       "shapes": [
@@ -133505,14 +134126,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cornerTrans_BUF", 
+          "name": "R_cornerTrans_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerTrans_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -133680,14 +134303,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cornerTrans_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "R_cornerTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_outerR_rlidslowermatdeftertiaryrot00_BUF": {
       "shapes": [
@@ -134171,14 +134792,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row07_CTL", 
+          "name": "L_mouthGuideShaper02Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -134346,9 +134969,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -134837,14 +135458,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row08_CTL", 
+          "name": "L_mouthGuideShaper01Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row08_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -135012,9 +135635,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row08Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -135503,237 +136124,15 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_color": false, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cornerTwistTrans_BUF", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cornerTwistTrans_BUF_SHPMain_None"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "L_cornerTwistTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
-    }, 
-    "L_browGuideShaper02Row00_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 1.0, 
           "override_enabled": true, 
           "color_r": 0.0, 
           "degree": 1, 
-          "parent": "L_browGuideShaper02Row00_CTL", 
-          "name": "L_browGuideShaper02Row00Main_SHP", 
-          "override_color": true, 
+          "parent": "L_cornerTwistTrans_BUF", 
+          "name": "L_cornerTwistTrans_BUF_SHPMain_None", 
+          "override_color": false, 
           "color_g": 0.0, 
           "controlVertices": [
             [
@@ -135906,10 +136305,10 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "L_browGuideShaper02Row00_CTL", 
-      "parent": "L_browGuideShaper02Row0000_BUF"
+      "name": "L_cornerTwistTrans_BUF", 
+      "parent": "MouthTrans_DEFORM"
     }, 
-    "R_mouthGuideShaper02Row01_CTL": {
+    "L_browGuideShaper02Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -135950,11 +136349,11 @@
           "degree": 1, 
           "form": 1, 
           "color": 0, 
-          "color_b": 0.0, 
+          "color_b": 1.0, 
           "override_color": true, 
           "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row01_CTL", 
+          "parent": "L_browGuideShaper02Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -136123,8 +136522,230 @@
             ]
           ], 
           "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper02Row00Main_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_browGuideShaper02Row00_CTL", 
+      "parent": "L_browGuideShaper02Row0000_BUF"
+    }, 
+    "R_mouthGuideShaper02Row01_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
           "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row01Main_SHP"
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row01_CTL", 
+          "name": "R_mouthGuideShaper02Row01Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -136613,14 +137234,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow00_CTL", 
+          "name": "C_mouthGuideShaperRow00Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -136788,9 +137411,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -137057,16 +137678,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper00Row02_CTL", 
-          "name": "R_browGuideShaper00Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper00Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -137234,7 +137853,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper00Row02Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -137501,14 +138122,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row00_CTL", 
+          "name": "R_mouthGuideShaper00Row00Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -137676,9 +138299,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row00Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -138167,16 +138788,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper01Row01_CTL", 
-          "name": "L_browGuideShaper01Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper01Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -138344,7 +138963,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper01Row01Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -138389,16 +139010,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper00Row02_CTL", 
-          "name": "L_browGuideShaper00Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper00Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -138566,7 +139185,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper00Row02Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -139721,236 +140342,14 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row03_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
           "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row03Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "L_mouthGuideShaper02Row03_CTL", 
-      "parent": "L_mouthGuideShaper02Row0300_BUF"
-    }, 
-    "R_browGuideShaper00Row03_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
           "degree": 1, 
-          "parent": "R_browGuideShaper00Row03_CTL", 
-          "name": "R_browGuideShaper00Row03Main_SHP", 
+          "parent": "L_mouthGuideShaper02Row03_CTL", 
+          "name": "L_mouthGuideShaper02Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -140121,6 +140520,228 @@
             ]
           ], 
           "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_mouthGuideShaper02Row03_CTL", 
+      "parent": "L_mouthGuideShaper02Row0300_BUF"
+    }, 
+    "R_browGuideShaper00Row03_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper00Row03_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper00Row03Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -141497,14 +142118,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row01_CTL", 
+          "name": "R_mouthGuideShaper03Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -141672,9 +142295,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -141719,16 +142340,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "C_browGuideShaperRow00_CTL", 
-          "name": "C_browGuideShaperRow00Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browGuideShaperRow00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -141896,7 +142515,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browGuideShaperRow00Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -141941,458 +142562,14 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row08_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
           "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row08Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "L_mouthGuideShaper00Row08_CTL", 
-      "parent": "L_mouthGuideShaper00Row0800_BUF"
-    }, 
-    "R_mouthGuideShaper02Row05_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
           "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row05_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row05Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper02Row05_CTL", 
-      "parent": "R_mouthGuideShaper02Row0500_BUF"
-    }, 
-    "R_browGuideShaper01Row03_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper01Row03_CTL", 
-          "name": "R_browGuideShaper01Row03Main_SHP", 
+          "parent": "L_mouthGuideShaper00Row08_CTL", 
+          "name": "L_mouthGuideShaper00Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -142563,6 +142740,450 @@
             ]
           ], 
           "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_mouthGuideShaper00Row08_CTL", 
+      "parent": "L_mouthGuideShaper00Row0800_BUF"
+    }, 
+    "R_mouthGuideShaper02Row05_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row05_CTL", 
+          "name": "R_mouthGuideShaper02Row05Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_mouthGuideShaper02Row05_CTL", 
+      "parent": "R_mouthGuideShaper02Row0500_BUF"
+    }, 
+    "R_browGuideShaper01Row03_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper01Row03_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper01Row03Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -143051,14 +143672,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row01_CTL", 
+          "name": "L_mouthGuideShaper01Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -143226,9 +143849,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -145049,14 +145670,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row07_CTL", 
+          "name": "R_mouthGuideShaper00Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -145224,9 +145847,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -146381,6 +147002,228 @@
             31.0, 
             32.0
           ], 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row06_CTL", 
+          "name": "R_mouthGuideShaper00Row06Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_mouthGuideShaper00Row06_CTL", 
+      "parent": "R_mouthGuideShaper00Row0600_BUF"
+    }, 
+    "R_browGuideShaper01Row00_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
           "degree": 1, 
           "form": 1, 
           "color": 0, 
@@ -146388,7 +147231,7 @@
           "override_color": true, 
           "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row06_CTL", 
+          "parent": "R_browGuideShaper01Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -146558,229 +147401,7 @@
           ], 
           "type": "nurbsCurve", 
           "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row06Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper00Row06_CTL", 
-      "parent": "R_mouthGuideShaper00Row0600_BUF"
-    }, 
-    "R_browGuideShaper01Row00_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper01Row00_CTL", 
-          "name": "R_browGuideShaper01Row00Main_SHP", 
-          "override_color": true, 
-          "color_g": 0.0, 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve"
+          "name": "R_browGuideShaper01Row00Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -146825,16 +147446,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper02Row02_CTL", 
-          "name": "L_browGuideShaper02Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper02Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -147002,7 +147621,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper02Row02Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -147491,14 +148112,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row05_CTL", 
+          "name": "L_mouthGuideShaper01Row05Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row05_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -147666,9 +148289,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row05Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -147713,14 +148334,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row06_CTL", 
+          "name": "L_mouthGuideShaper03Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row06_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -147888,9 +148511,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row06Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -147935,14 +148556,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper01Row03_CTL", 
+          "name": "R_mouthGuideShaper01Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper01Row03_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -148110,9 +148733,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row03Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -149267,14 +149888,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row08_CTL", 
+          "name": "R_mouthGuideShaper03Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row08_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -149442,9 +150065,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row08Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -149489,14 +150110,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper03Row04_CTL", 
+          "name": "R_mouthGuideShaper03Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper03Row04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -149664,9 +150287,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper03Row04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -149711,14 +150332,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_cheekMassTrans_BUF", 
+          "name": "L_cheekMassTrans_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_cheekMassTrans_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -149886,14 +150509,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_cheekMassTrans_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "L_cheekMassTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "L_mouthGuideShaper02Row08_CTL": {
       "shapes": [
@@ -149933,14 +150554,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row08_CTL", 
+          "name": "L_mouthGuideShaper02Row08Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row08_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -150108,9 +150731,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row08Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -150377,15 +150998,237 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper01Row01_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper01Row01Main_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browGuideShaper01Row01_CTL", 
+      "parent": "R_browGuideShaper01Row0100_BUF"
+    }, 
+    "R_cheekMassTrans_BUF": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
           "override_enabled": true, 
-          "color_r": 1.0, 
+          "color_r": 0.0, 
           "degree": 1, 
-          "parent": "R_browGuideShaper01Row01_CTL", 
-          "name": "R_browGuideShaper01Row01Main_SHP", 
-          "override_color": true, 
+          "parent": "R_cheekMassTrans_BUF", 
+          "name": "R_cheekMassTrans_BUF_SHPMain_None", 
+          "override_color": false, 
           "color_g": 0.0, 
           "controlVertices": [
             [
@@ -150558,230 +151401,8 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_browGuideShaper01Row01_CTL", 
-      "parent": "R_browGuideShaper01Row0100_BUF"
-    }, 
-    "R_cheekMassTrans_BUF": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_color": false, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cheekMassTrans_BUF", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cheekMassTrans_BUF_SHPMain_None"
-        }
-      ], 
-      "outliner_color": null, 
       "name": "R_cheekMassTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "L_mouthGuideShaper03Row03_CTL": {
       "shapes": [
@@ -150821,14 +151442,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row03_CTL", 
+          "name": "L_mouthGuideShaper03Row03Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row03_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -150996,9 +151619,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row03Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -151265,14 +151886,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_jawMatrixDef01_BUF", 
+          "name": "C_jawMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_jawMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -151440,9 +152063,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_jawMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -151931,14 +152552,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cornerTwistTrans_BUF", 
+          "name": "R_cornerTwistTrans_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerTwistTrans_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -152106,14 +152729,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cornerTwistTrans_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "R_cornerTwistTrans_BUF", 
-      "parent": "jawTranslate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_innerR_rlidslowermatdeftertiaryrot00_BUF": {
       "shapes": [
@@ -153041,14 +153662,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_jawRot_BUF", 
+          "name": "C_jawRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_jawRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -153216,14 +153839,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_jawRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "C_jawRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "R_outerR_rlidslowermatdeftertiarytrans00_BUF": {
       "shapes": [
@@ -153929,458 +154550,14 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
           "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
           "parent": "R_mouthGuideShaper01Row06_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row06Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "R_mouthGuideShaper01Row06_CTL", 
-      "parent": "R_mouthGuideShaper01Row0600_BUF"
-    }, 
-    "L_mouthGuideShaper01Row03_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 1.0, 
-          "override_color": true, 
-          "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper01Row03_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper01Row03Main_SHP"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "L_mouthGuideShaper01Row03_CTL", 
-      "parent": "L_mouthGuideShaper01Row0300_BUF"
-    }, 
-    "R_browGuideShaper02Row00_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper02Row00_CTL", 
-          "name": "R_browGuideShaper02Row00Main_SHP", 
+          "name": "R_mouthGuideShaper01Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
           "controlVertices": [
@@ -154554,10 +154731,232 @@
         }
       ], 
       "outliner_color": null, 
-      "name": "R_browGuideShaper02Row00_CTL", 
-      "parent": "R_browGuideShaper02Row0000_BUF"
+      "name": "R_mouthGuideShaper01Row06_CTL", 
+      "parent": "R_mouthGuideShaper01Row0600_BUF"
     }, 
-    "L_mouthGuideShaper02Row04_CTL": {
+    "L_mouthGuideShaper01Row03_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper01Row03_CTL", 
+          "name": "L_mouthGuideShaper01Row03Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "L_mouthGuideShaper01Row03_CTL", 
+      "parent": "L_mouthGuideShaper01Row0300_BUF"
+    }, 
+    "R_browGuideShaper02Row00_CTL": {
       "shapes": [
         {
           "knots": [
@@ -154598,11 +154997,11 @@
           "degree": 1, 
           "form": 1, 
           "color": 0, 
-          "color_b": 1.0, 
+          "color_b": 0.0, 
           "override_color": true, 
           "color_g": 0.0, 
           "override_enabled": true, 
-          "parent": "L_mouthGuideShaper02Row04_CTL", 
+          "parent": "R_browGuideShaper02Row00_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -154771,8 +155170,230 @@
             ]
           ], 
           "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper02Row00Main_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "R_browGuideShaper02Row00_CTL", 
+      "parent": "R_browGuideShaper02Row0000_BUF"
+    }, 
+    "L_mouthGuideShaper02Row04_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 1.0, 
+          "override_enabled": true, 
           "color_r": 0.0, 
-          "name": "L_mouthGuideShaper02Row04Main_SHP"
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper02Row04_CTL", 
+          "name": "L_mouthGuideShaper02Row04Main_SHP", 
+          "override_color": true, 
+          "color_g": 0.0, 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -155039,14 +155660,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row04_CTL", 
+          "name": "L_mouthGuideShaper03Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -155214,9 +155837,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -155483,14 +156104,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "C_jawSecondaryMatrixDef01_BUF", 
+          "name": "C_jawSecondaryMatrixDef_GUIDEMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "C_jawSecondaryMatrixDef01_BUF", 
           "controlVertices": [
             [
               0.0, 
@@ -155658,9 +156281,7 @@
               0.05935819781861909
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "C_jawSecondaryMatrixDef_GUIDEMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -156371,16 +156992,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
-          "override_enabled": true, 
-          "color_r": 1.0, 
-          "degree": 1, 
-          "parent": "R_browGuideShaper02Row01_CTL", 
-          "name": "R_browGuideShaper02Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "R_browGuideShaper02Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -156548,7 +157167,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "R_browGuideShaper02Row01Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -157259,14 +157880,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "R_cornerTwistRot_BUF", 
+          "name": "R_cornerTwistRot_BUF_SHPMain_None", 
           "override_color": false, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_cornerTwistRot_BUF", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -157434,14 +158057,12 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "R_cornerTwistRot_BUF_SHPMain_None"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
       "name": "R_cornerTwistRot_BUF", 
-      "parent": "jawRotate_MatrixDef_DEFORM"
+      "parent": "MouthTrans_DEFORM"
     }, 
     "L_middleL_llidsuppermatdefprimarytrans_BUF": {
       "shapes": [
@@ -158591,14 +159212,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow01_CTL", 
+          "name": "C_mouthGuideShaperRow01Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -158766,9 +159389,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -159257,14 +159878,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper02Row06_CTL", 
+          "name": "R_mouthGuideShaper02Row06Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper02Row06_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -159432,9 +160055,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper02Row06Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -160145,14 +160766,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper03Row02_CTL", 
+          "name": "L_mouthGuideShaper03Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper03Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -160320,9 +160943,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper03Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -160589,14 +161210,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row02_CTL", 
+          "name": "L_mouthGuideShaper00Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -160764,9 +161387,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row02Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -165473,14 +166094,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row01_CTL", 
+          "name": "R_mouthGuideShaper00Row01Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row01_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -165648,9 +166271,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row01Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -165917,16 +166538,14 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
-          "override_enabled": true, 
-          "color_r": 0.0, 
-          "degree": 1, 
-          "parent": "L_browGuideShaper01Row02_CTL", 
-          "name": "L_browGuideShaper01Row02Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
+          "override_enabled": true, 
+          "parent": "L_browGuideShaper01Row02_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -166094,7 +166713,9 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve"
+          "type": "nurbsCurve", 
+          "color_r": 0.0, 
+          "name": "L_browGuideShaper01Row02Main_SHP"
         }
       ], 
       "outliner_color": null, 
@@ -166361,14 +166982,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow08_CTL", 
+          "name": "C_mouthGuideShaperRow08Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow08_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -166536,9 +167159,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow08Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -166805,14 +167426,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "C_mouthGuideShaperRow04_CTL", 
+          "name": "C_mouthGuideShaperRow04Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -166980,9 +167603,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -168137,14 +168758,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper01Row07_CTL", 
+          "name": "R_mouthGuideShaper01Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper01Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -168312,9 +168935,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper01Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -168359,14 +168980,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 1.0, 
+          "override_enabled": true, 
+          "color_r": 0.0, 
+          "degree": 1, 
+          "parent": "L_mouthGuideShaper00Row07_CTL", 
+          "name": "L_mouthGuideShaper00Row07Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "L_mouthGuideShaper00Row07_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -168534,9 +169157,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 0.0, 
-          "name": "L_mouthGuideShaper00Row07Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -169247,14 +169868,16 @@
             31.0, 
             32.0
           ], 
-          "degree": 1, 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
+          "override_enabled": true, 
+          "color_r": 1.0, 
+          "degree": 1, 
+          "parent": "R_mouthGuideShaper00Row04_CTL", 
+          "name": "R_mouthGuideShaper00Row04Main_SHP", 
           "override_color": true, 
           "color_g": 0.0, 
-          "override_enabled": true, 
-          "parent": "R_mouthGuideShaper00Row04_CTL", 
           "controlVertices": [
             [
               0.24248257386731709, 
@@ -169422,9 +170045,7 @@
               0.0004009606419375089
             ]
           ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "R_mouthGuideShaper00Row04Main_SHP"
+          "type": "nurbsCurve"
         }
       ], 
       "outliner_color": null, 
@@ -170801,14 +171422,236 @@
             31.0, 
             32.0
           ], 
+          "degree": 1, 
+          "form": 1, 
+          "color": 0, 
+          "color_b": 0.0, 
+          "override_color": true, 
+          "color_g": 1.0, 
+          "override_enabled": true, 
+          "parent": "C_browGuideShaperRow02_CTL", 
+          "controlVertices": [
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.2107152416252891, 
+              0.11999563835533422, 
+              0.00034843130044581727
+            ], 
+            [
+              0.12248709956226556, 
+              0.209276986551572, 
+              0.00020254035284406058
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              -0.11999547430504975, 
+              0.2107155297019574, 
+              -0.00019842028909167198
+            ], 
+            [
+              -0.2092767004415954, 
+              0.12248726701895407, 
+              -0.00034605257941944245
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.2107152416252891, 
+              -0.11999563835533422, 
+              -0.0003484313004440409
+            ], 
+            [
+              -0.12248709956226556, 
+              -0.209276986551572, 
+              -0.00020254035284228422
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              0.11999547430505153, 
+              -0.2107155297019574, 
+              0.0001984202890952247
+            ], 
+            [
+              0.20927670044159719, 
+              -0.12248726701895407, 
+              0.000346052579422107
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ], 
+            [
+              0.17174465242550063, 
+              -0.0010172039314397807, 
+              -0.17118062056137173
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.17117759829369295, 
+              0.0010172039314397807, 
+              -0.17174766471464764
+            ], 
+            [
+              -0.2424825738673162, 
+              0.0014385431503853852, 
+              -0.00040096064193573255
+            ], 
+            [
+              -0.17174465242549886, 
+              0.0010172039314397807, 
+              0.17118062056137529
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.0003720225413417211, 
+              0.12124145268714415, 
+              0.21000085578735384
+            ], 
+            [
+              0.001045328779698096, 
+              0.2099962581267789, 
+              0.1212454805029024
+            ], 
+            [
+              0.0014385411836936868, 
+              0.2424829053742883, 
+              2.378721025486641e-06
+            ], 
+            [
+              0.0014462964775185938, 
+              0.2099962581267789, 
+              -0.12124136043914913
+            ], 
+            [
+              0.0010665186423519657, 
+              0.12124145268714415, 
+              -0.20999847706632746
+            ], 
+            [
+              0.0004009676978213861, 
+              0.0, 
+              -0.24248684094205064
+            ], 
+            [
+              -0.0003720225413399447, 
+              -0.12124145268714415, 
+              -0.21000085578735117
+            ], 
+            [
+              -0.0010453287796963195, 
+              -0.2099962581267789, 
+              -0.12124548050289974
+            ], 
+            [
+              -0.0014385411836919104, 
+              -0.2424829053742883, 
+              -2.3787210228221056e-06
+            ], 
+            [
+              -0.0014462964775177056, 
+              -0.2099962581267789, 
+              0.12124136043915268
+            ], 
+            [
+              -0.0010665186423510775, 
+              -0.12124145268714415, 
+              0.20999847706632924
+            ], 
+            [
+              -0.0004009676978213861, 
+              0.0, 
+              0.2424868409420533
+            ], 
+            [
+              0.17117759829369383, 
+              -0.0010172039314397807, 
+              0.1717476647146503
+            ], 
+            [
+              0.24248257386731709, 
+              -0.0014385431503853852, 
+              0.0004009606419375089
+            ]
+          ], 
+          "type": "nurbsCurve", 
+          "color_r": 1.0, 
+          "name": "C_browGuideShaperRow02Main_SHP"
+        }
+      ], 
+      "outliner_color": null, 
+      "name": "C_browGuideShaperRow02_CTL", 
+      "parent": "C_browGuideShaperRow0200_BUF"
+    }, 
+    "C_mouthGuideShaperRow03_CTL": {
+      "shapes": [
+        {
+          "knots": [
+            0.0, 
+            1.0, 
+            2.0, 
+            3.0, 
+            4.0, 
+            5.0, 
+            6.0, 
+            7.0, 
+            8.0, 
+            9.0, 
+            10.0, 
+            11.0, 
+            12.0, 
+            13.0, 
+            14.0, 
+            15.0, 
+            16.0, 
+            17.0, 
+            18.0, 
+            19.0, 
+            20.0, 
+            21.0, 
+            22.0, 
+            23.0, 
+            24.0, 
+            25.0, 
+            26.0, 
+            27.0, 
+            28.0, 
+            29.0, 
+            30.0, 
+            31.0, 
+            32.0
+          ], 
           "form": 1, 
           "color": 0, 
           "color_b": 0.0, 
           "override_enabled": true, 
           "color_r": 1.0, 
           "degree": 1, 
-          "parent": "C_browGuideShaperRow02_CTL", 
-          "name": "C_browGuideShaperRow02Main_SHP", 
+          "parent": "C_mouthGuideShaperRow03_CTL", 
+          "name": "C_mouthGuideShaperRow03Main_SHP", 
           "override_color": true, 
           "color_g": 1.0, 
           "controlVertices": [
@@ -170979,228 +171822,6 @@
             ]
           ], 
           "type": "nurbsCurve"
-        }
-      ], 
-      "outliner_color": null, 
-      "name": "C_browGuideShaperRow02_CTL", 
-      "parent": "C_browGuideShaperRow0200_BUF"
-    }, 
-    "C_mouthGuideShaperRow03_CTL": {
-      "shapes": [
-        {
-          "knots": [
-            0.0, 
-            1.0, 
-            2.0, 
-            3.0, 
-            4.0, 
-            5.0, 
-            6.0, 
-            7.0, 
-            8.0, 
-            9.0, 
-            10.0, 
-            11.0, 
-            12.0, 
-            13.0, 
-            14.0, 
-            15.0, 
-            16.0, 
-            17.0, 
-            18.0, 
-            19.0, 
-            20.0, 
-            21.0, 
-            22.0, 
-            23.0, 
-            24.0, 
-            25.0, 
-            26.0, 
-            27.0, 
-            28.0, 
-            29.0, 
-            30.0, 
-            31.0, 
-            32.0
-          ], 
-          "degree": 1, 
-          "form": 1, 
-          "color": 0, 
-          "color_b": 0.0, 
-          "override_color": true, 
-          "color_g": 1.0, 
-          "override_enabled": true, 
-          "parent": "C_mouthGuideShaperRow03_CTL", 
-          "controlVertices": [
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.2107152416252891, 
-              0.11999563835533422, 
-              0.00034843130044581727
-            ], 
-            [
-              0.12248709956226556, 
-              0.209276986551572, 
-              0.00020254035284406058
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              -0.11999547430504975, 
-              0.2107155297019574, 
-              -0.00019842028909167198
-            ], 
-            [
-              -0.2092767004415954, 
-              0.12248726701895407, 
-              -0.00034605257941944245
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.2107152416252891, 
-              -0.11999563835533422, 
-              -0.0003484313004440409
-            ], 
-            [
-              -0.12248709956226556, 
-              -0.209276986551572, 
-              -0.00020254035284228422
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              0.11999547430505153, 
-              -0.2107155297019574, 
-              0.0001984202890952247
-            ], 
-            [
-              0.20927670044159719, 
-              -0.12248726701895407, 
-              0.000346052579422107
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ], 
-            [
-              0.17174465242550063, 
-              -0.0010172039314397807, 
-              -0.17118062056137173
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.17117759829369295, 
-              0.0010172039314397807, 
-              -0.17174766471464764
-            ], 
-            [
-              -0.2424825738673162, 
-              0.0014385431503853852, 
-              -0.00040096064193573255
-            ], 
-            [
-              -0.17174465242549886, 
-              0.0010172039314397807, 
-              0.17118062056137529
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.0003720225413417211, 
-              0.12124145268714415, 
-              0.21000085578735384
-            ], 
-            [
-              0.001045328779698096, 
-              0.2099962581267789, 
-              0.1212454805029024
-            ], 
-            [
-              0.0014385411836936868, 
-              0.2424829053742883, 
-              2.378721025486641e-06
-            ], 
-            [
-              0.0014462964775185938, 
-              0.2099962581267789, 
-              -0.12124136043914913
-            ], 
-            [
-              0.0010665186423519657, 
-              0.12124145268714415, 
-              -0.20999847706632746
-            ], 
-            [
-              0.0004009676978213861, 
-              0.0, 
-              -0.24248684094205064
-            ], 
-            [
-              -0.0003720225413399447, 
-              -0.12124145268714415, 
-              -0.21000085578735117
-            ], 
-            [
-              -0.0010453287796963195, 
-              -0.2099962581267789, 
-              -0.12124548050289974
-            ], 
-            [
-              -0.0014385411836919104, 
-              -0.2424829053742883, 
-              -2.3787210228221056e-06
-            ], 
-            [
-              -0.0014462964775177056, 
-              -0.2099962581267789, 
-              0.12124136043915268
-            ], 
-            [
-              -0.0010665186423510775, 
-              -0.12124145268714415, 
-              0.20999847706632924
-            ], 
-            [
-              -0.0004009676978213861, 
-              0.0, 
-              0.2424868409420533
-            ], 
-            [
-              0.17117759829369383, 
-              -0.0010172039314397807, 
-              0.1717476647146503
-            ], 
-            [
-              0.24248257386731709, 
-              -0.0014385431503853852, 
-              0.0004009606419375089
-            ]
-          ], 
-          "type": "nurbsCurve", 
-          "color_r": 1.0, 
-          "name": "C_mouthGuideShaperRow03Main_SHP"
         }
       ], 
       "outliner_color": null, 

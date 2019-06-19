@@ -88,7 +88,7 @@ class Weight_Node(component_base.Component):
             return
         self.node = node_utils.get_node_agnostic(self.nodeType, name=self.name, parent=self.parent, component_name=self.component_name)
         # Node has cycle issues, will be deleted before giving to animators, so ignore cycles during setup...
-        if self.nodeType == "LHCurveWeightNode":
+        if self.nodeType == "LHCurveWeightNode_2":
             cmds.cycleCheck( self.node, e=False)
 
             
@@ -155,6 +155,8 @@ class AnimCurveWeight(Weight_Node):
                  autoCreateNum = 11,
                  autoCreateTimeRange = 20.0,
                  createSingleFalloff = True,
+                 auto_create_single_falloff_handweights = False,
+                 falloff_weight_mesh = "",
                  uKeyframesAllOnes = False,
                  falloffCurveDict = None,
                  curveOverrideDict = None,
@@ -195,6 +197,12 @@ class AnimCurveWeight(Weight_Node):
         self.autoCreateTimeRange =autoCreateTimeRange
         self.auto_create_reverse=auto_create_reverse
         self.createSingleFalloff =createSingleFalloff
+        self.auto_create_single_falloff_handweights =auto_create_single_falloff_handweights
+        self.falloff_weight_mesh = falloff_weight_mesh
+        
+        
+        
+        
         self.uKeyframesAllOnes =uKeyframesAllOnes
         self.falloffCurveDict =falloffCurveDict
         self.curveOverrideDict = curveOverrideDict
@@ -228,7 +236,7 @@ class AnimCurveWeight(Weight_Node):
         # These attributes will be filled with the latest created plugs, if you want a list of all the plugs check the kDoubleArrayOutputPlugs
         self.newKDoubleArrayOutputPlugs = []
         self.newKFloatArrayOutputPlugs = []
-        self.nodeType = "LHCurveWeightNode"
+        self.nodeType = "LHCurveWeightNode_2"
 
         # only support single base mesh for now
         if type(self.baseGeo) == list:
@@ -236,6 +244,9 @@ class AnimCurveWeight(Weight_Node):
             
         self.weightNames = ["{0}_{1}".format(x, self.animCurveSuffix) for x in self.weightCurveNames]
         self.weightNamesFalloff = ["{0}Falloff_{1}".format(x, self.animCurveSuffix) for x in self.weightCurveNames]
+
+        if not self.falloff_weight_mesh or not cmds.objExists(self.falloff_weight_mesh):
+            self.auto_create_single_falloff_handweights = False
 
 
     def check(self):
@@ -246,26 +257,6 @@ class AnimCurveWeight(Weight_Node):
             raise Exception('Make sure the length of the outputAttrs arg matches the number of input arg elements')
             quit()
 
-    def getAttrs(self):
-        self.membershipWeights = deformerUtils.attrCheck(node=self.baseGeo,
-                                           attrs=["membershipWeights"],
-                                           attrType=None,
-                                           weightmap=True)[0]
-        if self.autoCreateAnimCurves:
-            self.factorAttrNames = name_utils.name_based_on_range(count=self.autoCreateNum,
-                                                                  name="falloff",
-                                                                  suffixSeperator="",
-                                                                  side_name=self.auto_create_name_side,
-                                                                  reverse_side=self.auto_create_reverse,
-                                                                  )
-
-            defaultVals = [0.0 for x in range(self.autoCreateNum)]
-
-            self.floatAttrs = deformerUtils.attrCheck(node=self.ctrlNode,
-                                        attrs=self.factorAttrNames,
-                                        attrType="float",
-                                        defaultVals = defaultVals,
-                                        k=True)
 
     def getDriverNodes(self):
         self.projectionMesh = misc.getShape(self.projectionGeo)
@@ -297,7 +288,8 @@ class AnimCurveWeight(Weight_Node):
                                                                                                     itts=self.falloffItts,
                                                                                                     otts=self.falloffOtts,
                                                                                                     falloffCurveDict=self.falloffCurveDict,
-                                                                                                    component_name=self.component_name
+                                                                                                    component_name=self.component_name,
+                                                                                                    auto_create_reverse = self.auto_create_reverse,
                                                                                                     )
             self.overrideWeightCurves()
             return
@@ -323,6 +315,32 @@ class AnimCurveWeight(Weight_Node):
                                      otts=self.falloffOtts
                                      )
         self.overrideWeightCurves()
+        
+    def getAttrs(self):
+        self.membershipWeights = deformerUtils.attrCheck(node=self.baseGeo,
+                                           attrs=["membershipWeights"],
+                                           attrType=None,
+                                           weightmap=True)[0]
+        if self.autoCreateAnimCurves:
+            self.factorAttrNames = name_utils.name_based_on_range(count=self.autoCreateNum,
+                                                                  name="falloff",
+                                                                  suffixSeperator="",
+                                                                  side_name=self.auto_create_name_side,
+                                                                  reverse_side=self.auto_create_reverse,
+                                                                  )
+
+            defaultVals = [0.0 for x in range(self.autoCreateNum)]
+
+            self.floatAttrs = deformerUtils.attrCheck(node=self.ctrlNode,
+                                        attrs=self.factorAttrNames,
+                                        attrType="float",
+                                        defaultVals = defaultVals,
+                                        k=True)
+            if self.auto_create_single_falloff_handweights:
+                self.singleFalloffOverrideHandWeights = attr_utils.get_attr(node=self.falloff_weight_mesh,
+                                                                            attr = self.singleFalloffName + "OverrideWeights",
+                                                                            weightmap=True)
+        
 
     def overrideWeightCurves(self):
         if not self.curveOverrideDict:
@@ -356,8 +374,8 @@ class AnimCurveWeight(Weight_Node):
             elemIdx = idx + self.startElem
             cmds.connectAttr(self.uCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveU".format(self.node, elemIdx),f=True)
             cmds.connectAttr(self.vCurveOutAttrs[idx], "{0}.inputs[{1}].AnimCurveV".format(self.node, elemIdx),f=True)
-            if hasattr(self, "floatAttrs") and len(self.floatAttrs)-1 <= idx:
-                cmds.connectAttr(self.floatAttrs[idx], "{0}.inputs[{1}].falloffU".format(self.node, elemIdx),f=True)
+            if self.autoCreateAnimCurves and self.auto_create_single_falloff_handweights:
+                cmds.connectAttr(self.singleFalloffOverrideHandWeights, "{0}.inputs[{1}].overrideWeights".format(self.node, elemIdx),f=True)
 
             kDoubleOut = "{0}.outDoubleWeights[{1}].outWeightsDoubleArray".format(self.node, elemIdx)
             kFloatOut = "{0}.outDoubleWeights[{1}].outWeightsFloatArray[{1}]".format(self.node, elemIdx)
@@ -719,7 +737,6 @@ class WeightStack(Weight_Node):
         self.positionsFromWeights = []
         self.rotationsFromWeights = []
         numElements = cmds.getAttr("{0}.inputs".format(self.node), mi=True)
-        print numElements, self.controls
         for idx in range(len(numElements)):
             self.positionsFromWeights.append(self.getPositionsFromWeightsByIndex(idx))
             self.rotationsFromWeights.append(self.getRotationOrientation(self.positionsFromWeights[idx], self.controlAutoOrientMesh))

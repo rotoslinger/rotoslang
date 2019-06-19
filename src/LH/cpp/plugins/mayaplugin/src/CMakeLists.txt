@@ -63,6 +63,8 @@ set(SOURCE_FILES
 	"LHVectorDeformerSimple.cpp"
 	"LHCurveRollSimple.cpp"
 	"LHCurveTransform.cpp"
+	"LHCurveWeightNode_2.cpp"
+	"LHCurveWeightUtils.cpp"
 
 )
 

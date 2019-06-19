@@ -197,27 +197,32 @@ def cluster_lattice_sheet(lattice_name,
 
 
 
-def autoposition_matrix_deformer_controls(weight_stack_node, threshold=.09, is_mesh_rivet_control=True, orientation_mesh=""):
+def autoposition_matrix_deformer_controls(matrix_deformer_node, threshold=.09, is_mesh_rivet_control=False, orientation_mesh="", project_to_curve=None):
     # This will reposition matrix deformer
     # Rivets
     # Guides
     
-    numElements = cmds.getAttr("{0}.inputs".format(weight_stack_node), mi=True)
-    weighted_mesh = cmds.listConnections(weight_stack_node + ".weightedMesh")
+    numElements = cmds.getAttr("{0}.inputs".format(matrix_deformer_node), mi=True)
+    weighted_mesh = cmds.deformer(matrix_deformer_node, q=True, geometry=True)
     if not weighted_mesh:
         return
     weighted_mesh = weighted_mesh[0]
+    print weighted_mesh
     for idx in range(len(numElements)):
-        factor_attr =  "{0}.inputs[{1}].factor".format(weight_stack_node, idx)
-        position = getPositionsFromWeightsByIndex(weight_stack_node, weighted_mesh, idx, threshold)
-        connection = cmds.listConnections(factor_attr)
+        matrix_attr =  "{0}.inputs[{1}].matrix".format(matrix_deformer_node, idx)
+        position = getPositionsFromMatrixWeightsByIndex(matrix_deformer_node, weighted_mesh, idx, threshold)
+        if project_to_curve:
+            position = misc.getClosestPointOnCurve(project_to_curve, position)
+        
+        connection = cmds.listConnections(matrix_attr)
         if not connection:
             continue
         connection = connection[0]
-        maya_object_type = str(cmds.objectType(connection))
-        if maya_object_type != "nullTransform" and maya_object_type != "transform":
-            continue
-        node_to_position = connection
+        # maya_object_type = str(cmds.objectType(connection))
+        # if maya_object_type != "nullTransform" and maya_object_type != "transform":
+        #     continue
+        
+        node_to_position = misc.getParent(connection)
         rotation=None
         if orientation_mesh:
             rotation=get_rotation_from_nurbs()
@@ -225,7 +230,6 @@ def autoposition_matrix_deformer_controls(weight_stack_node, threshold=.09, is_m
             position_mesh_rivet(node_to_position, position, rotation)
             continue
         misc.move(node_to_position, position, rotation)
-        
 
 def autoposition_weight_stack_controls(weight_stack_node, threshold=.09, is_mesh_rivet_control=True, orientation_mesh="", project_to_curve=None):
     # THIS WILL NOT WORK if a transform is not connected to the factor, so be VERY CAREFUL when using this
@@ -256,6 +260,13 @@ def autoposition_weight_stack_controls(weight_stack_node, threshold=.09, is_mesh
             continue
         misc.move(node_to_position, position, rotation)
             
+
+def getPositionsFromMatrixWeightsByIndex(weight_stack_node, weighted_mesh, index=0, threshold=.09):
+    weightList =  "{0}.inputs[{1}].matrixWeight".format(weight_stack_node, index)
+    weightList = cmds.getAttr(weightList)
+    height, width, depth, center = deformerUtils.getPointPositionByWeights(weightList, weighted_mesh, threshold=threshold)
+    return [center.x, center.y, center.z]
+
 
 def getPositionsFromWeightsByIndex(weight_stack_node, weighted_mesh, index=0, threshold=.09):
     weightList =  "{0}.inputs[{1}].inputWeights".format(weight_stack_node, index)

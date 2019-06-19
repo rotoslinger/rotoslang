@@ -31,8 +31,9 @@ class Multiwrap(base.Deformer):
                     # geoToDeform,
                     driven_meshes,
                     driver_mesh_base=None,
+                    component_name="multiwrap",
                  **kw):
-        super(Multiwrap, self).__init__(**kw)
+        super(Multiwrap, self).__init__(component_name=component_name,**kw)
         self.driven_meshes = driven_meshes
         self.driver_mesh_base = driver_mesh_base
         self.deformerType="LHMultiWrap"

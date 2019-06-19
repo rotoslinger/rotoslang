@@ -168,12 +168,25 @@ def create_curve(curve_dict,
     for shape in curve_dict["shapes"]:
         # check if it already exists
         curve_name = shape["name"]
-        if shape_suffix or shape_name:
+        
+        if shape_suffix and not shape_name:
             curve_name = "{0}{1}_{2}".format(name, shape["name"], shape_suffix)
-            
+
+        if shape_name:
+            curve_name = shape_name
+
+        if shape_suffix and shape_name:
+            curve_name = "{0}_{1}".format(shape_name, shape_suffix)
+
         if check_existing:
             curve_name = shape["name"]
+            
         old_shape=None
+
+        # make sure that somehow None wasn't part of the name....
+        if "_None" in curve_name:
+            curve_name = curve_name.replace("_None", "_SHP")
+
         existing_path = None
         if cmds.objExists(curve_name):
             existing_path = True

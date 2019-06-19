@@ -137,21 +137,22 @@ class Shape(object):
             cmds.scale(self.size, self.size, self.size, 
                     shape_cvs,
                     r = True,ocp=True)
-            cmds.rotate(self.orient[0],
-                        self.orient[1],
-                        self.orient[2],
-                        shape_cvs, 
-                        r = True,ocp=True)
             cmds.move(self.offset[0],
                     self.offset[1],
                     self.offset[2],
                     shape_cvs, 
-                    r = True)
+                    r = True,
+                    os=True)
             cmds.scale(self.scale[0],
                     self.scale[1],
                     self.scale[2],
                     shape_cvs, 
                     r = True,ocp=True)
+            cmds.rotate(self.orient[0],
+                        self.orient[1],
+                        self.orient[2],
+                        shape_cvs, 
+                        r = True,ocp=True)
 
     def color_it(self):
         if not self.color_side:

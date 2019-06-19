@@ -9,6 +9,13 @@ from rig_2.tag import utils as tag_utils
 reload(tag_utils)
 from rig_2.node import utils as node_utils
 reload(node_utils)
+from rig_2.shape import nurbscurve
+reload(nurbscurve)
+
+from rig_2.manipulator import elements as manipulator_elements
+reload(manipulator_elements)
+
+
 
 class Component(object):
     def __init__(self,
@@ -35,6 +42,7 @@ class Component(object):
                  nullTransform = False,
                  component_name = "",
                  is_ctrl_guide = False,
+                 do_guide = False,
                  ):
         """
         @param side:
@@ -59,6 +67,7 @@ class Component(object):
         self.lockAttrs = lockAttrs
         self.gimbal = gimbal
         self.size = size
+        self.do_guide = do_guide
 
         self.translate = translate
         self.rotate = rotate
@@ -134,24 +143,6 @@ class Component(object):
                                                 null_transform=self.nullTransform,
                                                 guide=self.is_ctrl_guide)
         self.ctrl.create()
-                #  side="C",
-                #  name="controlTest",
-                #  parent="",
-                #  shape_dict = elements.circle,
-                #  lock_attrs=["v"],
-                #  num_buffer = 3,
-                #  gimbal = True,
-                #  num_secondary = 0,
-                #  show_rot_order = True,
-                #  size = 1,
-                #  orient = [0,0,0],
-                #  offset = [0,0,0],
-                #  scale = [1,1,1],
-                #  hide = False,
-                #  null_transform = False,
-                #  color_side=True,
-                #  outliner_color=False,
-                #  ctrl_alias_attr_remap={}
 
 
 
@@ -203,8 +194,30 @@ class Component(object):
         #     cmds.setAttr(curve.fullPathName() + ".overrideColorG", colorG)
         #     cmds.setAttr(curve.fullPathName() + ".overrideColorB", colorB)
 
+    # def createGuide(self):
+    #     pass
     def createGuide(self):
-        pass
+        if not self.numBuffer >= 2 or not self.do_guide:
+            return
+        # The guide is really just the buffer above the rivet.  This creates a shape for that buffer for easier selection
+        self.guide_transform, self.guideShapes = nurbscurve.create_curve(manipulator_elements.sphere_small,
+                                                                        self.buffer01,
+                                                                         self.buffer01,
+                                                                         transform_suffix=None,
+                                                                         check_existing=False,
+                                                                         outliner_color=False,
+                                                                         color=False,
+                                                                         shape_name="{0}_{1}".format(self.side, self.name))
+
+        tag_utils.tag_guide(self.guide_transform)
+        tag_utils.create_component_tag(self.guide_transform, self.component_name)
+
+        for guide_shape in self.guideShapes:
+            tag_utils.tag_guide_shape(guide_shape)
+            tag_utils.create_component_tag(guide_shape, self.component_name)
+            # Set the default visibility of the guide
+            cmds.setAttr(guide_shape + ".v", 0)
+        self.guideShape = self.guideShapes[0]
 
     def createAttrs(self):
         return

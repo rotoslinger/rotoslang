@@ -94,7 +94,8 @@ def get_class_node_from_component_name(component_name):
 
 def create_component_tag(node_to_tag, component_name, connect_to_class_node=True):
     class_node = "{0}_CLASS".format(component_name)
-
+    if not cmds.objExists(class_node):
+        return
     if type(node_to_tag) != list:
         node_to_tag = [node_to_tag]
     for node in node_to_tag:

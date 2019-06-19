@@ -45,7 +45,7 @@ class Base(QtWidgets.QWidget):
                  tag_remove_no_export_func=None,
                  no_export_tag_options=None,
                  ):
-        super(Base, self).__init__(parent )
+        QtWidgets.QWidget.__init__(self, parent )
         # args
         self.parent = parent
         self.win_title = win_title
@@ -447,7 +447,7 @@ class Base(QtWidgets.QWidget):
         self.mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
         # self.setParent(self.mayaWin)
         # self.installEventFilter(self)
-        self.mayaWin.installEventFilter(self)
+        # self.mayaWin.installEventFilter(self)
         globals()[self.win_name] = self
         globals()[self.win_name].show()
         

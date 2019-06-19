@@ -1329,9 +1329,11 @@ def geoConstraint(driverMesh=None, driven=None, parent=None, name=None, translat
         cmds.connectAttr(decompose + ".outputScale", driven + ".scale" )
     if offsetBuffer:
         getSetMaintainOffset(offsetBuffer, offsetTransform)
-
-    message_utils.create_message_attr_setup(constraint, "offsetBuffer", offsetBuffer, "geoConstraint")
-    message_utils.create_message_attr_setup(constraint, "upVectorObject", up_vector_object, "geoConstraint")
+        message_utils.create_message_attr_setup(constraint, "offsetBuffer", offsetBuffer, "geoConstraint")
+    
+    if up_vector_object:
+        message_utils.create_message_attr_setup(constraint, "upVectorObject", up_vector_object, "geoConstraint")
+        
     message_utils.create_message_attr_setup(constraint, "drivenObject", driven, "geoConstraint")
 
     return constraint
@@ -1367,11 +1369,14 @@ def updateGeoConstraint(offsetBuffer=False,
         offsetBuffer = message_utils.get_node_from_message_out(geoConstraint + ".offsetBuffer")
     if offsetBuffer and not geoConstraint:
         geoConstraint = message_utils.get_node_from_message_in(offsetBuffer + ".geoConstraint")
-        
-    up_vector_object = message_utils.get_node_from_message_in(offsetBuffer + ".upVectorObject")
+    if offsetBuffer:
+        up_vector_object = message_utils.get_node_from_message_in(offsetBuffer + ".upVectorObject")
 
     if not offsetBuffer:
-        offsetBuffer = cmds.ls(sl=True)[0]
+        return
+    
+    # offsetBuffer = cmds.ls(sl=True)[0]
+        
     if not geoConstraint:
         geoConstraint = cmds.listConnections(cmds.ls(sl=True)[0] + ".geoConstraint")[0]
 

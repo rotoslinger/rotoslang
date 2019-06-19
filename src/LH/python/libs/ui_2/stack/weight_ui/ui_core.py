@@ -25,6 +25,10 @@ reload(decorator)
 
 from rig.utils import misc
 reload(misc)
+
+from rig_2.export import utils as export_utils
+reload(export_utils)
+
 '''
 @code
 import sys
@@ -64,18 +68,17 @@ def remove_tag_no_export(checkboxes):
 def export_all(file_dialog, checkboxes, backup_checkbox, backup_filename, backup_path):
     weight_curves, falloff_weight_curves, hand_painted_weights = get_import_export_checkboxes(checkboxes)
     
-    export_dict = weight_utils.export_all(file_dialog.contents.text(),
-                                          weight_curves=weight_curves,
-                                          falloff_weight_curves=falloff_weight_curves,
-                                          hand_painted_weights=hand_painted_weights)
-    
-    full_backup_name = backup_utils.generate_backup_filename(backup_path, backup_filename)
-    backup_utils.generate_backup_file(full_backup_name, export_dict)
+    export_utils.export_all_weights(file_dialog.asset_name,
+                                    file_dialog.contents.text(),
+                                    weight_curves=weight_curves,
+                                    falloff_weight_curves=falloff_weight_curves,
+                                    hand_painted_weights=hand_painted_weights)
+
 
 @decorator.undo_ignore
 def import_all(file_dialog, checkboxes):
     weight_curves, falloff_weight_curves, hand_painted_weights = get_import_export_checkboxes(checkboxes)
-    weight_utils.import_all(file_dialog.contents.text(),
+    export_utils.import_all_weights(file_dialog.contents.text(),
                             weight_curves=weight_curves,
                             falloff_weight_curves=falloff_weight_curves,
                             hand_painted_weights=hand_painted_weights)

@@ -250,7 +250,7 @@ MStatus LHCurveWeightNode::getMeshData(MDataBlock& data, MObject &oInputMesh, MO
     return MS::kSuccess;
 }
 
-MDoubleArray getMembershipWeights(MDataBlock& data, MDoubleArray membershipWeights, int numVerts, int iCacheMemberWeights)
+MDoubleArray LHCurveWeightNode::getMembershipWeights(MDataBlock& data, MDoubleArray membershipWeights, int numVerts, int iCacheMemberWeights)
 {
     MDoubleArray rMembershipWeights;
     if (!membershipWeights.length() || membershipWeights.length() != numVerts || !iCacheMemberWeights)
@@ -266,6 +266,8 @@ MDoubleArray getMembershipWeights(MDataBlock& data, MDoubleArray membershipWeigh
     {
         return membershipWeights;
     }
+    return membershipWeights;
+
 }
 
 
@@ -319,14 +321,14 @@ MStatus LHCurveWeightNode::computeDoubleArray(MDataBlock& data)
     return MS::kSuccess;
 }
 
-MStatus animCurveObjectCheck(MObject curve)
-{
-    if (curve.isNull())
-    {
-        return MS::kFailure;
-    } 
-    return MS::kSuccess;
-}
+// MStatus animCurveObjectCheck(MObject curve)
+// {
+//     if (curve.isNull())
+//     {
+//         return MS::kFailure;
+//     } 
+//     return MS::kSuccess;
+// }
 
 MStatus LHCurveWeightNode::getAnimCurveInfo(MFnAnimCurve *fnAnimCurve, float &timeOffset, float &timeLength)
 {
@@ -344,22 +346,22 @@ MStatus LHCurveWeightNode::getAnimCurveInfo(MFnAnimCurve *fnAnimCurve, float &ti
     return MS::kSuccess;
 }
 
-double remapcurveWeight(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength)
-{
-    double remap = coord * timeLength;
-    remap = remap - timeOffset;
-    MTime remapTime(remap);
-    return fnAnimCurve->evaluate(remapTime);
-}
+// double remapcurveWeight(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength)
+// {
+//     double remap = coord * timeLength;
+//     remap = remap - timeOffset;
+//     MTime remapTime(remap);
+//     return fnAnimCurve->evaluate(remapTime);
+// }
 
-double remapcurveWeightPlus(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength, double falloffUAmount, double center) 
-{
-    coord = coord + (coord-center) * falloffUAmount;
-    double remap = coord * timeLength;
-    remap = remap - timeOffset;
-    MTime remapTime(remap);
-    return fnAnimCurve->evaluate(remapTime);
-}
+// double remapcurveWeightPlus(MFnAnimCurve *fnAnimCurve, double coord, float timeOffset, float timeLength, double falloffUAmount, double center) 
+// {
+//     coord = coord + (coord-center) * falloffUAmount;
+//     double remap = coord * timeLength;
+//     remap = remap - timeOffset;
+//     MTime remapTime(remap);
+//     return fnAnimCurve->evaluate(remapTime);
+// }
 
 
 MStatus LHCurveWeightNode::getAnimCurvePlug(int currentElem, MPlug& rPCurve, MObject curveObject)

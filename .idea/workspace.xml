@@ -2,7 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="84d539d8-cdd9-467a-ac62-46df048f5a56" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/ipch/4b91c96fa61ff147/LHCOLLISIONLOCATOR.ipch" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/ipch/4b91c96fa61ff147/LHCOLLISIONLOCATOR.ipch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHCurveWeightNode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHCurveWeightNode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHCurveWeightNode.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHCurveWeightNode.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/pluginMain.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/pluginMain.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/face_build.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/face_build.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/guides.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/guides.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/elements.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/elements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/LHCurveDeformerCmds.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig/utils/LHCurveDeformerCmds.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/brow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/brow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/face_guide.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/face_guide.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/weightStack.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/weightStack.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/elements/face_guide_elements.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/elements/face_guide_elements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/control.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/control.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/shape/nurbscurve.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/shape/nurbscurve.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/weights/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/weights/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/guide_ui/ui_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/ui_2/stack/guide_ui/ui_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/assets/oldMan/oldManBodyRig.ma" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/assets/oldMan/oldManBodyRig.ma" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,8 +38,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="218" column="13" selection-start-line="218" selection-start-column="8" selection-end-line="218" selection-end-column="9" />
+            <state relative-caret-position="3774">
+              <caret line="226" column="13" selection-start-line="226" selection-start-column="13" selection-end-line="226" selection-end-column="13" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -24,13 +47,25 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="333">
-              <caret line="143" column="54" selection-start-line="143" selection-start-column="54" selection-end-line="143" selection-end-column="54" />
+              <caret line="149" column="54" selection-start-line="149" selection-start-column="54" selection-end-line="149" selection-end-column="54" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="374">
+              <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+              <folding>
+                <element signature="e#0#33#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -39,8 +74,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="663">
-              <caret line="83" column="48" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
+            <state relative-caret-position="1428">
+              <caret line="86" column="48" selection-start-line="86" selection-start-column="48" selection-end-line="86" selection-end-column="48" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -51,8 +86,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="646">
-              <caret line="83" selection-start-line="83" selection-end-line="83" />
+            <state relative-caret-position="1836">
+              <caret line="112" selection-start-line="112" selection-end-line="112" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -63,7 +98,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
+            <state relative-caret-position="221">
               <caret line="22" column="11" selection-start-line="22" selection-start-column="6" selection-end-line="22" selection-end-column="15" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
@@ -75,8 +110,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/face_guide.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="843">
-              <caret line="226" column="63" selection-start-line="226" selection-start-column="63" selection-end-line="226" selection-end-column="63" />
+            <state relative-caret-position="3757">
+              <caret line="234" column="63" selection-start-line="234" selection-start-column="63" selection-end-line="234" selection-end-column="63" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -154,12 +189,13 @@
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/base.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" />
+        <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="155" />
-    <option name="y" value="733" />
+    <option name="x" value="99" />
+    <option name="y" value="27" />
     <option name="width" value="1750" />
     <option name="height" value="981" />
   </component>
@@ -209,35 +245,6 @@
               <item name="LH" type="462c0819:PsiDirectoryNode" />
               <item name="python" type="462c0819:PsiDirectoryNode" />
               <item name="libs" type="462c0819:PsiDirectoryNode" />
-              <item name="rig" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
-              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="LH" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="libs" type="462c0819:PsiDirectoryNode" />
-              <item name="rig" type="462c0819:PsiDirectoryNode" />
-              <item name="deformers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
-              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="LH" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="libs" type="462c0819:PsiDirectoryNode" />
-              <item name="rig" type="462c0819:PsiDirectoryNode" />
-              <item name="rigComponents" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
-              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="LH" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="libs" type="462c0819:PsiDirectoryNode" />
               <item name="rig_2" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -248,28 +255,7 @@
               <item name="python" type="462c0819:PsiDirectoryNode" />
               <item name="libs" type="462c0819:PsiDirectoryNode" />
               <item name="rig_2" type="462c0819:PsiDirectoryNode" />
-              <item name="attr" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
-              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="LH" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="libs" type="462c0819:PsiDirectoryNode" />
-              <item name="rig_2" type="462c0819:PsiDirectoryNode" />
-              <item name="component" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
-              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="LH" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="libs" type="462c0819:PsiDirectoryNode" />
-              <item name="rig_2" type="462c0819:PsiDirectoryNode" />
-              <item name="component" type="462c0819:PsiDirectoryNode" />
-              <item name="subcomponent" type="462c0819:PsiDirectoryNode" />
+              <item name="export" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -341,14 +327,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="59" width="1750" height="981" extended-state="0" />
+    <frame x="99" y="27" width="1750" height="981" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.30490655" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.30490655" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49766356" weight="0.3278302" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49649534" weight="0.3278302" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -356,7 +342,7 @@
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3293979" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50233644" side_tool="true" visible="true" weight="0.3278302" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5035047" side_tool="true" visible="true" weight="0.3278302" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -406,16 +392,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="663">
-          <caret line="83" column="48" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>
@@ -557,20 +533,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lineTest.py" />
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/lip.py" />
-    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/face_guide.py">
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/base.py" />
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="843">
-          <caret line="226" column="63" selection-start-line="226" selection-start-column="63" selection-end-line="226" selection-end-column="63" />
+        <state relative-caret-position="3774">
+          <caret line="226" column="13" selection-start-line="226" selection-start-column="13" selection-end-line="226" selection-end-column="13" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1428">
+          <caret line="86" column="48" selection-start-line="86" selection-start-column="48" selection-end-line="86" selection-end-column="48" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="83" selection-start-line="83" selection-end-line="83" />
+        <state relative-caret-position="1836">
+          <caret line="112" selection-start-line="112" selection-end-line="112" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
@@ -579,7 +566,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
+        <state relative-caret-position="221">
           <caret line="22" column="11" selection-start-line="22" selection-start-column="6" selection-end-line="22" selection-end-column="15" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
@@ -587,11 +574,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/base.py" />
-    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py">
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/face_guide.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="218" column="13" selection-start-line="218" selection-start-column="8" selection-end-line="218" selection-end-column="9" />
+        <state relative-caret-position="3757">
+          <caret line="234" column="63" selection-start-line="234" selection-start-column="63" selection-end-line="234" selection-end-column="63" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
@@ -601,9 +587,19 @@
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="333">
-          <caret line="143" column="54" selection-start-line="143" selection-start-column="54" selection-end-line="143" selection-end-column="54" />
+          <caret line="149" column="54" selection-start-line="149" selection-start-column="54" selection-end-line="149" selection-end-column="54" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -86,7 +86,8 @@ if(LINUX)
         "src/LHMultiWrap.h"
         "src/LHMultiWrap.cpp"
         "src/LHBlendshapeSimple.cpp"
-
+        "src/LHCurveWeightNode_2.cpp"
+        "src/LHCurveWeightUtils.cpp"
     )
 
     add_library(collision SHARED ${source_files})
