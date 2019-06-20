@@ -22,26 +22,26 @@ def test():
     driven = []
     for idx in range(4):
         driven.append(cmds.polyCube(n="driven{0:02}".format(idx), h=200, w=200, d=200)[0])
-    wrap_class = Multiwrap(geoToDeform=driver, driven_meshes=driven)
+    wrap_class = Multiwrap(geoToDeform=driver, driver_meshes=driven)
     wrap_class.create()
 
 class Multiwrap(base.Deformer):
     def __init__(self,
                     # inherited needed arg
                     # geoToDeform,
-                    driven_meshes,
+                    driver_meshes,
                     driver_mesh_base=None,
                     component_name="multiwrap",
                  **kw):
         super(Multiwrap, self).__init__(component_name=component_name,**kw)
-        self.driven_meshes = driven_meshes
+        self.driver_meshes = driver_meshes
         self.driver_mesh_base = driver_mesh_base
         self.deformerType="LHMultiWrap"
         # Deformer base always uses geoToDeform, but to ma
 
     def check(self):
-        if not type(self.driven_meshes) == list:
-            raise Exception('driven_meshes arg type must be list')
+        if not type(self.driver_meshes) == list:
+            raise Exception('driver_meshes arg type must be list')
             quit()
 
     def get_base_geo(self):
@@ -65,7 +65,7 @@ class Multiwrap(base.Deformer):
         self.get_base_geo()
 
         self.driven_mesh_shapes = []
-        for node in self.driven_meshes:
+        for node in self.driver_meshes:
             self.driven_mesh_shapes.append(misc.getShape(node))
 
     def connectDeformer(self):

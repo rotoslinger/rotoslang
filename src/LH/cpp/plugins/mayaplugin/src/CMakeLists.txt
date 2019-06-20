@@ -65,6 +65,7 @@ set(SOURCE_FILES
 	"LHCurveTransform.cpp"
 	"LHCurveWeightNode_2.cpp"
 	"LHCurveWeightUtils.cpp"
+	"matrixCommon.cpp"
 
 )
 

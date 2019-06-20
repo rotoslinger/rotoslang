@@ -88,6 +88,7 @@ if(LINUX)
         "src/LHBlendshapeSimple.cpp"
         "src/LHCurveWeightNode_2.cpp"
         "src/LHCurveWeightUtils.cpp"
+        "src/matrixCommon.cpp"
     )
 
     add_library(collision SHARED ${source_files})

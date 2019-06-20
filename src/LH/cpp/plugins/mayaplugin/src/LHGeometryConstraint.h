@@ -1,5 +1,6 @@
 #pragma once
 #include "formatErrorMacros.h"
+#include "matrixCommon.h"
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MStatus.h>
