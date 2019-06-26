@@ -69,6 +69,7 @@ class Multiwrap(base.Deformer):
             self.driven_mesh_shapes.append(misc.getShape(node))
 
     def connectDeformer(self):
+        print self.driver_mesh_base_shape, "BASE SHAPE", self.deformer, "DEFORMER"
         cmds.connectAttr( self.driver_mesh_base_shape + ".worldMesh", self.deformer + ".baseMesh")
         for idx, mesh_shape in enumerate(self.driven_mesh_shapes):
             cmds.connectAttr( mesh_shape + ".worldMesh", self.deformer + ".inputGeoArray[{0}].inputGeo".format(idx))

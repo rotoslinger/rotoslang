@@ -38,6 +38,19 @@ class Lip(base.Component):
                  baseLowerCurve= "",
                  rollCurveNameUpper = "",
                  rollCurveNameLower = "",
+                # self.deformMeshUpper="C_upperLip"
+                # self.baseUpper="C_upperLipBase"
+                # self.deformMeshLower="C_lowerLip"
+                # self.baseLower="C_lowerLipBase"
+                 deformMeshUpper="C_upperLip",
+                 baseUpper="C_upperLipBase",
+                 deformMeshLower="C_lowerLip",
+                 baseLower="C_lowerLipBase",
+
+                #  deformMeshUpper="jawMouth",
+                #  baseUpper="jawMouthBase",
+                #  deformMeshLower="jawMouth",
+                #  baseLower="jawMouthBase",
                  **kw
                  ):
         super(Lip, self).__init__(component_name=component_name, **kw)
@@ -69,13 +82,18 @@ class Lip(base.Component):
         self.baseLowerCurve=baseLowerCurve
         self.rollCurveNameUpper = rollCurveNameUpper
         self.rollCurveNameLower = rollCurveNameLower
-
+        
+        self.deformMeshUpper=deformMeshUpper
+        self.baseUpper=baseUpper
+        self.deformMeshLower=deformMeshLower
+        self.baseLower=baseLower
+        
         # SUPER TEMP!!!!!!!
         # constant placeholders until get multiwrap geo_asset_class class worked out
-        self.deformMeshUpper="C_upperLip"
-        self.baseUpper="C_upperLipBase"
-        self.deformMeshLower="C_lowerLip"
-        self.baseLower="C_lowerLipBase"
+        # self.deformMeshUpper="C_upperLip"
+        # self.baseUpper="C_upperLipBase"
+        # self.deformMeshLower="C_lowerLip"
+        # self.baseLower="C_lowerLipBase"
         
         self.rivet_mesh_upper = control_rivet_mesh
         self.rivet_mesh_lower = control_rivet_mesh

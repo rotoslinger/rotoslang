@@ -76,6 +76,8 @@ class Deformer(object):
         if cmds.objExists(self.name):
             self.deformer = self.name
             return
+        print self.deformerType, "DEFORMER TYPE"
+        print self.geoToDeform, "GEO TO DEFORM"
         self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name,
                                       foc=self.orderFrontOfChain,
                                       bf=self.orderBefore,
@@ -109,6 +111,21 @@ class Deformer(object):
 
     def cleanup(self):
         return
+
+    def duplicateMeshClean(self, mesh, vis=False):
+        """ Makes sure to duplicate a mesh cleanly, you still need to be careful of deformations """
+        meshShape = cmds.ls(mesh, dag = 1, g = 1)[0]
+        newTransform = cmds.createNode("transform", n = mesh + "Base")
+        newMesh = cmds.createNode("mesh", n = mesh + "BaseShape", p = newTransform)
+        cmds.connectAttr(meshShape + ".outMesh", newMesh + ".inMesh")
+        cmds.refresh()
+        cmds.disconnectAttr(meshShape + ".outMesh", newMesh + ".inMesh")
+        if self.parent:
+            cmds.parent(newTransform, self.parent)
+        if not vis:
+            cmds.setAttr(newTransform + ".visibility", 0)
+        return newTransform, newMesh
+
 
     def post_create(self):
         return
