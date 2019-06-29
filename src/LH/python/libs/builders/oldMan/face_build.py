@@ -41,11 +41,11 @@ def build(asset_name="oldMan",
     mouth_jaw_guides = face_guide.Mouth_Guide(hide_on_build=True)
     mouth_jaw_guides.create()
     
-    # lid_guides = face_guide.Lid_Guide(hide_on_build=True)
-    # lid_guides.create()
+    lid_guides = face_guide.Lid_Guide(hide_on_build=True)
+    lid_guides.create()
 
-    # brow_guides = face_guide.Brow_Guide(hide_on_build=True)
-    # brow_guides.create()
+    brow_guides = face_guide.Brow_Guide(hide_on_build=True)
+    brow_guides.create()
     
     # Import guides for the guide components.
     # They need to be placed in the proper location before the rigs build to make thing simpler
@@ -53,10 +53,10 @@ def build(asset_name="oldMan",
     export_utils.import_all_guides(filename=guide_file, build_components=False)
 
     lip_class = build_lip(mouth_jaw_guides)
-    # mouth_class = build_mouth(mouth_jaw_guides) 
-    # teeth_class = build_jaw()
-    # l_lids_class, r_lids_class = build_lids(lid_guides)
-    # brow_class = build_brow(brow_guides)
+    mouth_class = build_mouth(mouth_jaw_guides)
+    teeth_class = build_jaw()
+    l_lids_class, r_lids_class = build_lids(lid_guides)
+    brow_class = build_brow(brow_guides)
 
     # The face class will be used to wire everything together... it contains the face_anchor
     face_class = face.Face(face_driver="head_output")

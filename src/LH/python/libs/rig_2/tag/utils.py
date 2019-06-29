@@ -21,7 +21,10 @@ def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True)
         for node in get_all_with_tag(tag):
             # Make sure to remove from the dict if EXPORT_OVERRIDE exists
             if node in tag_dict.keys() and cmds.objExists(node + ".EXPORT_OVERRIDE"):
-                del tag_dict[node]
+                # del tag_dict[node]
+                if node not in tag_dict.keys():
+                    tag_dict[node] = []
+                tag_dict[node].append("DELETE_NOEXPORT_IF_EXISTS")
                 continue
             if cmds.objExists(node + ".EXPORT_OVERRIDE"):
                 continue
@@ -35,11 +38,16 @@ def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True)
     for component in get_all_component_names():
         component_class_node = get_class_node_from_component_name(component)
         if not cmds.objExists(component_class_node + ".NO_EXPORT"):
+            for node in get_nodes_by_component_name(component):
+                if node not in tag_dict.keys():
+                    tag_dict[node] = []
+                tag_dict[node].append("DELETE_NOEXPORT_IF_EXISTS")
             continue
+        print "AAAAAAAAAAA", component_class_node + ".NO_EXPORT"
         for node in get_nodes_by_component_name(component):
             # Failsafe make sure to remove from the dict if EXPORT_OVERRIDE exists
             if node in tag_dict.keys() and cmds.objExists(node + ".EXPORT_OVERRIDE"):
-                del tag_dict[node]
+                tag_dict[node].append("DELETE_NOEXPORT_IF_EXISTS")
             if cmds.objExists(node + ".EXPORT_OVERRIDE"):
                 continue
             # Create key entry if the key does not yet exist

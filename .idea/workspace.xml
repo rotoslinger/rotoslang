@@ -3,15 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="84d539d8-cdd9-467a-ac62-46df048f5a56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHMultiWrap.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHMultiWrap.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHMultiWrap.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/LHMultiWrap.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/matrixCommon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/matrixCommon.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/matrixCommon.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/cpp/plugins/mayaplugin/src/matrixCommon.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/face_build.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/face_build.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/test/multiWrapTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/test/multiWrapTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/assets/oldMan/oldManBodyRig.ma" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/assets/oldMan/oldManBodyRig.ma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/assets/oldMan/testingDeformerOrder.ma" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/assets/oldMan/testingDeformerOrder.ma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/weights.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/weights.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,21 +16,9 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip_sub.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3774">
-              <caret line="226" column="13" selection-start-line="226" selection-start-column="13" selection-end-line="226" selection-end-column="13" />
-              <folding>
-                <element signature="e#0#14#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2635">
+            <state relative-caret-position="563">
               <caret line="157" column="54" selection-start-line="157" selection-start-column="54" selection-end-line="157" selection-end-column="54" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
@@ -45,11 +27,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="94" selection-start-line="94" selection-end-line="94" />
+            <state relative-caret-position="408">
+              <caret line="111" column="41" selection-start-line="111" selection-start-column="41" selection-end-line="111" selection-end-column="41" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -58,24 +40,57 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/guides.py.2019_6_28_11_35_12.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1428">
-              <caret line="86" column="48" selection-start-line="86" selection-start-column="48" selection-end-line="86" selection-end-column="48" />
-              <folding>
-                <element signature="e#0#21#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="187">
+              <caret line="3524" column="39" selection-start-line="3524" selection-start-column="5" selection-end-line="3524" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="27" column="60" lean-forward="true" selection-start-line="25" selection-start-column="57" selection-end-line="27" selection-end-column="60" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/weights.py.2019_6_28_11_28_19.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1870">
-              <caret line="130" selection-start-line="130" selection-end-line="130" />
+            <state relative-caret-position="188">
+              <caret line="17266" column="16" selection-start-line="17266" selection-start-column="11" selection-end-line="17266" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/guides.py.2019_6_28_11_29_34.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="114204" selection-start-line="114204" selection-end-line="114204" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/guides.py.2019_6_28_11_32_8.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="3525" column="19" selection-start-line="3525" selection-start-column="19" selection-end-line="3525" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/face_build.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="510">
+              <caret line="63" selection-start-line="63" selection-end-line="63" />
               <folding>
-                <element signature="e#0#14#0" expanded="true" />
+                <element signature="e#0#31#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -135,6 +150,8 @@
       <find>control_</find>
       <find>self.controlParent</find>
       <find>control_rivet_mesh</find>
+      <find>lLids</find>
+      <find>L_middleLidcontrolupperprimary_CTL</find>
     </findStrings>
     <replaceStrings>
       <replace>from rig_2.tag import utils as tag_utils</replace>
@@ -157,7 +174,6 @@
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/mirror/utils.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/nurbscurve.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py" />
-        <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/ui_2/ui_utils.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/manipulator/control.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/utils.py" />
@@ -175,15 +191,18 @@
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/base.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/component/subcomponent/lip.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py" />
+        <option value="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/face_build.py" />
+        <option value="$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/guides.py.2019_6_28_11_29_34.py" />
         <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py" />
+        <option value="$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="99" />
-    <option name="y" value="27" />
-    <option name="width" value="1750" />
-    <option name="height" value="981" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1096" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -224,6 +243,36 @@
               <item name="LH" type="462c0819:PsiDirectoryNode" />
               <item name="python" type="462c0819:PsiDirectoryNode" />
               <item name="libs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
+              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="LH" type="462c0819:PsiDirectoryNode" />
+              <item name="python" type="462c0819:PsiDirectoryNode" />
+              <item name="libs" type="462c0819:PsiDirectoryNode" />
+              <item name="builders" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
+              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="LH" type="462c0819:PsiDirectoryNode" />
+              <item name="python" type="462c0819:PsiDirectoryNode" />
+              <item name="libs" type="462c0819:PsiDirectoryNode" />
+              <item name="builders" type="462c0819:PsiDirectoryNode" />
+              <item name="oldMan" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
+              <item name="rotoslang" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="LH" type="462c0819:PsiDirectoryNode" />
+              <item name="python" type="462c0819:PsiDirectoryNode" />
+              <item name="libs" type="462c0819:PsiDirectoryNode" />
+              <item name="builders" type="462c0819:PsiDirectoryNode" />
+              <item name="oldMan" type="462c0819:PsiDirectoryNode" />
+              <item name="BAK" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="rotoslang" type="b2602c69:ProjectViewProjectNode" />
@@ -313,9 +362,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="99" y="27" width="1750" height="981" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.30490655" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.38514227" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -327,7 +377,7 @@
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3293979" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info active="true" anchor="bottom" id="Event Log" order="9" sideWeight="0.5035047" side_tool="true" visible="true" weight="0.3278302" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5035047" side_tool="true" visible="true" weight="0.30119178" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -384,13 +434,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/ui_2/guide_ui/ui_core.py" />
-    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4046">
-          <caret line="267" column="32" selection-start-line="267" selection-start-column="32" selection-end-line="267" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/utils/misc.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="25296">
@@ -529,16 +572,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2635">
-          <caret line="157" column="54" selection-start-line="157" selection-start-column="54" selection-end-line="157" selection-end-column="54" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/rigComponents/meshRivetCtrl.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1428">
@@ -551,7 +584,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/component/lip.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1870">
+        <state relative-caret-position="2176">
           <caret line="130" selection-start-line="130" selection-end-line="130" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
@@ -579,13 +612,68 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/weights.py.2019_6_28_11_28_19.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="17266" column="16" selection-start-line="17266" selection-start-column="11" selection-end-line="17266" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/guides.py.2019_6_28_11_29_34.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="114204" selection-start-line="114204" selection-end-line="114204" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/guides.py.2019_6_28_11_32_8.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="3525" column="19" selection-start-line="3525" selection-start-column="19" selection-end-line="3525" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/face_build.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="63" selection-start-line="63" selection-end-line="63" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig/deformers/matrixDeformer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="563">
+          <caret line="157" column="54" selection-start-line="157" selection-start-column="54" selection-end-line="157" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/builders/oldMan/BAK/guides.py.2019_6_28_11_35_12.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="3524" column="39" selection-start-line="3524" selection-start-column="5" selection-end-line="3524" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/export/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="94" selection-start-line="94" selection-end-line="94" />
+        <state relative-caret-position="408">
+          <caret line="111" column="41" selection-start-line="111" selection-start-column="41" selection-end-line="111" selection-end-column="41" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LH/python/libs/rig_2/tag/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="27" column="60" lean-forward="true" selection-start-line="25" selection-start-column="57" selection-end-line="27" selection-end-column="60" />
         </state>
       </provider>
     </entry>

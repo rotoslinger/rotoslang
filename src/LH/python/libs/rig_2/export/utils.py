@@ -65,6 +65,14 @@ def export_all_weights(asset_name,
         for key in export_dict.keys():
             for inner_key in export_dict[key]:
                 original_dict[key][inner_key] = export_dict[key][inner_key]
+            if key is "no_export_tag_dict":
+                print "IS KEY"
+                for inner_key in export_dict[key]:
+                    if "DELETE_NOEXPORT_IF_EXISTS" in original_dict[key][inner_key]:
+                        print "THIS IS IT", key, inner_key, original_dict[key][inner_key]
+                    # original_dict[key][inner_key] = export_dict[key][inner_key]
+                    #         tag_dict[node].append("DELETE_NOEXPORT_IF_EXISTS")
+
         export_dict = original_dict
     
     file = open(filepath, "wb")
