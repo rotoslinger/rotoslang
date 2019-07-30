@@ -557,13 +557,13 @@ def get_weight_curves_dict(no_export_dict, do_weight_curves=True, do_falloff_wei
     falloff_weight_curve_dict = {}
     if do_weight_curves:
         for curve in weight_curves:
-            if curve in no_export_dict.keys():
+            if curve in no_export_dict.keys() and "NO_EXPORT" in no_export_dict[curve]:
                 continue
             weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
 
     if do_falloff_weight_curves:
         for curve in falloff_weight_curves:
-            if curve in no_export_dict.keys():
+            if curve in no_export_dict.keys() and "NO_EXPORT" in no_export_dict[curve]:
                 continue
             falloff_weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
     
@@ -578,7 +578,7 @@ def rebuildAnimCurveWeightsCurves(no_export_tag_dict,
 
     if weight_curves and weight_curve_dict:
         for curve in weight_curve_dict.keys():
-            if curve in no_export_tag_dict.keys():
+            if curve in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[curve]:
                 continue
             if not cmds.objExists(curve):
                 print curve + " Does not exist anymore, will not be able to set it"
@@ -587,7 +587,7 @@ def rebuildAnimCurveWeightsCurves(no_export_tag_dict,
 
     if falloff_weight_curves and falloff_weight_curve_dict:
         for curve in falloff_weight_curve_dict.keys():
-            if curve in no_export_tag_dict.keys():
+            if curve in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[curve]:
                 continue
             if not cmds.objExists(curve):
                 print curve + " Does not exist anymore, will not be able to set it"

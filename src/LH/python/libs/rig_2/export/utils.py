@@ -1,5 +1,5 @@
 import json,os,sys,importlib, ast
-
+from maya import cmds
 from rig_2.guide import utils as guide_utils
 reload(guide_utils)
 
@@ -65,18 +65,20 @@ def export_all_weights(asset_name,
         for key in export_dict.keys():
             for inner_key in export_dict[key]:
                 original_dict[key][inner_key] = export_dict[key][inner_key]
-            if key is "no_export_tag_dict":
-                print "IS KEY"
-                for inner_key in export_dict[key]:
-                    if "DELETE_NOEXPORT_IF_EXISTS" in original_dict[key][inner_key]:
-                        print "THIS IS IT", key, inner_key, original_dict[key][inner_key]
-                    # original_dict[key][inner_key] = export_dict[key][inner_key]
-                    #         tag_dict[node].append("DELETE_NOEXPORT_IF_EXISTS")
+            # print key, "KERY"
+            # if key is "no_export_tag_dict":
+            #     print "IS KEY"
+            #     for inner_key in export_dict[key]:
+            #         if "DELETE_NOEXPORT_IF_EXISTS" in original_dict[key][inner_key]:
+            #             print "THIS IS IT", key, inner_key, original_dict[key][inner_key]
+            #         # original_dict[key][inner_key] = export_dict[key][inner_key]
+            #         #         tag_dict[node].append("DELETE_NOEXPORT_IF_EXISTS")
 
         export_dict = original_dict
     
     file = open(filepath, "wb")
-    
+    original_dict = check_existing_no_exports(original_dict)
+
     json.dump(original_dict, file, sort_keys = False, indent = 2)
     file.close()
     return export_dict
@@ -112,8 +114,7 @@ def export_all_guides(asset_name,
                       guide_geo=True,
                       backup=True,
                       append=True):
-    
-    if backup:
+    if backup: 
         backup_utils.backup_file(asset_name, filepath)
 
     export_dict = {}
@@ -148,13 +149,26 @@ def export_all_guides(asset_name,
             for inner_key in export_dict[key]:
                 original_dict[key][inner_key] = export_dict[key][inner_key]
         export_dict = original_dict
-    
     file = open(filepath, "wb")
-    
+    original_dict = check_existing_no_exports(original_dict)
+
     json.dump(original_dict, file, sort_keys = False, indent = 2)
     file.close()
     return export_dict
 
+def check_existing_no_exports(original_export_dict):
+    # if the node exists in the scene, and NO_EXPORT has been removed, delete the tag from the tag dict
+    # if the node does not exist, just skip it
+    return_dict = original_export_dict.copy()
+    for node in original_export_dict["no_export_tag_dict"]:
+        # print "NDOE", original_dict["no_export_tag_dict"][node]
+        if not cmds.objExists(node):
+            continue
+        if "NO_EXPORT" in return_dict["no_export_tag_dict"][node] and not cmds.objExists(node + ".NO_EXPORT"):
+            return_dict["no_export_tag_dict"][node] = []
+
+    return return_dict
+    
 
 def import_all_guides(filename, ctrl_shape=True, guide=True, guide_shape=True, gimbal_shape=True, build_components=False, guide_geo=True):
     file = open(filename, "rb")

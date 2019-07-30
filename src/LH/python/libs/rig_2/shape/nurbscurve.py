@@ -15,6 +15,8 @@ from rig.utils import misc
 def get_curve_shape_dict(mayaObject=None, space= OpenMaya.MSpace.kWorld):
     if not mayaObject: mayaObject = cmds.ls(sl=True)[0]
     shapes = []
+    if not misc_utils.get_shape(mayaObject):
+        return
     for shape in misc_utils.get_shape(mayaObject):
         controlVertices = []
         knots = []

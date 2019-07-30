@@ -65,7 +65,7 @@ def get_guide_custom_attrs(guide_nodes, no_export_tag_dict, specified_attrs):
     user_defined_attrs = []
 
     for node in guide_nodes:
-        if node in no_export_tag_dict.keys():
+        if node in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[node]:
             continue
         custom_attribute_dict[node]["user_defined_attrs"] = cmds.listAttr( node, cb=True)
 
@@ -76,7 +76,7 @@ def get_guide_transforms(guide_nodes, no_export_tag_dict, debug=False):
     rotations = []
     scales = []
     for node in guide_nodes:
-        if node in no_export_tag_dict.keys():
+        if node in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[node]:
             continue
         if cmds.objectType(node) != "transform":
             node = misc.getParent(node)
@@ -137,7 +137,9 @@ def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
 
 def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=False):
     for transform in shape_dict.keys():
-        if no_export_tag_dict and transform in no_export_tag_dict.keys():
+        if no_export_tag_dict and transform in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[transform]:
+            continue
+        if not shape_dict[transform] or not "name" in shape_dict[transform].keys():
             continue
         if check_if_exists and not cmds.objExists(shape_dict[transform]["name"]):
             continue
@@ -151,14 +153,14 @@ def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=Fa
 def get_guide_geo_dict(transforms, no_export_tag_dict=None):
     sorted_transforms = []
     for transform in transforms:
-        if no_export_tag_dict and transform in no_export_tag_dict.keys():
+        if no_export_tag_dict and transform in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[transform]:
             continue
         sorted_transforms.append(transform)
     return shape_utils.create_agnostic_point_position_dict(sorted_transforms)
 
 def set_guide_geo_dict(guide_geo_dict, no_export_tag_dict=None):
     for shape in guide_geo_dict.keys():
-        if no_export_tag_dict and shape in no_export_tag_dict.keys() or not cmds.objExists(shape):
+        if no_export_tag_dict and shape in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[shape] or not cmds.objExists(shape):
             continue
         shape_utils.set_agnostic_point_position(shape, guide_geo_dict[shape])
 
