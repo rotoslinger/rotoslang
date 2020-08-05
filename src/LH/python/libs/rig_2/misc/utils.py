@@ -27,7 +27,7 @@ def get_shape(mayaObject):
     objectType = cmds.objectType(mayaObject)
     if objectType == "mesh" or objectType == "nurbsCurve" or objectType == "nurbsSurface" or objectType == "lattice":
         return mayaObject
-    relatives = cmds.listRelatives(mayaObject, shapes=True)
+    relatives = cmds.listRelatives(mayaObject, shapes=True, fullPath=True)
     if relatives:
         return relatives
 

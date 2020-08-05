@@ -128,6 +128,12 @@ def set_guide_transforms(guide_position_dict, no_export_tag_dict):
 def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
     shapeDict = {}
     for transform in curve_transforms:
+        short_name = ""
+        if "|" in transform:
+            short_name = transform.split("|")
+            short_name = short_name[-1]
+        if not cmds.objExists(transform) or "_anim" not in short_name :
+            continue
         if cmds.objectType(transform) != "transform" and cmds.objectType(transform) != "nullTransform":
             transform = misc.getParent(transform)
         if no_export_tag_dict and transform in no_export_tag_dict.keys():
@@ -135,8 +141,16 @@ def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
         shapeDict[transform] = nurbscurve.get_curve_shape_dict(mayaObject=transform, space=OpenMaya.MSpace.kObject)
     return shapeDict
 
-def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=False):
+def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=False, IgnoreShapes=None):
     for transform in shape_dict.keys():
+        short_name = ""
+        if "|" in transform:
+            short_name = transform.split("|")
+            short_name = short_name[-1]
+        if transform == "IgnoreShapes" or "_anim" not in short_name:
+            continue
+        if IgnoreShapes and type(IgnoreShapes) == list and transform in IgnoreShapes:
+            continue
         if no_export_tag_dict and transform in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[transform]:
             continue
         if not shape_dict[transform] or not "name" in shape_dict[transform].keys():

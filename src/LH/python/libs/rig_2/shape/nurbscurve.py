@@ -18,12 +18,21 @@ def get_curve_shape_dict(mayaObject=None, space= OpenMaya.MSpace.kWorld):
     if not misc_utils.get_shape(mayaObject):
         return
     for shape in misc_utils.get_shape(mayaObject):
+        if not shape or not cmds.objExists(shape):
+            continue
+        degree= cmds.getAttr( '{0}.degree'.format(shape) )
+        spans= cmds.getAttr( '{0}.spans'.format(shape) )
+        if degree + spans < 1:
+            continue
+
+        
         controlVertices = []
         knots = []
         degree = []
         form = []
         parent = []
         shape_type = []
+        
 
         # Get OM Shape
         nurbsCurve_node = OpenMaya.MSelectionList()
@@ -35,6 +44,9 @@ def get_curve_shape_dict(mayaObject=None, space= OpenMaya.MSpace.kWorld):
         # ControlVertices
         points = OpenMaya.MPointArray()
         fn_nurbsCurve.getCVs(points, space)
+        
+        if not points:
+            continue
         for idx in range(points.length()):
             controlVertices.append((points[idx].x,
                                     points[idx].y,
@@ -221,12 +233,12 @@ def create_curve(curve_dict,
         cmds.rename(newShape_path.fullPathName(),curve_name)
 
         if existing_path:
-            cmds.connectAttr(newShape_path.fullPathName() + ".worldSpace", curve_name + ".create")
+            cmds.connectAttr(newShape_path.fullPathName() + ".worldSpace", curve_name + ".create", force=True)
             cmds.refresh()
 
         # Color overrides 
 
-        if color and "override_enabled" in shape.keys():
+        if color and "override_enabled" in shape.keys() and cmds.objExists(curve_name):
             cmds.setAttr(curve_name + ".overrideRGBColors", shape["override_color"])
             cmds.setAttr(curve_name + ".overrideEnabled", shape["override_enabled"])
             cmds.setAttr(curve_name + ".overrideColor", shape["color"])
@@ -257,7 +269,7 @@ def create_curve(curve_dict,
         for shape_dict in curve_dict["shapes"]:
             names.append(shape_dict["name"])
 
-        for shape in cmds.listRelatives(curve_transform, s=True):
+        for shape in cmds.listRelatives(curve_transform, s=True, fullPath=True):
             if shape not in names:
                 cmds.delete(shape)
         # for shape in curve_dict["shapes"]:
