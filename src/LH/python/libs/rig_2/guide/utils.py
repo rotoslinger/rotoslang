@@ -138,7 +138,15 @@ def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
             transform = misc.getParent(transform)
         if no_export_tag_dict and transform in no_export_tag_dict.keys():
             continue
+        
         shapeDict[transform] = nurbscurve.get_curve_shape_dict(mayaObject=transform, space=OpenMaya.MSpace.kObject)
+        
+        if not isVisible:
+            cmds.setAttr(controlName + ".visibility", 0)
+        if isLocked:
+            cmds.setAttr(controlName + ".visibility", lock=True)
+        
+        
     return shapeDict
 
 def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=False, IgnoreShapes=None):
@@ -157,13 +165,67 @@ def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=Fa
             continue
         if check_if_exists and not cmds.objExists(shape_dict[transform]["name"]):
             continue
+        # controlName = shape_dict[transform]["name"]
+        # isLocked = cmds.getAttr(controlName + ".visibility", lock=True)
+        # isVisible = cmds.getAttr(controlName + ".visibility")
+        # if isLocked:
+        #     cmds.setAttr(controlName + ".visibility", lock=False)
+        # if not isVisible and cmds.getAttr(controlName + ".visibility", settable=True):
+        #     cmds.setAttr(controlName + ".visibility", 1)
+        # try:
+        #     cmds.setAttr(controlName + ".visibility", 1)
+        # except:
+        #     pass
         nurbscurve.create_curve(shape_dict[transform],
                                 name=shape_dict[transform]["name"],
                                 parent=shape_dict[transform]["parent"],
                                 transform_suffix=None,
                                 check_existing = True
                                 )
-
+        # if not isVisible and cmds.getAttr(controlName + ".visibility", settable=True):
+        #     cmds.setAttr(controlName + ".visibility", 0)
+        # if isLocked:
+        #     cmds.setAttr(controlName + ".visibility", lock=True)
+        
+def set_shapes_from_dict_NEW(shape_dict, no_export_tag_dict=None, check_if_exists=False, IgnoreShapes=None):
+    for transform in shape_dict.keys():
+        short_name = ""
+        if "|" in transform:
+            short_name = transform.split("|")
+            short_name = short_name[-1]
+        if transform == "IgnoreShapes" or "_anim" not in short_name:
+            continue
+        if IgnoreShapes and type(IgnoreShapes) == list and transform in IgnoreShapes:
+            continue
+        if no_export_tag_dict and transform in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[transform]:
+            continue
+        if not shape_dict[transform] or not "name" in shape_dict[transform].keys():
+            continue
+        if check_if_exists and not cmds.objExists(shape_dict[transform]["name"]):
+            continue
+        # controlName = shape_dict[transform]["name"]
+        # isLocked = cmds.getAttr(controlName + ".visibility", lock=True)
+        # isVisible = cmds.getAttr(controlName + ".visibility")
+        # if isLocked:
+        #     cmds.setAttr(controlName + ".visibility", lock=False)
+        # if not isVisible and cmds.getAttr(controlName + ".visibility", settable=True):
+        #     cmds.setAttr(controlName + ".visibility", 1)
+        # try:
+        #     cmds.setAttr(controlName + ".visibility", 1)
+        # except:
+        #     pass
+        nurbscurve.create_curve_new(shape_dict[transform],
+                                name=shape_dict[transform]["name"],
+                                parent=shape_dict[transform]["parent"],
+                                transform_suffix=None,
+                                check_existing = True
+                                )
+        # if not isVisible and cmds.getAttr(controlName + ".visibility", settable=True):
+        #     cmds.setAttr(controlName + ".visibility", 0)
+        # if isLocked:
+        #     cmds.setAttr(controlName + ".visibility", lock=True)
+        
+        
 def get_guide_geo_dict(transforms, no_export_tag_dict=None):
     sorted_transforms = []
     for transform in transforms:

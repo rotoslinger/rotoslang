@@ -268,13 +268,154 @@ def create_curve(curve_dict,
         names = []
         for shape_dict in curve_dict["shapes"]:
             names.append(shape_dict["name"])
+        if not curve_transform:
+            return curve_transform, retShapes
+        allShapes = cmds.listRelatives(curve_transform, s=True, fullPath=True)
+
+        if not allShapes:
+            return curve_transform, retShapes
 
         for shape in cmds.listRelatives(curve_transform, s=True, fullPath=True):
+            if not shape:
+                continue
             if shape not in names:
                 cmds.delete(shape)
         # for shape in curve_dict["shapes"]:
 
     return curve_transform, retShapes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def create_curve_new(curve_dict,
+                 name=None,
+                 parent=None,
+                 transform_suffix = "CTL",
+                 shape_suffix = "SHP",
+                 outliner_color = True,
+                 color = True,
+                 check_existing=False,
+                 mirror=False,
+                shape_name=None,
+):
+    if not name:
+        name = curve_dict["name"]
+    if not parent:
+        parent = curve_dict["parent"]
+    if parent and not cmds.objExists(parent):
+        parent = None
+
+    # Prepare transform
+    transform_name = name
+    if parent and cmds.objExists(parent) and shape_name and not shape_suffix:
+        transform_name = parent
+    if transform_suffix:
+        transform_name = "{0}_{1}".format(name, transform_suffix)
+    # curve_transform = cmds.createNode("transform", name = transform_name, p=parent)
+    curve_transform = node_utils.get_node_agnostic(nodeType = "transform", name = transform_name, parent=parent)
+    curve_transformNode = OpenMaya.MSelectionList()
+    curve_transformNode.add(curve_transform)
+    curve_transformPath = OpenMaya.MDagPath()
+    curve_transformNode.getDagPath(0,curve_transformPath)
+    curve_transformMObject = curve_transformPath.transform()
+    retShapes = []
+    for shape in curve_dict["shapes"]:
+        # check if it already exists
+        curve_name = shape["name"]
+        
+        if shape_suffix and not shape_name:
+            curve_name = "{0}{1}_{2}".format(name, shape["name"], shape_suffix)
+
+        if shape_name:
+            curve_name = shape_name
+
+        if shape_suffix and shape_name:
+            curve_name = "{0}_{1}".format(shape_name, shape_suffix)
+
+        if check_existing:
+            curve_name = shape["name"]
+            
+        old_shape=None
+
+        # make sure that somehow None wasn't part of the name....
+        if "_None" in curve_name:
+            curve_name = curve_name.replace("_None", "_SHP")
+
+        existing_path = None
+        if cmds.objExists(curve_name):
+            existing_path = True
+        if cmds.objExists(shape["name"]):
+            cmds.delete(shape["name"])
+        # print "FORM", shape["form"]
+        # print "controlVertices", shape["controlVertices"]
+        # print "knots", shape["knots"]
+        # print "degree", shape["degree"]
+        
+        
+        # cmds.curve( per=True,
+        #         p=[(0, 0, 0), (3, 5, 6), (5, 6, 7), (9, 9, 9), (0, 0, 0), (3, 5, 6), (5, 6, 7)],
+        #         k=[-2,-1,0,1,2,3,4,5,6] )
+        
+        # FORM 1
+        # controlVertices [[0.26566388672743396, -4.2957875532137635, -0.1635602537186259], [4.277787111643967, -4.046562304977722, -0.19255549706438177], [4.850947572346329, -4.010958698086859, -0.19669767468520405], [3.3439972996211904, -7.554399561330459, -0.3151193447976379], [0.5313277734548679, -8.591575106427527, -0.3271205074372518], [-2.3876073074024284, -7.91043563023909, -0.2736975685894153], [-4.319619798891462, -4.580616408340668, -0.13042283275204775], [-3.746459338189099, -4.545012801449805, -0.13456501037287003], [0.26566388672743396, -4.2957875532137635, -0.1635602537186259]]
+        # knots [0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.0, 6.0]
+        # degree 3
+        
+        point = [tuple(p) for p in shape["controlVertices"]]
+        # knots = [int(k) for k in shape["knots"]]
+        degree = float(shape["degree"])
+        knots = [int(k) for k in range(len(shape["controlVertices"]) + int(degree) -1 )]
+        
+        # knots = [i for i in range(len(shape["knots"]))]
+
+        # numberOfPoints + degree - 1)
+        # print "FORM", shape["form"]
+        # print "point", point
+        # print "knots", knots
+        # print "degree", degree
+        
+        
+        tmpCrv = cmds.curve(p=point,
+                            k=knots,
+                            degree=degree)
+
+        newShape = cmds.listRelatives(tmpCrv, s=1)[0]
+        cmds.parent(newShape, shape["parent"], r=1, s=1)
+
+        cmds.delete(tmpCrv)
+        newShape = cmds.rename(newShape, cmds.listRelatives(newShape, p=True)[0] + "Shape" )
+
+        if color and "override_enabled" in shape.keys() and cmds.objExists(curve_name):
+            cmds.setAttr(curve_name + ".overrideRGBColors", shape["override_color"])
+            cmds.setAttr(curve_name + ".overrideEnabled", shape["override_enabled"])
+            cmds.setAttr(curve_name + ".overrideColor", shape["color"])
+            cmds.setAttr(curve_name + ".overrideColorR", shape["color_r"])
+            cmds.setAttr(curve_name + ".overrideColorG", shape["color_g"])
+            cmds.setAttr(curve_name + ".overrideColorB", shape["color_b"])
+
+
 
 def mirror_shape(source_curve_transform, target_curve_transform):
     pushCurveShape(source_curve_transform, target_curve_transform, mirror=True)
