@@ -4,7 +4,7 @@ from functools import partial
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
-import collapseBoxWidget
+from . import collapseBoxWidget
 from uiCore import qtUtils
 
 
@@ -134,7 +134,7 @@ class UiStack(QtWidgets.QWidget):
         parentModuleName = ".".join(thisModule.split(".")[:-1])
         # Folders is a recursive dictionary of the folder structure rooted in the parentModule folder
         folders = qtUtils.getSubFoldersFromClass(parentWidget)
-        for k,v in folders.items():
+        for k,v in list(folders.items()):
             pyFiles = qtUtils.listPyFiles(k)
             newWidget = None
             for f in pyFiles:
@@ -145,7 +145,7 @@ class UiStack(QtWidgets.QWidget):
                                               os.path.splitext(f)[0])
                 newModule = importlib.import_module(newModuleName)
                 # reloading module to ensure that's up to date
-                reload(newModule)
+                importlib.reload(newModule)
                 # retrive a list of classes of type CollapseBox
                 newWdgtLst = qtUtils.listSubClassesOf(newModule, collapseBoxWidget.CollapseBox)
                 # if no CollapseBoxs are found, continue to the next py file
@@ -164,7 +164,7 @@ class UiStack(QtWidgets.QWidget):
                 self.addWidgetsToStack(newWidget, indentStep, indentStep)
 
             if not pyFiles:
-                print k
+                print(k)
 
         # for aDirName in qtUtils.listSubdir(baseDir):
         #     srcDir = os.path.join(baseDir, aDirName)

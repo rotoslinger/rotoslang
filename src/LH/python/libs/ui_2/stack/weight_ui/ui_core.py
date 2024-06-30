@@ -3,31 +3,32 @@ import sys, os, ast
 from maya import cmds
 
 from rig_2.mirror import utils as mirror_utils
-reload(mirror_utils)
+import importlib
+importlib.reload(mirror_utils)
 
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 
 from rig_2.weights import utils as weight_utils
-reload(weight_utils)
+importlib.reload(weight_utils)
 
 from rig_2.backup import utils as backup_utils
-reload(backup_utils)
+importlib.reload(backup_utils)
 
 from rig_2.animcurve import utils as animcurve_utils
-reload(animcurve_utils)
+importlib.reload(animcurve_utils)
 
 from rig_2 import decorator
-reload(decorator)
+importlib.reload(decorator)
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 
 from rig_2.export import utils as export_utils
-reload(export_utils)
+importlib.reload(export_utils)
 
 '''
 @code
@@ -107,7 +108,7 @@ def print_weight_curves_data():
             print_control_weightcurve_connection("Falloff Weight Curves", falloff_weights_string_dict)
             return
         if cmds.objectType(sel) == "animCurveTU":
-            print animcurve_utils.getAnimCurve(sel)
+            print(animcurve_utils.getAnimCurve(sel))
         
 
 @decorator.undo_chunk
@@ -116,20 +117,20 @@ def weight_curves_to_point_weights():
 
 def print_control_weightcurve_connection(weight_curve_type, weightcurve_dict_list):
     for curve_dict in weightcurve_dict_list:
-        print "================================ {0} {1} =====================================".format(curve_dict["control_parent"], weight_curve_type)
-        print "{0} --> {1} --> {2} --> {3}".format(
+        print("================================ {0} {1} =====================================".format(curve_dict["control_parent"], weight_curve_type))
+        print("{0} --> {1} --> {2} --> {3}".format(
                                                                                              curve_dict["curve_name"],
                                                                                              curve_dict["curve_weights_node"],
                                                                                              curve_dict["node"],
                                                                                              curve_dict["output_idx"],
-                                                                                                )
-        if "hand_weights" in curve_dict.keys():
-            print "Hand Painted Weights Overriding Curves: {0} --> {1}".format(
+                                                                                                ))
+        if "hand_weights" in list(curve_dict.keys()):
+            print("Hand Painted Weights Overriding Curves: {0} --> {1}".format(
                                                                                 curve_dict["hand_weights"],
                                                                                 curve_dict["curve_name"],
-                                                                                )
-            print "Weighted GEO: --> {0}".format(curve_dict["geo_shape"])
-    print "================================================================================================="
+                                                                                ))
+            print("Weighted GEO: --> {0}".format(curve_dict["geo_shape"]))
+    print("=================================================================================================")
 
 def select_all_weight_curves(options_checkbox):
     export_args = [checkbox.isChecked() for checkbox in options_checkbox]
@@ -224,7 +225,7 @@ def flip_weights(side="L"):
         for weight_attr in hand_weights:
             weights = cmds.getAttr(weight_attr)
             weights2 = cmds.getAttr(weight_attr)
-            for key in symmetry_dict.keys():
+            for key in list(symmetry_dict.keys()):
                 weights[symmetry_dict[key]] = weights2[key]
             cmds.setAttr(weight_attr, weights, type="doubleArray")
 def establish_symmetry():

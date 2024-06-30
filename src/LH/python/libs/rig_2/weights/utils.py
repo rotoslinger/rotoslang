@@ -2,26 +2,27 @@ import os, json, ast
 from maya import cmds, OpenMaya
 
 from rig_2.animcurve import utils as animcurve_utils
-reload(animcurve_utils)
+import importlib
+importlib.reload(animcurve_utils)
 
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 from rig_2.tag import utils as tag_utils
 
 from rig.utils import misc
 from rig.utils import weightMapUtils
 
-reload(misc)
+importlib.reload(misc)
 from rig.utils import exportUtils
-reload(exportUtils)
+importlib.reload(exportUtils)
 from rig.utils import weightMapUtils
-reload(weightMapUtils)
+importlib.reload(weightMapUtils)
 
 from rig.rigComponents import meshRivetCtrl
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 
 from rig_2.attr import utils as attr_utils
-reload(attr_utils)
+importlib.reload(attr_utils)
 
 
 
@@ -501,10 +502,10 @@ def getWeightStackHandWeightsDict(attrsToCheck = [".txOut", ".tyOut"], splitSide
 
 
 def rebuildSlideWeightOverrides(weightDict):
-    for ctrl in weightDict.keys():
+    for ctrl in list(weightDict.keys()):
         # unpack from the dict
         # weightName = ctrl.replace("txOut", "tyOut")
-        for attrType in weightDict[ctrl].keys():
+        for attrType in list(weightDict[ctrl].keys()):
 
             internalWeightDict = weightDict[ctrl][attrType]
             weightName = internalWeightDict["weightName"]
@@ -557,13 +558,13 @@ def get_weight_curves_dict(no_export_dict, do_weight_curves=True, do_falloff_wei
     falloff_weight_curve_dict = {}
     if do_weight_curves:
         for curve in weight_curves:
-            if curve in no_export_dict.keys() and "NO_EXPORT" in no_export_dict[curve]:
+            if curve in list(no_export_dict.keys()) and "NO_EXPORT" in no_export_dict[curve]:
                 continue
             weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
 
     if do_falloff_weight_curves:
         for curve in falloff_weight_curves:
-            if curve in no_export_dict.keys() and "NO_EXPORT" in no_export_dict[curve]:
+            if curve in list(no_export_dict.keys()) and "NO_EXPORT" in no_export_dict[curve]:
                 continue
             falloff_weight_curve_dict[curve] = animcurve_utils.getAnimCurve(curve)
     
@@ -577,20 +578,20 @@ def rebuildAnimCurveWeightsCurves(no_export_tag_dict,
                                   falloff_weight_curves=True):
 
     if weight_curves and weight_curve_dict:
-        for curve in weight_curve_dict.keys():
-            if curve in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[curve]:
+        for curve in list(weight_curve_dict.keys()):
+            if curve in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[curve]:
                 continue
             if not cmds.objExists(curve):
-                print curve + " Does not exist anymore, will not be able to set it"
+                print(curve + " Does not exist anymore, will not be able to set it")
                 continue
             animcurve_utils.setAnimCurveShape(curve, weight_curve_dict[curve])
 
     if falloff_weight_curves and falloff_weight_curve_dict:
-        for curve in falloff_weight_curve_dict.keys():
-            if curve in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[curve]:
+        for curve in list(falloff_weight_curve_dict.keys()):
+            if curve in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[curve]:
                 continue
             if not cmds.objExists(curve):
-                print curve + " Does not exist anymore, will not be able to set it"
+                print(curve + " Does not exist anymore, will not be able to set it")
                 continue
             animcurve_utils.setAnimCurveShape(curve, falloff_weight_curve_dict[curve])
 
@@ -637,7 +638,7 @@ def get_hand_painted_weight_dict():
     return hand_painted_weights_dict
 
 def rebuild_hand_painted_weights(weight_dict):
-    for full_name_attr in weight_dict.keys():
+    for full_name_attr in list(weight_dict.keys()):
         # if not cmds.objExists(full_name_attr):
         #     print "The final connection for the weights attribute "+ full_name_attr + " Does not exist, unable to add hand weights."
         #     continue
@@ -647,7 +648,7 @@ def rebuild_hand_painted_weights(weight_dict):
         connections = mesh_dict["connects"]
         
         if not cmds.objExists(mesh_dict["node"]):
-            print "Geo named " + mesh_dict["node"] + " Does not exist, unable to add hand weights."
+            print("Geo named " + mesh_dict["node"] + " Does not exist, unable to add hand weights.")
             continue
         
         attr_utils.get_attr(node=mesh_dict["node"], attr=mesh_dict["attr"], weightmap=True)
@@ -660,7 +661,7 @@ def rebuild_hand_painted_weights(weight_dict):
             continue
         for connection in connections:
             if not cmds.objExists(connection):
-                print "The connecting attribute " + connection + " does not exist.  The connection of " + full_name_attr + " to " + connection + " could not be made."
+                print("The connecting attribute " + connection + " does not exist.  The connection of " + full_name_attr + " to " + connection + " could not be made.")
                 continue
             cmds.connectAttr(full_name_attr, connection, f=True)
 

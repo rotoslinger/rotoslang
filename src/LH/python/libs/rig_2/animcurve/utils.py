@@ -1,12 +1,13 @@
 from maya import cmds, OpenMaya, OpenMayaAnim
 
 from rig.utils import misc
-reload(misc)
+import importlib
+importlib.reload(misc)
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 
 from rig_2 import decorator
-reload(decorator)
+importlib.reload(decorator)
 
 def initUKeyframes(animCurves):
     for animCurve in animCurves:

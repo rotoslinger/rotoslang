@@ -5,6 +5,7 @@ import sys
 
 import animcurve.utils
 import weights.utils
+import importlib
 
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
@@ -21,12 +22,12 @@ if os not in sys.path:
 
 
 from rig.utils import faceWeights, lhDeformerExport, exportUtils
-reload(faceWeights)
-reload(lhDeformerExport)
-reload(exportUtils)
+importlib.reload(faceWeights)
+importlib.reload(lhDeformerExport)
+importlib.reload(exportUtils)
 
 from rig.deformers import utils
-reload(utils)
+importlib.reload(utils)
 #cmds.getAttr("cluster1.weightList[0].weights")
 #print cmds.attributeQuery("weights", node="cluster1", multi=True)
 
@@ -55,10 +56,10 @@ if "darwin" in os:
     os = mac
 if os not in sys.path:
     sys.path.append(os)
-from utils import weightingUtils
-reload(weightingUtils)
+from .utils import weightingUtils
+importlib.reload(weightingUtils)
 if cmds.draggerContext("measureVectorCtx", exists=True):
-    print "TRUE"
+    print("TRUE")
     cmds.deleteUI("measureVectorCtx")
 
 
@@ -116,16 +117,16 @@ from rig_2.component.subcomponent import lip_sub
 from rig.rigComponents import line 
 from rig.rigComponents import lineTest 
 from rig.rigComponents import meshRivetCtrl 
-reload(line)
-reload(lineTest)
-reload(meshRivetCtrl)
-reload(misc)
-reload(weightMapUtils)
-reload(lip_sub)
-reload(utils)
-reload(matrixDeformer)
-reload(weightStack)
-reload(base)
+importlib.reload(line)
+importlib.reload(lineTest)
+importlib.reload(meshRivetCtrl)
+importlib.reload(misc)
+importlib.reload(weightMapUtils)
+importlib.reload(lip_sub)
+importlib.reload(utils)
+importlib.reload(matrixDeformer)
+importlib.reload(weightStack)
+importlib.reload(base)
 
 #lipTest.test()
 lineTest.test()
@@ -155,20 +156,20 @@ if os not in sys.path:
     sys.path.append(os)
 
 
-from utils import exportUtils
+from .utils import exportUtils
 
-reload(exportUtils)
+importlib.reload(exportUtils)
 
-from utils import misc
-reload(misc)
-from utils import elements
-reload(elements)
+from .utils import misc
+importlib.reload(misc)
+from .utils import elements
+importlib.reload(elements)
 
-from utils import misc
-from rigComponents import base
-reload(base)
-from rigComponents import slidingCtrl
-reload(slidingCtrl)
+from .utils import misc
+from .rigComponents import base
+importlib.reload(base)
+from .rigComponents import slidingCtrl
+importlib.reload(slidingCtrl)
 
 
 
@@ -212,13 +213,13 @@ mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 
 from rig.utils import exportUtils
-reload(exportUtils)
+importlib.reload(exportUtils)
 
 from rig.deformers import utils
-reload(utils)
+importlib.reload(utils)
 #animCurve = cmds.ls(sl=True)[0]
 #animCurvedict = utils.getAnimCurve(animCurve)
 #print animCurvedict
@@ -231,7 +232,7 @@ reload(utils)
 #utils.setAnimCurveShape(animCurve,lowerLip)
 #print animCurvedict
 #geo = misc.getGeoData()
-print misc.getGeoData()
+print(misc.getGeoData())
 #misc.createGeoFromData(elements.blockIcon)
 
 #######################################################################
@@ -267,8 +268,8 @@ if os not in sys.path:
     sys.path.append(os)
 from rig.rigComponents import simpleton
 from rig.rigComponents import lipTest 
-reload(lipTest)
-reload(simpleton)
+importlib.reload(lipTest)
+importlib.reload(simpleton)
 
 cmds.file( new=True, f=True )
 
@@ -304,15 +305,15 @@ linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import exportUtils
-reload(exportUtils)
+importlib.reload(exportUtils)
 from rig.utils import animCurves
-reload(animCurves)
+importlib.reload(animCurves)
 from rig.rigComponents import elements
-reload(elements)
+importlib.reload(elements)
 from rig.deformers import utils
-reload(utils)
+importlib.reload(utils)
 
 
 #animCurve = cmds.ls(sl=True)[0]
@@ -322,7 +323,7 @@ reload(utils)
 # print AnimCurve
 animCurve = cmds.ls(sl=True)[0]
 animCurvedict = animcurve.utils.getAnimCurve(animCurve)
-print animCurvedict
+print(animCurvedict)
 
 # Mirror AnimCurve
 #animCurves.mirrorAnimCurve(side="L")
@@ -373,13 +374,13 @@ from rig.deformers import curveRollSimple
 from rig.deformers import multiWrap 
 from rig.deformers import utils 
 from rig.rigComponents import meshRivetCtrl 
-reload(meshRivetCtrl)
-reload(utils)
-reload(vectorDeformerSimple)
-reload(curveRollSimple)
-reload(multiWrap)
+importlib.reload(meshRivetCtrl)
+importlib.reload(utils)
+importlib.reload(vectorDeformerSimple)
+importlib.reload(curveRollSimple)
+importlib.reload(multiWrap)
 from rig.utils import lhExport
-reload(lhExport)
+importlib.reload(lhExport)
 
 '''
 cmds.file( new=True, f=True )
@@ -396,7 +397,7 @@ print "rotations", rotations
 print "translations", translations
 print "scales", scales
 '''
-print weights.utils.getWeightStackHandWeightsDict()
+print(weights.utils.getWeightStackHandWeightsDict())
 #utils.getMatDefWeightsDict()
 #utils.convertAnimCurveWeightsToHandWeights()
 #meshRivetCtrl.mirrorSlidingCtrls(flipAll=True)
@@ -463,10 +464,10 @@ if os not in sys.path:
 
 
 from ka_rigTools import ka_weightBlender
-reload(ka_weightBlender)   
+importlib.reload(ka_weightBlender)   
 
 from rig_2.tools import dragger
-reload(dragger)
+importlib.reload(dragger)
 
 drag = dragger.Value_Dragger(range_start = 100,
                              range_min = 0,
@@ -528,30 +529,30 @@ if linux not in sys.path:
     sys.path.append(package)
     
 from rig_2.manipulator import control
-reload(control)
+importlib.reload(control)
 
 from rig_2.shape import nurbscurve
 
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 #print nurbscurve.get_curve_shape_dict()
 
 
 from rig_2.manipulator import misc
-reload(misc)
+importlib.reload(misc)
 
 from rig_2.manipulator import elements
-reload(elements)
+importlib.reload(elements)
 
 from rig_2.component import camera
-reload(camera)
+importlib.reload(camera)
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 
 cmds.file( new=True, f=True )
 
 cam = camera.Component()
 cam.create()
-print cam.camera.input_names
+print(cam.camera.input_names)
 
 
 
@@ -590,6 +591,6 @@ if linux not in sys.path:
     sys.path.append(package)
     
 from rig.ui import scratch_panel
-reload(scratch_panel)
+importlib.reload(scratch_panel)
 scratch_panel.Scratch_Panel.openUI()
 

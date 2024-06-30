@@ -1,5 +1,6 @@
 from maya import cmds
 import sys
+import importlib
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -15,15 +16,15 @@ if os not in sys.path:
 # from rig.deformers import base
 from rig_2.component.subcomponent import weightStack
 
-reload(weightStack)
+importlib.reload(weightStack)
 # from rig.deformers import utils as deformerUtils
 from rig.deformers import matrixDeformer
-reload(matrixDeformer)
+importlib.reload(matrixDeformer)
 # reload(deformerUtils)
 # reload(base)
 
 def faceTest():
-    print
+    print()
     weightStack
     fileName = "/scratch/levih/dev/rotoslang/src/scenes/presentation/Prototype/LipPrototype.ma"
 

@@ -2,26 +2,27 @@ import copy
 from maya import cmds
 
 from rig_2.message import utils as message_utils
-reload(message_utils)
+import importlib
+importlib.reload(message_utils)
 
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 from rig_2.manipulator import elements
-reload(elements)
+importlib.reload(elements)
 from rig_2.shape import nurbscurve
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 
 
 # from rig_2.manipulator import misc
 # reload(misc)
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 from rig_2.misc import utils as misc_utils
-reload(misc_utils)
+importlib.reload(misc_utils)
 
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 
 #===============================================================================
 #CLASS:         Shape
@@ -333,7 +334,7 @@ class Ctrl(object):
         self.buffers_ascending = []
         self.buffers_parent = []
         self.lastParent = copy.deepcopy(self.parent)
-        for idx in reversed(range(self.num_buffer)):
+        for idx in reversed(list(range(self.num_buffer))):
             bufferName = "{0}{1:02}_BUF".format(self.full_name, idx)
             # self.lastParent = cmds.createNode("transform", 
             #                               name = bufferName,
@@ -385,7 +386,7 @@ class Ctrl(object):
         """ aliases need to be added before custom attributes are added to the control... """
         if not self.ctrl_alias_attr_remap:
             return
-        for attr_alias_name, attr_original_name in self.ctrl_alias_attr_remap.iteritems():
+        for attr_alias_name, attr_original_name in self.ctrl_alias_attr_remap.items():
             if not (cmds.objExists(self.ctrl + "." + attr_alias_name)):
                 cmds.aliasAttr(attr_alias_name, self.ctrl + attr_original_name)
 

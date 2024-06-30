@@ -1,9 +1,10 @@
 import copy
 from maya import cmds
 from rig_2.misc import utils as misc_utils
-reload(misc_utils)
+import importlib
+importlib.reload(misc_utils)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 def get_node_agnostic(nodeType, name, parent=None, tag_name="", component_name=""):
     node = name
@@ -62,9 +63,9 @@ def condition(name,
         cmds.setAttr(ret_cond_matrix + ".secondTerm", second_term)
 
     # If it is an attribute connect it
-    if  type(first_term) == unicode:
+    if  type(first_term) == str:
         cmds.connectAttr(first_term, ret_cond_matrix + ".firstTerm")
-    if  type(second_term) == unicode:
+    if  type(second_term) == str:
         cmds.connectAttr(second_term, ret_cond_matrix + ".secondTerm")
 
     for idx, color in enumerate(["R", "G", "B"]):
@@ -75,9 +76,9 @@ def condition(name,
             cmds.setAttr(ret_cond_matrix + ".colorIfFalse{0}".format(color), color_if_false_attrs[idx])
 
         # If it is an attribute connect it
-        if color_if_true_attrs[idx] and type(color_if_true_attrs[idx]) == unicode:
+        if color_if_true_attrs[idx] and type(color_if_true_attrs[idx]) == str:
             cmds.connectAttr(color_if_true_attrs[idx], ret_cond_matrix + ".colorIfTrue{0}".format(color))
-        if color_if_false_attrs[idx] and type(color_if_false_attrs[idx]) == unicode:
+        if color_if_false_attrs[idx] and type(color_if_false_attrs[idx]) == str:
             cmds.connectAttr(color_if_false_attrs[idx], ret_cond_matrix + ".colorIfFalse{0}".format(color))
             
 
@@ -118,7 +119,7 @@ class Buffer(object):
             self.buffers_ascending = []
             self.buffers_parent = []
             self.buffers_curr_parent = copy.deepcopy(self.parent)
-            for idx in reversed(range(self.num_buffer)):
+            for idx in reversed(list(range(self.num_buffer))):
                 bufferName = "{0}_{1}{2:02}_{3}".format(self.side, self.name, idx, self.suffix)
                 self.buffers_curr_parent = get_node_agnostic(name = bufferName, nodeType="transform", parent=self.buffers_curr_parent)
                 self.buffers.append(self.buffers_curr_parent)

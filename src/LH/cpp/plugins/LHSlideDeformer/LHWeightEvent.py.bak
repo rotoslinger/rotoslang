@@ -1,0 +1,2 @@
+global thing
+print thing

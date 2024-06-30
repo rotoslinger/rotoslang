@@ -6,6 +6,7 @@ scene_path = linux_file
 weights_path = "/corp/projects/eng/lharrison/workspace/levi_harrison_test/lhrig/weights"
  
 import sys
+import importlib
 linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 #---determine operating system
@@ -20,15 +21,15 @@ import maya.cmds as cmds
 from utils import misc, weights
 
 from bodycmds import arm, finger, neck, main, shoulder, torso, holster
-reload(arm)
-reload(finger)
-reload(neck)
-reload(main)
-reload(shoulder)
-reload(torso)
-reload(holster)
-reload(misc)
-reload(weights)
+importlib.reload(arm)
+importlib.reload(finger)
+importlib.reload(neck)
+importlib.reload(main)
+importlib.reload(shoulder)
+importlib.reload(torso)
+importlib.reload(holster)
+importlib.reload(misc)
+importlib.reload(weights)
 
 # build naughty dog test
 def build_it(scene_path = "", weights_path = "", debug = False):

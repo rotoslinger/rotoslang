@@ -2,10 +2,11 @@ import json
 import time
 
 from rig.utils import exportUtils as xUtils, LHSlideDeformerCmds
-reload(xUtils)
+import importlib
+importlib.reload(xUtils)
 from rig.utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
 from maya import cmds
-from lhExport import lh_deformer_export, lh_deformer_import
+from .lhExport import lh_deformer_export, lh_deformer_import
 
 
 class exportDeformer(lh_deformer_export):

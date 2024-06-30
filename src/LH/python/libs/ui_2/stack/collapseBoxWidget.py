@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets, QtCore
 from uiCore import qtUtils
-import helpBoxWidget
+from . import helpBoxWidget
 
 
 class CollapseBox(QtWidgets.QWidget):
@@ -21,8 +21,8 @@ class CollapseBox(QtWidgets.QWidget):
         # and the click behavior on it
         self.collapsable = collapsable
 
-        self.collapseChar = unichr(11166)
-        self.expandChar = unichr(11167)
+        self.collapseChar = chr(11166)
+        self.expandChar = chr(11167)
 
         # color management for the standard elements of the collapseBox
         self.textColor = {"base": (180, 180, 180),
@@ -134,7 +134,7 @@ this Section
                                         fillColor=self.boxColor["back"],
                                         textColor=self.textColor["base"],
                                         collapseWidget=self)
-        import uiStack # import within the procedure to avoid cross-import issues
+        from . import uiStack # import within the procedure to avoid cross-import issues
         stackParent = uiStack.findParentUiStack(srcWidget = self)
         stackParentGlobalLayout = None
         if not stackParent:
@@ -227,9 +227,9 @@ this Section
 
     def setLabel(self, label):
         if self.collapsable:
-            self.header.setText(u"{}   {}".format(self.collapseChar, label))
+            self.header.setText("{}   {}".format(self.collapseChar, label))
         else:
-            self.header.setText(u"{}".format(label))
+            self.header.setText("{}".format(label))
 
     def setCollapsable(self, collapsable=True):
         if not collapsable:

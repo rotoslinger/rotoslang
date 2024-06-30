@@ -5,40 +5,41 @@ from collections import OrderedDict
 from maya import cmds
 
 from rig_2.name import utils as name_utils
-reload(name_utils)
+import importlib
+importlib.reload(name_utils)
 
 from rig_2.weights import utils as weights_utils
-reload(weights_utils)
+importlib.reload(weights_utils)
 
 from rig_2.animcurve import utils as animcurve_utils
-reload(animcurve_utils)
+importlib.reload(animcurve_utils)
 
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 
 from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
+importlib.reload(deformerUtils)
 
 from rig.rigComponents import meshRivetCtrl
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 
 from rig_2.message import utils as message_utils
-reload(message_utils)
+importlib.reload(message_utils)
 
 from rig_2.manipulator import elements as manipulator_elements
-reload(manipulator_elements)
+importlib.reload(manipulator_elements)
 
 from rig_2.attr import utils as attr_utils
-reload(attr_utils)
+importlib.reload(attr_utils)
 
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig_2.component import base as component_base
-reload(component_base)
+importlib.reload(component_base)
 
 
 

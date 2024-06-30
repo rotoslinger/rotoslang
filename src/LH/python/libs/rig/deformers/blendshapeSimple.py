@@ -1,6 +1,7 @@
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 import sys
+import importlib
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -15,11 +16,11 @@ if os not in sys.path:
 from rig.deformers import base
 
 from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
+importlib.reload(deformerUtils)
 from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
+importlib.reload(deformerUtils)
 from rig.utils import weightMapUtils, misc
-reload(misc)
+importlib.reload(misc)
 
 class BlendshapeSimple(base.Deformer):
     def __init__(self,

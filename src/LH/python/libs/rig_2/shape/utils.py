@@ -1,11 +1,12 @@
 from maya import cmds, OpenMaya
 
 from rig_2.shape import mesh
-reload(mesh)
+import importlib
+importlib.reload(mesh)
 from rig_2.shape import nurbscurve
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 from rig_2.shape import nurbsurface
-reload(nurbsurface)
+importlib.reload(nurbsurface)
 from rig.utils import misc
 def get_shapes(transform):
     return cmds.listRelatives(transform, s=True)

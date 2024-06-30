@@ -1,6 +1,7 @@
 from maya import cmds
-import base
-reload(base)
+from . import base
+import importlib
+importlib.reload(base)
 from rig.utils import misc
 # cmds.reload(DeformerCmdsBase)
 #===============================================================================

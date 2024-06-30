@@ -1,8 +1,9 @@
 import time, os, fnmatch, shutil, json
 from rig_2 import filepath
-reload(filepath)
+import importlib
+importlib.reload(filepath)
 from rig_2.filepath import utils as filepath_utils
-reload(filepath_utils)
+importlib.reload(filepath_utils)
 
 OPERATING_SYSTEM = filepath.OPERATING_SYSTEM
 DELIMETER = filepath.DELIMETER

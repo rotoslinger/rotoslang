@@ -6,21 +6,22 @@ from shiboken2 import wrapInstance
 from maya import cmds
 from ui_2 import ui_utils, file_dialog
 from ui_2 import file_dialog as file_dialog_ui
-reload(file_dialog)
-reload(ui_utils)
-import elements
-reload(elements)
+import importlib
+importlib.reload(file_dialog)
+importlib.reload(ui_utils)
+from . import elements
+importlib.reload(elements)
 from ui_2 import button_grid_base_core as core
-reload(core)
+importlib.reload(core)
 from ui_2 import filtered_list
-reload(filtered_list)
+importlib.reload(filtered_list)
 from rig_2.weights import utils as weight_utils
-reload(weight_utils)
+importlib.reload(weight_utils)
 
 
 def getMayaWindow():
     ptr = OpenMayaUI.MQtUtil.mainWindow()
-    return wrapInstance(long(ptr), QtWidgets.QMainWindow)
+    return wrapInstance(int(ptr), QtWidgets.QMainWindow)
 
 
 class Base(QtWidgets.QWidget):
@@ -444,7 +445,7 @@ class Base(QtWidgets.QWidget):
         except:
             pass
         ptr = OpenMayaUI.MQtUtil.mainWindow()
-        self.mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        self.mayaWin = wrapInstance(int(ptr), QtWidgets.QMainWindow)
         # self.setParent(self.mayaWin)
         # self.installEventFilter(self)
         # self.mayaWin.installEventFilter(self)
@@ -508,11 +509,11 @@ class Base_Test(Base):
 
     def first_button_func(self, checkboxes):
         args = [checkbox.isChecked() for checkbox in checkboxes]
-        print "You have just pressed the first button checkbox1 is {0}, checkbox 2 is {1}".format(args[0], args[1])
+        print("You have just pressed the first button checkbox1 is {0}, checkbox 2 is {1}".format(args[0], args[1]))
 
     def second_button_func(self, file_dialog):
         path = file_dialog.contents.text()
-        print "You have just pressed the second button, the path is {0}".format(path)
+        print("You have just pressed the second button, the path is {0}".format(path))
 
     def create_widgets(self):
         super(Base_Test, self).create_widgets()

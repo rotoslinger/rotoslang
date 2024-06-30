@@ -12,7 +12,7 @@ class Value_Dragger(object):
     # You will want to set add cmds.setToolTo("valueDragger") in your hotkeys to be able to use this feature
     # value_func is a function that will be setting the values, make sure this function only has one arg and that is for a -100 to 100 range
     CONTEXTNAME = "valueDragger"
-    print "NEW CONTEXT"
+    print("NEW CONTEXT")
     def __init__(self,
                  start_func = None,
                  change_func = None,

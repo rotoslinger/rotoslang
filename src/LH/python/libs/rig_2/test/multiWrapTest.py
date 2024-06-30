@@ -1,6 +1,7 @@
 from maya import cmds
 from rig.deformers import multiWrap
-reload(multiWrap)
+import importlib
+importlib.reload(multiWrap)
 
 def build_face_pieces():
     driven_mesh = "C_bodyBind_GEO"

@@ -1,5 +1,5 @@
 import inspect
-import weightmap as _weightmap
+from . import weightmap as _weightmap
 from maya import cmds
 import ast
 from rig_2.attr import constants as attr_constants

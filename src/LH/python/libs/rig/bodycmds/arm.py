@@ -1,4 +1,5 @@
 import sys
+import importlib
 linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 #---determine operating system
@@ -15,8 +16,8 @@ from maya import cmds
 import maya.OpenMaya as OpenMaya
 from utils import misc
 from rig.control import base as control_base
-reload(control_base)
-reload(misc)
+importlib.reload(control_base)
+importlib.reload(misc)
 #===============================================================================
 #CLASS:         arm
 #DESCRIPTION:   Creates an arm rig
@@ -307,7 +308,7 @@ class create_arm():
         if self.twist_axis == "z":
             line1 = "Sorry, but aligning along z is not supported at this time"
             line2 = ", aligning to x instead"
-            print line1 + line2
+            print(line1 + line2)
             self.move= (1,0,0)
         loop_arm_elbow = ([self.joints[0],self.joints[1],self.arm_splits,
                     self.bind_jnts[0],self.split_arm_jnts,self.bind_jnts[1]],

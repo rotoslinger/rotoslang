@@ -5,44 +5,45 @@ from maya import cmds
 import sys
 
 from rig_2.weights import utils as weights_utils
-reload(weights_utils)
+import importlib
+importlib.reload(weights_utils)
 
 from rig_2.component.subcomponent import weightStack
 # from rig.deformers import utils as deformer_utils
 from rig.deformers import matrixDeformer
-reload(matrixDeformer)
+importlib.reload(matrixDeformer)
 from rig.deformers import slideSimple
-reload(slideSimple)
+importlib.reload(slideSimple)
 from rig.deformers import blendshapeSimple
-reload(blendshapeSimple)
+importlib.reload(blendshapeSimple)
 from rig.deformers import vectorDeformerSimple
-reload(vectorDeformerSimple)
+importlib.reload(vectorDeformerSimple)
 from rig.deformers import curveRollSimple
-reload(curveRollSimple)
+importlib.reload(curveRollSimple)
 from rig.deformers import utils as deformer_utils
-reload(deformer_utils)
+importlib.reload(deformer_utils)
 # reload(deformer_utils)
 # reload(base)
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import LHCurveDeformerCmds
-reload(LHCurveDeformerCmds)
+importlib.reload(LHCurveDeformerCmds)
 from rig.rigComponents import meshRivetCtrl 
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 from rig.rigComponents import elements
-reload(elements)
+importlib.reload(elements)
 
 
 from rig.utils import lhExport
-reload(lhExport)
+importlib.reload(lhExport)
 
 from rig_2.manipulator import elements as manipulator_elements
-reload(manipulator_elements)
+importlib.reload(manipulator_elements)
 
 from rig_2.component import base
 from rig.rigComponents import mouthJaw
 
-reload(base) 
+importlib.reload(base) 
 
 class Mouth(base.Component):
     def __init__(self,

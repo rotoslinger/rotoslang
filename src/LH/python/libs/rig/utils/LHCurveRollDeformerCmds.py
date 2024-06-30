@@ -158,7 +158,7 @@ class curveRollDeformerCmd():
         except:
             raise Exception('''one or more argument did not have a shape \n' ''')
             quit()
-        print self.weightBase
+        print(self.weightBase)
 
     def __checkArgs(self):
         """checks the args to make sure they are the right type"""

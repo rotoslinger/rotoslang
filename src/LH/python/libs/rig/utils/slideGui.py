@@ -1,4 +1,5 @@
 import sys
+import importlib
 linux = '/scratch/levih/dev/rotoslang/lhrig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
@@ -12,21 +13,21 @@ if os not in sys.path:
 
 from maya import cmds
 import json
-import faceWeights, lhDeformerExport, lhDeformerCmds, exportUtils
-import weightingUtils
-import slideUICmds
+from . import faceWeights, lhDeformerExport, lhDeformerCmds, exportUtils
+from . import weightingUtils
+from . import slideUICmds
 from rigComponents import slidingCtrl
 from rigComponents import meshRivetCtrl
 from rig.utils import misc
-reload(misc)
-reload(exportUtils)
-reload(slidingCtrl)
-reload(meshRivetCtrl)
-reload(slideUICmds)
-reload(weightingUtils)
-reload(faceWeights)
-reload(lhDeformerExport)
-reload(lhDeformerCmds)
+importlib.reload(misc)
+importlib.reload(exportUtils)
+importlib.reload(slidingCtrl)
+importlib.reload(meshRivetCtrl)
+importlib.reload(slideUICmds)
+importlib.reload(weightingUtils)
+importlib.reload(faceWeights)
+importlib.reload(lhDeformerExport)
+importlib.reload(lhDeformerCmds)
 
 import maya.mel as mel
 
@@ -172,7 +173,7 @@ class slideDeformerGui(object):
             if geo:
                 geo= geo[0]
             idx = len(weights_source)-1
-            print deformer
+            print(deformer)
             if cmds.objectType(deformer[0]) == "LHMatrixDeformer":
                 geoTransform = cmds.listRelatives(geo, p=True)[0]
                 self.current_weights= geo + "." + weights_source[idx]
@@ -185,11 +186,11 @@ class slideDeformerGui(object):
                 geoTransform = cmds.listRelatives(geo, p=True)[0]
                 shape = misc.getShape(geo)
                 self.current_weights= shape + "." + weights_source[idx]
-                print self.current_weights
-                print self.current_weights
-                print self.current_weights
-                print self.current_weights
-                print self.current_weights
+                print(self.current_weights)
+                print(self.current_weights)
+                print(self.current_weights)
+                print(self.current_weights)
+                print(self.current_weights)
                 cmds.makePaintable("mesh", self.current_weights)
                 mel.eval('artSetToolAndSelectAttr( "artAttrCtx", "mesh.' + self.current_weights+ '" );')
                 self.weightDragger.weightAttr = self.current_weights
@@ -339,7 +340,7 @@ class slideDeformerGui(object):
                         continue
                     con = con[0]
                     if cmds.objectType(con) != 'mesh':
-                        print cmds.objectType(con)
+                        print(cmds.objectType(con))
                         continue
                     attrNameCon = cmds.listConnections(attrName, p=True)
                     if not attrNameCon:
@@ -410,7 +411,7 @@ class slideDeformerGui(object):
             for i in range(len(self.attrs)):
                 tmp_name = self.attrs[i].split(".")
                 self.names.append(tmp_name[1])
-            self.weight_dict = dict(zip(self.names,self.attrs))
+            self.weight_dict = dict(list(zip(self.names,self.attrs)))
                  
             # filter source
             self.source_string = cmds.textFieldGrp(filterTextGroup, q = 1, text = 1)
@@ -655,13 +656,13 @@ class slideDeformerGui(object):
     def addSlideCtrl(self, *args):
         deformer, unsortedAttrs, name, slideSurf, geoName = self.getSlideData()
 
-        print unsortedAttrs, "UNSORTED ATTRS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        print(unsortedAttrs, "UNSORTED ATTRS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
         if len(unsortedAttrs) != 2:
             return
         # force the attribute order... selection order is not understood by the textScrollList
         # make sure you have u then V
-        print unsortedAttrs[0], "UNSORTED ATTRS"
+        print(unsortedAttrs[0], "UNSORTED ATTRS")
         attrs = ["", ""]
         if "uValue" in cmds.listConnections(deformer + "." + unsortedAttrs[0], d=True,p=True)[0]:
             attrs[0] = unsortedAttrs[0]
@@ -796,7 +797,7 @@ class slideDeformerGui(object):
                         for i in range(len(geo)):
                             geo_tmp = cmds.deformer(deformer, q = True, g = True)
                             index_tmp = cmds.deformer(deformer, q = True, gi = True)
-                            geo_dict = dict(zip(geo_tmp,index_tmp))
+                            geo_dict = dict(list(zip(geo_tmp,index_tmp)))
                             for j in range(len(weights_source)):
                                 index = geo_dict.get(geo[i])
                                 weights_split = weights_source[j].split(".")
@@ -836,7 +837,7 @@ class slideDeformerGui(object):
         for i in range(len(sourceAttrs)):
             tmp_name = sourceAttrs[i].split(".")
             sourceWeightNames.append(tmp_name[1])
-        return dict(zip(sourceWeightNames,sourceAttrs))
+        return dict(list(zip(sourceWeightNames,sourceAttrs)))
 
 
     def __copy_weights(self, *args):
@@ -910,7 +911,7 @@ class slideDeformerGui(object):
                             for i in range(len(geo)):
                                 geo_tmp = cmds.deformer(deformer[0], q = True, g = True)
                                 index_tmp = cmds.deformer(deformer[0], q = True, gi = True)
-                                geo_dict = dict(zip(geo_tmp,index_tmp))
+                                geo_dict = dict(list(zip(geo_tmp,index_tmp)))
                                 index = geo_dict.get(geo[i])
                                 weights_split = source.split(".")
                                 tmp_target = []
@@ -1418,19 +1419,19 @@ class slideDeformerGui(object):
                             check = 1
 
                             if cmds.attributeQuery(new_attr, node = tmp[0], ex = True):
-                                print "attribute " + new_attr + " already exists please try a different name"
+                                print("attribute " + new_attr + " already exists please try a different name")
                                 check = 0
                             if cmds.attributeQuery(new_weight, node = tmp[0], ex = True):
-                                print "attribute " + new_weight + " already exists please try a different name"
+                                print("attribute " + new_weight + " already exists please try a different name")
                                 check = 0
                             if cmds.objExists(new_u_anim):
-                                print new_u_anim + " already exists please try a different name"
+                                print(new_u_anim + " already exists please try a different name")
                                 check = 0
                             if cmds.objExists(new_v_anim):
-                                print new_v_anim + " already exists please try a different name"
+                                print(new_v_anim + " already exists please try a different name")
                                 check = 0
                             if cmds.objExists(new_pivot):
-                                print new_pivot + " already exists please try a different name"
+                                print(new_pivot + " already exists please try a different name")
                                 check = 0
 
                             if check == 1:
@@ -1571,7 +1572,7 @@ class slideDeformerGui(object):
         max = cmds.floatFieldGrp(self.set_all_max, 
                                        q = 1, 
                                        value1 = True)
-        print "maxBake"
+        print("maxBake")
         deformer = cmds.textScrollList(self.deformer_list4, 
                                        q = 1, 
                                        selectItem = 1)
@@ -1874,7 +1875,7 @@ class slideDeformerGui(object):
             self.undo_counter += -1
             self.bake_dict = self.undo_cache.get(self.undo_counter)
         else:
-            print "Nothing left to undo"
+            print("Nothing left to undo")
 #         print "UNDO"
         if cmds.objectTypeUI(self.bake_row, isType = "rowColumnLayout"):
             cmds.deleteUI(self.bake_row)
@@ -1979,7 +1980,7 @@ class slideDeformerGui(object):
             self.undo_counter += 1
             self.bake_dict = self.undo_cache.get(self.undo_counter)
         else:
-            print "Nothing to redo"
+            print("Nothing to redo")
             
         if cmds.objectTypeUI(self.bake_row, isType = "rowColumnLayout"):
             cmds.deleteUI(self.bake_row)
@@ -2189,7 +2190,7 @@ class slideDeformerGui(object):
             attr_mins.append(self.bake_dict.get(attrs[i] + ".min"))
             attr_maxs.append(self.bake_dict.get(attrs[i] + ".max"))
             num_inbetweens.append(self.bake_dict.get(attrs[i] + ".tween"))
-            print attr_mins[i], attr_maxs[i],num_inbetweens[i]
+            print(attr_mins[i], attr_maxs[i],num_inbetweens[i])
 #             print attrs[count]
 #             count += 1
 
@@ -2208,7 +2209,7 @@ class slideDeformerGui(object):
                                            attr_min = attr_mins[i],
                                            attr_max = attr_maxs[i],
                                            num_inbetweens = num_inbetweens[i])
-            print count
+            print(count)
             count += 1
 
 
@@ -2220,7 +2221,7 @@ class slideDeformerGui(object):
 
     def callWeightAverageWithArgs(self, *args):
         averageVal = cmds.textFieldGrp(self.averageValue, q=1, text=1)
-        print averageVal
+        print(averageVal)
         weightingUtils.weightAverageAll(self.current_weights, int(averageVal))
         self.setVertexColorsToWeightVals()
 
@@ -2969,7 +2970,7 @@ class slideDeformerGui(object):
 #         cmds.text("Select one or more point")
     def addComponentTypeAction(self, *args):
         componentType = cmds.radioButtonGrp(self.add_component_type, q = 1, sl = 1)
-        print componentType
+        print(componentType)
         if componentType == 1:
             cmds.text(self.slideSurfaceInstruction, e=True, label = "Enter the surface that will be used to slide on")
         if componentType == 2:

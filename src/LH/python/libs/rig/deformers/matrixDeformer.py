@@ -1,38 +1,39 @@
 from maya import cmds
 
 from rig_2.name import utils as name_utils
-reload(name_utils)
+import importlib
+importlib.reload(name_utils)
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 from rig_2.attr import utils as attr_utils
-reload(attr_utils)
+importlib.reload(attr_utils)
 
 
 from rig_2.message import utils as message_utils
-reload(message_utils)
+importlib.reload(message_utils)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig.utils import weightMapUtils, misc
-reload(weightMapUtils)
-reload(misc)
+importlib.reload(weightMapUtils)
+importlib.reload(misc)
 from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
+importlib.reload(deformerUtils)
 from rig.deformers import base
-reload(base)
+importlib.reload(base)
 from rig.rigComponents import simpleton
-reload(simpleton)
+importlib.reload(simpleton)
 from rig.rigComponents import meshRivetCtrl
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 from rig.utils import exportUtils
-reload(exportUtils)
+importlib.reload(exportUtils)
 from rig.rigComponents import elements
-reload(elements)
+importlib.reload(elements)
 from rig_2.shape import nurbscurve
 
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 from rig_2.manipulator import elements as manipulator_elements
-reload(manipulator_elements)
+importlib.reload(manipulator_elements)
 
 def createTestMatrixDeformer():
     deformMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=100, sy=100,  n="deformMesh")[0]

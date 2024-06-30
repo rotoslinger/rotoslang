@@ -7,8 +7,9 @@ from rig_2.node import utils as node_utils
 from rig_2.tag import utils as tag_utils
 from rig.deformers import matrixDeformer 
 from rig.utils import misc 
+import importlib
 
-reload(base) 
+importlib.reload(base) 
 
 # Must be built after the MouthJaw, as it will use the matrices created by this class
 class TeethTongue(base.Component):

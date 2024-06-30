@@ -1,11 +1,12 @@
 from maya import cmds
-import base
-reload(base)
+from . import base
+import importlib
+importlib.reload(base)
 from rig.utils import weightMapUtils, misc
-reload(weightMapUtils)
-reload(misc)
+importlib.reload(weightMapUtils)
+importlib.reload(misc)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 
 class CurveRollSimple(base.Deformer):

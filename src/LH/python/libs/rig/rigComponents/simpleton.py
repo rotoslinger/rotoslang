@@ -1,13 +1,14 @@
 from maya import cmds
 from rig.rigComponents import base
-reload(base)
+import importlib
+importlib.reload(base)
 from rig.utils.misc import formatName
 from rig.control import base as control_base
-reload(control_base)
+importlib.reload(control_base)
 from rig.utils import misc
 from rig.utils import exportUtils
 from rig.utils import faceWeights
-import elements
+from . import elements
 
 # A simple control with translate, rotate, and scale.  Can have custom attributes but really shouldn't do to much more than the basics.
 

@@ -5,9 +5,10 @@ from maya import OpenMayaUI as OpenMayaUI
 from shiboken2 import wrapInstance
 from maya import cmds
 from ui_2 import ui_utils
-reload(ui_utils)
-import elements
-reload(elements)
+import importlib
+importlib.reload(ui_utils)
+from . import elements
+importlib.reload(elements)
 '''
 @code
 import sys
@@ -104,7 +105,7 @@ class Weight_Utility_UI(QtWidgets.QWidget):
 
     def add_py_path_action(self):
         path = os.path.dirname(os.path.abspath(__file__))
-        print os.path.dirname(os.path.normpath(path))
+        print(os.path.dirname(os.path.normpath(path)))
 
         #print os.path.dirname(sys.modules['__main__'].__file__)
 
@@ -125,7 +126,7 @@ class Weight_Utility_UI(QtWidgets.QWidget):
         except:
             pass
         ptr = OpenMayaUI.MQtUtil.mainWindow()
-        mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        mayaWin = wrapInstance(int(ptr), QtWidgets.QMainWindow)
         globals()[winName] = self(mayaWin, winTitle, winName)
         globals()[winName].show()
         return globals()[winName]

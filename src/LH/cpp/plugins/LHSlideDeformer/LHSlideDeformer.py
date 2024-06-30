@@ -417,7 +417,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                                 tmpVCoord.append(vCoord)
                                 tmpIntersectYN.append(intersectYN)
     
-                                iter.next()
+                                next(iter)
     
                             self.uCoord.append(tmpUCoord)
                             self.vCoord.append(tmpVCoord)
@@ -751,7 +751,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                                             tempUPointVals.append(weight)
                                         except:
                                             tempUPointVals.append(1.0)
-                                        iter.next()
+                                        next(iter)
                                     iter.reset()
                                     tempUVals.append(tempUPointVals)
                                 tempU.append(tempUVals)
@@ -770,7 +770,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                                             tempVPointVals.append(weight)
                                         except:
                                             tempVPointVals.append(1.0)
-                                        iter.next()
+                                        next(iter)
                                     iter.reset()
                                     tempVVals.append(tempVPointVals)
                                 tempV.append(tempVVals)
@@ -821,7 +821,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                             tmpPoint.append(slideUVBasePt)
                             tmpUParam.append(slideUBasePtParam)
                             tmpVParam.append(slideVBasePtParam)
-                            iter.next()
+                            next(iter)
                         iter.reset()
                         self.slideUVBasePt.append(tmpPoint)
                         self.slideUBasePtParam.append(tmpUParam)
@@ -907,7 +907,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                             #### 0 = XYZ rotation order, check maya api doc for other rotation orders
                             rotMatrix = rotMatrix.decompose(BaseMatrix,0)   
                             tmpRotMatrix.append(rotMatrix.asMatrix())
-                            iter.next()
+                            next(iter)
                         iter.reset()
                         self.rotMatrix.append(tmpRotMatrix)
                     else:
@@ -1002,7 +1002,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
             idx = itGeo.index()
             w = w * envelope
             if w <= 0:
-                itGeo.next()
+                next(itGeo)
                 continue
             ######################  
 
@@ -1306,7 +1306,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
             
 
             itGeo.setPosition(pt)
-            itGeo.next()
+            next(itGeo)
         return
 
 ####################################################
@@ -1833,12 +1833,12 @@ def initializePlugin(obj):
     try:
         plugin.registerNode('LHSlideDeformer', LHSlideDeformer.kPluginNodeId, creator, initialize, OpenMayaMPx.MPxNode.kDeformerNode)
     except:
-        raise RuntimeError, 'Failed to register node'
+        raise RuntimeError('Failed to register node')
  
 def uninitializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj)
     try:
         plugin.deregisterNode(LHSlideDeformer.kPluginNodeId)
     except:
-        raise RuntimeError, 'Failed to deregister node'
+        raise RuntimeError('Failed to deregister node')
     

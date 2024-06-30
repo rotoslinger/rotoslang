@@ -1,30 +1,30 @@
 import json,os,sys,importlib, ast
 from maya import cmds
 from rig_2.guide import utils as guide_utils
-reload(guide_utils)
+importlib.reload(guide_utils)
 
 from rig_2.filepath import utils as filepath_utils
-reload(filepath_utils)
+importlib.reload(filepath_utils)
 
 from rig_2.backup import utils as backup_utils
-reload(backup_utils)
+importlib.reload(backup_utils)
     
     
 from rig_2.component import base as component_base
-reload(component_base)
+importlib.reload(component_base)
 
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig_2.attr import constants as attr_constants
-reload(attr_constants)
+importlib.reload(attr_constants)
 
 from rig_2.weights import utils as weight_utils
-reload(weight_utils)
+importlib.reload(weight_utils)
 
 # this is important for the dynamic builds which will use relative module path names
 import rig_2
-reload(rig_2)
+importlib.reload(rig_2)
 from rig_2 import decorator
 
 
@@ -62,7 +62,7 @@ def export_all_weights(asset_name,
         original_dict = json.load(file)
         # Add new entries to the original file.
         # But also overwrite the original key values with new entries
-        for key in export_dict.keys():
+        for key in list(export_dict.keys()):
             for inner_key in export_dict[key]:
                 original_dict[key][inner_key] = export_dict[key][inner_key]
             # print key, "KERY"
@@ -145,7 +145,7 @@ def export_all_guides(asset_name,
         original_dict = json.load(file)
         # Add new entries to the original file.
         # But also overwrite the original key values with new entries
-        for key in export_dict.keys():
+        for key in list(export_dict.keys()):
             for inner_key in export_dict[key]:
                 original_dict[key][inner_key] = export_dict[key][inner_key]
         export_dict = original_dict
@@ -178,7 +178,7 @@ def import_all_guides(filename, ctrl_shape=True, guide=True, guide_shape=True, g
     no_export_tag_dict = import_dict["no_export_tag_dict"]
 
     # Create your guide components first, so the guide control positions can be set after
-    if build_components and "guide_components" in import_dict.keys():
+    if build_components and "guide_components" in list(import_dict.keys()):
         create_class_from_dict(import_dict["guide_components"])
 
 
@@ -198,7 +198,7 @@ def import_all_guides(filename, ctrl_shape=True, guide=True, guide_shape=True, g
     if gimbal_shape:
         guide_utils.set_shapes_from_dict(import_dict["gimbal_shapes"], no_export_tag_dict, check_if_exists=True)
 
-    if "guide_geo" in  import_dict.keys() and guide_geo:
+    if "guide_geo" in  list(import_dict.keys()) and guide_geo:
         guide_utils.set_guide_geo_dict(import_dict["guide_geo"], no_export_tag_dict)
         
 def literal_eval(string_attribute):
@@ -210,7 +210,7 @@ def literal_eval(string_attribute):
         return
     
 def convert_value_to_literals(dictionary_value):
-    if not type(dictionary_value) == unicode and not type(dictionary_value) == str:
+    if not type(dictionary_value) == str and not type(dictionary_value) == str:
         return dictionary_value
     test_val = str(dictionary_value)
     litteral_val = literal_eval(test_val)
@@ -227,16 +227,16 @@ def create_class_from_dict(components_dict):
     # Dynamically gets the module (and reloads it) from a dictionary
     if not components_dict:
         return
-    for component_name in components_dict.keys():
+    for component_name in list(components_dict.keys()):
         component_dict = components_dict[component_name]
-        for key in component_dict.keys():
+        for key in list(component_dict.keys()):
             component_dict[key] = convert_value_to_literals(component_dict[key])
                                 
         # getattr(component_dict["class_name"], **component_dict)
         class_name = component_dict["class_name"].split(".")[-1]
         module_name = component_dict["class_name"].replace("."+ class_name, "")
         module = importlib.import_module(module_name)
-        reload(module)
+        importlib.reload(module)
         component_class = eval(component_dict["class_name"])
         component = component_class(**component_dict)
         component.create()

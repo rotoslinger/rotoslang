@@ -3,17 +3,18 @@ from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 from PySide2 import QtWidgets, QtCore, QtGui
 from maya import cmds
 from ui_2 import elements
-reload(elements)
+import importlib
+importlib.reload(elements)
 
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 
 
 OPERATING_SYSTEM = sys.platform
 
 def test_func():
-    print "Test func is working"
+    print("Test func is working")
 
 def get_outliner_icon(maya_object):
     if not maya_object:
@@ -208,7 +209,7 @@ class DockContents(QtWidgets.QFrame):
 
 
 def change_in_size():
-    print "AAAAAAAAAAAA"
+    print("AAAAAAAAAAAA")
     
 def get_bg_color_from_color(color):
     return color.replace("color", "background-color: ")
@@ -569,7 +570,7 @@ def check_box_list(checkbox_names_defaults=[["testBox1", True], ["textBox2", Fal
     return layout, checkboxes 
 
 def test(string_name):
-    print string_name
+    print(string_name)
 
 class checkbox_list_with_limits(QtWidgets.QWidget):
     def __init__(self,
@@ -590,7 +591,7 @@ class checkbox_list_with_limits(QtWidgets.QWidget):
             temp_checkbox = QtWidgets.QCheckBox(checkbox[0])
             temp_checkbox.setChecked(checkbox[1])
             if len(checkbox) > 2 and checkbox[2]:
-                print "setting tooltip"
+                print("setting tooltip")
                 temp_checkbox.setToolTip(checkbox[2])
             grid_layout.addWidget(temp_checkbox, row_or_column[0], row_or_column[1])
             self.checkboxes.append(temp_checkbox)
@@ -612,7 +613,7 @@ class checkbox_list_with_limits(QtWidgets.QWidget):
             current_checkbox.setChecked(True)
 
 def check_box_list_limit(current_checkbox, check_box_list):
-    print current_checkbox.text()
+    print(current_checkbox.text())
     for checkbox in check_box_list:
         if current_checkbox.text() == checkbox.text():
             # print "SAME!!!", checkbox.text(), current_checkbox.text()

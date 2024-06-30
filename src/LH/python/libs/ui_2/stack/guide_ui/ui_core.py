@@ -1,21 +1,22 @@
 from maya import cmds
 
 from rig_2.export import utils as export_utils
-reload(export_utils)
+import importlib
+importlib.reload(export_utils)
 
 from rig_2.mirror import utils as mirror_utils
-reload(mirror_utils)
+importlib.reload(mirror_utils)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig_2.guide import utils as guide_utils
-reload(guide_utils)
+importlib.reload(guide_utils)
 
 from rig_2.shape import nurbscurve
 
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 
 from rig_2.backup import utils as backup_utils
 from rig_2 import decorator

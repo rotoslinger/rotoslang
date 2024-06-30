@@ -82,7 +82,7 @@ class meshData(object):
             mesh_iter.getVertices(temp_vert_ids)
             for i in range(temp_vert_ids.length()):
                 self.polygonConnects.append(temp_vert_ids[i])
-            mesh_iter.next()
+            next(mesh_iter)
 
     def get_UVs(self):
         tmp_U_float_array = OpenMaya.MFloatArray()
@@ -755,7 +755,7 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAt
     dstSkin = cmds.skinCluster(jointOn, jointOff, destMesh, n = "TempSKINDEST", tsb=True)[0]
     cmds.setAttr(dstSkin + ".envelope", 0)
     for idx, srcAttr in enumerate(srcAttributes):
-        print srcAttributes
+        print(srcAttributes)
         weight = cmds.getAttr(srcAttr)
         #---If weight hasn't been set, skip it
         if not weight:
@@ -773,7 +773,7 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAt
 
         cmds.setAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount), *weight, size=srcVertCount)
         attr = cmds.getAttr('{0}.weightList[0:{1}].weights[0]'.format(srcSkin, srcVertCount))
-        print attr
+        print(attr)
         normAttrs = []
         for i in attr:
             if i < 1:
@@ -788,7 +788,7 @@ def lhDeformerWeightTransfer(srcMesh, srcDeformer, destMesh, destDeformer, srcAt
         try:
             cmds.setAttr('{0}.weightList[0:{1}].weights[1]'.format(srcSkin, srcVertCount), *normAttrs, size=srcVertCount)
         except:
-            print "weights could not be properly transfered for " + srcAttr
+            print("weights could not be properly transfered for " + srcAttr)
         # Only Use Skin Percent to normalize! It is crappy slow to set points....
         cmds.skinPercent( srcSkin, '{0}.vtx[0:{1}]'.format(srcMesh + "TempWeightTransfer", srcVertCount), normalize=True)
 

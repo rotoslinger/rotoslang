@@ -3,22 +3,23 @@ from maya import cmds
 from rig_2.manipulator import elements as manip_elements
 
 from rig_2.mirror import utils as mirror_utils
-reload(mirror_utils)
+import importlib
+importlib.reload(mirror_utils)
 from rig_2.name import utils as name_utils
-reload(name_utils)
+importlib.reload(name_utils)
 from rig.rigComponents import simpleton
-reload(simpleton)
+importlib.reload(simpleton)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
+importlib.reload(deformerUtils)
 
 from rig.rigComponents import meshRivetCtrl
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 
 def safe_parent(objects_to_parent, parent):
     if not cmds.objExists(parent):
@@ -43,7 +44,7 @@ def get_projection_geo(mesh,
                        # If you give a list of meshes you need to give a name!!
                        name=None):
     proj_name=""
-    if type(mesh) == str or type(mesh) == unicode:
+    if type(mesh) == str or type(mesh) == str:
         proj_name = mesh
     if split_suffix in mesh:
         proj_name = mesh.split(split_suffix)[0]
@@ -140,7 +141,7 @@ def cluster_lattice_sheet(lattice_name,
                                                  do_return_side=True)
     controls = []
     clusters = []
-    for s, t in itertools.product(range(s_count), range(t_count)):
+    for s, t in itertools.product(list(range(s_count)), list(range(t_count))):
         exists = False
         
         if is_symmetric:
@@ -207,7 +208,7 @@ def autoposition_matrix_deformer_controls(matrix_deformer_node, threshold=.09, i
     if not weighted_mesh:
         return
     weighted_mesh = weighted_mesh[0]
-    print weighted_mesh
+    print(weighted_mesh)
     for idx in range(len(numElements)):
         matrix_attr =  "{0}.inputs[{1}].matrix".format(matrix_deformer_node, idx)
         position = getPositionsFromMatrixWeightsByIndex(matrix_deformer_node, weighted_mesh, idx, threshold)

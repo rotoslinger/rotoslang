@@ -3,9 +3,10 @@ from maya import cmds
 from rig_2.tag import utils as tag_utils
 from rig.utils import misc
 from rig.utils import exportUtils
-reload(tag_utils)
-reload(misc)
-reload(exportUtils)
+import importlib
+importlib.reload(tag_utils)
+importlib.reload(misc)
+importlib.reload(exportUtils)
 
 
 #===============================================================================
@@ -666,7 +667,7 @@ class create_ctl():
 
     def add_tags(self):
         for i in range(50):
-            print "CREATING TAGS"
+            print("CREATING TAGS")
         self.gimbal_shape = misc.getShape(self.gimbal_ctl)
         if self.gimbal == True:
             tag_utils.tag_gimbal(self.gimbal_shape)

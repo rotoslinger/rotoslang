@@ -198,7 +198,7 @@ def connectWeightMapToWeightNode(sourceMap=None, destWeightNode=None, sourceFact
 def safeConnectWeightAttrs(isConnected, destNode, forceConnection, size, attrToConnect, attrName="inputWeights", debug=False):
     if isConnected:
         if debug:
-            print attrToConnect + "  has already been connected to " + destNode
+            print(attrToConnect + "  has already been connected to " + destNode)
         if forceConnection:
             cmds.connectAttr(attrToConnect, destNode + ".Inputs[{0}].{1}".format(size, attrName))
     else:

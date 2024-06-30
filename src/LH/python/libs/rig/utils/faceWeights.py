@@ -77,13 +77,13 @@ class create_symmetric_partners():
                     vector_from = vector_from - vector_to
                     closest_lengths.append(vector_from.length())
                 #make dictionary
-                id_dict = dict(zip(closest_lengths,point_ids))
+                id_dict = dict(list(zip(closest_lengths,point_ids)))
                 smallest_id = min(closest_lengths)
 #                 regular_idx.append(self.geo + ".vtx["+ str(i)+"]")
 #                 flipped_idx.append(self.geo + ".vtx["+ str(id_dict.get(smallest_id))+"]")
                 regular_idx.append(i)
                 flipped_idx.append(id_dict.get(smallest_id))
-            self.symmetry_dict = dict(zip(regular_idx,flipped_idx))
+            self.symmetry_dict = dict(list(zip(regular_idx,flipped_idx)))
 # sym_points = create_symmetric_partners(geo = "pSphere1").symmetry_dict
 # 
 # sel = sym_points.get("pSphere1.vtx[296]")
@@ -797,14 +797,14 @@ class get_cooresponding_attrs():
         if cmds.objExists(self.node):
             self.type = cmds.nodeType(self.node)
         else:
-            print self.node + " does not exist"
+            print(self.node + " does not exist")
             self.end = 1
 
         if not cmds.objExists(self.full_attr):
-            print self.full_attr + " does not exist"
+            print(self.full_attr + " does not exist")
             self.end = 1
         if not (self.type == "LHSlideDeformer" or self.type == "LHVectorDeformer" or self.type == "LHCurveRollDeformer"):
-            print self.node + " is not a supported node"
+            print(self.node + " is not a supported node")
             self.end = 1
 
     def __get_connection(self):
@@ -812,7 +812,7 @@ class get_cooresponding_attrs():
         self.connections = cmds.listConnections(self.full_attr, d=True, p=True, t = self.type)
 #         print self.connections
         if not self.connections:
-            print self.full_attr + " is not connected, unable to find cooresponding attributes"
+            print(self.full_attr + " is not connected, unable to find cooresponding attributes")
             self.end = 1
             
     def __compose_attrs(self):
@@ -838,13 +838,13 @@ class get_cooresponding_attrs():
         if (cmds.objExists(self.weight_attr) and cmds.objExists(self.u_anim_curve) and cmds.objExists(self.v_anim_curve)):
             pass
         else:
-            print "One or more cooresponding attributes don't have a connection, check connections and try again"
+            print("One or more cooresponding attributes don't have a connection, check connections and try again")
             self.end = 1
         if self.type == "LHVectorDeformer":
             if cmds.objExists(self.pivot) :
                 pass
             else:
-                print "One or more cooresponding attributes don't have a connection, check connections and try again"
+                print("One or more cooresponding attributes don't have a connection, check connections and try again")
                 self.end = 1
 #         self.weights_attr = self.weights_attr + .
     def __get_final(self):

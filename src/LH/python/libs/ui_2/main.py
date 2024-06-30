@@ -5,9 +5,10 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 from maya import cmds
 from ui_2.stack.guide_ui import ui as guide
-reload(guide)
+import importlib
+importlib.reload(guide)
 from ui_2.stack.weight_ui import ui as weight
-reload(weight)
+importlib.reload(weight)
 
 
 

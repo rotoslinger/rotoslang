@@ -1,13 +1,14 @@
 from maya import cmds
 from rig.deformers import base
-reload(base)
+import importlib
+importlib.reload(base)
 from rig.utils import weightMapUtils, misc
-reload(weightMapUtils)
-reload(misc)
+importlib.reload(weightMapUtils)
+importlib.reload(misc)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 from rig_2.component import base as component_base
-reload(component_base)
+importlib.reload(component_base)
 
 class SlideSimple(base.Deformer):
     def __init__(self,

@@ -1,27 +1,28 @@
 from maya import cmds
 
 from rig_2.message import utils as message_utils
-reload(message_utils)
+import importlib
+importlib.reload(message_utils)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 from rig.rigComponents import base
-reload(base)
+importlib.reload(base)
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import exportUtils
-reload(exportUtils)
+importlib.reload(exportUtils)
 from rig.utils import faceWeights
-reload(faceWeights)
-import elements
-reload(elements)
+importlib.reload(faceWeights)
+from . import elements
+importlib.reload(elements)
 from rig_2.shape import nurbscurve
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 
 from rig_2.manipulator import elements as manipulator_elements
-reload(manipulator_elements)
+importlib.reload(manipulator_elements)
 
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 
 class Component(base.Component):
     def __init__(self,
@@ -326,7 +327,7 @@ def getWeightAttributes(deformerName):
     for i in range(len(sourceAttrs)):
         tmp_name = sourceAttrs[i].split(".")
         sourceWeightNames.append(tmp_name[1])
-    return dict(zip(sourceWeightNames,sourceAttrs))
+    return dict(list(zip(sourceWeightNames,sourceAttrs)))
 
 def getRivetParts(ctrl):
     buffer1 = cmds.listRelatives(ctrl, p=True)[0]

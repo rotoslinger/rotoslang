@@ -1,14 +1,15 @@
 import ast
 from maya import cmds
 from rig.utils import misc
-reload(misc)
+import importlib
+importlib.reload(misc)
 from rig_2.message import utils as message_utils
-reload(message_utils)
+importlib.reload(message_utils)
 from rig_2.attr import utils as attr_utils
-reload(attr_utils)
+importlib.reload(attr_utils)
 
 from rig_2.tag import constants as tag_constants
-reload(tag_constants)
+importlib.reload(tag_constants)
 
 
 def get_no_exports(check_component_class_no_export=True):
@@ -20,7 +21,7 @@ def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True)
     for tag in tag_filter:
         for node in get_all_with_tag(tag):
             # Make sure to remove from the dict if EXPORT_OVERRIDE exists
-            if node in tag_dict.keys() and cmds.objExists(node + ".EXPORT_OVERRIDE"):
+            if node in list(tag_dict.keys()) and cmds.objExists(node + ".EXPORT_OVERRIDE"):
                 del tag_dict[node]
                 # if node not in tag_dict.keys():
                 #     tag_dict[node] = []
@@ -30,7 +31,7 @@ def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True)
             if cmds.objExists(node + ".EXPORT_OVERRIDE"):
                 continue
             # Create key entry if the key does not yet exist
-            if node not in tag_dict.keys():
+            if node not in list(tag_dict.keys()):
                 tag_dict[node] = []
             tag_dict[node].append(tag)
     if not check_component_class_no_export:
@@ -47,7 +48,7 @@ def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True)
             continue
         for node in get_nodes_by_component_name(component):
             # Failsafe make sure to remove from the dict if EXPORT_OVERRIDE exists
-            if node in tag_dict.keys() and cmds.objExists(node + ".EXPORT_OVERRIDE"):
+            if node in list(tag_dict.keys()) and cmds.objExists(node + ".EXPORT_OVERRIDE"):
                 # if "DELETE_NOEXPORT_IF_EXISTS" not in tag_dict[node]:
                 #     tag_dict[node].append("DELETE_NOEXPORT_IF_EXISTS")
                 del tag_dict[node]
@@ -55,7 +56,7 @@ def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True)
             if cmds.objExists(node + ".EXPORT_OVERRIDE"):
                 continue
             # Create key entry if the key does not yet exist
-            if node not in tag_dict.keys():
+            if node not in list(tag_dict.keys()):
                 tag_dict[node] = []
             tag_dict[node].append("NO_EXPORT")
             # Create the tag 
@@ -63,10 +64,10 @@ def get_tag_dict(tag_filter=["NO_EXPORT"], check_component_class_no_export=True)
     return tag_dict
 
 # Temp, for testing, REMOVE ME
-TAG_DICT = {u'C_upperLipPrimaryGimbal_CTL': ['NO_EXPORT'], u'C_upperLipPrimary01_BUF': ['NO_EXPORT'], u'C_upperLipPrimary_CTL': ['NO_EXPORT'], u'C_upperLipPrimary_GUIDE': ['NO_EXPORT']}
+TAG_DICT = {'C_upperLipPrimaryGimbal_CTL': ['NO_EXPORT'], 'C_upperLipPrimary01_BUF': ['NO_EXPORT'], 'C_upperLipPrimary_CTL': ['NO_EXPORT'], 'C_upperLipPrimary_GUIDE': ['NO_EXPORT']}
 
 def set_tags_from_dict(tag_dict = TAG_DICT, check_component_class_no_export=True):
-    for node in tag_dict.keys():
+    for node in list(tag_dict.keys()):
         for tag in tag_dict[node]:
             create_tag(node, tag)
     if not check_component_class_no_export:
@@ -81,7 +82,7 @@ def set_tags_from_dict(tag_dict = TAG_DICT, check_component_class_no_export=True
                 continue
             create_tag(node, "NO_EXPORT")
         # Create key entry if the key does not yet exist
-            if node not in tag_dict.keys():
+            if node not in list(tag_dict.keys()):
                 tag_dict[node] = []
             tag_dict[node].append("NO_EXPORT")
     return tag_dict
@@ -523,7 +524,7 @@ def get_data_from_connection_dict(connection_dict_list):
         curve_weights_nodes.append(curve_dict["curve_weights_node"])
         nodes.append(curve_dict["node"])
         output_indices.append(curve_dict["output_idx"])
-        if "hand_weights" in curve_dict.keys():
+        if "hand_weights" in list(curve_dict.keys()):
             hand_weights.append(curve_dict["hand_weights"])
     return controls, curve_names, curve_weights_nodes, nodes, output_indices, hand_weights
 

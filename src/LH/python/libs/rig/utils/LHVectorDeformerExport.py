@@ -2,7 +2,7 @@ import json
 from maya import cmds
 from rig.utils import exportUtils as xUtils, LHVectorDeformerCmds
 from rig.utils.exportUtils import set_anim_curve_data
-from lhExport import lh_deformer_export, lh_deformer_import
+from .lhExport import lh_deformer_export, lh_deformer_import
 
 
 class exportDeformer(lh_deformer_export):

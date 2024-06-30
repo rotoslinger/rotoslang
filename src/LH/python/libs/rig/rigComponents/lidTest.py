@@ -1,5 +1,6 @@
 from maya import cmds
 import sys
+import importlib
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -15,40 +16,40 @@ if os not in sys.path:
 # from rig.deformers import base
 from rig_2.component.subcomponent import weightStack
 
-reload(weightStack)
+importlib.reload(weightStack)
 # from rig.deformers import utils as deformerUtils
 from rig.deformers import matrixDeformer
-reload(matrixDeformer)
+importlib.reload(matrixDeformer)
 from rig.deformers import slideSimple
-reload(slideSimple)
+importlib.reload(slideSimple)
 from rig.deformers import blendshapeSimple
-reload(blendshapeSimple)
+importlib.reload(blendshapeSimple)
 from rig.deformers import vectorDeformerSimple
-reload(vectorDeformerSimple)
+importlib.reload(vectorDeformerSimple)
 from rig.deformers import curveRollSimple
-reload(curveRollSimple)
+importlib.reload(curveRollSimple)
 from rig.deformers import utils as deformerUtils
-reload(deformerUtils)
+importlib.reload(deformerUtils)
 # reload(deformerUtils)
 # reload(base)
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import LHCurveDeformerCmds
-reload(LHCurveDeformerCmds)
+importlib.reload(LHCurveDeformerCmds)
 from rig.rigComponents import meshRivetCtrl 
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 from rig.rigComponents import elements
-reload(elements)
+importlib.reload(elements)
 
-reload(elements)
+importlib.reload(elements)
 
 from rig.utils import lhExport
-reload(lhExport)
+importlib.reload(lhExport)
 
 from rig.rigComponents import line
-reload(line)
+importlib.reload(line)
 from rig.rigComponents import lid
-reload(lid)
+importlib.reload(lid)
 
 def test(old_man=False, auto_load=True):
     if auto_load:
@@ -111,7 +112,7 @@ def test(old_man=False, auto_load=True):
         cmds.select(node, r=True)
         cmds.DeleteHistory(node)
         cmds.makeIdentity(node, apply=True, t=1, r=1, s=1, n=0, pn=1)
-        print node
+        print(node)
         if cmds.listRelatives(node, s=True) and cmds.objectType(cmds.listRelatives(node, s=True)[0]) == "nurbsSurface":
             cmds.reverseSurface(node,d=0, ch=1, rpo=1)
 

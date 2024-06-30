@@ -3,8 +3,9 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from maya import OpenMayaUI as OpenMayaUI
 from shiboken2 import wrapInstance
 from maya import cmds
-import utils as ui_utils
-reload(ui_utils)
+from . import utils as ui_utils
+import importlib
+importlib.reload(ui_utils)
 '''
 @code
 import sys
@@ -52,7 +53,7 @@ class Scratch_Panel(QtWidgets.QWidget):
             # self.restoreState(settings_obj.value("windowState", ""))
         for i in dir(self):
             if "save" in i or "restore" in i:
-                print i
+                print(i)
 
         # left list
         self.list_widget_l = LListWidget(self)
@@ -109,7 +110,7 @@ class Scratch_Panel(QtWidgets.QWidget):
         The event called when the user drops its elements
         Only if dragEnterEvent accept the event
         """
-        print "AAAAAAAAAAAAAAAA"
+        print("AAAAAAAAAAAAAAAA")
 
     def create_connections(self):
 
@@ -199,7 +200,7 @@ class Scratch_Panel(QtWidgets.QWidget):
         except:
             pass
         ptr = OpenMayaUI.MQtUtil.mainWindow()
-        mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        mayaWin = wrapInstance(int(ptr), QtWidgets.QMainWindow)
         globals()[winName] = Scratch_Panel(mayaWin, winTitle, winName)
         globals()[winName].show()
         return globals()[winName]

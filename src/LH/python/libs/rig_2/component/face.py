@@ -3,8 +3,9 @@ from maya import cmds
 from collections import OrderedDict
 from rig.rigComponents import elements 
 from rig_2.component import base
+import importlib
 
-reload(base) 
+importlib.reload(base) 
 
 # The face is a master class that will control and wire up all of the face components.
 class Face(base.Component):

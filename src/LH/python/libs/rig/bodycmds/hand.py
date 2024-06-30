@@ -100,18 +100,18 @@ class hand_rig():
         
         if trans_tuple > 0:
             self.side = "Left"
-            print "rigging left hand"
+            print("rigging left hand")
             
         if trans_tuple < 0:
             self.side = "Right"
-            print "rigging right hand"
+            print("rigging right hand")
                         
         #---Check two: check naming convention & for non unique names
         simple_name = self.ctl.split("|")
         if len(simple_name) > 1:
             simple_name = simple_name[len(simple_name)-1]
             side_string = simple_name.split("_")
-            print "Warning: your control is not using a unique name"
+            print("Warning: your control is not using a unique name")
         else:
             side_string = self.ctl.split("_")
         
@@ -181,25 +181,25 @@ class hand_rig():
                           "middleFinger",
                           "ringFinger",
                           "pinkyFinger"]
-            print "creating five digit rig"
+            print("creating five digit rig")
             
         if self.num_digits == 4:
             self.names = ["thumb",
                           "indexFinger",
                           "middleFinger",
                           "pinkyFinger"]
-            print "creating four digit rig"
+            print("creating four digit rig")
             
         if self.num_digits == 3:
             self.names = ["thumb",
                           "indexFinger",
                           "pinkyFinger"]
-            print "creating three digit rig"
+            print("creating three digit rig")
             
         if self.num_digits == 2:
             self.names = ["thumb",
                           "indexFinger"]
-            print "creating two digit rig"
+            print("creating two digit rig")
         
         
         #---set divider for readability

@@ -1,6 +1,7 @@
 import sys, os
 from rig_2 import filepath
-reload(filepath)
+import importlib
+importlib.reload(filepath)
 DELIMETER = filepath.DELIMETER
 
 BUILDER_DIR = "builders"

@@ -1,0 +1,250 @@
+
+#====================================================================================
+#====================================================================================
+#  
+# ka_menu
+#
+# DESCRIPTION:
+#   sets up a context sensitive popup menu while a specified hotkey is held down
+#
+# DEPENDENCEYS:
+#   a hotkey to build menu must use ka_rigTools.ka_menu.press()as the command and
+#   be held down during left click. The release hotkey for this button must use
+#   ka_rigTools.ka_menu.release()as the command
+#
+#   ka_utils_weightPainting
+#
+#
+# AUTHOR:
+#   Kris Andrews (3dkris@3dkris.com)
+#
+#====================================================================================
+#====================================================================================
+
+
+import os
+import re
+from functools import partial
+
+import maya.cmds as cmds
+import maya.mel as mel
+
+import sip
+import PyQt4
+from PyQt4 import QtGui, QtCore, uic
+
+import maya.cmds as cmds
+import maya.mel as mel
+import maya.OpenMayaUI as mui
+
+from .. import ka_util                                          ;reload(ka_util)
+import ka_menu_modelEditor                                      ;reload(ka_menu_modelEditor)
+import ka_menu_hyperShade                                       ;reload(ka_menu_hyperShade)
+import ka_menu_paintPallet                                      ;reload(ka_menu_paintPallet)
+
+repeatable = ka_util.repeatable
+undoable = ka_util.undoable
+    
+    
+def getMayaWindow():
+    'Get the maya main window as a QMainWindow instance'
+    ptr = mui.MQtUtil.mainWindow()
+    return sip.wrapinstance(long(ptr), QtCore.QObject)
+
+
+
+class Menu(ka_menu_modelEditor.Menu, ka_menu_hyperShade.Menu, ka_menu_paintPallet.Menu):
+    currentFolder = os.path.dirname(__file__)
+    iconFolder = os.path.abspath(os.path.join(currentFolder, "..",))
+    iconFolder = iconFolder+'/icons/'
+    iconFolder = re.sub(r'\\', r'/', iconFolder)
+
+
+    def __init__(self):
+        self.mayaWindow = getMayaWindow()
+
+        #the menu object
+        self.menu = QtGui.QMenu(self.mayaWindow)
+        self.currentMenu = self.menu
+        self.currentMenuClass = None
+        self.menuHierarchy = [self.menu]
+	
+	#turn the undo queue back on if it has been left off
+	if cmds.undoInfo( query=True, state=True,):
+		cmds.undoInfo( state=True,)
+
+        
+
+    def buildMenu(self, buildMenuOverride=None, **kwargs):
+        '''clears contents of the previous menu, and sets the new menu to show (which will later be populated with items'''
+        self.menu.clear()
+        self.cursorPos = QtGui.QCursor.pos()
+#        self.menu.show()
+
+        self.setCurrentMenuClass(buildMenuOverride=buildMenuOverride)
+            
+        if self.currentMenuClass:
+            self.currentMenuClass.populateMenu(**kwargs)
+#        if buildMenuOverride:
+#            self.populateMenu(buildMenuOverride=buildMenuOverride, **kwargs)
+#            
+#        else:
+#            self.populateMenu()
+            
+            
+        self.showMenu()
+        
+        
+#    def populateMenu(self, buildMenuOverride=None, **kwargs):
+#        
+
+                
+    def setCurrentMenuClass(self, buildMenuOverride=None, **kwargs):
+        panelName = cmds.getPanel( underPointer=True )
+        cursorPos = QtGui.QCursor.pos()
+        
+        if not panelName:
+            cursorPosX = cursorPos.x()
+            cursorPosY = cursorPos.x()
+            panelName = cmds.getPanel( atPosition=[cursorPosX, cursorPosY] )
+                
+            if not panelName:
+                cursorPosX = cursorPosX - 3
+                panelName = cmds.getPanel( atPosition=[cursorPosX, cursorPosY] )
+                
+                if not panelName:
+                    panelName = cmds.getPanel( withFocus=True )
+        
+
+
+        if panelName:
+
+            if buildMenuOverride:
+                if buildMenuOverride == 'paintPallet':
+                    self.currentMenuClass = ka_menu_paintPallet.Menu(self)
+                  
+                if buildMenuOverride == 'hyperConnector':  
+                    self.currentMenuClass = ka_menu_hyperConnector.Menu(self)
+            
+            elif 'modelPanel' in panelName:
+#                self.build_menu_modelEditor()
+                self.currentMenuClass = ka_menu_modelEditor.Menu(self)
+                
+            elif 'hyperShadePanel' in panelName:
+#                self.build_menu_hyperShade()
+                self.currentMenuClass = ka_menu_hyperShade.Menu(self)
+                
+    def showMenu(self, **kwargs):
+        if hasattr(self.currentMenu, 'showMenu'):
+            self.currentMenu.showMenu(**kwargs)
+        else:
+            self.menu.popup(self.cursorPos)
+    
+        
+    def press(self, buildMenuOverride=None, **kwargs):
+        self.buildMenu(buildMenuOverride=buildMenuOverride, **kwargs)
+        
+        if hasattr(self.currentMenuClass, 'press'):
+            self.currentMenuClass.press(**kwargs)
+
+        
+        
+    def release(self, **kwargs):
+        if hasattr(self.currentMenuClass, 'release'):
+            self.currentMenuClass.release(**kwargs)
+
+    
+        
+    #helper functions
+        
+    def addMenuItem(self, label, icon=None, command=None, ):
+        '''adds QAction to the menu and assigns the command (which is defined 1 line above the creation of each QAction as cmd) to be the
+        result of clicking the menu item'''
+        newQAction = None
+        if icon:
+            newQAction = QtGui.QAction(QtGui.QIcon(self.iconFolder+icon), label, self.currentMenu)
+        else:
+            newQAction = QtGui.QAction(label, self.currentMenu)
+        
+#        @repeatable
+#        @undoable
+        def cmd():
+            if command:
+                command()
+            else:
+                pass
+            
+        self.currentMenu.connect(newQAction, QtCore.SIGNAL('triggered()'), cmd)
+        self.currentMenu.addAction(newQAction)
+        
+        return newQAction
+    
+    def addSeparatorItem(self,):
+        #Separator = QtGui.QAction(QtGui.QIcon('icons/exit.png'), 'ddddddddddd', self.mayaWindow
+        separator = self.currentMenu.addSeparator()
+        
+        return separator
+    def addSubmenuItem(self, subMenuName, icon=None, tearOff=False):
+        #Separator = QtGui.QAction(QtGui.QIcon('icons/exit.png'), 'ddddddddddd', self.mayaWindow
+        if icon:
+            subMenu = self.menu.addMenu(QtGui.QIcon(self.iconFolder+icon), subMenuName)
+        else:
+            subMenu = self.menu.addMenu(subMenuName)
+
+        subMenu.setTearOffEnabled(tearOff)
+        
+        self.currentMenu = subMenu
+        self.menuHierarchy.append(subMenu)
+        
+        return subMenu
+    
+    def endSubmenuItem(self,):
+        self.menuHierarchy.pop()
+        self.currentMenu = self.menuHierarchy[-1]
+        
+        
+        
+
+    
+    
+        
+        
+        
+        
+###################################################################################        
+global ka_menu
+ka_menu = Menu()
+ka_menu.activated = False
+
+def press(buildMenuOverride=None, **kwargs):
+#    print 'open'
+    mel.eval('global int $gKa_menu = 1')
+    
+    if ka_menu.menu.isVisible():
+        try:
+            ka_menu.menu.hide()
+            mel.eval('global int $gKa_menu = 0')
+
+        except:
+            pass
+    
+    else:
+        ka_menu.press(buildMenuOverride=buildMenuOverride, **kwargs)
+
+    
+def release(**kwargs):
+#    print 'close'
+    mel.eval('global int $gKa_menu = 0')
+    ka_menu.release(**kwargs)
+    pass
+
+
+
+
+
+
+
+
+
+
+

@@ -370,7 +370,7 @@ class bake_blendshape():
             if cmds.nodeType(self.name) == "blendShape":
                 pass
             else:
-                print self.node + "is not a blendShape, please specify a different name"
+                print(self.node + "is not a blendShape, please specify a different name")
         else:
             self.new = 1
     def __split_values(self):

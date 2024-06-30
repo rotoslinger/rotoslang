@@ -225,7 +225,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 arrayHandle.jumpToElement(i)
                 val = arrayHandle.inputValue().child( valueChild ).asFloat()
                 temp[i] = val
-            returnValuelist = temp.items()
+            returnValuelist = list(temp.items())
         except:
             pass
             
@@ -401,7 +401,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 weightDict[i] = uWeightArray
         except:
             pass
-        uWeightArray = weightDict.items()
+        uWeightArray = list(weightDict.items())
         
         
         ################
@@ -424,7 +424,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 weightDict[i] = vWeightArray
         except:
             pass
-        vWeightArray = weightDict.items()
+        vWeightArray = list(weightDict.items())
 
         ################
         #####  N  ######
@@ -446,7 +446,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 weightDict[i] = nWeightArray
         except:
             pass
-        nWeightArray = weightDict.items()
+        nWeightArray = list(weightDict.items())
 
         ################
         #####  R  ######
@@ -468,7 +468,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 weightDict[i] = rWeightArray
         except:
             pass
-        rWeightArray = weightDict.items()
+        rWeightArray = list(weightDict.items())
 
 
 
@@ -826,7 +826,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
             #pt *= localToWorldMatrix
             #neutralPt = pt
             if w <= 0:
-                itGeo.next()
+                next(itGeo)
                 continue
             ######################
             # uWeights
@@ -865,8 +865,8 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 
                 allUVals[i] = tempUW * tempUVal
                 rotUVals[i] = tempUVal
-            allUVals = allUVals.values()
-            rotUVals = rotUVals.values()
+            allUVals = list(allUVals.values())
+            rotUVals = list(rotUVals.values())
 #             uW = sum(allUVals)
             
             ##########################
@@ -889,8 +889,8 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 allVVals[i] = tempVW * tempVVal
                 rotVVals[i] = tempUVal
                     
-            allVVals = allVVals.values()
-            rotVVals = rotVVals.values()
+            allVVals = list(allVVals.values())
+            rotVVals = list(rotVVals.values())
             
             ##########################
             #### painted Weights N ###
@@ -909,7 +909,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 
                 allNVals[i] = tempNW * tempNVal
                     
-            allNVals = allNVals.values()
+            allNVals = list(allNVals.values())
             
             ##########################
             #### painted Weights R ###
@@ -928,7 +928,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 
                 allRVals[i] = tempRW * tempRVal
                     
-            allRVals = allRVals.values()
+            allRVals = list(allRVals.values())
             
             
             ###################### 
@@ -974,7 +974,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 uVRemap = uVRemap - uVTimeOffsetArray[i]
                 uVWeight = uVFnCurvesArray[i].evaluate(uVRemap)
                 allUVAnimCurveWeights[i] = uVWeight 
-            allUVAnimCurveWeights = allUVAnimCurveWeights.values()
+            allUVAnimCurveWeights = list(allUVAnimCurveWeights.values())
             
             ########################
             # get uuAnimCurveWeights#
@@ -985,7 +985,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 uURemap = uURemap - uUTimeOffsetArray[i]
                 uUWeight = uUFnCurvesArray[i].evaluate(uURemap)
                 allUUAnimCurveWeights[i] = uUWeight 
-            allUUAnimCurveWeights = allUUAnimCurveWeights.values()
+            allUUAnimCurveWeights = list(allUUAnimCurveWeights.values())
 
             ################
             #####  V  ######
@@ -1001,7 +1001,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 vVRemap = vVRemap - vVTimeOffsetArray[i]
                 vVWeight = vVFnCurvesArray[i].evaluate(vVRemap)
                 allVVAnimCurveWeights[i] = vVWeight 
-            allVVAnimCurveWeights = allVVAnimCurveWeights.values()
+            allVVAnimCurveWeights = list(allVVAnimCurveWeights.values())
 
             ########################
             # get vUAnimCurveWeights#
@@ -1013,7 +1013,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                 vURemap = vURemap - vUTimeOffsetArray[i]
                 vUWeight = vUFnCurvesArray[i].evaluate(vURemap)
                 allVUAnimCurveWeights[i] = vUWeight 
-            allVUAnimCurveWeights = allVUAnimCurveWeights.values()
+            allVUAnimCurveWeights = list(allVUAnimCurveWeights.values())
 
             ################
             #####  N  ######
@@ -1031,7 +1031,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                     nVRemap = nVRemap - nVTimeOffsetArray[i]
                     nVWeight = nVFnCurvesArray[i].evaluate(nVRemap)
                     allNVAnimCurveWeights[i] = nVWeight 
-                allNVAnimCurveWeights = allNVAnimCurveWeights.values()
+                allNVAnimCurveWeights = list(allNVAnimCurveWeights.values())
 
             ########################
             # get nUAnimCurveWeights#
@@ -1045,7 +1045,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                     nURemap = nURemap - nUTimeOffsetArray[i]
                     nUWeight = nUFnCurvesArray[i].evaluate(nURemap)
                     allNUAnimCurveWeights[i] = nUWeight 
-                allNUAnimCurveWeights = allNUAnimCurveWeights.values()
+                allNUAnimCurveWeights = list(allNUAnimCurveWeights.values())
                 
             ################
             #####  R  ######
@@ -1063,7 +1063,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                     rVRemap = rVRemap - rVTimeOffsetArray[i]
                     rVWeight = rVFnCurvesArray[i].evaluate(rVRemap)
                     allRVAnimCurveWeights[i] = rVWeight 
-                allRVAnimCurveWeights = allRVAnimCurveWeights.values()
+                allRVAnimCurveWeights = list(allRVAnimCurveWeights.values())
 
             ########################
             # get rUAnimCurveWeights#
@@ -1077,7 +1077,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
                     rURemap = rURemap - rUTimeOffsetArray[i]
                     rUWeight = rUFnCurvesArray[i].evaluate(rURemap)
                     allRUAnimCurveWeights[i] = rUWeight 
-                allRUAnimCurveWeights = allRUAnimCurveWeights.values()
+                allRUAnimCurveWeights = list(allRUAnimCurveWeights.values())
 
             ############################
             ###### U V N R combine #####
@@ -1525,7 +1525,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
 
 
             itGeo.setPosition(pt)
-            itGeo.next()
+            next(itGeo)
 
         return
 
@@ -2095,14 +2095,14 @@ def initializePlugin(obj):
     try:
         plugin.registerNode('LHSlideDeformer', LHSlideDeformer.kPluginNodeId, creator, initialize, OpenMayaMPx.MPxNode.kDeformerNode)
     except:
-        raise RuntimeError, 'Failed to register node'
+        raise RuntimeError('Failed to register node')
  
 def uninitializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj)
     try:
         plugin.deregisterNode(LHSlideDeformer.kPluginNodeId)
     except:
-        raise RuntimeError, 'Failed to deregister node'
+        raise RuntimeError('Failed to deregister node')
     
 '''cmds.addAttr('LHSlideDeformer1', longName = 'uWeights003Parent', shortName = 'uweights003parent', numberOfChildren = 1, attributeType = 'compound',multi = True, indexMatters=True)
 cmds.addAttr('LHSlideDeformer1', longName = 'uWeights003', shortName = 'uweights003', dataType = 'doubleArray', parent = 'uWeights003Parent')

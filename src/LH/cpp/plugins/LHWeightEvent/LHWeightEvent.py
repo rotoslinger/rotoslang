@@ -1,4 +1,3 @@
-
 #
 # ==========================================================================
 #+
@@ -28,7 +27,6 @@
 # Remove UI objects with
 # maya.cmds.deleteUI("spMoveToolContext1")
 # maya.cmds.deleteUI("spMoveTool1")
-#
 
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
@@ -142,7 +140,7 @@ class MoveToolCmd(OpenMayaMPx.MPxToolCommand):
                                         transFn.translateBy(vector, spc)
                                 except:
                                         sys.stderr.write("Error doing translate on transform\n")
-                                sIter.next()
+                                next(sIter)
                                 continue
 
                         try:
@@ -152,7 +150,7 @@ class MoveToolCmd(OpenMayaMPx.MPxToolCommand):
                         else:
                                 while not cvFn.isDone():
                                         cvFn.translateBy(vector, spc)
-                                        cvFn.next()
+                                        next(cvFn)
                                 cvFn.updateCurve()
 
                         try:
@@ -164,7 +162,7 @@ class MoveToolCmd(OpenMayaMPx.MPxToolCommand):
                                 while not sCvFn.isDone():
                                         while not CvFn.isRowDone():
                                                 sCvFn.translateBy(vector, spc)
-                                                sCvFn.next()
+                                                next(sCvFn)
                                         sCvFn.nextRow()
                                 sCvFn.updateSurface()
 
@@ -175,10 +173,10 @@ class MoveToolCmd(OpenMayaMPx.MPxToolCommand):
                         else:
                                 while not vtxFn.isDone():
                                         vtxFn.translateBy(vector, spc)
-                                        vtxFn.next()
+                                        next(vtxFn)
                                 vtxFn.updateSurface()
 
-                        sIter.next()
+                        next(sIter)
 
 
 class MoveContext(OpenMayaMPx.MPxSelectionContext):
@@ -227,7 +225,7 @@ class MoveContext(OpenMayaMPx.MPxSelectionContext):
                         # Determine the camera used in the current view
                         #
                         if fnCamera.isOrtho():
-                                print "WORKING"
+                                print("WORKING")
                                 if upDir.isEquivalent(OpenMaya.MVector.zNegAxis, kVectorEpsilon):
                                         self.__currWin = MoveContext.kTop
                                 elif rightDir.isEquivalent(OpenMaya.MVector.xAxis, kVectorEpsilon):
@@ -274,7 +272,7 @@ class MoveContext(OpenMayaMPx.MPxSelectionContext):
                         self.__cmd.undoIt()
                         if downButton == OpenMayaUI.MEvent.kMiddleMouse:
                                 self.__cmd.setVector(endW.x - startW.x, 0.0, 0.0)
-                                print "WORKING"
+                                print("WORKING")
                         else:
                                 self.__cmd.setVector(endW.x - startW.x, 0.0, endW.z - startW.z)
 

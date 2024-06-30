@@ -1,9 +1,10 @@
 from maya import cmds
 from rig_2.node import utils as node_utils
 from rig_2.misc import utils as misc_utils
+import importlib
 
-reload(misc_utils)
-reload(node_utils)
+importlib.reload(misc_utils)
+importlib.reload(node_utils)
 
 class base(object):
     """

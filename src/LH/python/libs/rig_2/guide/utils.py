@@ -2,28 +2,29 @@ from maya import cmds
 import maya.OpenMaya as OpenMaya
 
 from rig_2.message import utils as message_utils
-reload(message_utils)
+import importlib
+importlib.reload(message_utils)
 
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 from rig_2.weights import utils as weight_utils
-reload(weight_utils)
+importlib.reload(weight_utils)
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import exportUtils
-reload(exportUtils)
+importlib.reload(exportUtils)
 from rig.utils import weightMapUtils
-reload(weightMapUtils)
+importlib.reload(weightMapUtils)
 
 from rig.rigComponents import meshRivetCtrl
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 from rig_2.shape import nurbscurve
 
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 from rig_2.mirror import utils as mirror_utils
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 from rig_2.shape import utils as shape_utils
-reload(shape_utils)
+importlib.reload(shape_utils)
 
 def get_control_shapes(no_export_tag_dict=None):
     all_controls = tag_utils.get_all_controls()
@@ -65,7 +66,7 @@ def get_guide_custom_attrs(guide_nodes, no_export_tag_dict, specified_attrs):
     user_defined_attrs = []
 
     for node in guide_nodes:
-        if node in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[node]:
+        if node in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[node]:
             continue
         custom_attribute_dict[node]["user_defined_attrs"] = cmds.listAttr( node, cb=True)
 
@@ -76,7 +77,7 @@ def get_guide_transforms(guide_nodes, no_export_tag_dict, debug=False):
     rotations = []
     scales = []
     for node in guide_nodes:
-        if node in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[node]:
+        if node in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[node]:
             continue
         if cmds.objectType(node) != "transform":
             node = misc.getParent(node)
@@ -85,16 +86,16 @@ def get_guide_transforms(guide_nodes, no_export_tag_dict, debug=False):
         guide_position_dict[node]["rotation"] = cmds.xform(node, q=True, ws=True, ro=True)
         guide_position_dict[node]["scale"] = cmds.xform(node, q=True, ws=True, s=True)
     if debug:
-        print guide_position_dict
+        print(guide_position_dict)
     return guide_position_dict
 
 def set_guide_transforms(guide_position_dict, no_export_tag_dict):
     position_preservation_nodes = []
     constraints = []
-    for node in guide_position_dict.keys():
+    for node in list(guide_position_dict.keys()):
         if not cmds.objExists(node):
             continue
-        if node in no_export_tag_dict.keys():
+        if node in list(no_export_tag_dict.keys()):
             continue
         # If dynamic mirrored skip
         if cmds.objExists(node + ".DYNAMIC_MIRRORED"):
@@ -136,7 +137,7 @@ def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
             continue
         if cmds.objectType(transform) != "transform" and cmds.objectType(transform) != "nullTransform":
             transform = misc.getParent(transform)
-        if no_export_tag_dict and transform in no_export_tag_dict.keys():
+        if no_export_tag_dict and transform in list(no_export_tag_dict.keys()):
             continue
         
         shapeDict[transform] = nurbscurve.get_curve_shape_dict(mayaObject=transform, space=OpenMaya.MSpace.kObject)
@@ -150,7 +151,7 @@ def get_shape_dicts(curve_transforms, no_export_tag_dict=None):
     return shapeDict
 
 def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=False, IgnoreShapes=None):
-    for transform in shape_dict.keys():
+    for transform in list(shape_dict.keys()):
         short_name = ""
         if "|" in transform:
             short_name = transform.split("|")
@@ -159,9 +160,9 @@ def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=Fa
             continue
         if IgnoreShapes and type(IgnoreShapes) == list and transform in IgnoreShapes:
             continue
-        if no_export_tag_dict and transform in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[transform]:
+        if no_export_tag_dict and transform in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[transform]:
             continue
-        if not shape_dict[transform] or not "name" in shape_dict[transform].keys():
+        if not shape_dict[transform] or not "name" in list(shape_dict[transform].keys()):
             continue
         if check_if_exists and not cmds.objExists(shape_dict[transform]["name"]):
             continue
@@ -188,7 +189,7 @@ def set_shapes_from_dict(shape_dict, no_export_tag_dict=None, check_if_exists=Fa
         #     cmds.setAttr(controlName + ".visibility", lock=True)
         
 def set_shapes_from_dict_NEW(shape_dict, no_export_tag_dict=None, check_if_exists=False, IgnoreShapes=None):
-    for transform in shape_dict.keys():
+    for transform in list(shape_dict.keys()):
         short_name = ""
         if "|" in transform:
             short_name = transform.split("|")
@@ -197,9 +198,9 @@ def set_shapes_from_dict_NEW(shape_dict, no_export_tag_dict=None, check_if_exist
             continue
         if IgnoreShapes and type(IgnoreShapes) == list and transform in IgnoreShapes:
             continue
-        if no_export_tag_dict and transform in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[transform]:
+        if no_export_tag_dict and transform in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[transform]:
             continue
-        if not shape_dict[transform] or not "name" in shape_dict[transform].keys():
+        if not shape_dict[transform] or not "name" in list(shape_dict[transform].keys()):
             continue
         if check_if_exists and not cmds.objExists(shape_dict[transform]["name"]):
             continue
@@ -229,14 +230,14 @@ def set_shapes_from_dict_NEW(shape_dict, no_export_tag_dict=None, check_if_exist
 def get_guide_geo_dict(transforms, no_export_tag_dict=None):
     sorted_transforms = []
     for transform in transforms:
-        if no_export_tag_dict and transform in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[transform]:
+        if no_export_tag_dict and transform in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[transform]:
             continue
         sorted_transforms.append(transform)
     return shape_utils.create_agnostic_point_position_dict(sorted_transforms)
 
 def set_guide_geo_dict(guide_geo_dict, no_export_tag_dict=None):
-    for shape in guide_geo_dict.keys():
-        if no_export_tag_dict and shape in no_export_tag_dict.keys() and "NO_EXPORT" in no_export_tag_dict[shape] or not cmds.objExists(shape):
+    for shape in list(guide_geo_dict.keys()):
+        if no_export_tag_dict and shape in list(no_export_tag_dict.keys()) and "NO_EXPORT" in no_export_tag_dict[shape] or not cmds.objExists(shape):
             continue
         shape_utils.set_agnostic_point_position(shape, guide_geo_dict[shape])
 

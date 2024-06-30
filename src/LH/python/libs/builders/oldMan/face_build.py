@@ -2,27 +2,28 @@ from maya import cmds, OpenMaya
 from rig_2 import decorator
 
 from rig_2.filepath import utils as filepath_utils
-reload(filepath_utils)
+import importlib
+importlib.reload(filepath_utils)
 from rig_2.export import utils as export_utils
-reload(export_utils)
+importlib.reload(export_utils)
 from rig_2.guide import utils as guide_utils
-reload(guide_utils)
+importlib.reload(guide_utils)
 
 
 from rig_2.component import face_guide
-reload(face_guide)
+importlib.reload(face_guide)
 from rig_2.component import lid
-reload(lid)
+importlib.reload(lid)
 
 from rig.rigComponents import mouthJaw
-reload(mouthJaw)
+importlib.reload(mouthJaw)
 
 from rig_2.component import lip, mouth, brow, face, teeth
-reload(mouth)
-reload(lip)
-reload(brow)
-reload(face)
-reload(teeth)
+importlib.reload(mouth)
+importlib.reload(lip)
+importlib.reload(brow)
+importlib.reload(face)
+importlib.reload(teeth)
 
 DEBUG = False
 

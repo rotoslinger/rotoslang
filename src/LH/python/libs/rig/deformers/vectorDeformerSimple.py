@@ -1,9 +1,10 @@
 from maya import cmds
-import base
-reload(base)
+from . import base
+import importlib
+importlib.reload(base)
 from rig.utils import weightMapUtils, misc
-reload(weightMapUtils)
-reload(misc)
+importlib.reload(weightMapUtils)
+importlib.reload(misc)
 
 def createTestVectorDeformerRaw():
     deformMesh = cmds.polyPlane(ax=[0,0,1], h=2, w=2, sx=100, sy=100,  n="deformMesh")[0]
@@ -62,11 +63,11 @@ class VectorDeformerSimple(base.Deformer):
                 self.vectorCurve = cmds.curve(name= self.name + "Curve",
                                     d=1, p=[(0,0,0),self.toPoint],
                                     k=[0,1])
-                print self.vectorCurve,self.parent
-                print self.vectorCurve,self.parent
-                print self.vectorCurve
-                print self.vectorCurve
-                print self.vectorCurve
+                print(self.vectorCurve,self.parent)
+                print(self.vectorCurve,self.parent)
+                print(self.vectorCurve)
+                print(self.vectorCurve)
+                print(self.vectorCurve)
                 cmds.parent(self.vectorCurve, self.parent)
         self.vectorCurve = misc.getShape(self.vectorCurve)
 

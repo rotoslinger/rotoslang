@@ -1,4 +1,5 @@
 import sys
+import importlib
 linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 #---determine operating system
@@ -13,9 +14,9 @@ if os not in sys.path:
 from maya import cmds
 from utils import misc
 from rig.control import base as control_base
-reload(control_base)
+importlib.reload(control_base)
 
-reload(misc)
+importlib.reload(misc)
 
 #===============================================================================
 #CLASS:         finger

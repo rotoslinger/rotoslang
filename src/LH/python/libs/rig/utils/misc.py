@@ -1,7 +1,8 @@
 import sys
 
 from rig_2.message import utils as message_utils
-reload(message_utils)
+import importlib
+importlib.reload(message_utils)
 # from rig_2.tag.utils import tag_rivet_mesh, create_component_tag
 
 
@@ -9,7 +10,7 @@ reload(message_utils)
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 from fnmatch import fnmatch
-import exportUtils
+from . import exportUtils
 import maya.OpenMayaAnim as OpenMayaAnim
 
 
@@ -626,45 +627,45 @@ def non_bind_jnt_invis():
 
 def print_translate_rotate_scale():
     sel = cmds.ls(sl = True)
-    print "TRANSLATE"
+    print("TRANSLATE")
     if len(sel) > 1:
         for i in range(len(sel)):
             t = cmds.getAttr(sel[i] + ".t")
             if i == 0:
-                print "[" + str(t[0]) + ","
+                print("[" + str(t[0]) + ",")
             if i > 0 and i < len(sel)-1:
-                print str(t[0]) + ","
+                print(str(t[0]) + ",")
             if i == len(sel)-1:
-                print str(t[0]) + "]"
+                print(str(t[0]) + "]")
     else:
         t = cmds.getAttr(sel[0] + ".t")
-        print "[" + str(t[0]) + "]"
-    print "ROTATE"
+        print("[" + str(t[0]) + "]")
+    print("ROTATE")
     if len(sel) > 1:
         for i in range(len(sel)):
             t = cmds.getAttr(sel[i] + ".r")
             if i == 0:
-                print "[" + str(t[0]) + ","
+                print("[" + str(t[0]) + ",")
             if i > 0 and i < len(sel)-1:
-                print str(t[0]) + ","
+                print(str(t[0]) + ",")
             if i == len(sel)-1:
-                print str(t[0]) + "]"
+                print(str(t[0]) + "]")
     else:
         t = cmds.getAttr(sel[0] + ".r")
-        print "[" + str(t[0]) + "]"
-    print "SCALE"
+        print("[" + str(t[0]) + "]")
+    print("SCALE")
     if len(sel) > 1:
         for i in range(len(sel)):
             t = cmds.getAttr(sel[i] + ".s")
             if i == 0:
-                print "[" + str(t[0]) + ","
+                print("[" + str(t[0]) + ",")
             if i > 0 and i < len(sel)-1:
-                print str(t[0]) + ","
+                print(str(t[0]) + ",")
             if i == len(sel)-1:
-                print str(t[0]) + "]"
+                print(str(t[0]) + "]")
     else:
         t = cmds.getAttr(sel[0] + ".s")
-        print "[" + str(t[0]) + "]"
+        print("[" + str(t[0]) + "]")
 
 
 
@@ -738,13 +739,13 @@ def printPointsPY(object=None):
     fnCurve.getCVs(points)
     for i in range(points.length()):
         if i == 0:
-            print "[(" + str(points[i][0]) + ", " + str(points[i][1]) + ", " + str(points[i][2]) + "),"
+            print("[(" + str(points[i][0]) + ", " + str(points[i][1]) + ", " + str(points[i][2]) + "),")
 
         if i != 0 and i != points.length()-1:
-            print "(" + str(points[i][0]) + ", " + str(points[i][1]) + ", " + str(points[i][2]) + "),"
+            print("(" + str(points[i][0]) + ", " + str(points[i][1]) + ", " + str(points[i][2]) + "),")
         
         if i == points.length()-1:
-            print "(" + str(points[i][0]) + ", " + str(points[i][1]) + ", " + str(points[i][2]) + ")]"
+            print("(" + str(points[i][0]) + ", " + str(points[i][1]) + ", " + str(points[i][2]) + ")]")
 
 
 # a function to print and format point positions for gl drawings in cpp
@@ -760,11 +761,11 @@ def printPointsCPP(object=None):
     fnCurve.getCVs(points)
     for i in range(points.length()):
         if i == 0:
-            print "{{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f},"
+            print("{{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f},")
         if i != 0 and i != points.length()-1:
-            print "{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f},"
+            print("{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f},")
         if i == points.length()-1:
-            print "{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f}}"
+            print("{" + str(points[i][0]) + "f, " + str(points[i][1]) + "f, " + str(points[i][2]) + "f}}")
 
 def printIntArray():
     selectedPoints = cmds.ls(sl=True, fl=True)
@@ -777,7 +778,7 @@ def printIntArray():
             pointArray += intName + ", "
         if i == len(points)-1:
             pointArray += intName + "}"
-    print pointArray
+    print(pointArray)
 
 # setFaceIdsOnLocator("C_bLip_LOC")
 
@@ -794,7 +795,7 @@ def rename_wild_card_attributes(deformer, string, rename_string):
 #         print old,new
         new_str = old.replace(string, rename_string)
         if cmds.objExists(old_str):
-            print old_str, new_str
+            print(old_str, new_str)
 #         this = cmds.renameAttr(old_str, new_str)
 #         print this
 #         print deformer + "." + tmp_attrs[i]
@@ -1022,7 +1023,7 @@ def createLocator(name=None, parent=None, vis=True, shapeVis=True):
 def createAndConnectNode(type=None, name=None, srcOutput=None,
                          selfInput=None, selfOutput=None, dstInput=None):
     node = cmds.createNode(type, name=name)
-    print node
+    print(node)
 
     if srcOutput and selfInput:
         cmds.connectAttr(srcOutput, "{0}.{1}".format(node, selfInput))
@@ -1119,7 +1120,7 @@ def getClosestUVOnMesh(pointX=None, pointY=None, pointZ=None, transform=None, me
     cmds.delete(closestPointNode)
     # for debug
     if debug:
-        print u, v
+        print(u, v)
     return u, v
 
 # def removeRotationFromPointOnPolyConstraint(pointOnPolyConstraint);
@@ -1451,9 +1452,9 @@ def addNakedLocatorToControl(control=None, side= None, controlParent=None, geom=
     if not side:
         side = control.split("_")[0]
     if not controlParent:
-        print control
+        print(control)
         controlParent = cmds.listRelatives(control, parent=True)[0]
-        print controlParent
+        print(controlParent)
     if not locator:
         createNakedLocator( name, side, geom, controlParent, control, faces)
         # locator = cmds.createNode("LHNakedLocator", p=control, n=name)
@@ -1495,7 +1496,7 @@ def constrainMeshToClosestJoint(selections=None):
         transform = cmds.listRelatives(mesh, p=True)[0]
         geomConstDict[transform] = joints[foundID]
 
-    for driven, driver in geomConstDict.items():
+    for driven, driver in list(geomConstDict.items()):
         cmds.parentConstraint(driver, driven, mo=True)
         cmds.scaleConstraint(driver, driven, mo=True)
 

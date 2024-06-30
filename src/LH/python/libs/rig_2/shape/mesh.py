@@ -1,6 +1,7 @@
 from maya import cmds, OpenMaya, OpenMayaAnim
 from rig.utils import misc
-reload(misc)
+import importlib
+importlib.reload(misc)
 
 class meshData(object):
     # ===============================================================================
@@ -86,7 +87,7 @@ class meshData(object):
             mesh_iter.getVertices(temp_vert_ids)
             for i in range(temp_vert_ids.length()):
                 self.polygonConnects.append(temp_vert_ids[i])
-            mesh_iter.next()
+            next(mesh_iter)
 
     def get_UVs(self):
         tmp_U_float_array = OpenMaya.MFloatArray()

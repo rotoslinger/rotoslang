@@ -12,14 +12,15 @@ from rig_2 import decorator
 from rig_2.mirror import utils as mirror_utils
 from rig_2.shape import mesh, nurbscurve
 from rig_2.elements import face_guide_elements
+import importlib
 
-reload(tag_utils)
-reload(component_base)
-reload(decorator)
-reload(mesh)
-reload(nurbscurve)
-reload(face_guide_elements)
-reload(component_utils)
+importlib.reload(tag_utils)
+importlib.reload(component_base)
+importlib.reload(decorator)
+importlib.reload(mesh)
+importlib.reload(nurbscurve)
+importlib.reload(face_guide_elements)
+importlib.reload(component_utils)
 
 
 

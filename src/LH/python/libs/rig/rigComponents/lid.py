@@ -1,5 +1,6 @@
 from maya import cmds
 import sys
+import importlib
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -15,39 +16,39 @@ if os not in sys.path:
 # from rig.deformers import base
 from rig_2.component.subcomponent import weightStack
 
-reload(weightStack)
+importlib.reload(weightStack)
 # from rig.deformers import utils as deformer_utils
 from rig.deformers import matrixDeformer
-reload(matrixDeformer)
+importlib.reload(matrixDeformer)
 from rig.deformers import slideSimple
-reload(slideSimple)
+importlib.reload(slideSimple)
 from rig.deformers import blendshapeSimple
-reload(blendshapeSimple)
+importlib.reload(blendshapeSimple)
 from rig.deformers import vectorDeformerSimple
-reload(vectorDeformerSimple)
+importlib.reload(vectorDeformerSimple)
 from rig.deformers import curveRollSimple
-reload(curveRollSimple)
+importlib.reload(curveRollSimple)
 from rig.deformers import utils as deformer_utils
-reload(deformer_utils)
+importlib.reload(deformer_utils)
 # reload(deformer_utils)
 # reload(base)
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import LHCurveDeformerCmds
-reload(LHCurveDeformerCmds)
+importlib.reload(LHCurveDeformerCmds)
 from rig.rigComponents import meshRivetCtrl 
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 from rig.rigComponents import elements
-reload(elements)
+importlib.reload(elements)
 
 from decorators import initialize
-reload(elements)
+importlib.reload(elements)
 
 from rig.utils import lhExport
-reload(lhExport)
+importlib.reload(lhExport)
 
 from rig_2.manipulator import elements as manipulator_elements
-reload(manipulator_elements)
+importlib.reload(manipulator_elements)
 
 
 class Lid(object):

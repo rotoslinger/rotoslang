@@ -1,6 +1,7 @@
 import sys
 
 import control.base
+import importlib
 
 linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
@@ -16,7 +17,7 @@ if os not in sys.path:
 from maya import cmds
 from utils import misc
 
-reload(misc)
+importlib.reload(misc)
 
 #===============================================================================
 #CLASS:         create_holster_rig
@@ -128,7 +129,7 @@ class create_holster_rig():
     def __check(self):
         """checks for joint names"""
         if self.joints:
-            print "Something"
+            print("Something")
             self.names = []
             self.sides = []
             self.translates = []
@@ -141,7 +142,7 @@ class create_holster_rig():
                 tmp = cmds.createNode("transform",
                                       n = "tmp23048950")
                 tcon = cmds.parentConstraint(self.joints[i],tmp)
-                print cmds.getAttr(tmp + ".translate")
+                print(cmds.getAttr(tmp + ".translate"))
                 self.translates.append(cmds.getAttr(tmp + ".translate")[0])
                 self.rotates.append(cmds.getAttr(tmp + ".rotate")[0])
                 self.scales.append(cmds.getAttr(tmp + ".scale")[0])

@@ -390,7 +390,7 @@ class slideDeformerCmd():
         """makes all connections into the slide deformer"""
         #----connect shapes
 
-        print self.driverShape, self.baseShape
+        print(self.driverShape, self.baseShape)
         cmds.connectAttr(self.driverShape + '.worldSpace',
                          self.returnDeformer + '.surface',
                          force=True)

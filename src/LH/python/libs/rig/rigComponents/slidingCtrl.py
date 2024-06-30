@@ -4,7 +4,8 @@ from rig.rigComponents import base
 from rig.control import base as control_base
 from rig.utils.misc import formatName
 from rig.control import base as control_base
-reload(control_base)
+import importlib
+importlib.reload(control_base)
 from rig.utils import misc
 from rig.utils import exportUtils
 from rig.utils import faceWeights
@@ -349,7 +350,7 @@ def getWeightAttributes(deformerName):
     for i in range(len(sourceAttrs)):
         tmp_name = sourceAttrs[i].split(".")
         sourceWeightNames.append(tmp_name[1])
-    return dict(zip(sourceWeightNames,sourceAttrs))
+    return dict(list(zip(sourceWeightNames,sourceAttrs)))
 
 
 def copyWeightsFromSlideCtrls(sourceSlideCtrl=None, targetSlideCtrl=None, cache=True):
@@ -386,20 +387,20 @@ def copyWeightsFromSlideCtrls(sourceSlideCtrl=None, targetSlideCtrl=None, cache=
         try:
             copyFlipSlideAnimCurves(sourceSide, flip, srcAnimCurve, targetAnimCurve)
         except:
-            print "Unable to copy animation curve as there weren't enough points"
+            print("Unable to copy animation curve as there weren't enough points")
         try:
             copyFlipSlideAnimCurves(sourceSide, flip, srcAnimCurveFalloff, targetAnimCurveFalloff)
         except:
-            print "Unable to copy animation curve as there weren't enough points"
+            print("Unable to copy animation curve as there weren't enough points")
 
         sourceWeights = getWeightAttributes(deformer)
         source = sourceWeights.get(srcWeights)
         target = sourceWeights.get(targetWeights)
         source = "{0}.{1}".format(deformer, source)
         target = "{0}.{1}".format(deformer, target)
-        print sourceWeights
-        print source, srcWeights
-        print target, targetWeights
+        print(sourceWeights)
+        print(source, srcWeights)
+        print(target, targetWeights)
 
         faceWeights.copy_double_array_weights(source = source,
                                               target = [target],

@@ -12,7 +12,7 @@ if os not in sys.path:
 from rig.utils import exportUtils as xUtils
 from maya import cmds
 from rig.utils import LHCurveRollDeformerCmds
-from lhExport import lh_deformer_export, lh_deformer_import
+from .lhExport import lh_deformer_export, lh_deformer_import
 
 class exportDeformer(lh_deformer_export):
     # ===============================================================================

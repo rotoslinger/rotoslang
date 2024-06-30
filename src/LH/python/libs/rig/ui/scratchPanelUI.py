@@ -34,7 +34,7 @@ class UiStackTest(QtWidgets.QWidget):
         except:
             pass
         ptr = OpenMayaUI.MQtUtil.mainWindow()
-        mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        mayaWin = wrapInstance(int(ptr), QtWidgets.QMainWindow)
         globals()[winName] = UiStackTest(mayaWin, winTitle, winName)
         globals()[winName].show()
         return globals()[winName]

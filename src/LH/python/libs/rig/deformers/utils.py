@@ -1,11 +1,12 @@
 import sys
 
 from rig_2.animcurve import utils as animcurve_utils
-reload(animcurve_utils)
+import importlib
+importlib.reload(animcurve_utils)
 from rig_2.weights import utils as weight_utils
-reload(weight_utils)
+importlib.reload(weight_utils)
 
-reload(animcurve_utils)
+importlib.reload(animcurve_utils)
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
 win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
@@ -24,14 +25,14 @@ if os not in sys.path:
 from maya import cmds
 import maya.OpenMaya as OpenMaya
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import exportUtils
-reload(exportUtils)
+importlib.reload(exportUtils)
 from rig.utils import weightMapUtils
-reload(weightMapUtils)
+importlib.reload(weightMapUtils)
 
 from rig.rigComponents import meshRivetCtrl
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 
 def calimari(skinCluster, mesh, bias, hide=True):
     vertCount = cmds.polyEvaluate(mesh, v=1) - 1
@@ -80,7 +81,7 @@ def facesFromWeightmap(weightAttribute="cluster1.weightList[0].weights", newGeoN
                 proceed = 0
         if proceed:
             poly_to_delete.append(mesh_iter.index())
-        mesh_iter.next()
+        next(mesh_iter)
 
     allPolys = OpenMaya.MIntArray()
     poly_to_delete = [x for x in range(mesh_iter.count()) if x not in poly_to_delete]
@@ -214,9 +215,9 @@ def getMatrixDeformerPivotLocations(matrixDeformer=None, debug=False):
         rotations.append(cmds.xform(locator, q=True, ws=True, ro=True))
         scales.append(cmds.xform(locator, q=True, ws=True, s=True))
     if debug:
-        print "rotations", rotations
-        print "translations", translations
-        print "scales", scales
+        print("rotations", rotations)
+        print("translations", translations)
+        print("scales", scales)
 
     return rotations, translations, scales
 
@@ -238,9 +239,9 @@ def getMatrixDeformerCtrlLocations(matrixDeformer=None, debug=False):
         rotations.append(cmds.xform(locator, q=True, ws=True, ro=True))
         scales.append(cmds.xform(locator, q=True, ws=True, s=True))
     if debug:
-        print "rotations", rotations
-        print "translations", translations
-        print "scales", scales
+        print("rotations", rotations)
+        print("translations", translations)
+        print("scales", scales)
 
     return rotations, translations, scales
 
@@ -307,7 +308,7 @@ def getControlShapes(matrixDeformer=None, attrConnectionToCheck=".rotate"):
         control = cmds.listConnections(locator + attrConnectionToCheck.format(idx))[0]
         shape = cmds.listRelatives(control, s=True)[0]
         shapeDict[control] = exportUtils.nurbsCurveData(name = shape, space=OpenMaya.MSpace.kObject).nurbsCurve
-    print shapeDict
+    print(shapeDict)
     return shapeDict
 
 
@@ -330,14 +331,14 @@ def getMatDefWeightsDict(attrsToCheck = [".rotate", ".tOut"]):
             internalWeightDict["weightPlug"] = weightPlug
             attrDict[attr] = internalWeightDict
             retWeightDict[ctrl] = attrDict
-    print retWeightDict
+    print(retWeightDict)
     return retWeightDict
 
 def rebuildMatDefWeightOverrides(weightDict):
-    for ctrl in weightDict.keys():
+    for ctrl in list(weightDict.keys()):
         # unpack from the dict
         weightName = ctrl.replace("_CTL", "_WEIGHTS")
-        for attrType in weightDict[ctrl].keys():
+        for attrType in list(weightDict[ctrl].keys()):
 
             internalWeightDict = weightDict[ctrl][attrType]
             elemIndex = internalWeightDict["elemIndex"]

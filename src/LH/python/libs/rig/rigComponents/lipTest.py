@@ -1,6 +1,7 @@
 
 from maya import cmds
 import sys
+import importlib
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
@@ -42,16 +43,16 @@ from rig_2.component.subcomponent import lip_sub
 from rig.rigComponents import line 
 from rig.rigComponents import meshRivetCtrl
 from rig.rigComponents import elements 
-reload(line)
-reload(elements)
-reload(meshRivetCtrl)
-reload(misc)
-reload(weightMapUtils)
-reload(lip_sub)
-reload(utils)
-reload(matrixDeformer)
-reload(weightStack)
-reload(base)
+importlib.reload(line)
+importlib.reload(elements)
+importlib.reload(meshRivetCtrl)
+importlib.reload(misc)
+importlib.reload(weightMapUtils)
+importlib.reload(lip_sub)
+importlib.reload(utils)
+importlib.reload(matrixDeformer)
+importlib.reload(weightStack)
+importlib.reload(base)
 
 def test(reloadPlugin = False, auto_load=True):
     if reloadPlugin:

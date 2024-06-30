@@ -146,4 +146,4 @@ class MoveContext(OpenMayaMPx.MPxSelectionContext):
 
 #############################################################################
 MoveContext
-print "stuff"
+print("stuff")

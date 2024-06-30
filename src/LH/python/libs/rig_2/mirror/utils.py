@@ -1,20 +1,21 @@
 import random, ast
 
 from rig.utils import misc
-reload(misc)
+import importlib
+importlib.reload(misc)
 
 from maya import cmds, OpenMaya
 
 from rig_2.animcurve import utils as animcurve_utils
-reload(animcurve_utils)
+importlib.reload(animcurve_utils)
 from rig_2.attr import utils as attr_utils
-reload(animcurve_utils)
+importlib.reload(animcurve_utils)
 
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig_2.message import utils as message_utils
-reload(message_utils)
+importlib.reload(message_utils)
 
 
 def mirrorSelectedLocatorLToR(ctrls=None):
@@ -262,11 +263,11 @@ def get_symmetry_dict(maya_object, retrieve_if_exists=True, retrieve_L_dict=Fals
             vector_from = vector_from - vector_to
             closest_lengths.append(vector_from.length())
         #make dictionary
-        id_dict = dict(zip(closest_lengths,point_ids))
+        id_dict = dict(list(zip(closest_lengths,point_ids)))
         smallest_id = min(closest_lengths)
         regular_idx.append(i)
         flipped_idx.append(id_dict.get(smallest_id))
-    symmetry_dict = dict(zip(regular_idx,flipped_idx))
+    symmetry_dict = dict(list(zip(regular_idx,flipped_idx)))
     left_dict = {i:symmetry_dict[i] for i in left_ids }
     right_dict = {i:symmetry_dict[i] for i in right_ids }
     attr_utils.get_attr(maya_object, "symmetry_dict", dataType="string")
@@ -309,7 +310,7 @@ def mirror_double_array_attrs(full_attr_name, geo, side="L"):
 
     symmetry_dict = get_symmetry_dict(geo, retrieve_L_dict=retrieve_side[0], retrieve_R_dict=retrieve_side[1])
     weights = cmds.getAttr(full_attr_name)
-    for key in symmetry_dict.keys():
+    for key in list(symmetry_dict.keys()):
         weights[symmetry_dict[key]] = weights[key]
     cmds.setAttr(full_attr_name,weights, type="doubleArray")
 

@@ -8,15 +8,16 @@ from rig_2.attr import utils as attr_utils
 from rig_2.tag import utils as tag_utils
 from rig_2.attr import constants as attr_constants
 from rig.utils import misc
+import importlib
 
 
-reload(rig_hierarchy)
-reload(node_utils)
-reload(misc_utils)
-reload(attr_utils)
-reload(tag_utils)
-reload(attr_constants)
-reload(misc)
+importlib.reload(rig_hierarchy)
+importlib.reload(node_utils)
+importlib.reload(misc_utils)
+importlib.reload(attr_utils)
+importlib.reload(tag_utils)
+importlib.reload(attr_constants)
+importlib.reload(misc)
 
 
 
@@ -95,7 +96,7 @@ class Component(object):
         self.guides = []
         # if parent is a dictionary get the value of the first key
         if type(self.parent) == dict:
-            self.parent = self.parent[self.parent.keys()[0]]
+            self.parent = self.parent[list(self.parent.keys())[0]]
 
         # these need to happen when the class is initialized
         if self.arg_dict:
@@ -180,21 +181,21 @@ class Component(object):
             tag_utils.tag_guide_class(self.class_node)
 
     def get_arg_attrs_from_dict(self):
-        for key, val in self.arg_dict.items():
+        for key, val in list(self.arg_dict.items()):
             setattr(self, key, val)
 
     def create_arg_attrs(self):
         self.arg_attrs = []
-        for key, val in self.ordered_args.items():
-            if type(val) == unicode:
+        for key, val in list(self.ordered_args.items()):
+            if type(val) == str:
                 val=str(val)
             attr_type = type(val)
             self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.class_node, attr_name=key, attr_type=attr_type, attr_default=val))
 
     def create_arg_attrs_agnostic(self, agnostic_arg_dict):
         self.arg_attrs = []
-        for key, val in agnostic_arg_dict.items():
-            if type(val) == unicode:
+        for key, val in list(agnostic_arg_dict.items()):
+            if type(val) == str:
                 val=str(val)
             attr_type = type(val)
             self.arg_attrs.append(attr_utils.get_attr_from_arg(node=self.class_node, attr_name=key, attr_type=attr_type, attr_default=val))
@@ -227,22 +228,22 @@ class Component(object):
 
     def get_subcomponent_inputs(self):
         for subcomponent in self.subcomponents:
-            for key, val in subcomponent.inputs.iteritems():
+            for key, val in subcomponent.inputs.items():
                 self.inputs[key] = val
 
     def get_subcomponent_outputs(self):
         # self.outputs = []
         for subcomponent in self.subcomponents:
-            for key, val in subcomponent.outputs.iteritems():
+            for key, val in subcomponent.outputs.items():
                 self.outputs[key] = val
 
     def finalize_input_output(self):
-        self.input_names = [x for x in self.inputs.keys()]
-        self.output_names = [x for x in self.outputs.keys()]
+        self.input_names = [x for x in list(self.inputs.keys())]
+        self.output_names = [x for x in list(self.outputs.keys())]
 
     def set_up_message_network(self):
         return
-        for input, input_node in self.inputs.iteritems():
+        for input, input_node in self.inputs.items():
             attr_name = input
             full_attr_name = self.class_node + "." + attr_name
             cmds.addAttr(self.class_node, ln = attr_name, at = "message")
@@ -386,7 +387,7 @@ def get_component_args_from_scene(component_name):
         full_attr_name = node + "." + attr
         attr_type = cmds.addAttr(node + "." + attr, q=True, attributeType=True)
         val = cmds.getAttr(full_attr_name)
-        if type(val) == unicode:
+        if type(val) == str:
             val = str(val)
         arg_dict[str(attr)] = val
     return arg_dict

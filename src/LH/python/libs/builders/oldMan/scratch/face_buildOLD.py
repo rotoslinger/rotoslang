@@ -1,5 +1,6 @@
 from maya import cmds, OpenMaya
 import sys
+import importlib
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 
@@ -12,13 +13,13 @@ if "darwin" in os:
 if os not in sys.path:
     sys.path.append(os)
 from rig.rigComponents import lidTest
-reload(lidTest)
+importlib.reload(lidTest)
 from rig.rigComponents import browTest
-reload(browTest)
+importlib.reload(browTest)
 from rig.rigComponents import lipTest
-reload(lipTest)
+importlib.reload(lipTest)
 from rig.rigComponents import mouthJawTest
-reload(mouthJawTest)
+importlib.reload(mouthJawTest)
 
 def build():
     cmds.file( new=True, f=True )

@@ -84,7 +84,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
             oSurface = data.inputValue(LHSlideDeformer.aSurface).asNurbsSurface()
             oSurfaceBase = data.inputValue(LHSlideDeformer.aSurfaceBase).asNurbsSurface()
         except:
-            raise RuntimeError, "One or more surfaces are not connected"
+            raise RuntimeError("One or more surfaces are not connected")
 
         if oSurface.isNull() or oSurfaceBase.isNull():
             return
@@ -177,7 +177,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
             #pt *= localToWorldMatrix
             #neutralPt = pt
             if w <= 0:
-                itGeo.next()
+                next(itGeo)
                 continue
             ######################
             # uWeights
@@ -424,7 +424,7 @@ class LHSlideDeformer(OpenMayaMPx.MPxDeformerNode):
 	    pt.z +=(slideUVPoint.z - slideUVBasePt.z) * w
 
             itGeo.setPosition(pt)
-            itGeo.next()
+            next(itGeo)
  
         return
  
@@ -555,11 +555,11 @@ def initializePlugin(obj):
     try:
         plugin.registerNode('LHSlideDeformer', LHSlideDeformer.kPluginNodeId, creator, initialize, OpenMayaMPx.MPxNode.kDeformerNode)
     except:
-        raise RuntimeError, 'Failed to register node'
+        raise RuntimeError('Failed to register node')
  
 def uninitializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj)
     try:
         plugin.deregisterNode(LHSlideDeformer.kPluginNodeId)
     except:
-        raise RuntimeError, 'Failed to deregister node'
+        raise RuntimeError('Failed to deregister node')

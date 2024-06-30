@@ -5,7 +5,8 @@ from maya import OpenMayaUI as OpenMayaUI
 from shiboken2 import wrapInstance
 from maya import cmds
 import utils as ui_utils
-reload(ui_utils)
+import importlib
+importlib.reload(ui_utils)
 '''
 @code
 import sys
@@ -53,7 +54,7 @@ class Setup_UI(QtWidgets.QWidget):
             # self.restoreState(settings_obj.value("windowState", ""))
         for i in dir(self):
             if "save" in i or "restore" in i:
-                print i
+                print(i)
 
         #add button
         self.add_py_path = QtWidgets.QPushButton("Add to python path")
@@ -85,7 +86,7 @@ class Setup_UI(QtWidgets.QWidget):
 
     def add_py_path_action(self):
         path = os.path.dirname(os.path.abspath(__file__))
-        print os.path.dirname(os.path.normpath(path))
+        print(os.path.dirname(os.path.normpath(path)))
 
         #print os.path.dirname(sys.modules['__main__'].__file__)
 
@@ -106,7 +107,7 @@ class Setup_UI(QtWidgets.QWidget):
         except:
             pass
         ptr = OpenMayaUI.MQtUtil.mainWindow()
-        mayaWin = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        mayaWin = wrapInstance(int(ptr), QtWidgets.QMainWindow)
         globals()[winName] = self(mayaWin, winTitle, winName)
         globals()[winName].show()
         return globals()[winName]

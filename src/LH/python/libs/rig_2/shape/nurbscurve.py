@@ -5,11 +5,12 @@ import maya.OpenMaya as OpenMaya
 from rig_2.mirror import utils as mirror_utils
 from rig_2.misc import utils as misc_utils
 from rig.utils import misc
+import importlib
 
-reload(misc_utils)
+importlib.reload(misc_utils)
 
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 from rig.utils import misc
 
 def get_curve_shape_dict(mayaObject=None, space= OpenMaya.MSpace.kWorld):
@@ -238,7 +239,7 @@ def create_curve(curve_dict,
 
         # Color overrides 
 
-        if color and "override_enabled" in shape.keys() and cmds.objExists(curve_name):
+        if color and "override_enabled" in list(shape.keys()) and cmds.objExists(curve_name):
             cmds.setAttr(curve_name + ".overrideRGBColors", shape["override_color"])
             cmds.setAttr(curve_name + ".overrideEnabled", shape["override_enabled"])
             cmds.setAttr(curve_name + ".overrideColor", shape["color"])
@@ -258,7 +259,7 @@ def create_curve(curve_dict,
 
 
     # Outliner Color
-    if outliner_color and "outliner_color" in curve_dict.keys() and curve_dict["outliner_color"]:
+    if outliner_color and "outliner_color" in list(curve_dict.keys()) and curve_dict["outliner_color"]:
         cmds.setAttr(curve_transform + ".useOutlinerColor" , True)
         cmds.setAttr(curve_transform + ".outlinerColor" , *curve_dict["outliner_color"][0])
         # mel.eval('AEdagNodeCommonRefreshOutliners();')
@@ -407,7 +408,7 @@ def create_curve_new(curve_dict,
         cmds.delete(tmpCrv)
         newShape = cmds.rename(newShape, cmds.listRelatives(newShape, p=True)[0] + "Shape" )
 
-        if color and "override_enabled" in shape.keys() and cmds.objExists(curve_name):
+        if color and "override_enabled" in list(shape.keys()) and cmds.objExists(curve_name):
             cmds.setAttr(curve_name + ".overrideRGBColors", shape["override_color"])
             cmds.setAttr(curve_name + ".overrideEnabled", shape["override_enabled"])
             cmds.setAttr(curve_name + ".overrideColor", shape["color"])

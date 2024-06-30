@@ -3,17 +3,18 @@ from maya import cmds
 from rig.utils import misc
 from rig.utils import exportUtils
 from rig_2.manipulator import control, elements
-reload(control)
-reload(elements)
+import importlib
+importlib.reload(control)
+importlib.reload(elements)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 from rig_2.shape import nurbscurve
-reload(nurbscurve)
+importlib.reload(nurbscurve)
 
 from rig_2.manipulator import elements as manipulator_elements
-reload(manipulator_elements)
+importlib.reload(manipulator_elements)
 
 
 
@@ -108,7 +109,7 @@ class Component(object):
         #     cmds.parent(self.cmptMasterParent, self.parent)
 
     def createHelperGeo(self):
-        if type(self.helperGeo) is unicode:
+        if type(self.helperGeo) is str:
             self.helperGeo = str(self.helperGeo)
         if type(self.helperGeo) is str and cmds.objExists(self.helperGeo):
             return

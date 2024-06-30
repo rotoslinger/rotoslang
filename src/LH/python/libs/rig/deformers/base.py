@@ -3,14 +3,15 @@ from collections import OrderedDict
 
 from maya import cmds
 from rig.utils import weightMapUtils, misc
-reload(weightMapUtils)
-reload(misc)
+import importlib
+importlib.reload(weightMapUtils)
+importlib.reload(misc)
 import copy
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 
 from rig_2.component import base as component_base
-reload(component_base)
+importlib.reload(component_base)
 
 
 class Deformer(object):
@@ -76,8 +77,8 @@ class Deformer(object):
         if cmds.objExists(self.name):
             self.deformer = self.name
             return
-        print self.deformerType, "DEFORMER TYPE"
-        print self.geoToDeform, "GEO TO DEFORM"
+        print(self.deformerType, "DEFORMER TYPE")
+        print(self.geoToDeform, "GEO TO DEFORM")
         self.deformer = cmds.deformer(self.geoToDeform, type=self.deformerType, n=self.name,
                                       foc=self.orderFrontOfChain,
                                       bf=self.orderBefore,

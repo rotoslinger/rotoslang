@@ -4,15 +4,16 @@ from maya import OpenMayaUI as OpenMayaUI
 from shiboken2 import wrapInstance
 from maya import cmds
 from ui_2 import ui_utils
-reload(ui_utils)
+import importlib
+importlib.reload(ui_utils)
 from ui_2 import elements
-reload(elements)
+importlib.reload(elements)
 from rig_2.tag import utils as tag_utils
-reload(tag_utils)
+importlib.reload(tag_utils)
 from rig_2.tag import constants as tag_constants
-reload(tag_utils)
+importlib.reload(tag_utils)
 from rig_2 import decorator
-reload(decorator)
+importlib.reload(decorator)
 
 class Filtered_List(QtWidgets.QWidget):
     def __init__(self,
@@ -161,7 +162,7 @@ class Filtered_List(QtWidgets.QWidget):
                 tag=self.tag_label_widgets[idx].text()
                 vis_selection = [checkbox.isChecked() for checkbox in self.tag_selection_option_checkboxes]
                 tag_utils.vis_all_with_tag(self.tag_label_widgets[idx].text(), checked, component, vis_shape=vis_selection[0], vis_transform=vis_selection[1])
-                if not component in self.tag_visibility_status.keys():
+                if not component in list(self.tag_visibility_status.keys()):
                     self.tag_visibility_status[component] = {}
                 self.tag_visibility_status[component][tag] = checked
 
@@ -176,7 +177,7 @@ class Filtered_List(QtWidgets.QWidget):
                 checkbox.setChecked(checked)
                 tag=self.tag_label_widgets[idx].text()
                 tag_utils.make_selectable_all_with_tag(tag, checked, component)
-                if not component in self.tag_selectability_status.keys():
+                if not component in list(self.tag_selectability_status.keys()):
                     self.tag_selectability_status[component] = {}
                 self.tag_selectability_status[component][tag] = checked
         
@@ -225,7 +226,7 @@ class Filtered_List(QtWidgets.QWidget):
             tag = self.tag_label_widgets[idx].text()
             vis_selection = [checkbox.isChecked() for checkbox in self.tag_selection_option_checkboxes]
             tag_utils.vis_all_with_tag(tag, vis=self.tag_vis_widgets[idx].isChecked(), component=component, vis_shape=vis_selection[0], vis_transform=vis_selection[1])
-            if not component in self.tag_visibility_status.keys():
+            if not component in list(self.tag_visibility_status.keys()):
                 self.tag_visibility_status[component] = {}
             self.tag_visibility_status[component][tag] =  self.tag_vis_widgets[idx].isChecked()
 
@@ -233,7 +234,7 @@ class Filtered_List(QtWidgets.QWidget):
             component = str(component.text())
             tag = self.tag_label_widgets[idx].text()
             tag_utils.make_selectable_all_with_tag(tag, selectable=self.tag_select_widgets[idx].isChecked(), component=component)
-            if not component in self.tag_selectability_status.keys():
+            if not component in list(self.tag_selectability_status.keys()):
                 self.tag_selectability_status[component] = {}
             self.tag_selectability_status[component][tag] = self.tag_select_widgets[idx].isChecked()
 
@@ -256,7 +257,7 @@ class Filtered_List(QtWidgets.QWidget):
             tag=str(tag)
             if not tag:
                 continue
-            if tag == " " or tag == unicode(" "):
+            if tag == " " or tag == str(" "):
                 continue
             if " " in tag:
                 tag.replace(" ", "")
@@ -299,12 +300,12 @@ class Filtered_List(QtWidgets.QWidget):
                 label = ui_utils.create_label(tag, self.color, center=False)
 
                 vis_checkbox = QtWidgets.QCheckBox("Visibility")
-                if component in self.tag_visibility_status.keys() and tag in self.tag_visibility_status[component].keys():
+                if component in list(self.tag_visibility_status.keys()) and tag in list(self.tag_visibility_status[component].keys()):
                     vis_checkbox.setChecked(self.tag_visibility_status[component][tag])
                 else:
                     vis_checkbox.setChecked(True)
                 selectable_checkbox = QtWidgets.QCheckBox("Selectable")
-                if component in self.tag_selectability_status.keys() and tag in self.tag_selectability_status[component].keys():
+                if component in list(self.tag_selectability_status.keys()) and tag in list(self.tag_selectability_status[component].keys()):
                     selectable_checkbox.setChecked(self.tag_selectability_status[component][tag])
                 else:
                     selectable_checkbox.setChecked(True)
@@ -325,12 +326,12 @@ class Filtered_List(QtWidgets.QWidget):
                 
     def update_tag_all_checklists(self):
         for component in [str(item.text()) for item in self.component_list.selectedItems()]:
-            if component in self.vis_all_dict.keys():
+            if component in list(self.vis_all_dict.keys()):
                 self.vis_checkbox.setChecked(self.vis_all_dict[component])
             else:
                 self.vis_all_dict[component] = True
                 self.vis_checkbox.setChecked(True)
-            if component in self.select_all_dict.keys():
+            if component in list(self.select_all_dict.keys()):
                 self.selectable_checkbox.setChecked(self.select_all_dict[component])
             else:
                 self.select_all_dict[component] = True
@@ -382,7 +383,7 @@ class Filtered_List(QtWidgets.QWidget):
                 tag=str(tag)
                 if not tag:
                     continue
-                if tag == " " or tag == unicode(" "):
+                if tag == " " or tag == str(" "):
                     continue
                 if " " in tag:
                     tag.replace(" ", "")

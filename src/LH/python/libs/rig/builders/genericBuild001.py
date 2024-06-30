@@ -6,6 +6,7 @@ scene_path = linux_file
 weights_path = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig/insomniacWeights"
  
 import sys
+import importlib
 linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
@@ -22,20 +23,20 @@ import maya.cmds as cmds
 from rig.utils import misc, weights
 
 from rig.bodycmds import arm, leg, foot, finger, neck, head, eye, main, shoulder, torso, holster, rivet
-reload(arm)
-reload(leg)
-reload(foot)
-reload(finger)
-reload(neck)
-reload(head)
-reload(eye)
-reload(main)
-reload(shoulder)
-reload(torso)
-reload(holster)
-reload(misc)
-reload(weights)
-reload(rivet)
+importlib.reload(arm)
+importlib.reload(leg)
+importlib.reload(foot)
+importlib.reload(finger)
+importlib.reload(neck)
+importlib.reload(head)
+importlib.reload(eye)
+importlib.reload(main)
+importlib.reload(shoulder)
+importlib.reload(torso)
+importlib.reload(holster)
+importlib.reload(misc)
+importlib.reload(weights)
+importlib.reload(rivet)
 
 # build insomniac test
 def build_it(scene_path = "", weights_path = "", debug = False, radius=1.0, geo=None, cape=True, hair=False):

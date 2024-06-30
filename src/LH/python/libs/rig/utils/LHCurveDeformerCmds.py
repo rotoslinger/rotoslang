@@ -1,6 +1,7 @@
 from maya import cmds
 from rig.utils import misc
-reload(misc)
+import importlib
+importlib.reload(misc)
 
 #===============================================================================
 #CLASS:         returnDeformerCmd
@@ -101,7 +102,7 @@ class curveDeformerCmd():
         for i in range(len(self.geom)):
             self.geomShapes.append(cmds.listRelatives(self.geom[i], shapes = True)[0])
         if not (self.driverCurveShape or self.aimCurveShape or self.geomShaps):
-            print 'one or more argument did not have a shape'
+            print('one or more argument did not have a shape')
             quit()
 
     def __checkDriverArgs(self):

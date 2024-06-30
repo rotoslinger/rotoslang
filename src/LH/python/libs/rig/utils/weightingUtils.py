@@ -10,7 +10,7 @@ import maya.mel as mel
 class weightValueDragger(object):
     # You will want to set add cmds.setToolTo("weightValueDragger") in your hotkeys to be able to use this feature
     CONTEXTNAME = "weightValueDragger"
-    print "NEW CONTEXT"
+    print("NEW CONTEXT")
     def __init__(self):
         # self.weightAttr = "LHWeightDeformer.C_testFace_SLD.lSideWeight"
         self.weightAttr = ""
@@ -473,7 +473,7 @@ def getPointsBetween():
 
 def trackComponentSelectionOrder():
     if not cmds.selectPref(q=True, trackSelectionOrder=True):
-        print "turning on tracking selection order"
+        print("turning on tracking selection order")
         cmds.selectPref(trackSelectionOrder=True)
 
 
@@ -524,7 +524,7 @@ def getPointBoundingBox(flattenTx=False, flattenTy=False, flattenTz=False):
     :param flattenTy: If true, will not pay attention to the ty position
     :return:
     """
-    print flattenTx, flattenTy, flattenTz
+    print(flattenTx, flattenTy, flattenTz)
     points = cmds.ls(sl=True, fl=True)
     startPos = ""
     startPoint =""

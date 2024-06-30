@@ -1,9 +1,10 @@
 
 from maya import cmds
 from rig.utils import weightMapUtils, misc
-reload(weightMapUtils)
+import importlib
+importlib.reload(weightMapUtils)
 from rig.deformers import base
-reload(base)
+importlib.reload(base)
 
 def createTestMultiWrap(baseMesh="justHead_body_M_skin_geobody_M_hrcGEOBASE", driverMeshes = ["humanLipsUpper", "humanLipsLower"]):
     cmds.file( "/home/users/levih/Desktop/supermanFace/lipsMultiWrapTest.ma", i=True, f=True )
@@ -69,7 +70,7 @@ class Multiwrap(base.Deformer):
             self.driven_mesh_shapes.append(misc.getShape(node))
 
     def connectDeformer(self):
-        print self.driver_mesh_base_shape, "BASE SHAPE", self.deformer, "DEFORMER"
+        print(self.driver_mesh_base_shape, "BASE SHAPE", self.deformer, "DEFORMER")
         cmds.connectAttr( self.driver_mesh_base_shape + ".worldMesh", self.deformer + ".baseMesh")
         for idx, mesh_shape in enumerate(self.driven_mesh_shapes):
             cmds.connectAttr( mesh_shape + ".worldMesh", self.deformer + ".inputGeoArray[{0}].inputGeo".format(idx))

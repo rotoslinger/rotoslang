@@ -205,7 +205,7 @@ def connectWeightMapToWeightNode(sourceMap=None, destWeightNode=None, sourceFact
 
 def safeConnectWeightAttrs(isConnected, destNode, forceConnection, size, attrToConnect, attrName="inputWeights"):
     if isConnected:
-        print attrToConnect + "  has already been connected to " + destNode
+        print(attrToConnect + "  has already been connected to " + destNode)
         if forceConnection:
             cmds.connectAttr(attrToConnect, destNode + ".Inputs[{0}].{1}".format(size, attrName))
     else:
@@ -217,7 +217,7 @@ def connectionCheck(destNode, attr):
     if not connections:
         return False
     for con in connections:
-        print con
+        print(con)
         if str(con) == attr:
             return True
     return False
@@ -331,7 +331,7 @@ def addCapsuleWeightsToLHCollisionDeformer(meshIdx=0, addAttr=True, updatePainta
 def addCapsuleWeightMap(name=None, deformer=None, attr=None, idx=None, mesh=None, addAttr=True):
     if not name or not deformer or not attr or not mesh:
         return
-    print "ACTUALLY CREATING ", idx
+    print("ACTUALLY CREATING ", idx)
     createWeightMapOnDeformer(deformer=deformer, mesh=mesh, weightName=name, dataType="doubleArray",
                             defaultValue=1.0, addAttr=addAttr,
                             makePaintable=True)

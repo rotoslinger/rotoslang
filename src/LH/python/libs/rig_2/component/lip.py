@@ -1,14 +1,15 @@
 import inspect
 from collections import OrderedDict
 from rig_2.component.subcomponent import lip_sub
-reload(lip_sub)
+import importlib
+importlib.reload(lip_sub)
 
 from rig.rigComponents import elements 
 from rig_2.component import base
-reload(base) 
+importlib.reload(base) 
 
 from rig_2.component import utils as component_utils
-reload(component_utils) 
+importlib.reload(component_utils) 
 
 
 

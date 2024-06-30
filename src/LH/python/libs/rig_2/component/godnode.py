@@ -1,12 +1,13 @@
 from maya import cmds
-import base as component_base
-reload(component_base)
+from . import base as component_base
+import importlib
+importlib.reload(component_base)
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 from rig_2.manipulator import control as manip_control
-reload(manip_control)
+importlib.reload(manip_control)
 from rig_2.manipulator import elements as manip_elements
-reload(manip_elements)
+importlib.reload(manip_elements)
 
 class Camera_Godnode(component_base.Subcomponent):
     def __init__(self,

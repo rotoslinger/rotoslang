@@ -3,15 +3,16 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 from maya import OpenMayaUI as OpenMayaUI
 from ui_2 import ui_utils
-reload(ui_utils)
+import importlib
+importlib.reload(ui_utils)
 from ui_2 import elements
-reload(elements)
+importlib.reload(elements)
 from ui_2 import button_grid_base
-reload(button_grid_base)
+importlib.reload(button_grid_base)
 from ui_2 import file_dialog as file_dialog_ui
-reload(file_dialog_ui)
+importlib.reload(file_dialog_ui)
 from ui_2.stack.weight_ui import ui_core
-reload(ui_core)
+importlib.reload(ui_core)
 
 
 

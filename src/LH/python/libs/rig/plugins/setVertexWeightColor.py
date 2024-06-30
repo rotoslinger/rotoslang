@@ -67,14 +67,14 @@ def initializePlugin(obj):
     try:
         plugin.registerCommand('setVertexWeightColor', creator)
     except:
-        raise RuntimeError, 'Failed to register command'
+        raise RuntimeError('Failed to register command')
  
 def uninitializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj)
     try:
         plugin.deregisterCommand('setVertexWeightColor')
     except:
-        raise RuntimeError, 'Failed to unregister command'
+        raise RuntimeError('Failed to unregister command')
 
 
 def setVertexColors(allWeightValues, fnMesh, vertexColorList, vertexIndexList):

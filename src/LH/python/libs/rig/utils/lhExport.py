@@ -2,9 +2,10 @@ import sys
 
 from rig.utils.exportUtils import set_anim_curve_data, lhDeformerWeightTransfer
 from rig.rigComponents import slidingCtrl, elements, meshRivetCtrl
-reload(slidingCtrl)
-reload(elements)
-reload(meshRivetCtrl)
+import importlib
+importlib.reload(slidingCtrl)
+importlib.reload(elements)
+importlib.reload(meshRivetCtrl)
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig'
 mac = "/Users/leviharrison/Documents/workspace/maya/scripts/lhrig"
 #---determine operating system
@@ -20,9 +21,9 @@ from rig.utils import exportUtils as xUtils
 from maya import cmds, OpenMaya
 import json
 from rig.utils import LHSlideDeformerCmds, LHVectorDeformerCmds, LHCurveRollDeformerCmds, misc
-reload(LHSlideDeformerCmds)
-reload(LHVectorDeformerCmds)
-reload(LHCurveRollDeformerCmds)
+importlib.reload(LHSlideDeformerCmds)
+importlib.reload(LHVectorDeformerCmds)
+importlib.reload(LHCurveRollDeformerCmds)
 
 
 class lh_deformer_export(object):
@@ -99,7 +100,7 @@ class lh_deformer_export(object):
                                                + "[" + str(j)
                                                + "]."
                                                + split_weights[1]))
-        self.weights = dict(zip(tmp_names, tmp_values))
+        self.weights = dict(list(zip(tmp_names, tmp_values)))
         # get deformer weights
         tmp_flat_weights = []
         tmp_flat_names = []
@@ -148,7 +149,7 @@ class lh_deformer_export(object):
         attrs = elements.MESH_RIVET_ATTRS
         stickControls = cmds.ls(et="nullTransform")
         for ctrl in stickControls:
-            if ctrl not in self.meshRivetManips.keys():
+            if ctrl not in list(self.meshRivetManips.keys()):
                 self.meshRivetManips[ctrl] = {}
             buffer1, buffer2, locator, geoConstraint, root, mesh, normalConstraintGeo = self.getStickyObjectsCrappy(ctrl)
 
@@ -166,9 +167,9 @@ class lh_deformer_export(object):
 
 
             # print buffer1, buffer2, locator, geoConstraint
-            if "geoConstraintGeo" not in self.meshRivetManips[ctrl].keys():
+            if "geoConstraintGeo" not in list(self.meshRivetManips[ctrl].keys()):
                     self.meshRivetManips[ctrl]["geoConstraintGeo"] = xUtils.meshData(name=mesh).mesh
-            if normalConstraintGeo and "surfaceConstraintGeo" not in self.meshRivetManips[ctrl].keys():
+            if normalConstraintGeo and "surfaceConstraintGeo" not in list(self.meshRivetManips[ctrl].keys()):
                     self.meshRivetManips[ctrl]["surfaceConstraintGeo"] = xUtils.nurbsSurfaceData(name=normalConstraintGeo).nurbs
         # mesh = cmds.listConnections(geoConstraint + ".inMesh", sh=True)[0]
         #print stickControls
@@ -189,7 +190,7 @@ class lh_deformer_export(object):
                 if not ".outU" or ".outV" in con[0]:
                     continue
                 key = con.split(".")[0]
-                if key not in self.manipDict.keys():
+                if key not in list(self.manipDict.keys()):
                     self.manipDict[key] = {}
                     name = key.split("_")
                     self.manipDict[key]["name"] = name[1]
@@ -199,7 +200,7 @@ class lh_deformer_export(object):
                     if cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True):
                         parent = cmds.listRelatives(name[0] + "_" + name[1] + "_CPT", parent=True)[0]
                     self.manipDict[key]["parent"] = parent
-                    if "helperGeo" not in self.manipDict[key].keys():
+                    if "helperGeo" not in list(self.manipDict[key].keys()):
                         pointOnSurface = cmds.listConnections(key, t="pointOnSurfaceInfo")
                         if pointOnSurface:
                             pointOnSurface = pointOnSurface[0]
@@ -281,9 +282,9 @@ class lh_deformer_import(object):
 
     def unpack(self):
         "imports the dictionary, separates all of the info for later use"
-        if "manipDict" in self.dict.keys():
+        if "manipDict" in list(self.dict.keys()):
             self.manipDict   = self.dict["manipDict"]
-        print self.geo_membership
+        print(self.geo_membership)
         if not self.geo_membership:
             self.geo_membership = self.dict["geo_membership"]
 
@@ -293,7 +294,7 @@ class lh_deformer_import(object):
     def createBase(self):
         """Creates base"""
         self.baseGeo = []
-        print self.geo_membership
+        print(self.geo_membership)
         for i in self.geo_membership:
             shapeParent = cmds.listRelatives(i, parent=True)
             if shapeParent:
@@ -361,14 +362,14 @@ class lh_deformer_import(object):
         #---If not, don't set weights, maya could crash
         for i in range(len(self.geo_membership)):
             if not xUtils.comparePolyCount(self.geo_membership[i], self.transferGeo[i]):
-                print "Points do not match, weights can be transfered, not set"
+                print("Points do not match, weights can be transfered, not set")
                 return
 
         if self.deformer_weights:
-            for i in self.deformer_weights.keys():
+            for i in list(self.deformer_weights.keys()):
                 cmds.setAttr(i, self.deformer_weights.get(i))
         #ToFixOldDeformers
-        for i in self.weights.keys():
+        for i in list(self.weights.keys()):
             weights = self.weights.get(i)
 
             if not weights:
@@ -376,7 +377,7 @@ class lh_deformer_import(object):
             try:
                 cmds.setAttr(i, weights,typ='doubleArray')
             except:
-                print "Weights for " + i + " unable to be set.  It is likely topology has changed."
+                print("Weights for " + i + " unable to be set.  It is likely topology has changed.")
 
     def getTransferData(self):
         return
@@ -386,7 +387,7 @@ class lh_deformer_import(object):
             # right now if you don't set weights the deformer will crash maya, you need to set the weights to be all 1
             return
         #---Set Transfer weights
-        for i in self.weights.keys():
+        for i in list(self.weights.keys()):
             weights = self.weights.get(i)
             if not weights:
                 continue
@@ -395,7 +396,7 @@ class lh_deformer_import(object):
             try:
                 cmds.setAttr(transferAttr, weights, typ='doubleArray')
             except:
-                print "Weights for " + i + " unable to be set."
+                print("Weights for " + i + " unable to be set.")
 
     def transfer(self):
         if not self.transferWeights:
@@ -411,7 +412,7 @@ class lh_deformer_import(object):
                 "vSpeedDefault", "initUDefault", "initVDefault", "baseUDefault", "baseVDefault",
                 "amountUDefault", "amountVDefault", "uOutConnectionAttr", "vOutConnectionAttr", "nurbsShape"]
 
-        for key in self.manipDict.keys():
+        for key in list(self.manipDict.keys()):
             ctrlDict = self.manipDict[key]
             for k in keys:
                 setattr(self, k, ctrlDict[k])
@@ -497,7 +498,7 @@ class lh_component_export(object):
         stickControls = cmds.ls(et="nullTransform")
         self.manipDict["controls"] = {}
         for ctrl in stickControls:
-            if ctrl not in self.manipDict.keys():
+            if ctrl not in list(self.manipDict.keys()):
                 self.manipDict["controls"][ctrl] = {}
             ctrlShape = cmds.listRelatives(ctrl, type = "nurbsCurve")[0]
             self.manipDict["controls"][ctrl]["nurbsShape"] = xUtils.nurbsCurveData(name = ctrlShape, space=OpenMaya.MSpace.kObject).nurbsCurve
@@ -543,13 +544,13 @@ class lh_component_export(object):
             self.manipDict["controls"][ctrl]["geoConstraintGeoName"] = mesh
             self.manipDict["controls"][ctrl]["normalConstraintGeoName"] = normalConstraintGeo
 
-            if "geoConstraintGeo" not in self.manipDict.keys():
+            if "geoConstraintGeo" not in list(self.manipDict.keys()):
                     self.manipDict["geoConstraintGeo"] = {}
-            if mesh not in self.manipDict["geoConstraintGeo"].keys():
+            if mesh not in list(self.manipDict["geoConstraintGeo"].keys()):
                     self.manipDict["geoConstraintGeo"][mesh] = xUtils.meshData(name=mesh).mesh
-            if normalConstraintGeo and "normalConstraintGeo" not in self.manipDict.keys():
+            if normalConstraintGeo and "normalConstraintGeo" not in list(self.manipDict.keys()):
                     self.manipDict["normalConstraintGeo"] = {}
-            if normalConstraintGeo and normalConstraintGeo not in self.manipDict["normalConstraintGeo"].keys():
+            if normalConstraintGeo and normalConstraintGeo not in list(self.manipDict["normalConstraintGeo"].keys()):
                     self.manipDict["normalConstraintGeo"][normalConstraintGeo] = xUtils.nurbsSurfaceData(name=normalConstraintGeo).nurbs
 
     def export(self):
@@ -611,21 +612,21 @@ class lh_component_import(object):
         """
         # Find all of the mesh's, or create them if they don't exist yet
 
-        for key in self.manipDict["geoConstraintGeo"].keys():
+        for key in list(self.manipDict["geoConstraintGeo"].keys()):
             meshName = self.manipDict["geoConstraintGeo"][key]["name"]
             if not cmds.objExists(meshName):
                 xUtils.createMesh(self.manipDict["geoConstraintGeo"][key],
                                   name=meshName,
                                   parent=self.manipDict["geoConstraintGeo"][key]["parent"])
-        if "normalConstraintGeo" in self.manipDict.keys():
-            for key in self.manipDict["normalConstraintGeo"].keys():
+        if "normalConstraintGeo" in list(self.manipDict.keys()):
+            for key in list(self.manipDict["normalConstraintGeo"].keys()):
                 nurbsName = self.manipDict["normalConstraintGeo"][key]["name"]
                 if not cmds.objExists(nurbsName):
                     xUtils.createNurbsSurface(self.manipDict["normalConstraintGeo"][key],
                                             name=nurbsName,
                                             parent=self.manipDict["normalConstraintGeo"][key]["parent"])
         attributes = elements.MESH_RIVET_ATTRS
-        for key in self.manipDict["controls"].keys():
+        for key in list(self.manipDict["controls"].keys()):
             ctrlDict = self.manipDict["controls"][key]
             if not cmds.objExists(key):
                 if not self.geo_name:
@@ -703,11 +704,11 @@ class joint(object):
             data["position"] = cmds.joint(joint, q=True, p=True, a=True)
             data["orientation"] = cmds.joint(joint, q=True, a=False, o=True)
             if joint == "l_wrist_bind":
-                print cmds.joint(joint, q=True, a=False, o=True)
+                print(cmds.joint(joint, q=True, a=False, o=True))
             data["scaleOrientation"] = cmds.joint(joint, q=True, so=True)
             data["radius"] = cmds.joint(joint, q=True, rad=True)
             self.jointDict[joint] = data
-        for joint in self.jointDict.keys():
+        for joint in list(self.jointDict.keys()):
             if cmds.objExists(self.jointDict[joint]["parent"]):
                 cmds.parent(joint, self.jointDict[joint]["parent"])
     def export(self):
@@ -720,7 +721,7 @@ class joint(object):
         self.export()
     
     def setJoints(self):
-        for joint in self.jointDict.keys():
+        for joint in list(self.jointDict.keys()):
             if not cmds.objExists(joint):
                 cmds.joint(n=joint)
             if cmds.listRelatives(joint, parent=True):
@@ -729,7 +730,7 @@ class joint(object):
             cmds.joint(joint, e=True, so=self.jointDict[joint]["scaleOrientation"])
             cmds.joint(joint, e=True, a=False, o=self.jointDict[joint]["orientation"])
             cmds.joint(joint, e=True, rad=self.jointDict[joint]["radius"][0])
-        for joint in self.jointDict.keys():
+        for joint in list(self.jointDict.keys()):
             if cmds.objExists(self.jointDict[joint]["parent"]):
                 cmds.parent(joint, self.jointDict[joint]["parent"])
 
@@ -780,7 +781,7 @@ class nurbsControl(object):
     def setCtrls(self):
         curveDummy = cmds.circle()[0]
         curveShape = misc.getShape(curveDummy)
-        for ctrl in self.ctrlDict.keys():
+        for ctrl in list(self.ctrlDict.keys()):
             # if "L_armIK_CTLSHAPE" in ctrl:
             #     print ctrl
             if not cmds.objExists(ctrl):
@@ -851,7 +852,7 @@ class constraintMap(object):
 
     def setConstraints(self):
 
-        for driven in self.constraintDict.keys():
+        for driven in list(self.constraintDict.keys()):
             if not cmds.objExists(driven) or not cmds.objExists(self.constraintDict[driven]):
                 continue
             cmds.parentConstraint(self.constraintDict[driven], driven, mo=True)

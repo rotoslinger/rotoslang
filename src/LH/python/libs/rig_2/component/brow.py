@@ -3,46 +3,47 @@ from collections import OrderedDict
 from maya import cmds
 import sys
 from rig_2.component.subcomponent import weightStack
-reload(weightStack)
+import importlib
+importlib.reload(weightStack)
 from rig.deformers import matrixDeformer
-reload(matrixDeformer)
+importlib.reload(matrixDeformer)
 from rig.deformers import slideSimple
-reload(slideSimple)
+importlib.reload(slideSimple)
 from rig.deformers import blendshapeSimple
-reload(blendshapeSimple)
+importlib.reload(blendshapeSimple)
 from rig.deformers import vectorDeformerSimple
-reload(vectorDeformerSimple)
+importlib.reload(vectorDeformerSimple)
 from rig.deformers import curveRollSimple
-reload(curveRollSimple)
+importlib.reload(curveRollSimple)
 from rig.deformers import utils as deformer_utils
-reload(deformer_utils)
+importlib.reload(deformer_utils)
 from rig.utils import misc
-reload(misc)
+importlib.reload(misc)
 from rig.utils import LHCurveDeformerCmds
-reload(LHCurveDeformerCmds)
+importlib.reload(LHCurveDeformerCmds)
 from rig.rigComponents import meshRivetCtrl 
-reload(meshRivetCtrl)
+importlib.reload(meshRivetCtrl)
 from rig.rigComponents import elements
-reload(elements)
+importlib.reload(elements)
 from decorators import initialize
-reload(elements)
+importlib.reload(elements)
 from rig.utils import lhExport
-reload(lhExport)
+importlib.reload(lhExport)
 from rig_2.manipulator import elements as manipulator_elements
 from rig_2.component import base
 from rig.rigComponents import mouthJaw
-reload(base)
+importlib.reload(base)
 
 from rig_2.animcurve import utils as animcurve_utils
-reload(animcurve_utils) 
+importlib.reload(animcurve_utils) 
 
 from rig_2.node import utils as node_utils
-reload(node_utils)
+importlib.reload(node_utils)
 
 from rig_2.component import utils as component_utils
-reload(component_utils)
+importlib.reload(component_utils)
 from rig_2.component.subcomponent import brow_sub
-reload(brow_sub)
+importlib.reload(brow_sub)
 
 
 # The face is a master class that will control and wire up all of the face components.

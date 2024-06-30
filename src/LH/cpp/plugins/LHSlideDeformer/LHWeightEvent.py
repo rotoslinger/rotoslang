@@ -1,2 +1,2 @@
 global thing
-print thing
+print(thing)
