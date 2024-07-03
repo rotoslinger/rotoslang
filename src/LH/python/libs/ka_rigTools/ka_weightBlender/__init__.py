@@ -278,11 +278,11 @@ class WeightBlenderInfo(object):
             else:
                 if self.pnt_typeDict[strand[0]] == 'mesh':
                     strandTargetsA, strandTargetsB = self._getVertStrandTargets(strand)
-                    print('goob')
-                    OOOOOOO = 'strandTargetsA';  print('%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO)))))
-                    OOOOOOO = 'strandTargetsB';  print('%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO)))))
+                    # print('goob')
+                    # OOOOOOO = 'strandTargetsA';  print('%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO)))))
+                    # OOOOOOO = 'strandTargetsB';  print('%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO)))))
                     for i, pointID in enumerate(strand):
-                        OOOOOOO = 'i';  print('%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO)))))
+                        # OOOOOOO = 'i';  print('%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO)))))
                         self.strandTargetSequencesA_dict[pointID] = [strandTargetsA[i]]
                         self.strandTargetSequencesB_dict[pointID] = [strandTargetsB[i]]
 
@@ -302,7 +302,6 @@ class WeightBlenderInfo(object):
     def start(self, createTargetIcons=True):
         if createTargetIcons:
             self.createTargetIcons()
-
         self.storeWeights()
 
 
@@ -352,8 +351,14 @@ class WeightBlenderInfo(object):
                                   they started, if they are 0, then they will be 100% blended to targetA, if the value
                                   is 200, then the value will be blended 100% to targetB.
         """
+        # print("AHHHHHHHHHHHHHH")
 
+        # for key, value in self.weightDict.items():
+        #     print("AHHHHHHHHHHHHHH")
+        #     print(str(key) + "->" + str(value))
+            
         for i, pointID in enumerate(self.selectedPointIDs):
+            
             originalWeightDict = self.weightDict[pointID]
             targetWeightA = self.targetAWeightDict[pointID]
             targetWeightB = self.targetBWeightDict[pointID]
@@ -841,15 +846,6 @@ class WeightBlenderInfo(object):
                     strandTargetsB.append([strandTarget])
                     break
 
-            #OOOOOOO = 'strandTargetsA';  print '%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO))))
-            #for eachs in strandTargetsA:
-                #for each in eachs:
-                    #print '    ', str(self.pntDict[each])
-
-            #OOOOOOO = 'strandTargetsB';  print '%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO))))
-            #for eachs in strandTargetsB:
-                #for each in eachs:
-                    #print '    ', str(self.pntDict[each])
 
             strandTargetsA = strandTargetsA
             strandTargetsB = strandTargetsB
@@ -1254,8 +1250,13 @@ class WeightBlenderInfo(object):
         """Returns a string for used to identify a component in all
         the various informational dictionarys
         """
+        componentString  = str(component).split("[")[1]
+        componentString = componentString.split("]")[0]
+        
+        # componentID = componentString.__hash__()
 
-        componentID = component.__hash__()
+        componentID = int(componentString)
+
 
         # add to relevent dictionary
         if component.__class__.__name__ == 'MeshEdge':
@@ -1530,6 +1531,7 @@ def start(points=None):
 
 def change(value=0.0):
     global weightBlenderInfo
+    # weightBlenderInfo = WeightBlenderInfo()
     weightBlenderInfo.blend(value)
 
 def finish():

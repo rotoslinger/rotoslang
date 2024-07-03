@@ -49,8 +49,8 @@ class Value_Dragger(object):
             self.vectorEnd = OpenMaya.MVector(vec[0], vec[1], vec[2])
 
             if self.start_func:
-                self.left, self.right, self.up, self.down = self.start_func()
-
+                # self.left, self.right, self.up, self.down = self.start_func()
+                self.start_func()
             # print vec[0], vec[1], vec[2]
 
         def getCursorPosition():
@@ -109,3 +109,6 @@ class Value_Dragger(object):
 
 def clamp(_val, _min, _max):
     return max(min(_max, _val), _min)
+
+
+

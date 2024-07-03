@@ -425,9 +425,10 @@ print(weights.utils.getWeightStackHandWeightsDict())
 #######################################################################
 ##########################  SKIN WEIGHT DRAGGER #####################################
 ########################################################################
-
+import importlib
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+windows = 'C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/python/libs'
 
 #---determine operating system
 os = sys.platform
@@ -435,31 +436,39 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win" in os:
+    os = windows
+
 if os not in sys.path:
     sys.path.append(os)
 
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
+windows = 'C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/python/libs/rig_2'
+
 #---determine operating system
 os = sys.platform
 if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win" in os:
+    os = windows
+
 if os not in sys.path:
     sys.path.append(os)
 
 from maya import cmds
 import sys
-linux = '/scratch/levih/dev/misc_tools'
-#---determine operating system
-os = sys.platform
-if "linux" in os:
-    os = linux
-if "darwin" in os:
-    os = mac
-if os not in sys.path:
-    sys.path.append(os)
+# linux = '/scratch/levih/dev/misc_tools'
+# #---determine operating system
+# os = sys.platform
+# if "linux" in os:
+#     os = linux
+# if "darwin" in os:
+#     os = mac
+# if os not in sys.path:
+#     sys.path.append(os)
 
 
 

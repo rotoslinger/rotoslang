@@ -1,7 +1,7 @@
 from maya import cmds
 import maya.OpenMaya as OpenMaya
-from plugins import setVertexWeightColor
-import maya.mel as mel
+# from plugins import setVertexWeightColor
+# import maya.mel as mel
 
 
 
@@ -51,8 +51,6 @@ class weightValueDragger(object):
             geo = sel[0].split(".")[0]
             if self.toggleVisOnDrag:
                 cmds.setAttr(geo + '.displayColors', False)
-
-            # mel.eval('artSetToolAndSelectAttr( "'+ self.currentContext +'", "' + self.weightAttr + '" );')
 
         def holdCommand():
             vec = tuple(cmds.draggerContext(Context, query=1, anchorPoint=1 ))
