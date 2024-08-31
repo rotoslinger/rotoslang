@@ -1,11 +1,11 @@
 import sys
-from PySide2 import QtWidgets, QtCore, QtGui
+from PySide6 import QtWidgets, QtCore, QtGui
 from maya import OpenMayaUI as OpenMayaUI
-from shiboken2 import wrapInstance
+from shiboken6 import wrapInstance
 
 '''
 @code
-from uiSSP.rigging.uiStackTest import uiStackTest
+from ui.rigging.uiStackTest import uiStackTest
 uiStackTest.UiStackTest.openUI()
 @endcode
 '''

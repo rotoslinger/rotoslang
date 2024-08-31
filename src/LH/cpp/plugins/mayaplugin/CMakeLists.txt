@@ -1,11 +1,25 @@
+#
 # YOU HAVE TO SET TO BUILD ON Win64 OR YOU WILL GET ERRORS
-# 1 Windows inside build dir run:       cmake ..
-# 2 THEN WINDOWS:                       cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
-# 3 THEN Windows inside build dir run:  cmake --build . --config Debug
+
+# WINDOWS BUILD INSTRUCTIONS 
+
+# Pre Maya 2019
+# 1 Navigate to build directory -> right click -> run terminal
+# 2 In Terminal type:     cmake -G "Visual Studio 15 2017 Win64" -DMAYA_VERSION=2018 .. 
+# 3 In Terminal type:     cmake --build . --config Debug
+
+# Post Maya 2019
+# 1 Navigate to build directory -> right click -> run terminal
+# 2 In Terminal type:     cmake -A "Win64" -G "Visual Studio 17 2022" -DMAYA_VERSION=2025 .. 
+# 3 In Terminal type:     cmake --build . --config Debug
 
 
-# OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
-cmake_minimum_required(VERSION 3.1.3)
+# OSX Build instructions
+
+# 1 Navigate to build directory -> open in terminal
+# 2 In Terminal type:     cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
+
+cmake_minimum_required(VERSION 3.5)
 
 
 
@@ -119,7 +133,7 @@ else()
     # Windows build cmake --build . --config Debug
 
     # OSX terminal build in build dir: cmake -G "Unix Makefiles" -DMAYA_VERSION=2018 ..
-    cmake_minimum_required(VERSION 3.1.3)
+    cmake_minimum_required(VERSION 3.5)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)  # not necessary, but encouraged
 

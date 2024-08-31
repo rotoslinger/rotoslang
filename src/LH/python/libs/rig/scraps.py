@@ -570,8 +570,10 @@ print(cam.camera.input_names)
 ########################################################################
 
 
+import importlib
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
+windows = 'C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/python/libs'
 
 #---determine operating system
 os = sys.platform
@@ -579,22 +581,31 @@ if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win" in os:
+    os = windows
+
 if os not in sys.path:
     sys.path.append(os)
 
 import sys
 linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
+windows = 'C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/python/libs/rig_2'
+
 #---determine operating system
 os = sys.platform
 if "linux" in os:
     os = linux
 if "darwin" in os:
     os = mac
+if "win" in os:
+    os = windows
+
 if os not in sys.path:
     sys.path.append(os)
 
+
 import sys
-package = '/scratch/levih/dev/rotoslang/src/LH/python/libs/decorators'
+package = 'C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/python/libs/decorators'
 #---determine operating system
 if linux not in sys.path:
     sys.path.append(package)

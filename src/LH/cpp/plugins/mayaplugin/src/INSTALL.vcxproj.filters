@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\CMakeFiles\35c7d75f840768cdd73336651a4ab046\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{1DC96C26-58EC-35FD-B4AE-C1C9E7744954}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

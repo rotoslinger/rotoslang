@@ -1,0 +1,149 @@
+﻿  Building Custom Rule C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/cpp/plugins/mayaplugin/src/CMakeLists.txt
+  pluginMain.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.h(206,36): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\pluginMain.cpp(41,31): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  LHWeightNode.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNode.cpp(130,20): warning C4018: '<': signed/unsigned mismatch
+  LHCollisionDeformer.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionDeformer.cpp(777,17): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionDeformer.cpp(1796,10): warning C4101: 'logicCheck': unreferenced local variable
+  LHLocator.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(548,34): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(548,23): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(564,35): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(564,29): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(564,23): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(568,34): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(568,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(603,40): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(606,43): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(605,43): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(604,43): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(611,40): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(614,46): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(613,46): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp(612,46): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  LHCollisionLocator.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionLocator.cpp(264,58): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionLocator.cpp(264,44): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionLocator.cpp(264,30): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+  nullTransform.cpp
+  nullMatrixTransform.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\nullMatrixTransform.cpp(74,24): warning C4996: 'Autodesk::Maya::OpenMaya20180000::MPxNode::forceCache': Use the method forceCache() instead. If needed, use MDGContextGuardto switch the context.
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\nullMatrixTransform.cpp(93,22): warning C4996: 'Autodesk::Maya::OpenMaya20180000::MPxTransform::validateAndSetValue': Override validateAndSetValue(const MPlug&, const MDataHandle&) instead. If needed, use MDGContext::current() to get the context.
+  LHGeometryConstraint.cpp
+  LHSlideDeformer.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(97,19): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(194,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(195,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(234,18): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(353,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(471,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(695,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(812,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(958,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp(1044,22): warning C4018: '<': signed/unsigned mismatch
+  LHVectorDeformer.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(117,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(118,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(158,18): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(256,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(356,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(482,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(657,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp(772,26): warning C4018: '<': signed/unsigned mismatch
+  LHCurveRollDeformer.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(99,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(100,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(138,18): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(258,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(371,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(521,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(636,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(789,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp(895,22): warning C4018: '<': signed/unsigned mismatch
+  LHCurveWeightNode.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode.cpp(302,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode.cpp(342,37): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode.cpp(343,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode.cpp(552,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode.cpp(581,20): warning C4018: '<': signed/unsigned mismatch
+  LHKDoubleArrayToKFloatArray.cpp
+  LHWeightNodeFloat.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNodeFloat.cpp(25,41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNodeFloat.cpp(59,38): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNodeFloat.cpp(63,38): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNodeFloat.cpp(86,24): warning C4018: '<': signed/unsigned mismatch
+  LHTemplateGPUDeformer.cpp
+  LHMultiWrap.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp(131,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp(132,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp(133,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp(134,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp(135,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp(280,47): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp(408,18): warning C4018: '<': signed/unsigned mismatch
+  LHSlideSimple.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideSimple.cpp(195,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideSimple.cpp(460,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideSimple.cpp(556,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideSimple.cpp(597,22): warning C4018: '<': signed/unsigned mismatch
+  LHNakedLocator.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(69,32): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(73,32): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(88,35): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(88,29): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(88,23): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(93,34): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(93,28): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(98,54): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(104,43): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(104,37): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(104,31): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(194,67): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp(214,77): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  LHMatrixDeformer.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMatrixDeformer.cpp(213,86): warning C4018: '<=': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMatrixDeformer.cpp(215,23): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMatrixDeformer.cpp(228,82): warning C4018: '<=': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMatrixDeformer.cpp(268,27): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMatrixDeformer.cpp(314,42): warning C4018: '<': signed/unsigned mismatch
+  LHBlendshapeSimple.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHBlendshapeSimple.cpp(98,23): warning C4018: '<=': signed/unsigned mismatch
+  Generating Code...
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNode.cpp(119,1): warning C4715: 'LHWeightNode::computeDoubleArray': not all control paths return a value
+  Compiling...
+  LHCurveDeformer.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.h(206,36): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.cpp(330,28): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.cpp(331,30): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.cpp(807,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.cpp(829,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.cpp(839,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.cpp(867,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  LHVectorDeformerSimple.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformerSimple.cpp(87,23): warning C4018: '<=': signed/unsigned mismatch
+  LHCurveRollSimple.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollSimple.cpp(213,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollSimple.cpp(217,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollSimple.cpp(211,7): warning C4101: 'currentVertID': unreferenced local variable
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollSimple.cpp(308,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollSimple.cpp(366,22): warning C4018: '<': signed/unsigned mismatch
+  LHCurveTransform.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveTransform.cpp(185,24): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveTransform.cpp(210,56): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveTransform.cpp(252,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveTransform.cpp(277,52): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  LHCurveWeightNode_2.cpp
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp(36,33): warning C4305: 'argument': truncation from '__int64' to 'unsigned int'
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp(36,33): warning C4309: 'argument': truncation of constant value
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp(335,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp(367,37): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp(368,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp(450,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp(622,20): warning C4018: '<': signed/unsigned mismatch
+  LHCurveWeightUtils.cpp
+  matrixCommon.cpp
+  Generating Code...
+     Creating library C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/cpp/plugins/mayaplugin/src/Debug/LHDeformerNodes.lib and object C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/cpp/plugins/mayaplugin/src/Debug/LHDeformerNodes.exp
+  LHDeformerNodes.vcxproj -> C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\Debug\LHDeformerNodes.mll

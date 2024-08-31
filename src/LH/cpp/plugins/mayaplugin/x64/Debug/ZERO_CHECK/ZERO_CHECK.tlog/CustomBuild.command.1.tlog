@@ -1,0 +1,10 @@
+^C:\USERS\HARRI\DOCUMENTS\MAYA\2025\SCRIPTS\ROTOSLANG\SRC\LH\CPP\PLUGINS\MAYAPLUGIN\CMAKEFILES\95A940185A771198CEA5F8331BBBC70E\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/cpp/plugins/mayaplugin -BC:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/cpp/plugins/mayaplugin --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/cpp/plugins/mayaplugin/LHDeformerNodes.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

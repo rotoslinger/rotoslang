@@ -1,34 +1,8 @@
-import sys, os
-from PySide2 import QtWidgets, QtCore, QtGui
+import os
+from PySide6 import QtWidgets, QtCore, QtGui
 from maya import OpenMayaUI as OpenMayaUI
-from shiboken2 import wrapInstance
+from shiboken6 import wrapInstance
 from maya import cmds
-from . import utils as ui_utils
-import importlib
-importlib.reload(ui_utils)
-'''
-@code
-import sys
-linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
-mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
-win = "C:\\Users\\harri\\Desktop\\dev\\rotoslang\\src\\LH\\python\\libs"
-#---determine operating system
-os = sys.platform
-if "linux" in os:
-    os = linux
-if "darwin" in os:
-    os = mac
-if "win32" in os:
-    os = win
-
-if os not in sys.path:
-    sys.path.append(os)
-from rig.ui import scratch_panel
-reload(scratch_panel)
-scratch_panel.Scratch_Panel.openUI()
-
-@endcode
-'''
 class Scratch_Panel(QtWidgets.QWidget):
 
     def __init__(self, parent=None, winTitle = "Scratch Panel", winName = None):
@@ -40,7 +14,7 @@ class Scratch_Panel(QtWidgets.QWidget):
 
         self.setWindowTitle(winTitle)
         self.setObjectName(winName)
-        self.setAcceptDrops(True) # Very important
+        self.setAcceptDrops(True)
 
         self.create_layout()
         self.create_connections()
@@ -50,7 +24,6 @@ class Scratch_Panel(QtWidgets.QWidget):
         if os.path.exists(self.settings_path):
             settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
             self.restoreGeometry(settings_obj.value("windowGeometry"))
-            # self.restoreState(settings_obj.value("windowState", ""))
         for i in dir(self):
             if "save" in i or "restore" in i:
                 print(i)
@@ -60,14 +33,13 @@ class Scratch_Panel(QtWidgets.QWidget):
         self.list_widget_l.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.list_widget_l.setAcceptDrops(True)
         # Allow drag and drop reorder
-        self.list_widget_l.setDragDropMode(self.list_widget_l.InternalMove)
-        # self.list_widget_l.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.list_widget_l.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
 
         # right list
         self.list_widget_r = QtWidgets.QListWidget(self)
         self.list_widget_r.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.list_widget_r.setAcceptDrops(True)
-        self.list_widget_r.setDragDropMode(self.list_widget_r.InternalMove)
+        self.list_widget_r.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
 
 
         #add button
@@ -85,13 +57,11 @@ class Scratch_Panel(QtWidgets.QWidget):
         #--create the layout vbox#$#$#$
         main_layout= QtWidgets.QVBoxLayout()
         
-        ################ to reduce button margins and the spacing
+        # to reduce button margins and the spacing
         main_layout.setContentsMargins(2, 2, 2, 2)
         main_layout.setSpacing(2)
         main_layout.addLayout(self.gridLayout, 1) # stretch factor > 0
         main_layout.addStretch(0) # 0 is full stretch
-        
-        # 
         self.gridLayout.addWidget(self.list_widget_l, 0, 0)
         self.gridLayout.addWidget(self.add_btn_l, 1, 0)
         self.gridLayout.addWidget(self.remove_btn_l, 2, 0)
@@ -105,26 +75,14 @@ class Scratch_Panel(QtWidgets.QWidget):
         #add the main layout itself to the primitive ui dialog
         self.setLayout(main_layout)
 
-    def dropEvent(self, event):
-        """
-        The event called when the user drops its elements
-        Only if dragEnterEvent accept the event
-        """
-        print("AAAAAAAAAAAAAAAA")
-
     def create_connections(self):
 
         # L List
-        # We could do this with lamda like below.  Not using because it is hard to read...
-        # self.add_btn_l.clicked.connect(lambda widget_arg=self.list_widget_l: self.add_to_list(widget_arg))
         self.add_btn_l.clicked.connect(self.add_to_list_l)
         self.remove_btn_l.clicked.connect(self.remove_from_list_l)
         self.clear_btn_l.clicked.connect(lambda : self.list_widget_l.clear())
         self.list_widget_l.itemSelectionChanged.connect(self.clicked)
         self.list_widget_l.itemSelectionChanged.connect(self.clicked)
-        # def test():
-        #     print "aaaaa"
-        # self.list_widget_l.dropEvent(test)
         # R List
         self.add_btn_r.clicked.connect(self.add_to_list_r)
         self.remove_btn_r.clicked.connect(self.remove_from_list_r)
@@ -157,14 +115,17 @@ class Scratch_Panel(QtWidgets.QWidget):
         self.add_to_list(self.list_widget_r)
 
     def add_to_list(self, list_widget):
-        selected = cmds.ls(sl=True)
+        selected = cmds.ls(sl=True, dag=True)
+        first_level_selected =  cmds.ls(sl=True)
         # Filter objects that are already in the list
         items =  [str(list_widget.item(i).text()) for i in range(list_widget.count())]
         selected = [x for x in selected if x not in items]
+        selected = [x for x in selected if x in first_level_selected]
         if not selected:
             return
         for sel in selected:
-            icon = ui_utils.get_outliner_icon(sel)
+            print(cmds.objectType(sel))
+            icon = get_outliner_icon(sel)
             item = QtWidgets.QListWidgetItem(icon, sel)
             list_widget.addItem( item)
 
@@ -182,7 +143,6 @@ class Scratch_Panel(QtWidgets.QWidget):
         # Save window's geometry
         settings_obj = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat)
         settings_obj.setValue("windowGeometry", self.saveGeometry())
-        # settings_obj.setValue("windowState", self.saveState())
 
 
     winWidth = 800
@@ -223,4 +183,18 @@ class LListWidget(QtWidgets.QListWidget):
         else:
             return super(LListWidget, self).dropMimeData(index, data, action)
 
+
+def get_outliner_icon(maya_object):
+    if not maya_object:
+        maya_object = cmds.ls(sl=True)[0]
+    maya_object_type = cmds.objectType(maya_object)
+    maya_object_relatives = cmds.listRelatives(maya_object)
+    # If the object is a transform and has a shape, set the type to that of the shape
+    if maya_object_relatives != None and maya_object_type == "transform" and cmds.listRelatives(s=True) and len(cmds.listRelatives(maya_object)) == 1:
+        maya_object_type = cmds.objectType(cmds.listRelatives(s=True)[0])
+    file_dir = ":/{0}.svg".format(maya_object_type)
+    testfile = QtCore.QFile(file_dir)
+    if not testfile.exists():
+        file_dir = ":/default.svg"
+    return QtGui.QIcon(file_dir)
 

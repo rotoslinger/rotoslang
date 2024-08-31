@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\pluginMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionLocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\nullTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\nullMatrixTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHGeometryConstraint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHKDoubleArrayToKFloatArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNodeFloat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHTemplateGPUDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideSimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMatrixDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHBlendshapeSimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformerSimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollSimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode_2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\matrixCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionDeformer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHLocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCollisionLocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\nullTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\nullMatrixTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHGeometryConstraint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideDeformer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHVectorDeformer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveRollDeformer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHCurveWeightNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHKDoubleArrayToKFloatArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHWeightNodeFloat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHTemplateGPUDeformer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMultiWrap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHSlideSimple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHNakedLocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHMatrixDeformer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\harri\Documents\maya\2025\scripts\rotoslang\src\LH\cpp\plugins\mayaplugin\src\LHTemplateGPUDeformer.cl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{61CC875F-C073-3234-B7EA-985C261EBE58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4F73D368-EF80-35EC-9DA9-48E08C321612}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

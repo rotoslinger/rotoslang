@@ -1,7 +1,7 @@
 import sys
-from PySide2 import QtWidgets, QtCore, QtGui
+from PySide6 import QtWidgets, QtCore, QtGui
 from maya import OpenMayaUI as OpenMayaUI
-from shiboken2 import wrapInstance
+from shiboken6 import wrapInstance
 from maya import cmds
 from . import utils as ui_utils
 import importlib
