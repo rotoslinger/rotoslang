@@ -5,7 +5,7 @@
 import maya.cmds as cmds
 import pymel.core as pymel
 import maya.mel as mel
-import maya.OpenMaya as om
+import maya.OpenMaya as OpenMaya
 import math
 import traceback
 
@@ -91,9 +91,9 @@ class WeightBlenderInfo(object):
         # other info
         self.currentCamera = getCurrentCamera()
         self.currentCameraMMatrix = getMMatrix(self.currentCamera, matrixType='worldInverseMatrix')
-        print(self.currentCameraMMatrix)
+
         # target icons
-        self.delete_target_icons()
+        self.deleteTargetIcons()
 
         self.iconPointsA = {}
         self.iconPointsB = {}
@@ -451,19 +451,19 @@ class WeightBlenderInfo(object):
             strSkinCluster = str(skinCluster)
             strVertIndex = str(self._getComplexPointIndices(pointID)[0])
 
-            cmds.removeMultiInstance('%s.wl[%s]' % (strSkinCluster, strVertIndex))
+            cmds.removeMultiInstance('%s.wl[%s]' % (strSkinCluster, strVertIndex,))
             for influenceIndex in weightDict:
                 influence = self.influenceDict[skinCluster][influenceIndex]
                 arrayIndex = self.influenceArrayIndexDict[skinCluster][influence]
                 cmds.setAttr('%s.wl[%s].w[%s]' % (strSkinCluster, strVertIndex, str(arrayIndex)), weightDict[influenceIndex])
+
 
         else:
             skinPercentTupleList = []
             for influenceIndex in weightDict:
                 skinPercentTupleList.append((self.influenceDict[skinCluster][influenceIndex], weightDict[influenceIndex]))
 
-            cmds.skinPercent(skinCluster, self.pntDict[pointID], transformValue=skinPercentTupleList)
-
+            pymel.skinPercent(skinCluster, self.pntDict[pointID], transformValue=skinPercentTupleList )
 
 
 
@@ -604,21 +604,23 @@ class WeightBlenderInfo(object):
         return finalValues
 
     def _getSkinWeights(self, pointID, refresh=False):
+
         if pointID not in self.weightDict:
             node = self._getNode(pointID)
             skinCluster = self.skinClusterDict.get(node, None)
-            if not skinCluster or refresh:
-                skinCluster = findRelatedSkinCluster(self.pntDict[pointID])
+            if not skinCluster or refresh == True:
+                skinCluster =  findRelatedSkinCluster(self.pntDict[pointID])
                 self.skinClusterDict[node] = skinCluster
 
                 influences = self._getInfluences(skinCluster)
 
-            weights = cmds.skinPercent(skinCluster, self.pntDict[pointID], query=True, value=True)
+            weights = pymel.skinPercent(skinCluster, self.pntDict[pointID], query=True, value=True )
             self.weightDict[pointID] = {}
 
             for i, weight in enumerate(weights):
                 if weight:
                     self.weightDict[pointID][i] = weight
+
 
     def _getInfluences(self, skinCluster):
 
@@ -887,7 +889,7 @@ class WeightBlenderInfo(object):
                             connectedPoints.append(connectedPoint)
 
                     if not connectedPoints:
-                        cmds.warning('what the heck did you select dude?')
+                        pymel.error('what the heck did you select dude?')
 
                     # make listB contain all connected points, and move one into list A.
                     # we will move all connected points of that point to listA
@@ -904,7 +906,7 @@ class WeightBlenderInfo(object):
                     while faceStack:
                         iCheck += 1
                         if iCheck == 99:
-                            cmds.warning('icheck failed')
+                            pymel.error('icheck failed')
 
                         currentFace = faceStack.pop(0)
                         pointsOfCurrentFace = self.pointsOfFace[currentFace]
@@ -972,7 +974,7 @@ class WeightBlenderInfo(object):
                             unusedConnectedPoints.append(connectedPoint)
 
                     if not connectedPoints:
-                        cmds.error('what the heck did you select dude?')
+                        pymel.error('what the heck did you select dude?')
 
 
                     # make empty lists, we will vet points to see if they are appropriate before adding them
@@ -1099,33 +1101,36 @@ class WeightBlenderInfo(object):
         self.setTargetIconPositions()
 
     def createTargetIcons(self):
-        self.delete_target_icons()
+        self.deleteTargetIcons()
 
-        panel = getCurrentPanel()
-        isolateState = cmds.isolateSelect(panel, query=True, state=True)
+        panel = getCurrentPannel()
+        isolateState = pymel.isolateSelect(panel, query=True, state=True)
         radius = 1
 
-    if not self.targetIconsShaderA:    # make lambert for A spheres
-        lambertA = cmds.shadingNode('lambert', asShader=True, name='DELETE_ME__TEMP_rightLambert')
-        cmds.addAttr(lambertA, longName='createColoredVertexSpheres_tempType', dataType='string')
-        cmds.setAttr(lambertA + '.color', 0, 0, 0, type='double3')
-        cmds.setAttr(lambertA + '.transparency', 0.5, 0.5, 0.5, type='double3')
 
-        shadingEngineA = cmds.sets(renderable=True, noSurfaceShader=True, empty=True, name='DELETE_ME__TEMP_rightshadingEngine')
-        cmds.addAttr(shadingEngineA, longName='createColoredVertexSpheres_tempType', dataType='string')
-        cmds.connectAttr(lambertA + '.outColor', shadingEngineA + '.surfaceShader', force=True)
-        self.targetIconsShaderA = (lambertA, shadingEngineA)
 
-    if not self.targetIconsShaderB:    # make lambert for B spheres
-        lambertB = cmds.shadingNode('lambert', asShader=True, name='DELETE_ME__TEMP_rightLambert')
-        cmds.addAttr(lambertB, longName='createColoredVertexSpheres_tempType', dataType='string')
-        cmds.setAttr(lambertB + '.color', 0, 0, 0, type='double3')
-        cmds.setAttr(lambertB + '.transparency', 0.5, 0.5, 0.5, type='double3')
+        if not self.targetIconsShaderA:    # make lambert for A spheres
+            lambertA = pymel.shadingNode('lambert', asShader=True, name='DELETE_ME__TEMP_rightLambert')
+            lambertA.addAttr('createColoredVertexSpheres_tempType', dt='string')
+            lambertA.color.set( [0,0,0] )
+            lambertA.transparency.set( [0.5,0.5,0.5] )
 
-        shadingEngineB = cmds.sets(renderable=True, noSurfaceShader=True, empty=True, name='DELETE_ME__TEMP_rightshadingEngine')
-        cmds.addAttr(shadingEngineB, longName='createColoredVertexSpheres_tempType', dataType='string')
-        cmds.connectAttr(lambertB + '.outColor', shadingEngineB + '.surfaceShader', force=True)
-        self.targetIconsShaderB = (lambertB, shadingEngineB)
+            shadingEngineA = pymel.sets(renderable=True, noSurfaceShader=True, empty=True, name='DELETE_ME__TEMP_rightshadingEngine')
+            shadingEngineA.addAttr('createColoredVertexSpheres_tempType', dt='string')
+            pymel.connectAttr(lambertA+".outColor", shadingEngineA+".surfaceShader", force=True)
+            self.targetIconsShaderA = (lambertA, shadingEngineA)
+
+
+        if not self.targetIconsShaderB:    # make lambert for B spheres
+            lambertB = pymel.shadingNode('lambert', asShader=True, name='DELETE_ME__TEMP_rightLambert')
+            lambertB.addAttr('createColoredVertexSpheres_tempType', dt='string')
+            lambertB.color.set( [0,0,0] )
+            lambertB.transparency.set( [0.5,0.5,0.5] )
+
+            shadingEngineB = pymel.sets(renderable=True, noSurfaceShader=True, empty=True, name='DELETE_ME__TEMP_rightshadingEngine')
+            shadingEngineB.addAttr('createColoredVertexSpheres_tempType', dt='string')
+            pymel.connectAttr(lambertB+".outColor", shadingEngineB+".surfaceShader", force=True)
+            self.targetIconsShaderB = (lambertB, shadingEngineB)
 
 
 
@@ -1134,47 +1139,46 @@ class WeightBlenderInfo(object):
         # Create Sphere A
         for i, targetA in enumerate(self.iconPointsA):
             if i == 0:
-                targetIconA = cmds.sphere(name='DELETE_ME__vertexSpheres', radius=radius, sections=1, spans=2)[0]
-                cmds.setAttr(targetIconA + '.overrideEnabled', 1)
-                cmds.setAttr(targetIconA + '.drawOverride.overrideColor', 2)
+                targetIconA = pymel.sphere(name='DELETE_ME__vertexSpheres', radius=radius, sections=1, spans=2)[0]
+                targetIconA.overrideEnabled.set(1)
+                targetIconA.drawOverride.overrideColor.set(2)
 
-                cmds.addAttr(targetIconA, longName='createColoredVertexSpheres_tempType', dataType='string')
-                cmds.sets(shadingEngineA, forceElement=targetIconA)
+                targetIconA.addAttr('createColoredVertexSpheres_tempType', dt='string')
+                pymel.sets( shadingEngineA, forceElement=targetIconA, )
 
             else:
-                targetIconA = cmds.instance(self.targetIconsA[0], name='DELETE_ME__vertexSpheres')[0]
+                targetIconA = pymel.instance(self.targetIconsA[0], name='DELETE_ME__vertexSpheres',)[0]
+
 
             self.targetIconsA.append(targetIconA)
             if isolateState:
-                cmds.isolateSelect(panel, addDagObject=targetIconA)
+                pymel.isolateSelect(panel, addDagObject=targetIconA)
+
 
         # Create Sphere B
         for i, targetB in enumerate(self.iconPointsB):
             if i == 0:
-                targetIconB = cmds.sphere(name='DELETE_ME__vertexSpheres', radius=radius, sections=1, spans=2)[0]
-                cmds.setAttr(targetIconB + '.overrideEnabled', 1)
-                cmds.setAttr(targetIconB + '.drawOverride.overrideColor', 2)
+                targetIconB = pymel.sphere(name='DELETE_ME__vertexSpheres', radius=radius, sections=1, spans=2)[0]
+                targetIconB.overrideEnabled.set(1)
+                targetIconB.drawOverride.overrideColor.set(2)
 
-                cmds.addAttr(targetIconB, longName='createColoredVertexSpheres_tempType', dataType='string')
-                cmds.sets(shadingEngineB, forceElement=targetIconB)
+                targetIconB.addAttr('createColoredVertexSpheres_tempType', dt='string')
+                pymel.sets( shadingEngineB, forceElement=targetIconB, )
 
             else:
-                targetIconB = cmds.instance(self.targetIconsB[0], name='DELETE_ME__vertexSpheres')[0]
+                targetIconB = pymel.instance(self.targetIconsB[0], name='DELETE_ME__vertexSpheres',)[0]
 
             self.targetIconsB.append(targetIconB)
             if isolateState:
-                cmds.isolateSelect(panel, addDagObject=targetIconB)
+                pymel.isolateSelect(panel, addDagObject=targetIconB)
 
-        cmds.select(list(self.pointsInNodesDict.keys()))
+        pymel.select(list(self.pointsInNodesDict.keys()))
         for node in self.pointsInNodesDict:
-            print('highlight ' + str(node))
-            # Uncomment and adjust if you need to execute a MEL command:
-            # cmds.eval('hilite ' + node.name())
-
-        cmds.select(self.selection)
+            print('hilight ' + str(node))
+            #mel.eval( 'hilite '+node.name() )
+        pymel.select(self.selection)
 
         self.setTargetIconPositions()
-
 
 
     def setTargetIconScales(self, pointID, target_pointID, targetIcon):
@@ -1235,59 +1239,69 @@ class WeightBlenderInfo(object):
                     if not pointID in targetDictB[targetPointB]['blendingPoints']:
                         targetDictB[targetPointB]['blendingPoints'].append(pointID)
 
-
-
-
-    def set_target_icon_positions(self):
-        for targetID in self.targetDictA:
-            subDict = self.targetDictA[targetID]
-            cmds.xform(subDict['icon'], translation=subDict['position'], worldSpace=True)
+        for targetID in targetDictA:
+            subDict = targetDictA[targetID]
+            pymel.xform(subDict['icon'], translation=subDict['position'], worldSpace=True)
             self.setTargetIconScales(subDict['blendingPoints'], targetID, subDict['icon'])
 
-        for targetID in self.targetDictB:
-            subDict = self.targetDictB[targetID]
-            cmds.xform(subDict['icon'], translation=subDict['position'], worldSpace=True)
+        for targetID in targetDictB:
+            subDict = targetDictB[targetID]
+            pymel.xform(subDict['icon'], translation=subDict['position'], worldSpace=True)
             self.setTargetIconScales(subDict['blendingPoints'], targetID, subDict['icon'])
 
-    def delete_target_icons(self):
-        deleteMeObjects = cmds.ls('DELETE_ME__*')
+
+
+
+
+    def deleteTargetIcons(self):
+        deleteMeObjects = pymel.ls('DELETE_ME__*')
         deleteList = []
 
         for each in deleteMeObjects:
-            if cmds.attributeQuery('createColoredVertexSpheres_tempType', node=each, exists=True):
+            if pymel.attributeQuery('createColoredVertexSpheres_tempType', node=each, exists=True):
                 deleteList.append(each)
 
         if deleteList:
-            cmds.delete(deleteList)
+            pymel.delete(deleteList)
 
-    def _get_component_id(self, component):
-        """Returns a string used to identify a component in various informational dictionaries."""
-        componentString = str(component).split("[")[1]
+    def _getComponentID(self, component):
+        """Returns a string for used to identify a component in all
+        the various informational dictionarys
+        """
+        componentString  = str(component).split("[")[1]
         componentString = componentString.split("]")[0]
+        
+        # componentID = componentString.__hash__()
+
         componentID = int(componentString)
 
-        # add to relevant dictionary
-        if cmds.nodeType(component) == 'mesh':
+
+        # add to relevent dictionary
+        if component.__class__.__name__ == 'MeshEdge':
             self.edgeDict[componentID] = component
-        elif cmds.nodeType(component) == 'meshFace':
+
+        elif component.__class__.__name__ == 'MeshFace':
             self.faceDict[componentID] = component
+
         else:
             self.pntDict[componentID] = component
 
         return componentID
 
-    def _get_world_space_position(self, pointID, refresh=False):
+
+    def _getWorldSpacePosition(self, pointID, refresh=False):
         if not refresh:
             if pointID in self.pnt_worldSpacePostionDict:
                 return self.pnt_worldSpacePostionDict[pointID]
 
         point = self.pntDict[pointID]
-        worldPosition = cmds.xform(point, query=True, translation=True, worldSpace=True)
+        worldPosition = pymel.xform(point, query=True, translation=True, worldSpace=True)
         self.pnt_worldSpacePostionDict[pointID] = worldPosition
 
         return worldPosition
 
-    def _get_camera_space_position(self, pointID, refresh=False):
+
+    def _getCameraSpacePosition(self, pointID, refresh=False):
         if not refresh:
             if pointID in self.pnt_cameraSpacePostionDict:
                 return self.pnt_cameraSpacePostionDict[pointID]
@@ -1296,80 +1310,106 @@ class WeightBlenderInfo(object):
             if pointID in self.pnt_worldSpacePostionDict:
                 pointWorldSpace = self.pnt_worldSpacePostionDict[pointID]
             else:
-                pointWorldSpace = self._get_world_space_position(pointID)
+                pointWorldSpace = self._getWorldSpacePosition(pointID)
 
         camera = self.currentCamera
-        # Get point in camera space
-        aPoint = om.MPoint(pointWorldSpace[0], pointWorldSpace[1], pointWorldSpace[2])
+
+
+        # get point in camera space
+        aPoint = OpenMaya.MPoint(pointWorldSpace[0], pointWorldSpace[1], pointWorldSpace[2])
         result = aPoint * self.currentCameraMMatrix
 
         self.pnt_cameraSpacePostionDict[pointID] = [result.x, result.y, result.z]
         return self.pnt_cameraSpacePostionDict[pointID]
 
-    def _get_node(self, pointID):
+    def _getNode(self, pointID):
         if pointID not in self.nodeOfpointDict:
             point = self.pntDict[pointID]
-            node = cmds.listRelatives(point, parent=True)[0] if cmds.listRelatives(point, parent=True) else None
+            node = point.node()
             self.nodeOfpointDict[pointID] = node
 
             # type dict
             if pointID not in self.pnt_typeDict:
-                componentType = cmds.nodeType(node)
+                componentType = point.nodeType()
                 self.pnt_typeDict[pointID] = componentType
 
         return self.nodeOfpointDict[pointID]
 
-    def _get_complex_point_indices(self, pointID):
-        """Return a list of integers representing the index of the component."""
+
+    def _getComplexPointIndices(self, pointID):
+        """Return a list of intigers representing the index of the component."""
         if pointID not in self.pnt_complexIndexDict:
             componentString = str(self.pntDict[pointID])
             startOfStringIndex = componentString.find('[')
             indexStrings = componentString[startOfStringIndex+1:-1].split('][')
-            indices = [int(indexString) for indexString in indexStrings]
+            indices = []
+            for indexString in indexStrings:
+                index = int(indexString)
+                indices.append(index)
 
             self.pnt_complexIndexDict[pointID] = indices
 
         return self.pnt_complexIndexDict[pointID]
 
-    def _get_connected_points(self, pointID, inclusionList=[], exclusionList=[]):
-        # Start empty list if none exists
+    def _getConnectedPoints(self, pointID, inclusionList=[], exclusionList=[]):
+
+        # start empty list if none exists
         if pointID not in self.connectedPointsDict:
             self.connectedPointsDict[pointID] = []
 
         if self.pnt_typeDict[pointID] == 'mesh':
+
             connectedVertIDs = self.connectedPointsDict[pointID]
 
-            # Get connected vertIDs, if not already stored in dict
+            # get connected vertIDs, if not already stored in dict
             if not connectedVertIDs:
                 vert = self.pntDict[pointID]
-                connectedVerts = cmds.polyListComponentConversion(vert, toVertex=True)
+                connectedVerts = vert.connectedVertices()
                 for connectedVert in connectedVerts:
-                    connectedVertID = self._get_component_id(connectedVert)
+                    connectedVertID = self._getComponentID(connectedVert)
                     connectedVertIDs.append(connectedVertID)
 
-                    # Populate info dicts
+                    #populate info dicts
                     if connectedVertID not in self.pntDict:
                         self.pntDict[connectedVertID] = connectedVert
 
                         if connectedVertID not in self.connectedPointsDict[pointID]:
                             self.connectedPointsDict[pointID].append(connectedVertID)
 
-            returnList = [connectedVertID for connectedVertID in connectedVertIDs if connectedVertID not in exclusionList and (not inclusionList or connectedVertID in inclusionList)]
+
+            returnList = []
+            for connectedVertID in connectedVertIDs:
+
+                # if it is not included/excluded, add it to list
+                if connectedVertID not in exclusionList:
+                    if not inclusionList or connectedVertID in inclusionList:
+                        returnList.append(connectedVertID)
 
             return returnList
 
-        # Handle other component types as needed
+        elif self.pnt_typeDict[pointID] == 'nurbsSurface':
+            pass
 
-    def _order_connected_verts_clockwise(self, pointID):
+        elif self.pnt_typeDict[pointID] == 'nurbsCurve':
+            pass
+
+        elif self.pnt_typeDict[pointID] == 'bezierCurve':
+            pass
+
+        elif self.pnt_typeDict[pointID] == 'lattice':
+            pass
+
+    def _orderConnectedVertsClockwise(self, pointID):
         orderedVerts = []
         connectedPoints = self.connectedPointsDict[pointID]
         unOrderedVerts = list(connectedPoints)
 
-        # Find point that is farthest to camera left
+        # find point that is fathest to camera left
         leftMostPoint = connectedPoints[0]
         for connectedPointID in connectedPoints[1:]:
-            leftMostX = self._get_camera_space_position(leftMostPoint)[0]
-            connectedPointX = self._get_camera_space_position(connectedPointID)[0]
+            #leftMostX = self.pnt_cameraSpacePostionDict[leftMostPoint]
+            leftMostX = self._getCameraSpacePosition(leftMostPoint)
+            connectedPointX = self._getCameraSpacePosition(connectedPointID)
 
             if leftMostX > connectedPointX:
                 leftMostPoint = connectedPointID
@@ -1384,29 +1424,34 @@ class WeightBlenderInfo(object):
             count += 1
 
             if direction == 1:
-                faceConnectedPoints = self._get_points_connected_by_face(orderedVerts[-1], pointInclusionList=connectedPoints, pointExclusionList=orderedVerts)
+                faceConnectedPoints = self._getPointsConnectedByFace(orderedVerts[-1], pointInclusionList=connectedPoints, pointExclusionList=orderedVerts)
 
                 if not faceConnectedPoints:
                     direction = -1
+
                 else:
                     nextPoint = None
                     for faceConnectedPoint in faceConnectedPoints:
                         if faceConnectedPoint != pointID:
                             if not nextPoint:
                                 nextPoint = faceConnectedPoint
+
                             else:
-                                if self._get_camera_space_position(nextPoint)[1] < self._get_camera_space_position(faceConnectedPoint)[1]:
+                                if self._getCameraSpacePosition(nextPoint)[1] < self._getCameraSpacePosition(faceConnectedPoint)[1]:
+                                #if self.pnt_cameraSpacePostionDict[nextPoint][1] < self.pnt_cameraSpacePostionDict[faceConnectedPoint][1]:
                                     nextPoint = faceConnectedPoint
 
                     orderedVerts.append(nextPoint)
                     unOrderedVerts.remove(nextPoint)
 
-            else:   # Direction is reversed
-                faceConnectedPoints = self._get_points_connected_by_face(orderedVerts[0], pointInclusionList=connectedPoints, pointExclusionList=orderedVerts)
 
-                if not faceConnectedPoints:
+            else:   # direction is reversed
+                faceConnectedPoints = self._getPointsConnectedByFace(orderedVerts[0], pointInclusionList=connectedPoints, pointExclusionList=orderedVerts)
+
+                if not faceConnectedPoints: # well, just grab a random left over then :S
                     nextPoint = unOrderedVerts.pop()
                     orderedVerts.append(nextPoint)
+
                 else:
                     nextPoint = None
                     for faceConnectedPoint in faceConnectedPoints:
@@ -1417,84 +1462,81 @@ class WeightBlenderInfo(object):
                     orderedVerts.append(nextPoint)
                     unOrderedVerts.remove(nextPoint)
 
-            ## get more topology info
-            ## populate 2 dictionarys, one with connected faces as the key, and the points of those faces as the
-            ## value, and the second dictionary having connected verts as keys, and faces connected to those verts as values
-            #facesOfPointsDict = {pointID:[]}
-            #for connectedPointID in connectedPoints:
-                #facesOfPointsDict[connectedPointID] = []
+        ## get more topology info
+        ## populate 2 dictionarys, one with connected faces as the key, and the points of those faces as the
+        ## value, and the second dictionary having connected verts as keys, and faces connected to those verts as values
+        #facesOfPointsDict = {pointID:[]}
+        #for connectedPointID in connectedPoints:
+            #facesOfPointsDict[connectedPointID] = []
 
-            #pointsOfFacesDict = {}
-            #connectedFaces = self.pntDict[pointID].connectedFaces()
-            #for face in connectedFaces:
-                #faceID = self._getComponentID(face)
-                #faceVertIndices = face.getVertices()
-                #faceVertsList = []
-                #for faceVertIndex in faceVertIndices:
-                    #faceVert = self.pntDict[pointID].node().vtx[faceVertIndex]
-                    #faceVertID = self._getComponentID(faceVert)
-                    #if faceVertID in connectedPoints:
-                        #self.pntDict[faceVertID] = faceVert
-                        #faceVertsList.append(faceVertID)
+        #pointsOfFacesDict = {}
+        #connectedFaces = self.pntDict[pointID].connectedFaces()
+        #for face in connectedFaces:
+            #faceID = self._getComponentID(face)
+            #faceVertIndices = face.getVertices()
+            #faceVertsList = []
+            #for faceVertIndex in faceVertIndices:
+                #faceVert = self.pntDict[pointID].node().vtx[faceVertIndex]
+                #faceVertID = self._getComponentID(faceVert)
+                #if faceVertID in connectedPoints:
+                    #self.pntDict[faceVertID] = faceVert
+                    #faceVertsList.append(faceVertID)
 
-                        #if faceID not in facesOfPointsDict[faceVertID]:
-                            #facesOfPointsDict[faceVertID].append(faceID)
+                    #if faceID not in facesOfPointsDict[faceVertID]:
+                        #facesOfPointsDict[faceVertID].append(faceID)
 
-                #pointsOfFacesDict[faceID] = faceVertsList
+            #pointsOfFacesDict[faceID] = faceVertsList
 
-            #previousLen = 0
-            #searchInOppositeDirection = False
+        #previousLen = 0
+        #searchInOppositeDirection = False
 
-            #while len(orderedVerts) != len(connectedPoints):
-                ## infinite loop check
+        #while len(orderedVerts) != len(connectedPoints):
+            ## infinite loop check
 
-                #if len(orderedVerts) == previousLen:
-                    #pymel.error('unable to order connected verts')
-                #previousLen = len(orderedVerts)
+            #if len(orderedVerts) == previousLen:
+                #pymel.error('unable to order connected verts')
+            #previousLen = len(orderedVerts)
+
+            #if searchInOppositeDirection:
+                #previoiusVertID = orderedVerts[0]
+            #else:
+                #previoiusVertID = orderedVerts[-1]
+
+            #connectedFaceIDs = facesOfPointsDict[previoiusVertID]
+
+            #if not searchInOppositeDirection:
+                #unorderedVerts = []
+                #for connectedFaceID in connectedFaceIDs:
+                    #for faceVertID in pointsOfFacesDict[connectedFaceID]:
+                        #if faceVertID != pointID and faceVertID not in orderedVerts:
+                            #unorderedVerts.append(faceVertID)
+
+            #if not unorderedVerts:
+                #searchInOppositeDirection = True
+
+            #else:
+                #OOOOOOO = 'unorderedVerts';  print '%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO))))
+                ## If we have 2 unordered verts, then we are solving the first point, and must choose a
+                ## direction to solve, preferably clockwise. Find the uppermost of the 2 vertex in camera Y
+                ## and remove the other
+                #if len(unorderedVerts) == 2:
+                    #vertA_camY = self._getCameraSpacePosition(unorderedVerts[0])
+                    #vertB_camY = self._getCameraSpacePosition(unorderedVerts[1])
+
+                    #if vertA_camY < vertB_camY:
+                        #unorderedVerts.remove(unorderedVerts[1])
+                    #else:
+                        #unorderedVerts.remove(unorderedVerts[0])
 
                 #if searchInOppositeDirection:
-                    #previoiusVertID = orderedVerts[0]
+                    #orderedVerts.insert(0, unorderedVerts[0])
                 #else:
-                    #previoiusVertID = orderedVerts[-1]
+                    #orderedVerts.append(unorderedVerts[0])
 
-                #connectedFaceIDs = facesOfPointsDict[previoiusVertID]
-
-                #if not searchInOppositeDirection:
-                    #unorderedVerts = []
-                    #for connectedFaceID in connectedFaceIDs:
-                        #for faceVertID in pointsOfFacesDict[connectedFaceID]:
-                            #if faceVertID != pointID and faceVertID not in orderedVerts:
-                                #unorderedVerts.append(faceVertID)
-
-                #if not unorderedVerts:
-                    #searchInOppositeDirection = True
-
-                #else:
-                    #OOOOOOO = 'unorderedVerts';  print '%s = %s %s'%(str(OOOOOOO),str(eval(OOOOOOO)),str(type(eval(OOOOOOO))))
-                    ## If we have 2 unordered verts, then we are solving the first point, and must choose a
-                    ## direction to solve, preferably clockwise. Find the uppermost of the 2 vertex in camera Y
-                    ## and remove the other
-                    #if len(unorderedVerts) == 2:
-                        #vertA_camY = self._getCameraSpacePosition(unorderedVerts[0])
-                        #vertB_camY = self._getCameraSpacePosition(unorderedVerts[1])
-
-                        #if vertA_camY < vertB_camY:
-                            #unorderedVerts.remove(unorderedVerts[1])
-                        #else:
-                            #unorderedVerts.remove(unorderedVerts[0])
-
-                    #if searchInOppositeDirection:
-                        #orderedVerts.insert(0, unorderedVerts[0])
-                    #else:
-                        #orderedVerts.append(unorderedVerts[0])
-
-            return orderedVerts
+        return orderedVerts
 
 
 # MAIN FUNCTIONS ----------------------------------------------------------------------------------------------------------------
-global weightBlenderInfo
-weightBlenderInfo = None
-
 weightBlenderInfo = None
 def start(points=None):
     global weightBlenderInfo
@@ -1506,24 +1548,21 @@ def start(points=None):
     cmds.select(selection)
 
 def change(value=0.0):
-
     global weightBlenderInfo
-    if not weightBlenderInfo:
-        print("\n  GOT IT \n")
-        weightBlenderInfo = WeightBlenderInfo()
-
-    print(weightBlenderInfo)
-    # weightBlenderInfo.blend(value)
+    # weightBlenderInfo = WeightBlenderInfo()
+    weightBlenderInfo.blend(value)
 
 def finish():
     global weightBlenderInfo
     print('finished')
 
     if weightBlenderInfo:
-        weightBlenderInfo.delete_target_icons()
+
+        weightBlenderInfo.deleteTargetIcons()
 
 def cancel():
     global weightBlenderInfo
+
     finish()
     pass
 
@@ -1535,28 +1574,33 @@ def previous():
     global weightBlenderInfo
     weightBlenderInfo.previousSequence()
 
+
 def blendWithBothNeighbors():
     global weightBlenderInfo
-    selection = cmds.ls(selection=True)
+    selection = pymel.ls(selection=True)
 
     weightBlenderInfo = WeightBlenderInfo()
     weightBlenderInfo.start(createTargetIcons=False)
 
     weightBlenderInfo.averageWithBothNeighbors()
 
-    cmds.select(selection)
+
+    pymel.select(selection)
 
     print('hiyea')
 
+
 # MISC
-def getCurrentPanel():
+def getCurrentPannel():
     try:
-        panel = cmds.getPanel(underPointer=True)
+        panel = pymel.getPanel(underPointer=True)
         panel = panel.split('|')[-1]
         return panel
 
     except:
+        printError()
         print('## Failed to find current panel, make sure you have a view port with focus')
+
 
 # UNDOS ----------------------------------------------------------------------------------------------------------------
 
@@ -1678,87 +1722,104 @@ def getCurrentPanel():
         #pymel.warning('weightBlender has nothing left to undo')
 
 # ----------------------------------------------------------------------------------------------------------------
+
 def getCurrentCamera():
-    """Returns the current camera with focus"""
-    panelUnderPointer = cmds.getPanel(underPointer=True)
+    """Returns the current cammera with focus"""
+    panelUnderPointer = pymel.getPanel( underPointer=True )
     camera = 'persp'
     if panelUnderPointer:
         if 'modelPanel' in panelUnderPointer:
-            currentPanel = cmds.getPanel(withFocus=True)
+            currentPanel = pymel.getPanel(withFocus=True)
             currentPanel = currentPanel.split('|')[-1]
-            camera = cmds.modelPanel(currentPanel, query=True, camera=True)
+            camera = pymel.modelPanel(currentPanel, query=True, camera=True)
 
     return camera
 
+
 def getMMatrix(transform, matrixType='worldMatrix'):
     """Returns transform as MMatrix"""
-    matrix = cmds.getAttr(transform + "." + matrixType)
+    matrix = pymel.getAttr(transform+".%s" % matrixType)
+    matrixList = []
+    for row in matrix:
+        for n in row:
+            matrixList.append(n)
 
-    print("\n " + str(matrix) + " \n")
-
-    # matrixList = [n for row in matrix for n in row]
-
-    mMatrix = om.MMatrix()
-    om.MScriptUtil.createMatrixFromList(matrix, mMatrix)
+    mMatrix = OpenMaya.MMatrix()
+    OpenMaya.MScriptUtil.createMatrixFromList(matrixList, mMatrix)
     return mMatrix
 
+
+
+
 def normalizeVector(vector):
-    return [vector[i] / magnitudeOfVector(vector) for i in range(len(vector))]
+    return [ vector[i]/magnitudeOfVector(vector)  for i in range(len(vector)) ]
+
 
 def magnitudeOfVector(vector):
-    return math.sqrt(sum(vector[i] * vector[i] for i in range(len(vector))))
+    return math.sqrt( sum( vector[i]*vector[i] for i in range(len(vector)) ) )
+
+
+
 
 def findRelatedSkinCluster(*args, **kwArgs):
-    '''Return the skinCluster for the input, which will be a user selection.
+    '''return the skinCluster for the input, which will be a user selection
 
     kwArgs:
-        silent - True/False if True, then no error will occur if no skinCluster is found
+        silent - True/False if True, then no error will occure if no skinCluster is found
     '''
+
     silent = kwArgs.get('silent', True)
-    log = 0  # Log debug messages or not
+
+    log = 0 #log debug messages or not
 
     if args:
         node = args[0]
     else:
-        node = kwArgs.get('input', cmds.ls(selection=True)[0])
+        if 'input' in kwArgs:
+            node = kwArgs['input']
+        else: #then use selection
+            node = pymel.ls(selection=True)[0]
 
-    node = cmds.ls(node, long=True)[0]
+    node = node.node()
     transform = None
     skinCluster = None
 
-    if log: print("input", node)
+    if log:print("input", input)
 
-    if cmds.nodeType(node) == 'transform':
+
+    if 'transform' in node.nodeType(inherited=True):
         transform = node
 
-    if cmds.objectType(node) == 'skinCluster':
+    if pymel.objectType(node) == 'skinCluster':
         return node
 
-    elif 'deformableShape' in cmds.nodeType(node, inherited=True):
-        transform = cmds.listRelatives(node, parent=True)[0]
+    elif 'deformableShape' in pymel.nodeType(node, inherited=True):
+        transform = pymel.listRelatives(node, parent=True)
+
 
     if not skinCluster and transform:
-        shapes = cmds.listRelatives(transform, shapes=True)
+        shapes = pymel.listRelatives(transform, shapes=True)
         if shapes:
-            if 'deformableShape' in cmds.nodeType(shapes[0], inherited=True):
-                history = cmds.listHistory(transform)
+            if 'deformableShape' in pymel.nodeType(shapes[0], inherited=True):
+                history = pymel.listHistory(transform)
+
                 if history:
                     for each in history:
-                        if cmds.nodeType(each) == 'skinCluster':
-                            shapes = cmds.listRelatives(transform, noIntermediate=True, shapes=True)
+                        if pymel.nodeType(each) == 'skinCluster':
+                            shapes = pymel.listRelatives(transform, noIntermediate=True, shapes=True)
                             if shapes:
-                                geos = cmds.skinCluster(each, query=True, geometry=True)
+                                geos = pymel.skinCluster(each, query=True, geometry=True)
                                 for geo in geos:
                                     if geo in shapes:
                                         skinCluster = each
                                         break
-                                if skinCluster:
-                                    break
+                                        break
 
                 if not skinCluster:
                     if history:
                         for each in history:
-                            if cmds.nodeType(each) == 'skinCluster':
+                            if pymel.nodeType(each) == 'skinCluster':
                                 skinCluster = each
                                 break
     return skinCluster
+
