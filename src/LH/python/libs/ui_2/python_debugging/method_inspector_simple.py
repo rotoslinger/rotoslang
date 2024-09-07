@@ -3,6 +3,8 @@ from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 import inspect
+import io
+from pydoc import render_doc, plaintext
 
 # Utility function to get Maya's main window
 def get_maya_main_window():
@@ -83,34 +85,49 @@ class MethodInspectorUI(QtWidgets.QDialog):
             doc = inspect.getdoc(method)
             help_text = self.get_help_text(method)
 
-
-
-            '''
-            help_text = "{0}<b><u>Documentation:</u></b> \n {1} \n \n <b><u>Help:</u></b> \n {2}".format(
-                "", help_text, "None"
-            ) if doc else "{0}<b><u>Documentation:</u></b> \n {1} \n \n <b><u>Help:</u></b> \n {2}".format(
-            '''
-
-
-
-            doc_text = f"<b>Documentation:</b><br>{doc if doc else 'None'}"
-            help_text = f"<b>Help:</b><br>{help_text if help_text else 'None'}"
-            self.help_text_field.setHtml(f"{doc_text}<br><br>{help_text}")
+            doc_text = "########## Documentation ###########\n\n{0}\n".format(doc if doc else 'None')
+            help_text = "############### Help ###############\n\n{0}".format(help_text if help_text else 'None')
+            self.help_text_field.setText("{0}\n\n{1}".format(doc_text, help_text))
 
             # Copy selected text if checkbox is checked
             if self.copy_checkbox.isChecked():
                 clipboard = QtWidgets.QApplication.clipboard()
-                clipboard.setText("." + method_name)
+                clipboard.setText(".{0}".format(method_name))
         except:
-            self.help_text_field.setHtml("Error retrieving method help.")
+            self.help_text_field.setText("Error retrieving method help.")
 
     def get_help_text(self, obj):
         """Get the help text for the given object."""
         try:
-            # This is a placeholder; adjust based on your needs for extracting help.
-            if obj:
-                return str(obj)
-            return ""
+            # Create a string buffer
+            buffer = io.StringIO()
+
+            # Save the original stdout and stderr
+            original_stdout = sys.stdout
+            original_stderr = sys.stderr
+
+            try:
+                # Redirect stdout and stderr to the buffer
+                sys.stdout = buffer
+                sys.stderr = buffer
+
+                # Call help() on the object
+                help(obj)
+            except Exception as e:
+                # Handle any exceptions that occur
+                return "Error capturing help: {0}".format(str(e))
+            finally:
+                # Restore the original stdout and stderr
+                sys.stdout = original_stdout
+                sys.stderr = original_stderr
+
+                # Get the string from the buffer
+                help_text = buffer.getvalue()
+
+                # Close the buffer
+                buffer.close()
+
+            return help_text
         except:
             return ""
 
@@ -125,4 +142,4 @@ def show_method_inspector_ui(obj=None):
     method_inspector_ui.show()
 
 # Call function to show the UI
-show_method_inspector_ui()
+show_method_inspector_ui("str")

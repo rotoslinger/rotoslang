@@ -72,3 +72,9 @@ def equal_spacing_edges():
         raise e  # Re-raise the error for debugging
 
     cmds.undoInfo(closeChunk=True)  # Close undo chunk
+
+
+equal_spacing_edges()
+
+
+
