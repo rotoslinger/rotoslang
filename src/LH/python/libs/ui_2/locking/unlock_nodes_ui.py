@@ -16,11 +16,17 @@ def get_maya_main_window():
 def get_scene_info():
     scene_name = cmds.file(q=True, sceneName=True, shortName=True).split('.')[0]
     scene_dir = cmds.file(q=True, sceneName=True).rsplit('/', 1)[0]
+    print(scene_dir)
+    print(scene_name)
     return scene_name, scene_dir
 
 # Function to select a directory
 def select_directory(directory_field):
-    selected_dir = cmds.fileDialog2(fm=3, ds=2)[0]  # Directory selection mode
+    multipleFilters = "Maya Files (*.ma *.mb);;Maya ASCII(*.ma);;Maya Binary(*.mb);;Json Files(*.json)"
+# openDailog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+    multipleFilters = "JSON Files (*.json);;Text Files (*.txt);;All Files (*.*)"
+
+    selected_dir = cmds.fileDialog2(fm=0, ds=2, fileFilter=multipleFilters)[0]  # Directory selection mode
     directory_field.setText(selected_dir)
 
 # Function to save lock settings
@@ -45,6 +51,7 @@ def load_lock_settings(directory, scene_name):
     if os.path.exists(settings_path):
         with open(settings_path, 'r') as f:
             return json.load(f)
+
     return None
 
 # Function to update user_settings based on scene
@@ -52,28 +59,26 @@ def gather_scene_settings():
     locked_nodes, templated_nodes, blackboxed_nodes = [], [], []
     
     # Get selection list and filter valid DAG paths
-    selection_list = om2.MGlobal.getSelectionListByName("*")
-    for i in range(selection_list.length()):
-        try:
-            dag_path = selection_list.getDagPath(i)
-            if dag_path.isValid():
-                node = dag_path.fullPathName()
-                
-                # Locked nodes
-                lock_state = cmds.lockNode(node, query=True, lock=True)
-                if lock_state and lock_state[0]:
-                    locked_nodes.append(node)
-                
-                # Templated nodes
-                if cmds.attributeQuery('template', node=node, exists=True) and cmds.getAttr("{}.template".format(node)):
-                    templated_nodes.append(node)
-                
-                # Blackboxed nodes
-                if cmds.attributeQuery('blackBox', node=node, exists=True) and cmds.getAttr("{}.blackBox".format(node)):
-                    blackboxed_nodes.append(node)
-        except:
-            # Log or handle exception for invalid or unprocessable items
-            print(f"Skipping invalid item at index {i}")
+    # selection_list = om2.MGlobal.getSelectionListByName("*")
+    # print(type(selection_list))
+    # Get all objects in the scene
+    all_objects = cmds.ls(dag=True, long=True)  # Get all DAG objects, including shapes
+
+    # Loop through all objects
+    for obj in all_objects:
+        # Check if the object is locked
+        if cmds.lockNode(obj, q=True, lock=True)[0]:
+            locked_nodes.append(obj)
+        
+        # Check if the object is templated
+        if cmds.attributeQuery('template', node=obj, exists=True):
+            if cmds.getAttr(obj + ".template") == 1:
+                templated_nodes.append(obj)
+        
+        # Check if the object is blackboxed
+        if cmds.attributeQuery('blackBox', node=obj, exists=True):
+            if cmds.getAttr(obj + ".blackBox") == 1:
+                blackboxed_nodes.append(obj)
     
     return {
         'locked_nodes': locked_nodes if locked_nodes else ["none"],
@@ -86,7 +91,7 @@ def unlock_nodes(lock_cb, template_cb, blackbox_cb, directory_field):
     scene_name, scene_dir = get_scene_info()
     directory = directory_field.text() or scene_dir
     settings = gather_scene_settings()
-    
+    print(settings)
     # Save current settings as a backup before unlocking
     save_lock_settings(settings, directory, scene_name)
     
@@ -107,25 +112,24 @@ def unlock_nodes(lock_cb, template_cb, blackbox_cb, directory_field):
                 cmds.setAttr("{}.blackBox".format(node), 0)
 
 # Function to lock/template/blackbox nodes based on checkbox state
-def lock_nodes(lock_cb, template_cb, blackbox_cb):
+def lock_nodes():
     settings = gather_scene_settings()
-    
-    if lock_cb.isChecked():
-        for node in settings['locked_nodes']:
-            if node != "none":
-                cmds.lockNode(node, lock=True)
-    
-    if template_cb.isChecked():
-        for node in settings['templated_nodes']:
-            if node != "none":
-                cmds.setAttr("{}.template".format(node), 1)
-    
-    if blackbox_cb.isChecked():
-        for node in settings['blackboxed_nodes']:
-            if node != "none":
-                cmds.setAttr("{}.blackBox".format(node), 1)
+    for node in settings['locked_nodes']:
+        if node != "none":
+            cmds.lockNode(node, lock=True)
+    print("Finished Locking")
 
-# PySide2 UI class for the tool
+    for node in settings['templated_nodes']:
+        if node != "none":
+            cmds.setAttr("{}.template".format(node), 1)
+    print("Finished Templating")
+
+    for node in settings['blackboxed_nodes']:
+        if node != "none":
+            cmds.setAttr("{}.blackBox".format(node), 1)
+    print("Finished Blackboxing")
+
+# UI
 class LockUnlockToolUI(QtWidgets.QDialog):
     def __init__(self, parent=get_maya_main_window()):
         super(LockUnlockToolUI, self).__init__(parent)
@@ -181,7 +185,7 @@ class LockUnlockToolUI(QtWidgets.QDialog):
         
         lock_button = QtWidgets.QPushButton("Lock")
         lock_button.setToolTip("Lock the nodes based on the selected options.")
-        lock_button.clicked.connect(lambda: lock_nodes(self.lock_cb, self.template_cb, self.blackbox_cb))
+        lock_button.clicked.connect(lambda: lock_nodes())
         main_layout.addWidget(lock_button)
 
         # Load existing lock settings from the scene directory
