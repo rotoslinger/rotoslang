@@ -69,7 +69,13 @@ class MethodInspectorUI(QtWidgets.QDialog):
                 return
 
             methods = [method for method in dir(obj) if callable(getattr(obj, method))]
+            # vars = [var for var in vars(obj)]
+            self.methods_list_widget.addItems(["############# CALLABLES #############"])
+
             self.methods_list_widget.addItems(sorted(methods))
+            self.methods_list_widget.addItems(["\n","############### VARS ###############",])
+
+            self.methods_list_widget.addItems(vars(obj))
         except:
             pass
 
@@ -84,10 +90,11 @@ class MethodInspectorUI(QtWidgets.QDialog):
             method = getattr(obj, method_name, None)
             doc = inspect.getdoc(method)
             help_text = self.get_help_text(method)
-
-            doc_text = "########## Documentation ###########\n\n{0}\n".format(doc if doc else 'None')
-            help_text = "############### Help ###############\n\n{0}".format(help_text if help_text else 'None')
-            self.help_text_field.setText("{0}\n\n{1}".format(doc_text, help_text))
+            obj_type = type(method)
+            type_text = "############### Type ###############\n##################################\n{0}".format(obj_type)
+            doc_text = "\n########## Documentation ###########\n##################################\n{0}".format(doc if doc else 'None')
+            help_text = "\n############### Help ###############\n##################################\n{0}".format(help_text if help_text else 'None')
+            self.help_text_field.setText("{0}\n\n{1}\n\n{2}".format(type_text, doc_text, help_text))
 
             # Copy selected text if checkbox is checked
             if self.copy_checkbox.isChecked():
