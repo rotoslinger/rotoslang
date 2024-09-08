@@ -5,7 +5,8 @@ import maya.OpenMayaUI as omui
 import inspect
 import io
 import importlib
-# Utility function to get Maya's main window
+
+# Get Maya's main window
 def get_maya_main_window():
     main_window_ptr = omui.MQtUtil.mainWindow()
     return wrapInstance(int(main_window_ptr), QtWidgets.QWidget)
@@ -30,11 +31,11 @@ class ObjectInspectorUI(QtWidgets.QDialog):
         obj = class_cleanup(obj=obj, is_lib=is_lib)
 
         # Text Field
-
         self.obj_text_field = QtWidgets.QLineEdit(self)
         self.obj_text_field.setPlaceholderText("Enter a python object")
         self.obj_text_field.textChanged.connect(self.update_method_list)
         main_layout.addWidget(self.obj_text_field)
+
         # Checkbox for Copy Selected Text
         self.copy_checkbox = QtWidgets.QCheckBox("Copy Selected Text ---> prefixes with '.' for easy object traversal", self)
         self.copy_checkbox.setChecked(True)  # Default to checked
@@ -187,18 +188,9 @@ def class_cleanup(obj, is_lib = False):
         obj = obj.split("'")[1]
     if "'" in obj:
         obj = obj.split("'")[0]
-    # if "(" in obj:
-    #     obj = obj.split("(")[0]
-    # if "(" in obj:
-    #     obj = obj.split(">")[0]
-    # if "<" in obj:
-    #     obj = obj.split("<")[1]
     if is_lib and "." in obj:
         obj = obj.split(".")[1]
     return obj
-
-
-
 
 # Create and show the UI
 def ui_inspect(obj=None):
