@@ -2,6 +2,12 @@ import sys
 from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
+import importlib
+from ui_2.python_debugging import obj_inspect
+importlib.reload(obj_inspect)
+
+ui_inspect = obj_inspect.ui_inspect
+
 
 # Utility function to get Maya's main window
 def get_maya_main_window():
@@ -43,7 +49,8 @@ class SimpleUI(QtWidgets.QDialog):
         # Buttons
         self.button1 = QtWidgets.QPushButton("Lock")
         self.button2 = QtWidgets.QPushButton("Unlock")
-        
+        ui_inspect(QtWidgets.QPushButton)
+
         # Add buttons to button layout
         button_layout.addWidget(self.button1)
         button_layout.addWidget(self.button2)

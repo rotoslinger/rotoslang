@@ -1,0 +1,11 @@
+2024-09-07 19:24:39 : Begin installation
+2024-09-07 19:24:39 : Show EULA
+2024-09-07 19:24:50 : Setting automatic paths:
+2024-09-07 19:24:50 : Using the default user preferences path to install the module.
+2024-09-07 19:24:50 : C:\Users\harri\Documents\maya\modules
+2024-09-07 19:24:50 : C:\Users\harri\Documents\maya\modules
+2024-09-07 19:25:22 : Installing files to: C:\Users\harri\Documents\maya\modules
+2024-09-07 19:25:22 : Copying: C:\Users\harri\Documents\Github\rotoslang\weightDriver\weightDriver\modules\weightDriver to: C:\Users\harri\Documents\maya\modules\weightDriver
+2024-09-07 19:25:22 : Creating module file in: C:\Users\harri\Documents\maya\modules
+2024-09-07 19:25:22 : Writing module file: C:\Users\harri\Documents\maya\modules\weightDriver.mod
+2024-09-07 19:25:22 : Installation complete.

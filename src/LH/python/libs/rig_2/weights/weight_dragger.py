@@ -2,7 +2,7 @@ from maya import cmds
 import maya.OpenMaya as OpenMaya
 import maya.mel as mel
 from rig_2.weights import self_contained_katools as ka_tools
-
+import importlib
 importlib.reload(ka_tools)
 
 

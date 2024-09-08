@@ -4,31 +4,39 @@ from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 import inspect
 import io
-from pydoc import render_doc, plaintext
-
+import importlib
 # Utility function to get Maya's main window
 def get_maya_main_window():
     main_window_ptr = omui.MQtUtil.mainWindow()
     return wrapInstance(int(main_window_ptr), QtWidgets.QWidget)
 
-class MethodInspectorUI(QtWidgets.QDialog):
+class ObjectInspectorUI(QtWidgets.QDialog):
     def __init__(self, obj=None, parent=get_maya_main_window()):
-        super(MethodInspectorUI, self).__init__(parent)
+        super(ObjectInspectorUI, self).__init__(parent)
         
         self.setWindowTitle("Method Inspector")
         self.resize(600, 400)  # Set initial size
 
         # Layout
         main_layout = QtWidgets.QVBoxLayout(self)
+        new_obj = str(obj)
+        new_obj = class_cleanup((new_obj))
+        is_lib = False
+        try:
+            new_obj = eval(new_obj)
+        except:
+            is_lib = True
+        obj = str(obj)
+        obj = class_cleanup(obj=obj, is_lib=is_lib)
 
         # Text Field
+
         self.obj_text_field = QtWidgets.QLineEdit(self)
-        self.obj_text_field.setPlaceholderText("Enter Python object...")
+        self.obj_text_field.setPlaceholderText("Enter a python object")
         self.obj_text_field.textChanged.connect(self.update_method_list)
         main_layout.addWidget(self.obj_text_field)
-
         # Checkbox for Copy Selected Text
-        self.copy_checkbox = QtWidgets.QCheckBox("Copy Selected Text", self)
+        self.copy_checkbox = QtWidgets.QCheckBox("Copy Selected Text ---> prefixes with '.' for easy object traversal", self)
         self.copy_checkbox.setChecked(True)  # Default to checked
         main_layout.addWidget(self.copy_checkbox)
 
@@ -51,9 +59,7 @@ class MethodInspectorUI(QtWidgets.QDialog):
         # Set layout
         self.setLayout(main_layout)
 
-        self.obj = obj
-        if obj:
-            self.update_method_list()
+        self.obj_text_field.setText(str(obj))
 
     def update_method_list(self):
         self.methods_list_widget.clear()
@@ -138,15 +144,71 @@ class MethodInspectorUI(QtWidgets.QDialog):
         except:
             return ""
 
-# Create and show the UI
-def show_method_inspector_ui(obj=None):
-    global method_inspector_ui
+
+def is_library(obj):
     try:
-        method_inspector_ui.close()  # Close existing window if it's open
+        # Get the module name where the object is defined
+        module_name = obj.__class__.__module__
+        
+        # Extract the top-level package name (first part)
+        library_name = module_name.split('.')[0]
+        
+        try:
+            # Try to import the top-level package
+            imported_lib = importlib.import_module(library_name)
+            
+            # Check if it contains submodules or specific properties
+            if hasattr(imported_lib, '__path__'):
+                return True, library_name
+            else:
+                return False, f"{library_name} is a module but not a library"
+        except ImportError as e:
+            # If it cannot be imported, return an error message
+            return False, f"Could not import library: {library_name}, error: {str(e)}"
+    
+    except AttributeError as e:
+        # Handle cases where obj.__class__.__module__ is not available or valid
+        return False, f"Object does not have a valid module: {str(e)}"
+    
+    except Exception as e:
+        # Catch-all for any other unexpected issues
+        return False, f"Unexpected error: {str(e)}"
+
+# Example usage
+# obj = QtWidgets.QVBoxLayout()
+# is_lib, library_name = is_library(obj)
+def class_cleanup(obj, is_lib = False):
+    # remember:
+    # obj_string = str(QtWidgets)
+    # returns <module 'PySide2.QtWidgets' from 'C:\\Program Files\\Autodesk\\Maya2024\\Python\\lib\\site-packages\\PySide2\\QtWidgets.cp310-win_amd64.pyd'>
+    # when splitting make sure to do first index, then second index to get the class and not the library
+    obj = str(obj)
+    if "'" in obj:
+        obj = obj.split("'")[1]
+    if "'" in obj:
+        obj = obj.split("'")[0]
+    # if "(" in obj:
+    #     obj = obj.split("(")[0]
+    # if "(" in obj:
+    #     obj = obj.split(">")[0]
+    # if "<" in obj:
+    #     obj = obj.split("<")[1]
+    if is_lib and "." in obj:
+        obj = obj.split(".")[1]
+    return obj
+
+
+
+
+# Create and show the UI
+def ui_inspect(obj=None):
+    global object_inspector_ui
+    try:
+        object_inspector_ui.close()  # Close existing window if it's open
     except:
         pass
-    method_inspector_ui = MethodInspectorUI(obj)
-    method_inspector_ui.show()
+    object_inspector_ui = ObjectInspectorUI(obj)
+    object_inspector_ui.show()
 
 # Call function to show the UI
-show_method_inspector_ui("str")
+

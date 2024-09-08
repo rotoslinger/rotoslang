@@ -6,6 +6,10 @@ from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 
+import importlib
+from ui_2.python_debugging import obj_inspect
+importlib.reload(obj_inspect)
+
 
 # Utility function to get Maya's main window
 def get_maya_main_window():
