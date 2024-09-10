@@ -203,4 +203,10 @@ def ui_inspect(obj=None):
     object_inspector_ui.show()
 
 # Call function to show the UI
+# --- Example ---
+# ui_2.ui_inspect(obj="str")
+# Also takes a class as
+
+# Run on import
+# ui_inspect("str")
 
