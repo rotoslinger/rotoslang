@@ -4,47 +4,7 @@ import maya.mel as mel
 from rig_2.weights import self_contained_katools as ka_tools
 import importlib
 importlib.reload(ka_tools)
-
-
-
-
 import maya.api.OpenMaya as OpenMaya
-
-
-
-
-mel.eval('select -tgl Torso.vtx[1646] ;select -add Torso.vtx[1645:1656] ;')
-
-
-print("Something")
-
-
-# # MAIN FUNCTIONS ----------------------------------------------------------------------------------------------------------------
-# weightBlenderInfo = None
-# def start(points=None):
-#     global weightBlenderInfo
-#     selection = cmds.ls(selection=True)
-#     print('start')
-
-#     weightBlenderInfo = WeightBlenderInfo()
-#     weightBlenderInfo.start()
-#     cmds.select(selection)
-
-# def change(value=0.0):
-#     global weightBlenderInfo
-#     # weightBlenderInfo = WeightBlenderInfo()
-#     weightBlenderInfo.blend(value)
-
-# def finish():
-#     global weightBlenderInfo
-#     print('fin')
-
-#     if weightBlenderInfo:
-
-#         weightBlenderInfo.deleteTargetIcons()
-
-
-
 
 #######################################################################
 ##########################  SKIN WEIGHT DRAGGER #######################
@@ -168,9 +128,6 @@ class Value_Dragger(object):
 
             # if self.left and self.right and self.left < self.right:
             #     posNeg = posNeg * -1
-
-
-
 
             self.wt = (length * self.sensitivity)*posNeg + self.range_start
             self.wt = clamp(self.wt, self.range_min, self.range_max)
