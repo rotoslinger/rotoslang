@@ -10,10 +10,12 @@ def create_std_rig():
     controls = stdavars.create_stdavar_ctrl(side = "C",
                     skel_parent = "C_skeleton_GRP",
                     rig_parent = "C_rig_GRP",
-                    ctl_sizes = [1.5, 1.3, 1.1],
+                    ctl_sizes = [12,((12)*.9),((11)*.9)],
                     colors = [ 
-                                (1.0, 1.0, 0.0),
-                                (0.4, 0.4, 0.0),
-                                (0.3, 0.3, 0.0)],
-                    debug = False)
+                                (.8, 0, 0.0),
+                                (0.4, 0, 0.0),
+                                (0.4, 0, 0.0)],
+                    ty_offsets = [0,0,0],
+                    create_bone = True,
+                    debug = True)
 #tag_utils.get_tag_dict("tag_filter=["CONTROL"]")

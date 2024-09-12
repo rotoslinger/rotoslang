@@ -12,10 +12,6 @@ def set_display_type(display_type = 1):
 def attribute_exists(obj, attr):
     return cmds.attributeQuery(attr, node=obj, exists=True)
 
-#Leave the joint radius alone
-#joint_radius = None
-#uncomment if you want to set the size of the joint radius
-#joint_radius = 10
 
 def unlock_unhide_bones(joint_radius=None):
     cmds.setAttr("skel_grp.visibility", k=True, lock=0)

@@ -468,7 +468,8 @@ class create_ctl():
                  scale = [1,1,1],
                  hide = False,
                  color = None,
-                 nullTransform = False
+                 nullTransform = False,
+                 create_bone = False
                  ):
 
         """
@@ -529,6 +530,9 @@ class create_ctl():
 
         @type  hide:                bool
         @param hide:                if True control will be hidden
+
+        @type  create_bone:                bool
+        @param create_bone:                if True create a create_bone
         """
 
         #---args
@@ -548,6 +552,7 @@ class create_ctl():
         self.scale                  = scale
         self.hide                   = hide
         self.nullTransform          = nullTransform
+        self.create_bone            = create_bone
         self.color                  = color
         if self.customShape:
             self.shape = ""
@@ -622,8 +627,14 @@ class create_ctl():
                             lock = True,
                             keyable = False,
                             channelBox = False)
-
-
+        self.bone = ''
+        self.parent_constraint = ''
+        self.scale_constraint = ''
+        if self.create_bone:
+            self.bone = cmds.joint( self.ctl, name=self.name + "_jnt")
+            self.parent_constraint = cmds.parentConstraint(self.ctl , self.bone)
+            self.scale_constraint = cmds.scaleConstraint(self.ctl, self.bone)
+            
     def __create_secondary(self):
         "creates ctl"
         sec_parent = []
@@ -686,6 +697,9 @@ class create_ctl():
             # gimbal shape
             cmds.addAttr(self.ctl, ln = "gimbal", at = "message")
             cmds.connectAttr(self.gimbal_shape + ".message", self.ctl + ".gimbal")
+        if self.create_bone:
+            tag_utils.tag_bind_joint(self.bone)
+
 
         tag_utils.tag_control(misc.getShape(self.ctl))
 

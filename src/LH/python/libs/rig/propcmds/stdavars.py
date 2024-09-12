@@ -1,21 +1,9 @@
 import sys
 import importlib
-linux = '/corp/projects/eng/lharrison/workspace/levi_harrison_test'
-mac = "/Users/leviharrison/Documents/workspace/maya/scripts"
-#---determine operating system
-os = sys.platform
-if "linux" in os:
-    os = linux
-if "darwin" in os:
-    os = mac
-if os not in sys.path:
-    sys.path.append(os)
-
 from maya import cmds
 from rig.utils import misc
 from rig.control import base as control_base
 importlib.reload(control_base)
-
 importlib.reload(misc)
 
 #===============================================================================
@@ -40,6 +28,8 @@ class create_stdavar_ctrl():
                             (0.1, 0.75, 0.7),
                             (0.5, 0.5, 0.0)
                           ],
+                 ty_offsets = [0,0,0],
+                 create_bone = False,
                  debug = False,
                  ):
 
@@ -70,7 +60,9 @@ class create_stdavar_ctrl():
         self.rig_parent             = rig_parent
         self.ctl_sizes              = ctl_sizes
         self.debug                  = debug
+        self.ty_offsets             = ty_offsets
         self.colors                 = colors
+        self.create_bone            = create_bone
 
         #---vars
         self.ctls                   = []
@@ -99,9 +91,9 @@ class create_stdavar_ctrl():
 
     def __create_ctls(self):
         """ create ctls """
-        names = ["layout", "base", "root"]
+        names = ["World", "Layout", "Root"]
         for i in range(len(names)):
-            if i == 0:
+            if i == 0 & self.debug != 1:
                 parent = self.rig_parent
                 lock_attrs = ["v"], 
             if i == 1:
@@ -116,7 +108,10 @@ class create_stdavar_ctrl():
                                                 gimbal = False,
                                                 size = self.ctl_sizes[i],
                                                 color = self.colors[i],
-                                                orient = [0,0,90])
+                                                offset = [0,self.ty_offsets[i],0],
+                                                orient = [0,0,90],
+                                                create_bone = self.create_bone
+                                                )
             self.ctls.append(return_ctl.ctl)
             self.ctl_buffers.append(return_ctl.buffers)
             # self.ctl_gimbals.append(return_ctl.gimbal_ctl)
