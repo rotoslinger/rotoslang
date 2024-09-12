@@ -90,13 +90,13 @@ class lock_attrs():
 
 class create_rig_hier():
     def __init__(self,
-                 char_name = "character"):
+                 name = "character"):
         """
-        @type  char_name:                string
-        @param char_name:                character name
+        @type  name:                string
+        @param name:                character name
         """
         #---args
-        self.char_name                   = char_name
+        self.name                   = name
         
         #---vars
         self.groups                      = []
@@ -107,7 +107,7 @@ class create_rig_hier():
         "Create and name rig transforms"
         self.groups.append(cmds.createNode("transform", 
                                            name = "C_" + 
-                                           self.char_name + 
+                                           self.name + 
                                            "_GRP"))
 
         self.groups.append(cmds.createNode("transform", 

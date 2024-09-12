@@ -108,7 +108,7 @@ class Lid(object):
         #          matDefCtrlShapeOffset3=[0,-2.0,1],
 
         if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):
-            misc.create_rig_hier(char_name=self.characterName)
+            misc.create_rig_hier(name=self.characterName)
 
         self.control = cmds.circle(n= self.nameLids + "Control", nr=[0,1,0])[0]
         cmds.parent(self.control, self.controlParent)

@@ -1,0 +1,178 @@
+import maya.cmds as cmds
+import maya.OpenMayaUI as omui
+from PySide2 import QtWidgets
+from shiboken2 import wrapInstance
+
+def get_bounding_box(obj):
+    """
+    Get the bounding box of the given object.
+    :param obj: Name of the object.
+    :return: Bounding box [min_x, min_y, min_z, max_x, max_y, max_z].
+    """
+    return cmds.exactWorldBoundingBox(obj)
+
+def calculate_scaling_factors(target_bbox, current_bbox):
+    """
+    Calculate the scaling factors between the target and current bounding boxes.
+    Handles cases where any of the bounding box dimensions are zero or extremely small.
+    
+    :param target_bbox: Bounding box of the target object.
+    :param current_bbox: Bounding box of the current object.
+    :return: Scaling factors (scale_x, scale_y, scale_z).
+    """
+    # Calculate the dimensions of the target and current bounding boxes
+    target_width = target_bbox[3] - target_bbox[0]
+    target_height = target_bbox[4] - target_bbox[1]
+    target_depth = target_bbox[5] - target_bbox[2]
+    
+    current_width = current_bbox[3] - current_bbox[0]
+    current_height = current_bbox[4] - current_bbox[1]
+    current_depth = current_bbox[5] - current_bbox[2]
+
+    # Minimum threshold to avoid extremely large scaling values due to small bounding box sizes
+    min_threshold = 0.001
+
+    # Ensure we don't divide by zero or apply excessive scaling for very small dimensions
+    scale_x = (target_width / current_width) if current_width >= min_threshold else 1.0
+    scale_y = (target_height / current_height) if current_height >= min_threshold else 1.0
+    scale_z = (target_depth / current_depth) if current_depth >= min_threshold else 1.0
+
+    return scale_x, scale_y, scale_z
+
+def scale_object(scale_factors, obj, uniform=False, scale_points=False):
+    """
+    Apply scaling to the given object. Can scale uniformly or non-uniformly.
+    Takes into account any prior scaling on the object.
+    
+    :param scale_factors: Scaling factors (scale_x, scale_y, scale_z).
+    :param obj: Name of the object to be scaled.
+    :param uniform: Whether to scale uniformly to the largest dimension.
+    :param scale_points: Whether to scale object points (cvs) instead of the transform.
+    """
+    # Get the current scale of the object
+    current_scale = cmds.getAttr(f"{obj}.scale")[0]
+
+    if uniform:
+        max_scale = max(scale_factors)
+        scale_factors = (max_scale, max_scale, max_scale)
+
+    # Multiply the new scale factors by the current scale to apply scaling relatively
+    final_scale_x = scale_factors[0] * current_scale[0]
+    final_scale_y = scale_factors[1] * current_scale[1]
+    final_scale_z = scale_factors[2] * current_scale[2]
+
+    if scale_points:
+        if cmds.nodeType(obj) == 'nurbsCurve':
+            cvs = cmds.ls(f'{obj}.cv[*]', fl=True)
+        else:
+            cvs = cmds.ls(f'{obj}.vtx[*]', fl=True)
+        cmds.scale(scale_factors[0], scale_factors[1], scale_factors[2], cvs, relative=True)
+    else:
+        cmds.scale(final_scale_x, final_scale_y, final_scale_z, obj, relative=False)
+
+def move_to_center(target_bbox, obj):
+    """
+    Move the given object to the center of the target bounding box.
+    :param target_bbox: Bounding box of the target object.
+    :param obj: Name of the object to move.
+    """
+    center_x = (target_bbox[0] + target_bbox[3]) / 2
+    center_y = (target_bbox[1] + target_bbox[4]) / 2
+    center_z = (target_bbox[2] + target_bbox[5]) / 2
+    cmds.move(center_x, center_y, center_z, obj)
+
+def is_scale_locked(obj):
+    """
+    Check if any of the scale attributes of the given object are locked.
+    :param obj: Name of the object.
+    :return: Boolean indicating whether any scale attributes are locked.
+    """
+    return any([cmds.getAttr(f"{obj}.scale{axis}", lock=True) for axis in 'XYZ'])
+
+def are_points_locked(obj):
+    """
+    Check if any of the points (CVs or vertices) of the object are locked.
+    :param obj: Name of the object.
+    :return: Boolean indicating whether any points are locked.
+    """
+    if cmds.nodeType(obj) == 'nurbsCurve':
+        points = cmds.ls(f'{obj}.cv[*]', fl=True)
+    else:
+        points = cmds.ls(f'{obj}.vtx[*]', fl=True)
+        
+    return any([cmds.getAttr(point, lock=True) for point in points])
+
+def unlock_points(obj):
+    """
+    Unlock all points (CVs or vertices) of the given object.
+    :param obj: Name of the object.
+    """
+    if cmds.nodeType(obj) == 'nurbsCurve':
+        points = cmds.ls(f'{obj}.cv[*]', fl=True)
+    else:
+        points = cmds.ls(f'{obj}.vtx[*]', fl=True)
+    
+    for point in points:
+        cmds.setAttr(point, lock=False)
+
+def show_warning_popup(obj, scale_points=False):
+    """
+    Show a warning popup for locked attributes and ask whether to unlock points (CVs) or scale them.
+    :param obj: Name of the object.
+    :param scale_points: If True, warns about locked points.
+    :return: Boolean indicating whether the user chose to unlock points or scale points.
+    """
+    maya_main_window_ptr = omui.MQtUtil.mainWindow()
+    maya_main_window = wrapInstance(int(maya_main_window_ptr), QtWidgets.QWidget)
+
+    msg_box = QtWidgets.QMessageBox(maya_main_window)
+    msg_box.setIcon(QtWidgets.QMessageBox.Warning)
+    
+    if scale_points:
+        msg_box.setText(f"Some points (CVs or vertices) are locked for {obj}. Would you like to unlock them?")
+        msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        result = msg_box.exec_()
+
+        if result == QtWidgets.QMessageBox.Yes:
+            unlock_points(obj)
+            return True
+    else:
+        msg_box.setText(f"Scale attributes have been locked for {obj}. Would you like to scale points instead?")
+        msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        result = msg_box.exec_()
+
+        return result == QtWidgets.QMessageBox.Yes
+
+def scale_and_center_polycube(target_model, polycube, scale_points=False, uniform=False, ignore_locked_scale=False):
+    """
+    Scales the polycube to match the bounding box of the target model and centers it.
+    Supports scaling points (cvs), uniform scaling, and handling locked scale attributes.
+    
+    :param target_model: Name of the target model.
+    :param polycube: Name of the polycube to be scaled.
+    :param scale_points: If True, scales the object's points (cvs or vertices) instead of the transform.
+    :param uniform: If True, scales the object uniformly to the largest dimension.
+    :param ignore_locked_scale: If True, ignores locked scale attributes.
+    """
+    if not scale_points and is_scale_locked(polycube) and not ignore_locked_scale:
+        if show_warning_popup(polycube):
+            scale_points = True
+
+    if scale_points and are_points_locked(polycube):
+        if not show_warning_popup(polycube, scale_points=True):
+            return
+
+    target_bbox = get_bounding_box(target_model)
+    current_bbox = get_bounding_box(polycube)
+
+    scale_factors = calculate_scaling_factors(target_bbox, current_bbox)
+
+    scale_object(scale_factors, polycube, uniform=uniform, scale_points=scale_points)
+    move_to_center(target_bbox, polycube)
+
+# Example usage
+target_model = 'nonfrozen|pSphere1'  # Replace with the name of your target model
+polycube = 'C_layout_CTL'           # Replace with the name of your polycube
+
+# Use the function with the desired options
+scale_and_center_polycube(target_model, polycube, scale_points=True, uniform=True, ignore_locked_scale=False)

@@ -60,4 +60,4 @@ def scale_object_to_bounding_box(node_name, target_min, target_max):
     transform_fn.setScale(new_scale)
 
 # Example usage: Scale object to fit a bounding box from (0,0,0) to (10,10,10)
-scale_object_to_bounding_box('pCube1', om.MPoint(0, 0, 0), om.MPoint(10, 10, 10))
+# scale_object_to_bounding_box('pCube1', om.MPoint(0, 0, 0), om.MPoint(10, 10, 10))

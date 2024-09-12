@@ -34,6 +34,7 @@ class draw_ctl():
                  offset = [0,0,0],
                  scale = [1,1,1],
                  customShape=None,
+                 color = None,
                  hide = False
                  ):
 
@@ -99,6 +100,7 @@ class draw_ctl():
         self.scale                  = scale
         self.hide                   = hide
         self.customShape            = customShape
+        self.color                  = color
 
         #---vars
         self.ctl                    = ""
@@ -367,11 +369,19 @@ class draw_ctl():
                           keyable = False,
                           channelBox = False)
 
-    def __color_it(self):
+    def __color_it(self, color_rgb = (0.0,0.0,0.0)):
+        # color_rgb can be a numerical rgb value like so:
+        # color_rgb = (1.0,1.0,0.0)
+        # if none, base it on side naming
         ctl_shape = cmds.listRelatives(self.ctl, shapes = True)[0]
         cmds.setAttr(ctl_shape + ".overrideEnabled", True)
         color = ctl_shape + ".overrideColor"
         cmds.setAttr(ctl_shape + ".overrideRGBColors", 1)
+        if color_rgb:
+            cmds.setAttr(color + "R", color_rgb[0])
+            cmds.setAttr(color + "G", color_rgb[1])
+            cmds.setAttr(color + "B", color_rgb[2])
+            return 
         if self.side == "C":
             cmds.setAttr(color + "R", 1)
             cmds.setAttr(color + "G", 1)
@@ -418,7 +428,7 @@ class draw_ctl():
         self.__ik_fk()
         self.createCustomShape()
         self.__lock_it()
-        self.__color_it()
+        self.__color_it(color_rgb = self.color)
         self.__cleanup()
 ##########################################################
 #---example
@@ -457,6 +467,7 @@ class create_ctl():
                  offset = [0,0,0],
                  scale = [1,1,1],
                  hide = False,
+                 color = None,
                  nullTransform = False
                  ):
 
@@ -537,7 +548,7 @@ class create_ctl():
         self.scale                  = scale
         self.hide                   = hide
         self.nullTransform          = nullTransform
-
+        self.color                  = color
         if self.customShape:
             self.shape = ""
 
@@ -593,6 +604,7 @@ class create_ctl():
                             orient = self.orient,
                             offset = self.offset,
                             scale = self.scale,
+                            color = self.color,
                             hide = self.hide).ctl
         if self.nullTransform:
             name = self.ctl
@@ -666,15 +678,16 @@ class create_ctl():
             cmds.setAttr( gimbalShape + ".v", l = True, cb = False, k = False)
 
     def add_tags(self):
-        for i in range(50):
-            print("CREATING TAGS")
-        self.gimbal_shape = misc.getShape(self.gimbal_ctl)
+        # for i in range(50):
+        #     print("CREATING TAGS")
         if self.gimbal == True:
+            self.gimbal_shape = misc.getShape(self.gimbal_ctl) 
             tag_utils.tag_gimbal(self.gimbal_shape)
+            # gimbal shape
+            cmds.addAttr(self.ctl, ln = "gimbal", at = "message")
+            cmds.connectAttr(self.gimbal_shape + ".message", self.ctl + ".gimbal")
+
         tag_utils.tag_control(misc.getShape(self.ctl))
-        # gimbal shape
-        cmds.addAttr(self.ctl, ln = "gimbal", at = "message")
-        cmds.connectAttr(self.gimbal_shape + ".message", self.ctl + ".gimbal")
 
     def __create(self):
         ""

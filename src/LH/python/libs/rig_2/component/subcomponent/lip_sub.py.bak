@@ -214,7 +214,7 @@ class Lip(component_base.Component):
 
         # # Temporary, create character hierarchy
         # if not (cmds.objExists("C_{0}_GRP".format(self.characterName))):
-        #     misc.create_rig_hier(char_name=self.characterName)
+        #     misc.create_rig_hier(name=self.characterName)
 
         # self.control_node = cmds.circle(n=self.name + "Control", nr=[0, 1, 0])[0]
         if cmds.objExists(self.ctrlName + "Control"):
