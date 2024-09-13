@@ -29,7 +29,9 @@ class create_stdavar_ctrl():
                             (0.5, 0.5, 0.0)
                           ],
                  ty_offsets = [0,0,0],
-                 create_bone = False,
+                 #create_bone = False,
+                 ctrl_names = ["World", "Layout", "Root"],
+                 ctrls_with_bones = [False, False, True],
                  debug = False,
                  ):
 
@@ -62,14 +64,15 @@ class create_stdavar_ctrl():
         self.debug                  = debug
         self.ty_offsets             = ty_offsets
         self.colors                 = colors
-        self.create_bone            = create_bone
+        #self.create_bone            = create_bone
+        self.ctrls_with_bones       = ctrls_with_bones
+        self.ctrl_names             = ctrl_names
 
         #---vars
         self.ctls                   = []
         self.ctl_buffers            = []
         self.ctl_gimbals            = []
         self.mdlsiz_attr            = []
-
         self.__create()
 
     def __check(self):
@@ -91,16 +94,15 @@ class create_stdavar_ctrl():
 
     def __create_ctls(self):
         """ create ctls """
-        names = ["World", "Layout", "Root"]
-        for i in range(len(names)):
+        for i in range(len(self.ctrl_names)):
             if i == 0 & self.debug != 1:
                 parent = self.rig_parent
-                lock_attrs = ["v"], 
+                lock_attrs = ["v"],
+            else: parent = self.ctls[i-1]
             if i == 1:
-                parent = self.ctls[i-1]
                 lock_attrs = ["sx", "sy", "sz", "v"], 
             return_ctl = control_base.create_ctl(side = self.side, 
-                                                name = names[i], 
+                                                name = self.ctrl_names[i], 
                                                 parent = parent, 
                                                 shape = "circle",
                                                 num_buffer = 1,
@@ -110,7 +112,7 @@ class create_stdavar_ctrl():
                                                 color = self.colors[i],
                                                 offset = [0,self.ty_offsets[i],0],
                                                 orient = [0,0,90],
-                                                create_bone = self.create_bone
+                                                create_bone = self.ctrls_with_bones[i],
                                                 )
             self.ctls.append(return_ctl.ctl)
             self.ctl_buffers.append(return_ctl.buffers)

@@ -64,4 +64,4 @@ def create_help_ui():
     cmds.showWindow(window)
 
 # Run the UI
-create_help_ui()
+# create_help_ui()

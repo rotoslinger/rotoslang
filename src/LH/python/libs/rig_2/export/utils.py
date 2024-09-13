@@ -220,7 +220,29 @@ def convert_value_to_literals(dictionary_value):
         if not isinstance(litteral_val, attr_instance):
             continue
         return litteral_val
-        
+
+
+
+
+
+def import_all_buffer_locations(filename, weight_curves=True, falloff_weight_curves=True, hand_painted_weights=True):
+    file = open(filename, "rb")
+    import_dict = json.load(file)
+    file.close()
+
+    ### place holder for importing buffer location offsets.
+
+    ### to find out what to export look at the buffer tags (if there aren't buffer tags, create buffer tags BUFFER)
+
+
+    no_export_tag_dict = import_dict["no_export_tag_dict"]
+
+    # Set NO_EXPORT tags
+    tag_utils.set_tags_from_dict(no_export_tag_dict)
+    
+    if hand_painted_weights:
+        weight_utils.rebuild_hand_painted_weights(import_dict["hand_painted_weights"])
+       
         
 @decorator.undo_chunk
 def create_class_from_dict(components_dict):
