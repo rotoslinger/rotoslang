@@ -58,7 +58,11 @@ class Component(object):
         self.side = side
         self.name = name
         self.suffix = suffix
-        self.curveData = curveData
+        if not curveData:
+             curveData = elements.circle,
+        else: self.curveData = curveData
+
+
         self.parent = parent
         self.helperGeo = helperGeo
         self.numBuffer = numBuffer
@@ -129,6 +133,7 @@ class Component(object):
             self.locator = misc.createLocator(name=misc.formatName(self.side, self.name, "LOC"),
                                             parent=self.cmptMasterParent,
                                             shapeVis=False)
+            
         self.ctrl = control.Ctrl(side=self.side,
                                                 name=self.name,
                                                 parent=self.locator,

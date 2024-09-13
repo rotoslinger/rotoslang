@@ -24,6 +24,7 @@ class Component(base.Component):
                 #  scale=[1, 1, 1],
                 #  lock_attrs=["sx", "sy", "sz"],
                 #  size=.5)
+                curveData=elements.circle,
                 numBuffer=1,
                 gimbal=False,
                 parent=None,   # this will be set by the builder

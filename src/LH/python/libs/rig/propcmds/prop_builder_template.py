@@ -32,5 +32,6 @@ def create_std_rig():
 
     #create_rig_parts
     child_001.create()
+    #print(child_001.ctrl)
                             
 #tag_utils.get_tag_dict("tag_filter=["CONTROL"]")
