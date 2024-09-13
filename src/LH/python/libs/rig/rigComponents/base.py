@@ -17,6 +17,8 @@ from rig_2.manipulator import elements as manipulator_elements
 importlib.reload(manipulator_elements)
 
 
+from rig_2.manipulator import elements as manip_elements
+importlib.reload(manip_elements)
 
 class Component(object):
     def __init__(self,
@@ -59,7 +61,7 @@ class Component(object):
         self.name = name
         self.suffix = suffix
         if not curveData:
-             curveData = elements.circle,
+             self.curveData = elements.circle,
         else: self.curveData = curveData
 
 

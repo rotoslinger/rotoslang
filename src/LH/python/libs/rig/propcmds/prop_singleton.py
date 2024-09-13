@@ -7,7 +7,7 @@ from rig.control import base as control_base
 importlib.reload(control_base)
 from rig.utils import misc
 from rig.utils import exportUtils
-from rig.rigComponents import elements
+from rig_2.manipulator import elements
 
 # A simple control with translate, rotate, and scale.  Can have custom attributes but really shouldn't do to much more than the basics.
 
@@ -34,7 +34,7 @@ class Component(base.Component):
         super(Component, self).__init__(**kw)
         self.componentName = "simpletonCtrl"
         if not self.curveData:
-            self.curveData = elements.blockIcon
+            self.curveData = elements.block
         self.nullTransform=null_transform
 
     def dummy(self):
