@@ -274,6 +274,9 @@ def tag_gimbal(node_to_tag):
 def tag_control(node_to_tag):
     create_tag(node_to_tag, "CONTROL")
 
+def tag_buffer(node_to_tag):
+    create_tag(node_to_tag, "BUFFER")
+
 
 def tag_guide(node_to_tag):
     create_tag(node_to_tag, "GUIDE")

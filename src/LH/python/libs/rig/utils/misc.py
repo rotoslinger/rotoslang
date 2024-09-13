@@ -105,27 +105,27 @@ class create_rig_hier():
 
     def __create_nodes(self):
         "Create and name rig transforms"
-        self.groups.append(cmds.createNode("transform", 
-                                           name = "C_" + 
-                                           self.name + 
-                                           "_GRP"))
+        self.character_grp   = cmds.createNode("transform", 
+                                                name = "C_" + 
+                                                self.name + 
+                                                "_GRP")
 
-        self.groups.append(cmds.createNode("transform", 
-                                           name = "C_geo_GRP",
-                                           parent = self.groups[0]))
+        self.geo_grp         = cmds.createNode("transform", 
+                                                name   = "C_geo_GRP",
+                                                parent = self.character_grp)
 
-        self.groups.append(cmds.createNode("transform", 
-                                           name = "C_skeleton_GRP",
-                                           parent = self.groups[0]))
+        self.skeleton_grp    = cmds.createNode("transform", 
+                                                name   = "C_skeleton_GRP",
+                                                parent = self.character_grp)
 
-        self.groups.append(cmds.createNode("transform", 
-                                           name = "C_rig_GRP",
-                                           parent = self.groups[0]))
+        self.rig_grp         = cmds.createNode("transform", 
+                                                name   = "C_rig_GRP",
+                                                parent = self.character_grp)
 
-        self.groups.append(cmds.createNode("transform", 
-                                           name = "C_control_GRP",
-                                           parent = self.groups[0]))
-
+        self.control_grp     = cmds.createNode("transform", 
+                                                name   = "C_control_GRP",
+                                                parent = self.character_grp)
+        self.groups = [self.character_grp, self.geo_grp, self.skeleton_grp, self.rig_grp, self.control_grp]
     def __lock_attrs(self):
         "Lock out attributes"
         for i in range(len(self.groups)):
