@@ -8,6 +8,7 @@ import maya.mel as mel
 import maya.OpenMaya as OpenMaya
 import math
 import traceback
+import maya.api.OpenMaya as om2
 
 
 # import ka_rigTools.ka_math as ka_math #;reload(ka_math)
@@ -1540,13 +1541,12 @@ class WeightBlenderInfo(object):
 weightBlenderInfo = None
 def start(points=None):
     global weightBlenderInfo
+    store_selection_list()
     selection = cmds.ls(selection=True)
     print('start')
-
     weightBlenderInfo = WeightBlenderInfo()
     weightBlenderInfo.start()
-    cmds.select(selection)
-
+    
 def change(value=0.0):
     global weightBlenderInfo
     # weightBlenderInfo = WeightBlenderInfo()
@@ -1555,10 +1555,50 @@ def change(value=0.0):
 def finish():
     global weightBlenderInfo
     print('finished')
-
     if weightBlenderInfo:
-
         weightBlenderInfo.deleteTargetIcons()
+    restore_selection()
+
+def store_selection_list():
+    global stored_selection, selection_context
+    
+    sel = om2.MGlobal.getActiveSelectionList()
+    if sel.length() > 0:
+        comp = sel.getComponent(0)
+        api_type = comp.apiType()
+        
+        # Check if the component is an edge or point
+        if api_type in (om2.MFn.kMeshEdgeComponent, om2.MFn.kMeshVertComponent):
+            # Store the entire selection list and context
+            stored_selection = sel
+            selection_context = api_type
+            
+            if api_type == om2.MFn.kMeshEdgeComponent:
+                # Convert edges to points
+                sel = sel.getSelectionStrings()
+                sel = [om2.MGlobal.getSelectionListByName(name).getComponent(0) for name in sel]
+                om2.MGlobal.setActiveSelectionList(om2.MSelectionList().add(sel).getSelectionStrings(), om2.MFn.kMeshVertComponent)
+            
+            return sel, selection_context
+        else:
+            print("Selection is neither an edge nor a point.")
+            return None, None
+    else:
+        print("No selection.")
+        return None, None
+
+def restore_selection():
+    if 'stored_selection' in globals() and 'selection_context' in globals():
+        if selection_context == om2.MFn.kMeshEdgeComponent:
+            # Convert points back to edges
+            sel = stored_selection.getSelectionStrings()
+            sel = [om2.MGlobal.getSelectionListByName(name).getComponent(0) for name in sel]
+            om2.MGlobal.setActiveSelectionList(om2.MSelectionList().add(sel).getSelectionStrings(), om2.MFn.kMeshEdgeComponent)
+        else:
+            om2.MGlobal.setActiveSelectionList(stored_selection)
+    else:
+        print("No stored selection to restore.")
+
 
 def cancel():
     global weightBlenderInfo
