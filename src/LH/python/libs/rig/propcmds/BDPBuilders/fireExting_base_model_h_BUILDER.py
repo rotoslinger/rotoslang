@@ -8,7 +8,7 @@ importlib.reload(stdavars)
 importlib.reload(prop_singleton)
 importlib.reload(tag_utils)
 
-def create_std_rig():
+def create_std_rig(name = ):
     misc.create_rig_hier(name = "prop")
     std_avars = stdavars.create_stdavar_ctrl(side = "C",
                                             skel_parent = "C_skeleton_GRP",
