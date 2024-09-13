@@ -130,7 +130,7 @@ class Component(base.Component):
 
             self.bone_parent_constraints = [{temp_jnt:tmp_parent_constraint}]
             self.bone_scale_constraints = [{temp_jnt:tmp_scale_constraint}]
-
+            print("CREATING CONTROL!!!!")
         elif type(self.ctrl) == list:
             
 
@@ -148,6 +148,7 @@ class Component(base.Component):
                 self.bone_parent_constraints.append({temp_jnt:tmp_parent_constraint})
                 self.bone_scale_constraints.append({temp_jnt:tmp_scale_constraint})
                 self.joints.append(temp_jnt)
+                print("CREATING multiple CONTROL!!!!")
 
 
 
