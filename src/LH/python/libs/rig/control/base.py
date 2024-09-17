@@ -35,7 +35,8 @@ class draw_ctl():
                  scale = [1,1,1],
                  customShape=None,
                  color = None,
-                 hide = False
+                 hide = False,
+                 suffix = "_CTL"
                  ):
 
         """
@@ -101,6 +102,7 @@ class draw_ctl():
         self.hide                   = hide
         self.customShape            = customShape
         self.color                  = color
+        self.suffix                 = suffix
 
         #---vars
         self.ctl                    = ""
@@ -124,13 +126,13 @@ class draw_ctl():
 
     def __circle(self):
         if (self.shape == "circle"):
-            self.ctl = cmds.circle(n = self.side + "_" + self.name + "_CTL",
+            self.ctl = cmds.circle(n = self.side + "_" + self.name +  self.suffix,
                                    nr=(1, 0, 0), c=(0, 0, 0), r = self.size)[0]
             cmds.parent(self.ctl, self.parent)
 
     def __sphere(self):
         if (self.shape == "sphere"):
-            self.ctl = cmds.curve(n = self.side + "_" + self.name + "_CTL",
+            self.ctl = cmds.curve(n = self.side + "_" + self.name +  self.suffix,
                                   d = 1,
                                   p=[(0, 0, 1),
                                      (0, 0.5, 0.866025 ),
@@ -161,7 +163,7 @@ class draw_ctl():
 
     def __switch(self):
         if (self.shape == "switch"):
-            self.ctl = cmds.curve(n = self.side + "_" + self.name + "_CTL",
+            self.ctl = cmds.curve(n = self.side + "_" + self.name +  self.suffix,
                                   d = 1,
                                   p=[(7.06316e-009, 0, -1),
                                      (0.104714, 0, -0.990425),
@@ -206,7 +208,7 @@ class draw_ctl():
 
     def __cube(self):
         if (self.shape == "cube"):
-            self.ctl = cmds.curve(n = self.side + "_" + self.name + "_CTL",
+            self.ctl = cmds.curve(n = self.side + "_" + self.name +  self.suffix,
                                   d = 1,
                                   p=[(0.5, 0.5, 0.5), (0.5, 0.5, -0.5),
                                      (-0.5, 0.5, -0.5), (-0.5, -0.5, -0.5),
@@ -224,7 +226,7 @@ class draw_ctl():
 
     def __square(self):
         if (self.shape == "square"):
-            self.ctl = cmds.curve(n = self.side + "_" + self.name + "_CTL",
+            self.ctl = cmds.curve(n = self.side + "_" + self.name +  self.suffix,
                                   d = 1,
                                   p=[(-1, 0, 1), (1, 0, 1),
                                      (1, 0, -1), (-1, 0, -1),
@@ -242,7 +244,7 @@ class draw_ctl():
 
     def __shoulder(self):
         if (self.shape == "shoulder"):
-            self.ctl = cmds.curve(n = self.side + "_" + self.name + "_CTL",
+            self.ctl = cmds.curve(n = self.side + "_" + self.name + self.suffix,
                                   d = 3,
                                   p=[(-7.590953, 0, 12.696369),
                                      (0.42242, 0, 10.152781),
@@ -279,7 +281,7 @@ class draw_ctl():
     def __ik_fk(self):
         """"""
         if (self.shape == "ik/fk"):
-            self.ctl = cmds.curve(n = self.side + "_" + self.name + "_CTL",
+            self.ctl = cmds.curve(n = self.side + "_" + self.name + self.suffix,
                                   d = 1,
                                   p=[(1.54953666109, -1.60264861549e-16, 0.471768770752),
                                     (1.17923504277, -4.70697878823e-17, -0.0380165208327),
@@ -347,10 +349,10 @@ class draw_ctl():
 
     def createCustomShape(self):
         if (self.customShape):
-            self.ctl = cmds.createNode("transform", n=self.side + "_" + self.name + "_CTL", p=self.parent)
-            curve = exportUtils.create_curve_2(self.customShape, self.side + "_" + self.name + "_CTL" + "Shape", self.ctl)
+            self.ctl = cmds.createNode("transform", n=self.side + "_" + self.name + self.suffix, p=self.parent)
+            curve = exportUtils.create_curve_2(self.customShape, self.side + "_" + self.name + self.suffix + "Shape", self.ctl)
 
-            # self.ctl = createGeoFromData(self.customShape, name = self.side + "_" + self.name + "_CTL").fullPathName()
+            # self.ctl = createGeoFromData(self.customShape, name = self.side + "_" + self.name + self.suffix).fullPathName()
             # print  "CURVE SHAPE,", self.ctl
             # self.ctl = cmds.listRelatives(self.ctl, p=True)[0]
             # cmds.parent(self.ctl, self.parent)
@@ -459,6 +461,7 @@ class create_ctl():
                  customShape = "",
                  lock_attrs=[],
                  num_buffer = 0,
+                 add_fit_ctrl = False, # if true each buffer gets a nurbscurve shape added and the tag CONTROLFIT and clusters to controls for scaling.
                  gimbal = False,
                  num_secondary = 0,
                  show_rot_order = True,
@@ -469,7 +472,8 @@ class create_ctl():
                  hide = False,
                  color = None,
                  nullTransform = False,
-                 create_bone = False
+                 create_joint = False,
+                 create_buffer_shape = False
                  ):
 
         """
@@ -552,11 +556,12 @@ class create_ctl():
         self.scale                  = scale
         self.hide                   = hide
         self.nullTransform          = nullTransform
-        self.create_bone            = create_bone
+        self.create_joint            = create_joint
         self.color                  = color
         if self.customShape:
-            self.shape = ""
-
+            self.shape              = ""
+        self.shape_node             = ""
+        self.create_buffer_shape    = create_buffer_shape
 
 
         #---vars
@@ -596,6 +601,55 @@ class create_ctl():
             self.buffers.append(self.parent)
         self.buffers_parent =  self.buffers[0]
 
+
+    def __create_buffer_as_shape(self):
+        "creates extra transforms to parent the ctls under"
+        self.buffer_shapes = []
+        self.shape_size_attr = ""
+        for i in range(self.num_buffer):
+            print("creatingBuffer")
+            format_num = self.num_buffer-i
+            temp_buffer = draw_ctl(
+                                    name =  self.side
+                                            + "_"
+                                            + self.name
+                                            + "Buffer"
+                                            + str(format_num)
+                                            + "_GRP",
+                                    parent = self.parent,
+                                    shape = self.shape,
+                                    size = 4,
+                                    show_rot_order = False,
+                                    orient = self.orient,
+                                    color = (1,1,1),
+                                    hide = False)
+            self.parent = temp_buffer.ctl
+            buffer_shape = misc.getShape(self.parent)
+            self.buffer_shapes.append(buffer_shape)
+            self.buffers.append(self.parent)
+            # Add attr for buffer_shape_vis, connect to shape.
+            # 
+            self.maintenence_grp = tag_utils.get_all_with_tag("MAINTENANCE_GRP")[0]
+            self.fit_ctrl_vis = self.maintenence_grp + ".fit_ctrl_vis"
+            cmds.connectAttr(self.fit_ctrl_vis, buffer_shape + ".visibility")
+            cmds.setAttr(buffer_shape + ".alwaysDrawOnTop", 1)
+            if i == self.num_buffer-1:
+                cmds.addAttr(temp_buffer.ctl,
+                ln = "ctrl_siz", 
+                at = "float", 
+                dv = 1,
+                min = 0,
+                k = True)
+                self.shape_size_attr = temp_buffer.ctl + ".ctrl_siz"
+
+            # // Result: Connected C_maintenance_GRP.fit_ctrl_vis to L__ControlDBuffer1_GRP_CTLShape.visibility.
+
+
+        self.buffers_parent =  self.buffers[0]
+
+
+        
+
     def __create_ctl(self):
         "creates ctl"
         self.ctl = draw_ctl(side = self.side,
@@ -611,6 +665,7 @@ class create_ctl():
                             scale = self.scale,
                             color = self.color,
                             hide = self.hide).ctl
+        self.shape_node = misc.getShape(self.ctl)
         if self.nullTransform:
             name = self.ctl
             parent = misc.getParent(self.ctl)
@@ -627,14 +682,26 @@ class create_ctl():
                             lock = True,
                             keyable = False,
                             channelBox = False)
-        self.bone = ''
+        self.joint = ''
         self.parent_constraint = ''
         self.scale_constraint = ''
-        if self.create_bone:
-            self.bone = cmds.joint( self.ctl, name=self.name + "_jnt")
-            self.parent_constraint = cmds.parentConstraint(self.ctl , self.bone)
-            self.scale_constraint = cmds.scaleConstraint(self.ctl, self.bone)
-            
+        if self.create_joint:
+            self.joint = cmds.joint( self.ctl, name=self.name + "_jnt")
+            self.parent_constraint = cmds.parentConstraint(self.ctl , self.joint)
+            self.scale_constraint = cmds.scaleConstraint(self.ctl, self.joint)
+        if self.create_buffer_shape:
+            # create cluster in rig control connect buffer siz attr to scale
+            # self.ctl
+            cluster_parent = tag_utils.get_all_with_tag(tag_utils.HIER_____RIG_CONTROL_SIZE_GRP)
+            print("CLUSTER PARENT = ",  cluster_parent)
+            self.shape_siz_clust, self.shape_siz_clust_handle = cmds.cluster(self.shape_node, name=self.shape_node + "Cluster") # the cluster handle is at index 1, this is what to scale
+            cmds.parent(self.shape_siz_clust_handle, cluster_parent)
+            cmds.connectAttr(self.shape_size_attr, self.shape_siz_clust_handle + ".scaleX")
+            cmds.connectAttr(self.shape_size_attr, self.shape_siz_clust_handle + ".scaleY")
+            cmds.connectAttr(self.shape_size_attr, self.shape_siz_clust_handle + ".scaleZ")
+            self.cluster_vis_attr = self.maintenence_grp + ".size_cluster_vis"
+            cmds.connectAttr(self.cluster_vis_attr, self.shape_siz_clust_handle + ".visibility")
+
     def __create_secondary(self):
         "creates ctl"
         sec_parent = []
@@ -697,16 +764,26 @@ class create_ctl():
             # gimbal shape
             cmds.addAttr(self.ctl, ln = "gimbal", at = "message")
             cmds.connectAttr(self.gimbal_shape + ".message", self.ctl + ".gimbal")
-        if self.create_bone:
-            tag_utils.tag_bind_joint(self.bone)
+        if self.create_joint:
+            tag_utils.tag_bind_joint(self.joint)
 
 
-        tag_utils.tag_control(misc.getShape(self.ctl))
+        tag_utils.tag_control(self.ctl)
+        tag_utils.tag_control_shape(misc.getShape(self.ctl))
+
+        for buffer in self.buffers:
+            tag_utils.tag_buffer(buffer)
+        if self.create_buffer_shape:
+            for buffer_shape in self.buffer_shapes:
+                tag_utils.tag_buffer_shape(buffer_shape)
 
     def __create(self):
         ""
         self.__check()
-        self.__create_buffer()
+        if self.create_buffer_shape:
+            self.__create_buffer_as_shape()
+        else:
+            self.__create_buffer()
         self.__create_ctl()
         self.__create_secondary()
         self.__create_gimbal()
@@ -725,6 +802,13 @@ class create_ctl():
     #            size = 1)
     ##########################################################
 
+def create_circle_in_xform(transform_name):
+    # Create a NURBS circle shape
+    curve_shape = cmds.circle(name=transform_name + "Shape", constructionHistory=False, normal=(0, 1, 0), radius=1.0)[0]
+    # Parent the circle shape to the existing transform (without affecting transforms)
+    cmds.parent(curve_shape, transform_name, shape=True, relative=True)
+    # Delete the temporary transform node created with the circle
+    cmds.delete(transform_name + "Shape")
 
 class create_spline_ik():
     # ===============================================================================
@@ -868,7 +952,7 @@ class create_spline_ik():
         tmp_cluster_ctls = []
         for i in range(len(self.joints)):
 
-            tmp_cluster_ctls.append(control_base.create_ctl(side = self.side,
+            tmp_cluster_ctls.append(create_ctl(side = self.side,
                                                name = self.name + "Cluster"+str(i),
                                                parent = self.cluster_parents[i],
                                                shape = "cube",
@@ -894,7 +978,8 @@ class create_spline_ik():
                                                       + self.name
                                                       + str(i)
                                                       + "_CLS"),
-                                              wn = (tmp_cluster_ctls[i].ctl,
+                                              
+                                              weightedNode = (tmp_cluster_ctls[i].ctl,
                                                     tmp_cluster_ctls[i].ctl,),
                                               bindState=True))
             cmds.rename("clusterHandleShape",
@@ -1156,7 +1241,7 @@ class create_rivet_rig():
     def __create_ctl(self):
         if self.num_buffer <1:
             self.num_buffer =1
-        self.ctl = control_base.create_ctl(side = self.side,
+        self.ctl = create_ctl(side = self.side,
                               name = self.name,
                               parent = self.rig_parent,
                               shape = self.shape,
@@ -1217,8 +1302,8 @@ class create_rivet_rig():
     def __cleanup(self):
         if self.debug == False:
             suffix_constraints()
-            misc.lock_all(hierarchy = self.rig_parent, filter = ["*_CTL", "*_JNT"])
-            misc.lock_all(hierarchy = self.skel_parent, filter = ["*_CTL", "*_JNT","*_EX"])
+            misc.lock_all(hierarchy = self.rig_parent, filter = ["*"+ self.suffix, "*_JNT"])
+            misc.lock_all(hierarchy = self.skel_parent, filter = ["*" + self.suffix, "*_JNT","*_EX"])
 
     def __create(self):
         self.__create_parents()

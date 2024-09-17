@@ -10,40 +10,6 @@ import maya.api.OpenMaya as OpenMaya
 ##########################  SKIN WEIGHT DRAGGER #######################
 #######################################################################
 
-# This is the actual tool
-
-import importlib
-import sys
-linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs'
-windows = 'C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/python/libs'
-
-#---determine operating system
-os = sys.platform
-if "linux" in os:
-    os = linux
-if "darwin" in os:
-    os = mac
-if "win" in os:
-    os = windows
-
-if os not in sys.path:
-    sys.path.append(os)
-
-import sys
-linux = '/scratch/levih/dev/rotoslang/src/LH/python/libs/rig_2'
-windows = 'C:/Users/harri/Documents/maya/2025/scripts/rotoslang/src/LH/python/libs/rig_2'
-
-#---determine operating system
-os = sys.platform
-if "linux" in os:
-    os = linux
-if "darwin" in os:
-    os = mac
-if "win" in os:
-    os = windows
-
-if os not in sys.path:
-    sys.path.append(os)
 
 import sys
 
@@ -58,7 +24,8 @@ drag = dragger.Value_Dragger(range_start = 100,
                              range_max = 200,
                              start_func = ka_tools.start,
                              change_func = ka_tools.change,
-                             end_func = ka_tools.finish)
+                             end_func = ka_tools.finish,
+                             exit_func = ka_tools.restore_selection)
 
 drag.clickAndMoveCommand()
 cmds.setToolTo("selectSuperContext")
@@ -69,11 +36,13 @@ class Value_Dragger(object):
     # You will want to set add cmds.setToolTo("valueDragger") in your hotkeys to be able to use this feature
     # value_func is a function that will be setting the values, make sure this function only has one arg and that is for a -100 to 100 range
     CONTEXTNAME = "valueDragger"
+
     print("NEW CONTEXT")
     def __init__(self,
                  start_func = None,
                  change_func = None,
                  end_func = None,
+                 exit_func = None,
                  range_start = 0,
                  range_min = -100,
                  range_max = 100,
@@ -82,6 +51,7 @@ class Value_Dragger(object):
         self.start_func = start_func
         self.change_func = change_func
         self.end_func = end_func
+        self.exit_func = exit_func
         self.range_start = range_start
         self.range_min = range_min
         self.range_max = range_max
@@ -93,6 +63,9 @@ class Value_Dragger(object):
         self.originalWeightValues=""
         self.left = None
         self.right = None
+        self.stored_selection = [""]
+        self.selection_context = "vertex"
+        self.store_selection_list()
 
     def clickAndMoveCommand(self):
 
@@ -100,13 +73,13 @@ class Value_Dragger(object):
 
         def getFirstClick():
             cmds.undoInfo(openChunk=True)
+            self.store_selection_list()
 
             vec = tuple(cmds.draggerContext(Context, query=1, anchorPoint=1 ))
             self.vectorStart = OpenMaya.MVector(vec[0], vec[1], vec[2])
             self.vectorEnd = OpenMaya.MVector(vec[0], vec[1], vec[2])
 
             if self.start_func:
-                # self.left, self.right, self.up, self.down = self.start_func()
                 self.start_func()
             # print vec[0], vec[1], vec[2]
 
@@ -138,7 +111,9 @@ class Value_Dragger(object):
             cmds.refresh()
             # self.vectorStart = OpenMaya.MVector(vec[0], vec[1], vec[2])
 
+
         def releaseClick():
+            self.restore_selection()
             self.vectorStart = OpenMaya.MVector(0.0, 0.0, 0.0)
             self.wt = 0.0
             sel = cmds.ls(sl=True, fl=True)
@@ -148,6 +123,14 @@ class Value_Dragger(object):
                 self.end_func()
 
             cmds.undoInfo(closeChunk=True)
+        def exit_context():
+            self.restore_selection()
+            if self.exit_func:
+                self.exit_func()
+            print("WHYYYYYYYYYYYYYY")
+
+        def initialize():
+            self.store_selection_list()
 
         def holdCommand():
             vec = tuple(cmds.draggerContext(Context, query=1, anchorPoint=1 ))
@@ -158,8 +141,32 @@ class Value_Dragger(object):
             cmds.deleteUI(Context)
 
         cmds.draggerContext(Context, um="sequence", pressCommand=getFirstClick, dragCommand=getCursorPosition, name=Context,
-                            cursor='crossHair', sp="screen", pr="viewPlane", rc=releaseClick)
+                            cursor='crossHair', sp="screen", pr="viewPlane", rc=releaseClick, finalize=exit_context, initialize=initialize)
+
         cmds.setToolTo(Context)
+
+    def store_selection_list(self):
+        # global stored_selection, selection_context
+
+        self.stored_selection = cmds.ls(sl=True, fl=True)
+        if "vtx" in self.stored_selection[0]:
+            self.selection_context = "vertex"
+        elif ".e[" in self.stored_selection[0]:
+            self.selection_context = "edge"
+        vertices = cmds.polyListComponentConversion(toVertex=True)
+        cmds.select(vertices)
+        
+    def restore_selection(self):
+        cmds.select(self.stored_selection)
+        if self.selection_context == "vertex":
+            cmds.selectMode(component=True )
+            cmds.selectType(vertex=True)
+            cmds.hilite(self.stored_selection[0].split(".")[0])
+
+        if self.selection_context == "edge":
+            cmds.selectMode(component=True )
+            cmds.hilite(self.stored_selection[0].split(".")[0])
+
 
 def clamp(_val, _min, _max):
     return max(min(_max, _val), _min)

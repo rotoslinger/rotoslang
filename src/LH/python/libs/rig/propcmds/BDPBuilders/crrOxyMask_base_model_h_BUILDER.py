@@ -67,7 +67,6 @@ def create_std_rig():
                                                         (.8, 0, 0.0),
                                                         (0.4, 0, 0.0),
                                                         (0.4, 0, 0.0)],
-                                            ty_offsets = [0,0,0],
                                             ctrl_names = ["World", "Layout", "Root"],
                                             ctrls_with_bones = [False, False, True],
                                             debug = True)

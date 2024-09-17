@@ -3,6 +3,8 @@ import importlib
 from maya import cmds
 from rig.utils import misc
 from rig.control import base as control_base
+from rig_2.tag import utils as tag_utils
+importlib.reload(tag_utils)
 importlib.reload(control_base)
 importlib.reload(misc)
 
@@ -16,6 +18,7 @@ importlib.reload(misc)
 #DATE:          Oct 14th, 2014
 #Version        1.0.0
 #===============================================================================
+
 
 class create_stdavar_ctrl():
     def __init__(self,
@@ -33,7 +36,9 @@ class create_stdavar_ctrl():
                  #create_bone = False,
                  ctrl_names = ["World", "Layout", "Root"],
                  ctrls_with_bones = [False, False, True],
+                 create_buffer_shape = True,
                  debug = False,
+                 model_hier = "", # this is the model_hier that will be parented to C_geo_Group
                  ):
 
         """
@@ -61,14 +66,18 @@ class create_stdavar_ctrl():
         self.side                   = side
         self.skel_parent            = skel_parent
         self.rig_parent             = rig_parent
+        self.ctrl_parent            = ctrl_parent
         self.ctrl_sizes             = ctrl_sizes
+        self.create_buffer_shape    = create_buffer_shape
         self.debug                  = debug
         self.ty_offsets             = ty_offsets
         self.colors                 = colors
         #self.create_bone           = create_bone
         self.ctrls_with_bones       = ctrls_with_bones
         self.ctrl_names             = ctrl_names
-
+        self.world_ctrl = ""
+        self.layout_ctrl = ""
+        self.root_ctrl = ""
         #---vars
         self.ctrls                  = []
         self.ctrl_buffers           = []
@@ -84,6 +93,7 @@ class create_stdavar_ctrl():
 
     def __create_parents(self):
         """ create groups for skeleton and rig """
+        pass
         # self.skel_parent = cmds.createNode("transform",
         #                                   n = self.side + 
         #                                   "_globalSkel_GRP",
@@ -95,29 +105,45 @@ class create_stdavar_ctrl():
 
     def __create_ctrls(self):
         """ create ctrls """
-        for i in range(len(self.ctrl_names)):
-            if i == 0 & self.debug != 1:
-                parent = self.rig_parent
+        self.root_joint = ""
+        create_buffer_shape = [False, False, True]
+        for index in range(len(self.ctrl_names)):
+            if index == 0 & self.debug != 1:
+                parent = self.ctrl_parent
+
+                # parent = self.rig_parent
                 lock_attrs = ["v"],
-            else: parent = self.ctrls[i-1]
-            if i == 1:
-                lock_attrs = ["sx", "sy", "sz", "v"], 
+            else: parent = self.ctrls[index-1]
+            if index == 1:
+                lock_attrs = ["sx", "sy", "sz", "v"],
             return_ctrl = control_base.create_ctl(side = self.side, 
-                                                name = self.ctrl_names[i], 
+                                                name = self.ctrl_names[index], 
                                                 parent = parent, 
                                                 shape = "circle",
                                                 num_buffer = 1,
                                                 lock_attrs = lock_attrs[0], 
                                                 gimbal = False,
-                                                size = self.ctrl_sizes[i],
-                                                color = self.colors[i],
-                                                offset = [0,self.ty_offsets[i],0],
+                                                size = self.ctrl_sizes[index],
+                                                color = self.colors[index],
+                                                offset = [0,self.ty_offsets[index],0],
                                                 orient = [0,0,90],
-                                                create_bone = self.ctrls_with_bones[i],
+                                                create_buffer_shape=create_buffer_shape[index],
+                                                create_joint = self.ctrls_with_bones[index],
                                                 )
             self.ctrls.append(return_ctrl.ctl)
             self.ctrl_buffers.append(return_ctrl.buffers)
+            if return_ctrl.joint:
+                self.root_joint = return_ctrl.joint
+                tag_utils.tag_rootskel_joint(self.root_joint)
+                bind_jnt_grp = tag_utils.get_all_with_tag("BIND_JOINT_GRP", hint_list=None)[0]
+                cmds.parent(self.root_joint, bind_jnt_grp)
+
+            
             # self.ctrl_gimbals.append(return_ctl.gimbal_ctl)
+        self.world_ctrl = self.ctrls[0]
+        self.layout_ctrl = self.ctrls[1]
+        self.root_ctrl = self.ctrls[2]
+
 
     def __create_mdlsiz(self):
         """ create global scale attr, wire it up"""
@@ -132,6 +158,9 @@ class create_stdavar_ctrl():
         cmds.connectAttr(self.mdlsiz_attr, self.ctrls[0] + ".sy")
         cmds.connectAttr(self.mdlsiz_attr, self.ctrls[0] + ".sz")
         misc.lock_attrs(node = self.ctrls[0], attr = ["sx", "sy", "sz"])
+
+    def __tag(self):
+        pass
 
     def __cleanup(self):
         if self.debug == False:

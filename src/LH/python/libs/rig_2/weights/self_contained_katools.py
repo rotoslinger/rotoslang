@@ -1550,6 +1550,7 @@ def start(points=None):
 def change(value=0.0):
     global weightBlenderInfo
     # weightBlenderInfo = WeightBlenderInfo()
+
     weightBlenderInfo.blend(value)
 
 def finish():
@@ -1559,45 +1560,51 @@ def finish():
         weightBlenderInfo.deleteTargetIcons()
     restore_selection()
 
+import maya.api.OpenMaya as om2
+
+# Initialize global variables
+stored_selection = None
+selection_context = None
+
+
 def store_selection_list():
     global stored_selection, selection_context
-    
-    sel = om2.MGlobal.getActiveSelectionList()
-    if sel.length() > 0:
-        comp = sel.getComponent(0)
-        api_type = comp.apiType()
-        
-        # Check if the component is an edge or point
-        if api_type in (om2.MFn.kMeshEdgeComponent, om2.MFn.kMeshVertComponent):
-            # Store the entire selection list and context
-            stored_selection = sel
-            selection_context = api_type
-            
-            if api_type == om2.MFn.kMeshEdgeComponent:
-                # Convert edges to points
-                sel = sel.getSelectionStrings()
-                sel = [om2.MGlobal.getSelectionListByName(name).getComponent(0) for name in sel]
-                om2.MGlobal.setActiveSelectionList(om2.MSelectionList().add(sel).getSelectionStrings(), om2.MFn.kMeshVertComponent)
-            
-            return sel, selection_context
-        else:
-            print("Selection is neither an edge nor a point.")
-            return None, None
-    else:
-        print("No selection.")
-        return None, None
+
+    stored_selection = cmds.ls(sl=True, fl=True)
+    if "vtx" in stored_selection[0]:
+        selection_context = "vertex"
+    elif ".e[" in stored_selection[0]:
+        selection_context = "edge"
+
+    # updateObjectSelectionMasks;
+    # updateComponentSelectionMasks;
+
+
+    vertices = cmds.polyListComponentConversion(toVertex=True)
+    cmds.select(vertices)
+    pass
 
 def restore_selection():
-    if 'stored_selection' in globals() and 'selection_context' in globals():
-        if selection_context == om2.MFn.kMeshEdgeComponent:
-            # Convert points back to edges
-            sel = stored_selection.getSelectionStrings()
-            sel = [om2.MGlobal.getSelectionListByName(name).getComponent(0) for name in sel]
-            om2.MGlobal.setActiveSelectionList(om2.MSelectionList().add(sel).getSelectionStrings(), om2.MFn.kMeshEdgeComponent)
-        else:
-            om2.MGlobal.setActiveSelectionList(stored_selection)
-    else:
-        print("No stored selection to restore.")
+    stored_selection, selection_context
+    cmds.select(stored_selection)
+    if selection_context == "vertex":
+        cmds.selectMode(component=True )
+        cmds.selectType(vertex=True)
+        cmds.hilite(stored_selection[0].split(".")[0])
+
+    if selection_context == "edge":
+        cmds.selectMode(component=True )
+        cmds.selectType(polymeshEdge=True)
+        cmds.hilite(stored_selection[0].split(".")[0])
+    ctx = cmds.currentCtx()
+    print(cmds.contextInfo(ctx, escapeContext=True))
+
+
+
+
+# cmds.select(all_target_curves, r=True)
+# cmds.selectMode(component=True )
+# cmds.selectType(controlVertex=True)
 
 
 def cancel():

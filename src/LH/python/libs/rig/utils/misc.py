@@ -4,6 +4,8 @@ from rig_2.message import utils as message_utils
 import importlib
 importlib.reload(message_utils)
 # from rig_2.tag.utils import tag_rivet_mesh, create_component_tag
+from rig_2.tag import utils as tag_utils
+importlib.reload(tag_utils)
 
 
 
@@ -105,27 +107,73 @@ class create_rig_hier():
 
     def __create_nodes(self):
         "Create and name rig transforms"
-        self.character_grp   = cmds.createNode("transform", 
-                                                name = "C_" + 
-                                                self.name + 
-                                                "_GRP")
+        self.root_grp= cmds.createNode("transform", 
+                                        name = "C_" + 
+                                        self.name + 
+                                        "_GRP")
 
-        self.geo_grp         = cmds.createNode("transform", 
-                                                name   = "C_geo_GRP",
-                                                parent = self.character_grp)
+        self.geo_grp = cmds.createNode("transform", 
+                                        name   = "C_geo_GRP",
+                                        parent = self.root_grp)
 
-        self.skeleton_grp    = cmds.createNode("transform", 
-                                                name   = "C_skeleton_GRP",
-                                                parent = self.character_grp)
+        self.skeleton_grp = cmds.createNode("transform", 
+                                            name   = "C_skeleton_GRP",
+                                            parent = self.root_grp)
+        self.skel_bind = cmds.createNode("transform", 
+                                             name   = "C_skelbind_GRP",
+                                             parent = self.skeleton_grp)
+        self.skel_helper = cmds.createNode("transform", 
+                                                name   = "C_skelhelp_GRP",
+                                                parent = self.skeleton_grp)
 
-        self.rig_grp         = cmds.createNode("transform", 
-                                                name   = "C_rig_GRP",
-                                                parent = self.character_grp)
+        self.rig_grp = cmds.createNode("transform",
+                                       name   = "C_rig_GRP",
+                                       parent = self.root_grp)
+        
+        self.rig_ctrl_grp = cmds.createNode("transform",
+                                    name   = "C_rigctrl_GRP",
+                                    parent = self.rig_grp)
+        self.rig_sizectrl_grp = cmds.createNode("transform",
+                                    name   = "C_ctrlsize_GRP",
+                                    parent = self.rig_ctrl_grp)
 
-        self.control_grp     = cmds.createNode("transform", 
-                                                name   = "C_control_GRP",
-                                                parent = self.character_grp)
-        self.groups = [self.character_grp, self.geo_grp, self.skeleton_grp, self.rig_grp, self.control_grp]
+
+        self.maintenence_grp = cmds.createNode("transform",
+                                                name   = "C_maintenance_GRP",
+                                                parent = self.root_grp)
+        
+
+
+
+        self.control_grp = cmds.createNode("transform", 
+                                            name   = "C_control_GRP",
+                                            parent = self.root_grp)
+
+        self.groups = [self.root_grp, self.geo_grp, self.skeleton_grp, self.rig_grp, self.control_grp]
+        tag_utils.tag_root_group(self.root_grp)
+        tag_utils.tag_rig_group(self.rig_grp)
+        tag_utils.tag_rig_ctrl_group(self.rig_ctrl_grp)
+        tag_utils.tag_rig_ctrlsize_group(self.rig_sizectrl_grp)
+        tag_utils.tag_ctrl_group(self.control_grp)
+        tag_utils.tag_geo_group(self.geo_grp)
+        tag_utils.tag_skeleton_group(self.skeleton_grp)
+        tag_utils.tag_bindjnt_group(self.skel_bind)
+        tag_utils.tag_helpjnt_group(self.skel_helper)
+        tag_utils.tag_maintenance_group(self.maintenence_grp)
+
+        # Any rig fitting or rig maintenance attributes will go here
+        # This will make cleaning up the rig much easier.
+        cmds.addAttr(self.maintenence_grp, ln = "fit_ctrl_vis", at = "bool")
+        self.fit_ctrl_vis = self.maintenence_grp + ".fit_ctrl_vis"
+        cmds.setAttr(self.fit_ctrl_vis, cb = True, e=True)
+        cmds.addAttr(self.maintenence_grp, ln = "size_cluster_vis", at = "bool")
+        self.size_cluster_vis = self.maintenence_grp + ".size_cluster_vis"
+        cmds.setAttr(self.size_cluster_vis, cb = True, e=True)
+
+        # addAttr -ln "vis_fit_ctrl"  -at bool  |C_Template_GRP|C_maintenance_GRP;
+        # setAttr -e-channelBox true |C_Template_GRP|C_maintenance_GRP.vis_fit_ctrl;
+
+
     def __lock_attrs(self):
         "Lock out attributes"
         for i in range(len(self.groups)):

@@ -36,6 +36,7 @@ class Value_Dragger(object):
         self.originalWeightValues=""
         self.left = None
         self.right = None
+    
 
     def clickAndMoveCommand(self):
 
@@ -43,7 +44,7 @@ class Value_Dragger(object):
 
         def getFirstClick():
             cmds.undoInfo(openChunk=True)
-
+            
             vec = tuple(cmds.draggerContext(Context, query=1, anchorPoint=1 ))
             self.vectorStart = OpenMaya.MVector(vec[0], vec[1], vec[2])
             self.vectorEnd = OpenMaya.MVector(vec[0], vec[1], vec[2])
@@ -57,32 +58,15 @@ class Value_Dragger(object):
             vec = tuple(cmds.draggerContext(Context, query=1, dragPoint=1))
             self.vectorEnd = OpenMaya.MVector(vec[0], vec[1], vec[2])
             dotProd = OpenMaya.MVector(self.vectorStart- self.vectorEnd).normal()*(OpenMaya.MVector(-1.0, 0.0, 0.0))
-            # dotProd = OpenMaya.MVector(self.vectorStart- self.vectorEnd).normal()*(OpenMaya.MVector(-1.0, 0.0, 0.0))
             length = OpenMaya.MVector(self.vectorStart- self.vectorEnd).length()
             posNeg = -1
-
             if dotProd >= 0:
                 posNeg = 1
-            
-            # print "UP", self.up
-            # print "DOWN", self.down
-            # print "Left", self.left
-            # print "Right", self.right
-
-            # if self.left and self.right and self.left < self.right:
-            #     posNeg = posNeg * -1
-
-
-
-
             self.wt = (length * self.sensitivity)*posNeg + self.range_start
             self.wt = clamp(self.wt, self.range_min, self.range_max)
-
             if self.change_func:
                 self.change_func(self.wt)
-
             cmds.refresh()
-            # self.vectorStart = OpenMaya.MVector(vec[0], vec[1], vec[2])
 
         def releaseClick():
             self.vectorStart = OpenMaya.MVector(0.0, 0.0, 0.0)
@@ -99,6 +83,8 @@ class Value_Dragger(object):
             vec = tuple(cmds.draggerContext(Context, query=1, anchorPoint=1 ))
             self.vectorStart = OpenMaya.MVector(vec[0], vec[1], vec[2])
             self.vectorEnd = OpenMaya.MVector(vec[0], vec[1], vec[2])
+
+
 
         if cmds.draggerContext(Context, exists=True):
             cmds.deleteUI(Context)

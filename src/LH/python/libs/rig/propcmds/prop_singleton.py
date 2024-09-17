@@ -86,7 +86,7 @@ class Component(base.Component):
                                                 size = self.ctl_sizes[i],
                                                 color = self.colors[i],
                                                 orient = [0,0,90],
-                                                create_bone = self.ctrls_with_bones[i],
+                                                create_joint = self.ctrls_with_bones[i],
                                                 )
             self.ctls.append(return_ctl.ctl)
             self.ctl_buffers.append(return_ctl.buffers)
