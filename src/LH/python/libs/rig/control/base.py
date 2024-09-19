@@ -574,6 +574,19 @@ class create_ctl():
 
         self.__create()
 
+    def __create(self):
+        ""
+        self.__check()
+        if self.create_buffer_shape:
+            self.__create_buffer_as_shape()
+        else:
+            self.__create_buffer()
+        self.__create_ctl()
+        self.__create_secondary()
+        self.__create_gimbal()
+        self.__make_gimbal_vis()
+        self.add_tags()
+
     def __check(self):
         "checks to make sure shape is supported"
         if not(self.shape != "circle" or
@@ -641,14 +654,7 @@ class create_ctl():
                 min = 0,
                 k = True)
                 self.shape_size_attr = temp_buffer.ctl + ".ctrl_siz"
-
-            # // Result: Connected C_maintenance_GRP.fit_ctrl_vis to L__ControlDBuffer1_GRP_CTLShape.visibility.
-
-
         self.buffers_parent =  self.buffers[0]
-
-
-        
 
     def __create_ctl(self):
         "creates ctl"
@@ -686,7 +692,7 @@ class create_ctl():
         self.parent_constraint = ''
         self.scale_constraint = ''
         if self.create_joint:
-            self.joint = cmds.joint( self.ctl, name=self.name + "_jnt")
+            self.joint = cmds.joint( self.ctl, name=self.side + self.name + "_jnt")
             self.parent_constraint = cmds.parentConstraint(self.ctl , self.joint)
             self.scale_constraint = cmds.scaleConstraint(self.ctl, self.joint)
         if self.create_buffer_shape:
@@ -777,18 +783,6 @@ class create_ctl():
             for buffer_shape in self.buffer_shapes:
                 tag_utils.tag_buffer_shape(buffer_shape)
 
-    def __create(self):
-        ""
-        self.__check()
-        if self.create_buffer_shape:
-            self.__create_buffer_as_shape()
-        else:
-            self.__create_buffer()
-        self.__create_ctl()
-        self.__create_secondary()
-        self.__create_gimbal()
-        self.__make_gimbal_vis()
-        self.add_tags()
 
     ##########################################################
     # ---example

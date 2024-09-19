@@ -45,6 +45,7 @@ class simple_component():
                  primary_axis = "X", # unless mirrored, then -X
                  secondary_axis = "Y", # up 
                  world_up_object = None,
+                 floating_ctrls = False,
                  # Add functionality to inherit transforms
                  ):
 
@@ -89,9 +90,9 @@ class simple_component():
         self.ctrl_rotation          = ctrl_rotation
         self.is_wire                = is_wire
         self.primary_axis           = primary_axis
-        self.secondary_axis          = secondary_axis
+        self.secondary_axis         = secondary_axis
         self.world_up_object        = world_up_object
-
+        self.floating_ctrls         = floating_ctrls
         #---vars
         self.ctrls                  = []
         self.ctrl_buffers           = []
@@ -102,12 +103,24 @@ class simple_component():
         self.shape_size_attr        = []
         self.__create()
 
+    def __create(self):
+        self.__check()
+        self.__create_ctrls()
+        self.__create_wire_deformer()
+        #self.__create_shape_size()
+        self.__tag()
+        self.__cleanup()
+
+
     def __check(self):
         for i in [self.skel_parent, self.rig_parent]:
             if not cmds.objExists(i):
                 raise Exception(i + " does not exist")
                 quit()
-    
+        # for index, arg in ["Keyword arg ctrl_names, value ", "Keyword arg ctrl_sizes "]:
+        #     if type(arg) != list:
+        #         raise Exception(arg + check_lists[index] + " should be a list, make sure you haven't missed any [] ")
+
     def __create_ctrls(self):
         """ create ctrls """
         self.ctrl_buffers = []
@@ -143,6 +156,7 @@ class simple_component():
             if index == 0 & self.debug != 1:
                 parent = self.parent_hook
                 lock_attrs = ["v"],
+            elif self.floating_ctrls: self.parent_hook
             else: parent = self.ctrls[index-1]  # ---Nested hierarchy
             if index == 1:
                 lock_attrs = ["sx", "sy", "sz", "v"], 
@@ -221,14 +235,6 @@ class simple_component():
         if self.debug == False:
             misc.lock_all(hierarchy = self.rig_parent, filter = ["*_CTL"])
             misc.lock_all(hierarchy = self.skel_parent, filter = ["*_CTL"])
-
-    def __create(self):
-        self.__check()
-        self.__create_ctrls()
-        self.__create_wire_deformer()
-        #self.__create_shape_size()
-        self.__tag()
-        self.__cleanup()
 
 
 
