@@ -211,6 +211,54 @@ class simple_component():
         for ctrl in self.ctrls:
             print(ctrl)
         pass
+
+
+
+
+
+
+
+    def __draw_curve(self):
+        knots = []
+        for i in range(len(self.joints)):
+            self.points.append(tuple(cmds.xform(self.joints[i],
+                                     q =True,
+                                     ws=True,
+                                     t=True)))
+            knots.append(i)
+        self.curve = cmds.curve(n = (self.side
+                                     + "_"
+                                     + self.name
+                                     + "SplineIK_CRV"),
+                                d = 1,
+                                p = self.points,
+                                k = knots)
+        if self.inherit_transform == False:
+            cmds.setAttr(self.curve + ".inheritsTransform",0)
+        cmds.parent(self.curve,
+                    self.curve_parent)
+
+    def __create_clusters(self):
+        tmp_cluster_ctls = []
+        for i in range(len(self.joints)):
+
+            self.clusters.append(cmds.cluster(self.curve
+                                               + ".cv["
+                                               + str(i)
+                                               + "]",
+                                              name = (self.side
+                                                      + "_"
+                                                      + self.name
+                                                      + str(i)
+                                                      + "_CLS"),
+                                              wn = (tmp_cluster_ctls[i].ctl,
+                                                    tmp_cluster_ctls[i].ctl,),
+                                              bindState=True))
+            cmds.rename("clusterHandleShape",
+                        self.side + "_" + self.name + str(i) + "_CLS" + "Shape")
+
+
+
     def __create_shape_size(self):
         """ create global scale attr, wire it up"""
         # print("BUFFERS", str(self.ctrl_buffers))
