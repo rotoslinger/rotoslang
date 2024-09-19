@@ -39,7 +39,8 @@ class simple_component():
                  ctrl_shape_orient = (0,0,0), #this is just the control wire orientation.
                  ctrl_rotation = (0, 0, 0), # this is the root of the chain rotation. All children will be oriented with an rx,ry,rz offset of 0, to inherit the root's rotation.
                  debug = False,
-                 is_wire=True,
+                 create_wire_deformer=True,
+                 wire_deformer_root_name="ControlARoot", # if creating the wire deformer, the curve and curve base must be parented here in order to prevent flipping when the component is rotated.
                  # These are todo: These will align the control shape
                  # Then use aim constraints to orient the buffers
                  primary_axis = "X", # unless mirrored, then -X
@@ -50,24 +51,53 @@ class simple_component():
                  ):
 
         """
-        @type  side:                string
-        @param side:                usually C but L or R are also supported
+        @type  side:                        string
+        @param side:                        usually C but L or R are also supported
 
-        @type  skel_parent:          string
-        @param skel_parent:          where to parent newly created joints,
-                                     effectors, and generally things animators
-                                     don't want to see.
+        @type  skel_parent:                 string
+        @param skel_parent:                 where to parent newly created joints,
+                                            effectors, and generally things animators
+                                            don't want to see.
 
-        @type  rig_parent:           string
-        @param rig_parent:           where to parent ctrls and other things
-                                     animators would like to see
+        @type  rig_parent:                  string
+        @param rig_parent:                  where to parent ctrls and other things
+                                            animators would like to see
 
-        @type  ctrl_sizes:            float array
-        @param ctrl_sizes:            sizes for the global & local controls
+        @type  ctrl_sizes:                  float array
+        @param ctrl_sizes:                  sizes for the global & local controls
 
-        @type  debug:                bool
-        @param debug:                if debug is on, nothing will be locked and
-                                     ihi will remain 1
+        @type  debug:                       bool
+        @param debug:                       if debug is on, nothing will be locked and
+                                            ihi will remain 1
+
+        @type  create_wire_deformer:        bool
+        @param create_wire_deformer:        if True, a curve will be created with CVs 
+                                            at every joint, then a wire deformer will 
+                                            be created. This curve will be parented to
+                                            a new control which is named after the arg
+                                            wire_deformer_root_name.
+
+        @type  wire_deformer_root_name:     string
+        @param wire_deformer_root_name:     the name you would like to give the control
+                                            where the the curve and curve base will be
+                                            parented.
+                                            
+                                            If None split any numbers out of 
+                                            the first control's name and append the word
+                                            "Root". For example: ControlARoot.
+                                            
+                                            This control will be created in addition to
+                                            the specified controls.  It will be parented
+                                            under the parent_hook arg, then all of the 
+                                            controls will be parented here instead of the
+                                            parent_hook.
+                                            
+
+
+
+
+
+                                      if creating the wire deformer, the curve and curve base must be parented here in order to prevent flipping when the component is rotated.
         """
 
         #---arg vars
@@ -81,18 +111,25 @@ class simple_component():
         self.root_pos_offset        = root_pos_offset
         self.create_buffer_shape    = create_buffer_shape
         self.debug                  = debug
-        # self.ty_offsets             = ty_offsets
+        # self.ty_offsets             = ty_offsets # This will be done by hand right now, no good procedural way to do this.
         self.colors                 = colors
         self.create_joints          = create_joints
         self.ctrl_names             = ctrl_names
         self.joint_parent           = joint_parent
         self.ctrl_shape_plane       = ctrl_shape_orient
         self.ctrl_rotation          = ctrl_rotation
-        self.is_wire                = is_wire
+        self.create_wire_deformer   = create_wire_deformer
+        self.wire_deformer_root_name=wire_deformer_root_name
+        # TODO: Add orientation options.
+        # Right now I am using ctrl_rotation to orient the controls.
+        # This is a temporary solution, and does not take into account mirroring.
+        # In order to get mirrored rotations the control buffer will need to have its x axis scaled to -1 this has to be done by hand :(
         self.primary_axis           = primary_axis
         self.secondary_axis         = secondary_axis
         self.world_up_object        = world_up_object
+
         self.floating_ctrls         = floating_ctrls
+
         #---vars
         self.ctrls                  = []
         self.ctrl_buffers           = []
@@ -152,6 +189,12 @@ class simple_component():
         tmp_x, tmp_y, tmp_z = self.root_pos_offset
 
         rx,ry,rz = self.ctrl_rotation
+
+        '''
+        If you are creating a wire deformer, you will need a root control to move all of the child controls around.
+        Whether the component is a chain, or a group of controls, you will need all of these controls to be parented to the root
+        By default, the
+        '''
         for index in range(len(self.ctrl_names)):
             if index == 0 & self.debug != 1:
                 parent = self.parent_hook
