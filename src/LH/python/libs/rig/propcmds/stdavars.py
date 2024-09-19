@@ -94,14 +94,6 @@ class create_stdavar_ctrl():
     def __create_parents(self):
         """ create groups for skeleton and rig """
         pass
-        # self.skel_parent = cmds.createNode("transform",
-        #                                   n = self.side + 
-        #                                   "_globalSkel_GRP",
-        #                                   p = self.skel_parent)
-        # self.rig_parent = cmds.createNode("transform",
-        #                                   n = self.side + 
-        #                                   "_globalRig_GRP",
-        #                                   p = self.rig_parent)
 
     def __create_ctrls(self):
         """ create ctrls """

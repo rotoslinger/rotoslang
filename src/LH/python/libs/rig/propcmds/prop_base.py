@@ -36,9 +36,16 @@ class simple_component():
                  root_pos_offset= (1,0,0), # this moves the root to an offset location
                  create_buffer_shape = True,
                  joint_parent = None, #if set to None automatically parent to root
-                 ctrl_shape_orient = (0,0,90), #this is just the control wire orientation.
+                 ctrl_shape_orient = (0,0,0), #this is just the control wire orientation.
                  ctrl_rotation = (0, 0, 0), # this is the root of the chain rotation. All children will be oriented with an rx,ry,rz offset of 0, to inherit the root's rotation.
                  debug = False,
+                 is_wire=True,
+                 # These are todo: These will align the control shape
+                 # Then use aim constraints to orient the buffers
+                 primary_axis = "X", # unless mirrored, then -X
+                 secondary_axis = "Y", # up 
+                 world_up_object = None,
+                 # Add functionality to inherit transforms
                  ):
 
         """
@@ -80,6 +87,11 @@ class simple_component():
         self.joint_parent           = joint_parent
         self.ctrl_shape_plane       = ctrl_shape_orient
         self.ctrl_rotation          = ctrl_rotation
+        self.is_wire                = is_wire
+        self.primary_axis           = primary_axis
+        self.secondary_axis          = secondary_axis
+        self.world_up_object        = world_up_object
+
         #---vars
         self.ctrls                  = []
         self.ctrl_buffers           = []
@@ -95,13 +107,14 @@ class simple_component():
             if not cmds.objExists(i):
                 raise Exception(i + " does not exist")
                 quit()
-
     
     def __create_ctrls(self):
         """ create ctrls """
         self.ctrl_buffers = []
         chained_pos_off_count = self.chained_pos_offset
         
+        # TODO need to check that we at least have 3 controls in ctrl names if making a wire deformer.
+
         if len(self.colors) > 0 < len(self.ctrl_names):
             # get the index at which the last color was specified - start the loop here
             # color every color the same as the last specified color
@@ -178,7 +191,12 @@ class simple_component():
                 cmds.parent(self.joints[index], joint_parent)
             if index > 0:
                 cmds.parent(self.joints[index], self.joints[index-1])
-
+    def __create_wire_deformer(self):
+        # must have at least 3 controls
+        self.wire_curve=""
+        for ctrl in self.ctrls:
+            print(ctrl)
+        pass
     def __create_shape_size(self):
         """ create global scale attr, wire it up"""
         # print("BUFFERS", str(self.ctrl_buffers))
@@ -207,6 +225,7 @@ class simple_component():
     def __create(self):
         self.__check()
         self.__create_ctrls()
+        self.__create_wire_deformer()
         #self.__create_shape_size()
         self.__tag()
         self.__cleanup()

@@ -1,7 +1,7 @@
 import importlib
 from rig.utils import misc
 from rig.propcmds import stdavars
-from rig.propcmds import prop_singleton
+from src.LH.python.libs.rig.propcmds.OLD_components import prop_singleton
 from rig_2.tag import utils as tag_utils
 from rig.propcmds import prop_base
 importlib.reload(prop_base)
