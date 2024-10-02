@@ -35,6 +35,8 @@ def create_std_rig(name = "mask_tubing_rig"):
                                     # ctrl_rotation = (90,0,-90),
                                     ctrl_shape_orient = [0,0,0],
                                     root_pos_offset=(0, 2 ,0),
+                                    create_wire_deformer=True,
+
                                     debug = True)
     counter = 1 
     mask_pouch = prop_base.simple_component(side = "",
@@ -102,6 +104,7 @@ def create_std_rig(name = "mask_tubing_rig"):
                     chained_pos_offset=(0, 0, 2),
                     root_pos_offset=(0, -20 ,2),
                     # ctrl_shape_orient = [0, 0, 0],
+                    create_wire_deformer=True,
                     ctrl_rotation = [0,0,0],
                     debug = True)
     strap_straight_end = prop_base.simple_component(side = "",
@@ -128,13 +131,15 @@ def create_std_rig(name = "mask_tubing_rig"):
                         # Not adding a joint parent, because Oxy mask won't have joints, it is a wire
                         # This automatically makes the parent the root joint.
                         ctrl_sizes = [1],
-                        ctrl_names = ["_strapBase","_strapMid","_strapEnd",],
+                        ctrl_names = ["_strapBase","_strapMid1","_strapMid2","_strapEnd",],
                         create_joints = True,
                         create_buffer_shape = True,
                         colors = [(1, 0, 0)],
                         chained_pos_offset=(0, -2, 0),
                         root_pos_offset=(3, -20 ,0),
                         # ctrl_shape_orient = [0, 0, 0],
+                        create_wire_deformer=True,
+
                         ctrl_rotation = [0,0,0],
                         debug = True)
 
@@ -145,13 +150,14 @@ def create_std_rig(name = "mask_tubing_rig"):
                         # Not adding a joint parent, because Oxy mask won't have joints, it is a wire
                         # This automatically makes the parent the root joint.
                         ctrl_sizes = [1],
-                        ctrl_names = ["_strapBase","_strapMid","_strapEnd",],
+                        ctrl_names = ["_strapBase","_strapMid1","_strapMid2","_strapEnd",],
                         create_joints = True,
                         create_buffer_shape = True,
                         colors = [(0, 0, 1)],
                         chained_pos_offset=(0, -2, 0),
                         root_pos_offset=(-3, -20 ,0),
                         # ctrl_shape_orient = [0, 0, 0],
+                        create_wire_deformer=True,
                         ctrl_rotation = [0,0,0],
                         debug = True)
     strap_loop = prop_base.simple_component(side = "",
@@ -170,6 +176,8 @@ def create_std_rig(name = "mask_tubing_rig"):
                     # ctrl_shape_orient = [0, 0, 0],
                     ctrl_rotation = [0,0,0],
                     floating_ctrls=True,
+                    create_wire_deformer=True,
+
                     debug = True)
 
 

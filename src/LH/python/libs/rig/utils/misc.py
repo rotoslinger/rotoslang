@@ -170,9 +170,28 @@ class create_rig_hier():
         self.size_cluster_vis = self.maintenence_grp + ".size_cluster_vis"
         cmds.setAttr(self.size_cluster_vis, cb = True, e=True)
 
+        cmds.addAttr(self.maintenence_grp, ln = "ctrl_shape_vis", at = "bool", dv=True)
+        self.ctrl_shape_vis = self.maintenence_grp + ".ctrl_shape_vis"
+        cmds.setAttr(self.ctrl_shape_vis, cb = True, e=True)
+
         # addAttr -ln "vis_fit_ctrl"  -at bool  |C_Template_GRP|C_maintenance_GRP;
         # setAttr -e-channelBox true |C_Template_GRP|C_maintenance_GRP.vis_fit_ctrl;
 
+    def finalize_maintenence(self):
+        # meant to be used after the entire rig has finished building
+        # creates all neccesary attributes.
+        self.groups = [self.root_grp, self.geo_grp, self.skeleton_grp, self.rig_grp, self.control_grp, self.maintenence_grp]
+
+        # wires up the maintenence group
+        # turns on drawing overrides
+        # Adds visibility switches for the rig groups
+        # Adds override display types for each rig group
+
+        # cmds.setAttr(self.groups[i]+".overrideEnabled",
+        #         keyable = False, 
+        #         channelBox = True,)
+
+        pass
 
     def __lock_attrs(self):
         "Lock out attributes"
@@ -183,6 +202,11 @@ class create_rig_hier():
             cmds.setAttr(self.groups[i]+".v",
                          keyable = False, 
                          channelBox = True)
+            cmds.setAttr(self.groups[i]+".overrideEnabled",
+                         keyable = False, 
+                         channelBox = True,)
+
+
             #---expose needed attrs
             cmds.setAttr(self.groups[i]+".overrideDisplayType",
                          2,

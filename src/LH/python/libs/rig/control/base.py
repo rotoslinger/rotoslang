@@ -366,7 +366,7 @@ class draw_ctl():
         if self.lock_attrs == ["all"]:
             self.lock_attrs = ["tx","ty","tz","rx","ry","rz","sx","sy","sz","v"]
         for i in range(len(self.lock_attrs)):
-            cmds.setAttr(self.ctl + "."+ self.lock_attrs[i],
+            cmds.setAttr(self.ctl + "." + self.lock_attrs[i],
                           lock = True,
                           keyable = False,
                           channelBox = False)
@@ -620,7 +620,6 @@ class create_ctl():
         self.buffer_shapes = []
         self.shape_size_attr = ""
         for i in range(self.num_buffer):
-            print("creatingBuffer")
             format_num = self.num_buffer-i
             temp_buffer = draw_ctl(
                                     name =  self.side
@@ -631,7 +630,7 @@ class create_ctl():
                                             + "_GRP",
                                     parent = self.parent,
                                     shape = self.shape,
-                                    size = 4,
+                                    size =self.size,
                                     show_rot_order = False,
                                     orient = self.orient,
                                     color = (1,1,1),
@@ -672,6 +671,7 @@ class create_ctl():
                             color = self.color,
                             hide = self.hide).ctl
         self.shape_node = misc.getShape(self.ctl)
+
         if self.nullTransform:
             name = self.ctl
             parent = misc.getParent(self.ctl)
@@ -698,8 +698,7 @@ class create_ctl():
         if self.create_buffer_shape:
             # create cluster in rig control connect buffer siz attr to scale
             # self.ctl
-            cluster_parent = tag_utils.get_all_with_tag(tag_utils.HIER_____RIG_CONTROL_SIZE_GRP)
-            print("CLUSTER PARENT = ",  cluster_parent)
+            cluster_parent = tag_utils.get_all_with_tag("RIG_CONTROL_SIZE_GRP")
             self.shape_siz_clust, self.shape_siz_clust_handle = cmds.cluster(self.shape_node, name=self.shape_node + "Cluster") # the cluster handle is at index 1, this is what to scale
             cmds.parent(self.shape_siz_clust_handle, cluster_parent)
             cmds.connectAttr(self.shape_size_attr, self.shape_siz_clust_handle + ".scaleX")
@@ -707,6 +706,11 @@ class create_ctl():
             cmds.connectAttr(self.shape_size_attr, self.shape_siz_clust_handle + ".scaleZ")
             self.cluster_vis_attr = self.maintenence_grp + ".size_cluster_vis"
             cmds.connectAttr(self.cluster_vis_attr, self.shape_siz_clust_handle + ".visibility")
+        self.maintenence_grp = tag_utils.get_all_with_tag("MAINTENANCE_GRP")[0]
+        self.ctrl_shape_vis_attr = self.maintenence_grp + ".ctrl_shape_vis"
+        cmds.connectAttr(self.ctrl_shape_vis_attr, self.shape_node + ".visibility")
+
+            
 
     def __create_secondary(self):
         "creates ctl"

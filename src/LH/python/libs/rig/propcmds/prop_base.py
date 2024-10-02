@@ -1,5 +1,6 @@
 import sys
 import importlib
+import re
 from maya import cmds
 from rig.utils import misc
 from rig.control import base as control_base
@@ -39,8 +40,11 @@ class simple_component():
                  ctrl_shape_orient = (0,0,0), #this is just the control wire orientation.
                  ctrl_rotation = (0, 0, 0), # this is the root of the chain rotation. All children will be oriented with an rx,ry,rz offset of 0, to inherit the root's rotation.
                  debug = False,
-                 create_wire_deformer=True,
-                 wire_deformer_root_name="ControlARoot", # if creating the wire deformer, the curve and curve base must be parented here in order to prevent flipping when the component is rotated.
+                 create_wire_deformer=False,
+                 wire_deformer_root_name=None, # if creating the wire deformer, the curve and curve base must be parented here in order to prevent flipping when the component is rotated.
+                 wire_ctrl_scale_factor = 1.5,
+                 wire_ctrl_color = (1,1,0),
+                 wire_deformer_geom = "",
                  # These are todo: These will align the control shape
                  # Then use aim constraints to orient the buffers
                  primary_axis = "X", # unless mirrored, then -X
@@ -120,6 +124,7 @@ class simple_component():
         self.ctrl_rotation          = ctrl_rotation
         self.create_wire_deformer   = create_wire_deformer
         self.wire_deformer_root_name=wire_deformer_root_name
+        self.wire_deformer_geom     = wire_deformer_geom
         # TODO: Add orientation options.
         # Right now I am using ctrl_rotation to orient the controls.
         # This is a temporary solution, and does not take into account mirroring.
@@ -129,25 +134,29 @@ class simple_component():
         self.world_up_object        = world_up_object
 
         self.floating_ctrls         = floating_ctrls
+        self.wire_ctrl_scale_factor = wire_ctrl_scale_factor
+        self.wire_ctrl_color        = wire_ctrl_color
 
         #---vars
         self.ctrls                  = []
         self.ctrl_buffers           = []
-        self.ctrl_shapes     = []
+        self.ctrl_shapes            = []
 
         self.ctrl_gimbals           = []
         self.joints                 = []
         self.shape_size_attr        = []
+        self.curve_parent           = ""
+
         self.__create()
 
     def __create(self):
         self.__check()
         self.__create_ctrls()
-        self.__create_wire_deformer()
+        if self.create_wire_deformer:
+            self.__create_wire_deformer()
         #self.__create_shape_size()
         self.__tag()
         self.__cleanup()
-
 
     def __check(self):
         for i in [self.skel_parent, self.rig_parent]:
@@ -160,11 +169,16 @@ class simple_component():
 
     def __create_ctrls(self):
         """ create ctrls """
-        self.ctrl_buffers = []
+        # self.ctrl_buffers = []
         chained_pos_off_count = self.chained_pos_offset
         
         # TODO need to check that we at least have 3 controls in ctrl names if making a wire deformer.
 
+        '''
+        If you are creating a wire deformer, you will need a root control to move all of the child controls around.
+        Whether the component is a chain, or a group of controls, you will need all of these controls to be parented to the root
+        By default, the
+        '''
         if len(self.colors) > 0 < len(self.ctrl_names):
             # get the index at which the last color was specified - start the loop here
             # color every color the same as the last specified color
@@ -178,6 +192,26 @@ class simple_component():
             for name in self.ctrl_names:
                 self.colors.append((1,1,0))
 
+        if not self.wire_ctrl_scale_factor: self.wire_ctrl_scale_factor = 1.5,
+        if not self.wire_ctrl_color: self.wire_ctrl_color = (1,1,0),
+
+        self.wire_ctrl_scale_factor = 1.5
+        self.wire_ctrl_color = (1,1,0)
+        if self.create_wire_deformer:
+            if self.wire_deformer_root_name == None:
+                # using  re.sub to remove all digits for example: re.sub(r'\d+', '', string)
+                # the '\d' is a shorthand character class for digits
+                # the '+' in '\d+' --- the + is an iterator or quantifier in (re) regular expressions, and it modifies how many times the preceding pattern (in this case, \d) can occur.
+                # A single + is a lazy aka greedy quantifier. It requires less work and is 'safer' in that you can backtrack(find a partial match).
+                # Backtracking can be fatal or cause performance problems if it happens too much. In this simple case however, there won't be an issue.
+                first_control_name = self.ctrl_names[0]
+                # wire_root_tmp = re.sub(r'\d+', '', first_control_name)
+                self.wire_deformer_root_name = first_control_name + 'WireCtrlRoot'
+            self.ctrl_sizes.insert(0, self.ctrl_sizes[0] * self.wire_ctrl_scale_factor)
+            self.colors.insert(0, self.wire_ctrl_color)
+            self.ctrl_names.insert(0, self.wire_deformer_root_name)
+
+
         if len(self.ctrl_sizes) > 0 < len(self.ctrl_names):
             # get the index at which the last color was specified - start the loop here
             # color every color the same as the last specified color
@@ -189,20 +223,28 @@ class simple_component():
         tmp_x, tmp_y, tmp_z = self.root_pos_offset
 
         rx,ry,rz = self.ctrl_rotation
+        
 
-        '''
-        If you are creating a wire deformer, you will need a root control to move all of the child controls around.
-        Whether the component is a chain, or a group of controls, you will need all of these controls to be parented to the root
-        By default, the
-        '''
+
         for index in range(len(self.ctrl_names)):
-            if index == 0 & self.debug != 1:
+            # print(self.ctrl_names[index] + " This is index " + str(index))
+            if index == 0:
                 parent = self.parent_hook
                 lock_attrs = ["v"],
-            elif self.floating_ctrls: self.parent_hook
-            else: parent = self.ctrls[index-1]  # ---Nested hierarchy
+                # print("INDEX IS "+  str(index)+" INDEX == 0")
+
+            elif self.floating_ctrls:
+                if not self.create_wire_deformer:
+                    pass # --- just leave the parent
+                else:
+                    parent = self.ctrls[0] # --- needs to float inside the root ctrl which is at ctrls index 0
+                    # print("IS FLOATING AND CREATING WIRE DEFORMER")
+            else:
+                parent = self.ctrls[index-1]  # ---Nested hierarchy
+                print("IS WORKING and not floating!!!")
+
             if index == 1:
-                lock_attrs = ["sx", "sy", "sz", "v"], 
+                lock_attrs = ["sx", "sy", "sz", "v"],
             return_ctrl = control_base.create_ctl(side = self.side, 
                                                 name = self.ctrl_names[index], 
                                                 parent = parent, 
@@ -223,8 +265,9 @@ class simple_component():
                 y = (chained_pos_off_count[1] * (index + 1)) + tmp_y
                 z = (chained_pos_off_count[2] * (index + 1)) + tmp_z
                 cmds.move( x,y,z, return_ctrl.buffers_parent)
-            elif self.root_pos_offset != (0,0,0):  # if no chained, make sure to still do the root! (if not nuetral)
-                cmds.move( tmp_x, tmp_y,tmp_z, return_ctrl.buffers_parent)
+            if self.root_pos_offset != (0,0,0) and index==0:  # if no chained, make sure to still do the root! (if not nuetral)
+                cmds.move( tmp_x, tmp_y,tmp_z, return_ctrl.buffers_parent, worldSpace=True)
+                print("MOVING OFFSET ")
             if index == 0:
                 cmds.setAttr(return_ctrl.buffers_parent + ".rx", rx)
                 cmds.setAttr(return_ctrl.buffers_parent + ".ry", ry)
@@ -233,9 +276,11 @@ class simple_component():
                 cmds.setAttr(return_ctrl.buffers_parent + ".rx", 0)
                 cmds.setAttr(return_ctrl.buffers_parent + ".ry", 0)
                 cmds.setAttr(return_ctrl.buffers_parent + ".rz", 0)
-
-                # cmds.rotate(rot_val[0],rot_val[1],rot_val[2], return_ctrl.buffers_parent)
-
+            if self.floating_ctrls and not self.create_wire_deformer:
+                cmds.setAttr(return_ctrl.buffers_parent + ".rx", rx)
+                cmds.setAttr(return_ctrl.buffers_parent + ".ry", ry)
+                cmds.setAttr(return_ctrl.buffers_parent + ".rz", rz)
+                
             self.ctrl_shapes.append(return_ctrl.shape_node)
             self.ctrls.append(return_ctrl.ctl)
             self.ctrl_buffers.append(return_ctrl.buffers)
@@ -248,66 +293,87 @@ class simple_component():
                 cmds.parent(self.joints[index], joint_parent)
             if index > 0:
                 cmds.parent(self.joints[index], self.joints[index-1])
+            if index == 0 and self.create_wire_deformer:
+                self.curve_parent = self.ctrls[0]
+                
     def __create_wire_deformer(self):
         # must have at least 3 controls
         self.wire_curve=""
-        for ctrl in self.ctrls:
-            print(ctrl)
-        pass
+        self.clusters = []
+        self.__draw_curve()
+        self.__create_clusters()
+        # create wire deformer....
+        self.wire_deformer = ""
+        # self.wire_base = cmds.duplicate(self.wire_curve)[0]
+        # cmds.setAttr(self.wire_base + ".inheritsTransform",1)
+        # cmds.rename(self.wire_base, self.wire_base + "BASE")
+        # self.wire_base =  self.wire_base + "BASE"
+        # print("WIRE BASE " + str(self.wire_base))
 
 
-
-
-
-
+        # if self.wire_deformer_geom:
+        #     self.wire_deformer=cmds.wire(self.wire_deformer_geom, self.wire_curve)
 
     def __draw_curve(self):
         knots = []
-        for i in range(len(self.joints)):
+        self.points = []
+        self.final_point_count =len(self.joints)-1
+        for idx in range(self.final_point_count):
+            # i =
+            i=idx+1
             self.points.append(tuple(cmds.xform(self.joints[i],
                                      q =True,
                                      ws=True,
                                      t=True)))
-            knots.append(i)
-        self.curve = cmds.curve(n = (self.side
+            knots.append(idx)
+        degree = 2
+        knot_list = get_knot_list(self.final_point_count, degree=degree)
+        print(knot_list)
+        self.wire_curve = cmds.curve(n = (self.side
                                      + "_"
-                                     + self.name
+                                     + self.wire_deformer_root_name
                                      + "SplineIK_CRV"),
-                                d = 1,
+                                degree = degree,
                                 p = self.points,
-                                k = knots)
-        if self.inherit_transform == False:
-            cmds.setAttr(self.curve + ".inheritsTransform",0)
-        cmds.parent(self.curve,
+                                k = knot_list)
+        print("CURVE NAME " + str(self.wire_curve))
+        cmds.setAttr(self.wire_curve + ".inheritsTransform",0)
+        cmds.parent(self.wire_curve,
                     self.curve_parent)
+        # self.wire_base = cmds.duplicate(self.wire_curve)[0]
+        # cmds.setAttr(self.wire_base + ".inheritsTransform",1)
+        # cmds.rename(self.wire_base, self.wire_base + "BASE")
+        # self.wire_base =  self.wire_base + "BASE"
+        # print("WIRE BASE " + str(self.wire_base))
+
+
+
 
     def __create_clusters(self):
         tmp_cluster_ctls = []
-        for i in range(len(self.joints)):
-
-            self.clusters.append(cmds.cluster(self.curve
-                                               + ".cv["
-                                               + str(i)
-                                               + "]",
-                                              name = (self.side
-                                                      + "_"
-                                                      + self.name
-                                                      + str(i)
-                                                      + "_CLS"),
-                                              wn = (tmp_cluster_ctls[i].ctl,
-                                                    tmp_cluster_ctls[i].ctl,),
-                                              bindState=True))
+        for idx in range(self.final_point_count):
+            i = idx+1
+            self.clusters.append(cmds.cluster(self.wire_curve
+                                            + ".cv["
+                                            + str(idx)
+                                            + "]",
+                                            name = (self.side
+                                                    + "_"
+                                                    + self.wire_deformer_root_name
+                                                    + str(idx)
+                                                    + "_CLS"),
+                                            wn = (self.ctrls[i],
+                                                    self.ctrls[i]),
+                                            bindState=True))
             cmds.rename("clusterHandleShape",
-                        self.side + "_" + self.name + str(i) + "_CLS" + "Shape")
+                        self.side + "_" + self.wire_deformer_root_name + str(idx) + "_CLS" + "Shape")
 
 
 
     def __create_shape_size(self):
+        ''' this is now in base, done in the draw_ctls class'''
         """ create global scale attr, wire it up"""
-        # print("BUFFERS", str(self.ctrl_buffers))
         for buffer in self.ctrl_buffers:
-            # print("THIS IS THE CURRENT BUFFER", buffer)
-
             buffer = buffer[0] # --- only do it to the first buffer
             cmds.addAttr(buffer,
                         ln = "ctrl_siz", 
@@ -330,51 +396,37 @@ class simple_component():
 
 
 
+def get_knot_list(num_points, degree=3):
+    """
+    degree(d)
+    The degree of the new curve. Default is 3. Note that you need (degree+1) curve points to create a visible curve span. eg. you must place 4 points for a degree 3 curve.
+    knot(k)	
+    A knot value in a knot vector. One flag per knot value. There must be (numberOfPoints + degree - 1) knots and the knot vector must be non-decreasing.
+
+    """
+
+    num_knots = num_points + degree -1
+    num_betweens = num_knots - degree * 2
+
+    start_num = 0
+    end_num = num_betweens+2
+    start_indices = []
+    middle_indices = []
+    end_indices = []
+    for indice in range(degree):
+        start_indices.append(start_num)
+    for indice in range(num_betweens):
+        middle_indices.append(indice + (degree-1))
+    for indice in range(degree):
+        end_indices.append(end_num)
+    knot_list = start_indices + middle_indices + end_indices
+    print("num_knots ", str(num_knots))
+    print("num_betweens ", str(num_betweens))
+    print("Final", str(knot_list))
+    print("Middle", str(middle_indices))
+    # (number of CVs + degree - 1) knots and that the knot
+
+    return knot_list
 
 
 
-'''
-For curve deform creation:
-    def __draw_curve(self):
-        knots = []
-        for i in range(len(self.joints)):
-            self.points.append(tuple(cmds.xform(self.joints[i],
-                                     q =True,
-                                     ws=True,
-                                     t=True)))
-            knots.append(i)
-        self.curve = cmds.curve(n = (self.side
-                                     + "_"
-                                     + self.name
-                                     + "SplineIK_CRV"),
-                                d = 1,
-                                p = self.points,
-                                k = knots)
-        if self.inherit_transform == False:
-            cmds.setAttr(self.curve + ".inheritsTransform",0)
-        cmds.parent(self.curve,
-                    self.curve_parent)
-
-    def __create_clusters(self):
-        tmp_cluster_ctls = []
-        for i in range(len(self.joints)):
-
-            self.clusters.append(cmds.cluster(self.curve
-                                               + ".cv["
-                                               + str(i)
-                                               + "]",
-                                              name = (self.side
-                                                      + "_"
-                                                      + self.name
-                                                      + str(i)
-                                                      + "_CLS"),
-                                              wn = (tmp_cluster_ctls[i].ctl,
-                                                    tmp_cluster_ctls[i].ctl,),
-                                              bindState=True))
-            cmds.rename("clusterHandleShape",
-                        self.side + "_" + self.name + str(i) + "_CLS" + "Shape")
-
-
-
-
-'''

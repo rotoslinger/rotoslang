@@ -151,8 +151,6 @@ class create_stdavar_ctrl():
         cmds.connectAttr(self.mdlsiz_attr, self.ctrls[0] + ".sz")
         misc.lock_attrs(node = self.ctrls[0], attr = ["sx", "sy", "sz"])
 
-    def __tag(self):
-        pass
 
     def __cleanup(self):
         if self.debug == False:

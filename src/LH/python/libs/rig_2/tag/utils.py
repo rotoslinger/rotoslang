@@ -330,7 +330,7 @@ def tag_guide_shape(node_to_tag):
 
 
 def tag_bind_joint(node_to_tag):
-    create_tag(node_to_tag, "BIND")
+    create_tag(node_to_tag, "BIND_JNT")
 
 
 def tag_weight_curve(node_to_tag):
@@ -345,7 +345,34 @@ def tag_dynamic_mirrored(node_to_tag):
 def get_all_with_tag(tag, hint_list=None):
     if not hint_list:
         hint_list = cmds.ls()
+    if type(hint_list) != list:
+        hint_list = cmds.listRelatives(hint_list, allDescendents = True)
     return [x for x in hint_list if cmds.objExists(x + "." + tag)]
+
+class RigHierarchy():
+    def __init__(self):
+        self.hier = self.get_hier()
+        self.pieces = self.get_pieces()
+        
+    def get_hier(self):
+        self.root_grp = get_all_with_tag(tag_constants.HIER_____ROOT_GRP)[0]
+        self.maintenance_grp = get_all_with_tag(tag_constants.HIER_____MAINTENANCE_GRP, hint_list=self.root_grp)[0]
+        self.rig_grp = get_all_with_tag(tag_constants.HIER_____RIG_GRP, hint_list=self.root_grp)[0]
+        self.rig_control_grp = get_all_with_tag(tag_constants.HIER_____RIG_CONTROL_GRP, hint_list=self.root_grp)[0]
+        self.skeleton_grp = get_all_with_tag(tag_constants.HIER_____SKELETON_GRP, hint_list=self.root_grp)[0]
+        self.geo_grp = get_all_with_tag(tag_constants.HIER_____GEO_GRP, hint_list=self.root_grp)[0]
+        return self.root_grp, self.maintenance_grp, self.rig_grp, self.rig_control_grp, self.skeleton_grp, self.geo_grp
+    
+    def get_pieces(self):
+        all_controls = get_all_with_tag(tag_constants.WILDCARD______CONTROL)
+        all_controls_shapes = get_all_with_tag(tag_constants.WILDCARD______CONTROL_SHAPE)
+        all_buffers = get_all_with_tag(tag_constants.WILDCARD______BUFFER)
+        all_buffer_shapes = get_all_with_tag(tag_constants.WILDCARD______BUFFER_SHAPE)
+        return all_controls, all_controls_shapes, all_buffers, all_buffer_shapes
+
+
+
+
 
 def get_all_in_component_with_tag(tag, component_name):
     hint_list = get_nodes_by_component_name(component_name)
