@@ -188,51 +188,122 @@ def find_jnts():
     for jnt in cmds.ls(type="joint"):
         print(jnt)
 
-############## BDP Weights
+############## BDP Weight Export Utils ##################
+
+def get_geom_skinclusters(geom):
+    # Get the shape node if the input node is a transform
+    shapes = cmds.listRelatives(geom, shapes=True, fullPath=True) or [geom]
+
+    # This will hold all the found skin clusters
+    skin_clusters = set() # <---- to avoid duplicates (shouldn't happen, but whatever)
+
+    # Go through all the shapes
+    for shape in shapes:
+        # Get all incoming and outgoing connections of the shape
+        connections = cmds.listConnections(shape, connections=True, plugs=True) or []
+
+        # Look for any deformer-related connections (groupParts, tweak, skinCluster, etc.)
+        for i in range(0, len(connections), 2):
+            source_attr = connections[i]
+            dest_attr = connections[i + 1]
+            
+            # Check for skinCluster in the deformer's connection chain
+            if 'skinCluster' in cmds.nodeType(dest_attr.split('.')[0]):
+                skin_clusters.add(dest_attr.split('.')[0])
+
+            elif 'skinCluster' in cmds.nodeType(source_attr.split('.')[0]):
+                skin_clusters.add(source_attr.split('.')[0])
+
+    return list(skin_clusters)
+### Usage
+# skin_clusters = get_geom_skinclusters("jsh_base_body_geo")
+# for skin in skin_clusters:
+#     print(skin)
+##########################################################################################
+
+
+# TODO add a normalization feature to import? Needs testing.
+def filter_skins(geom="", skin_filter=[""]):
+    skins = get_geom_skinclusters(geom=geom)
+    if skin_filter == ["all"]:
+        skin_filter = skins
+    filtered_skins = list()
+    # Filter skins
+    for skin in skins:
+        filtered = [f for f in skin_filter if f in skin]
+        if len(filtered) > 0:         
+            filtered_skins.append(skin)
+    return filtered_skins
+# Usage #
+# filter_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
+######################################################################################
+
+def export_skins(path="", geom="", skin_filter=[""]):
+    # Filter skins
+    filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
+    # Export filtered skins
+    for skin in filtered_skins:
+        cmds.deformerWeights(skin + ".xml",
+                        export = True, 
+                        deformer=skin,
+                        path = path)
+# Usage #
+# weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
+# export_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
+######################################################################################
+
+def import_skins(path="", geom="", skin_filter=[""]):
+    # Filter skins
+    filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
+    # Export filtered skins
+    for skin in filtered_skins:
+        cmds.deformerWeights(skin + ".xml",
+                            im = True,
+                            method = "index",
+                            deformer=skin,
+                            path = path)
+        
+        # weight normalization for imported weights. Must be updated or points are disfigured at rest.
+        # to make sure normalization has worked, translate the global movement controller 1000 units away, rotate global scale, and see if the points are drifting. 
+        cmds.skinPercent(skin, geom, normalize = True)
+        cmds.skinCluster(skin , e = True, forceNormalizeWeights = True)
+        print("# Imported deformer weights from '" + path + skin + ".xml'.")
+
+        # Exported deformer weights to 'C:/Users/harri/Documents/BDP/cha/jsh/jsh_base_body_geo_upperFace_skinCluster.xml'.
+
+# Usage #
+# weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
+# import_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
+######################################################################################
+
+
+# Full Usage #
+weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
+export_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
+import_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
 
 
 
-def get_skincluster_in_mesh(mesh="" ):
-    return_skinclusters = []
-    for node in cmds.ls(type="skinCluster"):
-        meshes = cmds.skinCluster(node, q=True, geometry=True)
-        skincluster_filter = [x for x in meshes if mesh in x and cmds.nodeType(x) == "mesh"]
-        if not len(skincluster_filter) > 0:
-            continue
-        return_skinclusters.append(node)
-        # print("skinclusters " + str(skincluster_filter) + " skin cluster " + node  )
-    return return_skinclusters
-clusters = get_skincluster_in_mesh(mesh="jsh_base_body_geo")
-
-def export_mesh_skins(path="", mesh="", filter=[""]):
-    skins = get_skincluster_in_mesh(mesh=mesh)
-    if not filter == ["all"]:
-        print("not all")
-    # get all skin clusters in the scene and export them to xml files
-    # for i in skins:
-    #     cmds.deformerWeights(i + ".xml",
-    #                          export = True, 
-    #                          deformer=i,
-    #                          path = path)
-#############################################
 
 
 
 
-#############################################
-def import_skins(path):
-    skins = cmds.ls(type = "skinCluster")
-    if skins:
-        for i in skins:
-            cmds.deformerWeights(i + ".xml",
-                             im = True,
-                             method = "index",
-                             deformer=i,
-                             path = path)
 
-            geom = cmds.skinCluster(i,q=True, g = True)
-            cmds.skinPercent(i,geom,normalize = True)
-            cmds.skinCluster(i , e = True, forceNormalizeWeights = True)
+
+# def shape_from_xform(node):
+#     # Check if the node is of type 'transform'
+#     if cmds.objectType(node) == 'transform':
+#         # List all shapes under the transform node
+#         shapes = cmds.listRelatives(node, shapes=True, fullPath=True)
+#         if shapes:
+#             return shapes[0]  # Return the first shape found
+#     if cmds.objectType(node) == 'transform':
+#         # List all shapes under the transform node
+#         shapes = cmds.listRelatives(node, shapes=True, fullPath=True)
+#         if shapes:
+#             return shapes[0]  # Return the first shape found
+
+#     return None
 
 
 
@@ -250,29 +321,116 @@ def import_skins(path):
 
 
 
-def export_skins(path):
-    # get all skin clusters in the scene and export them to xml files
-    skins = cmds.ls(type = "skinCluster")
-    for i in skins:
-        cmds.deformerWeights(i + ".xml",
-                             export = True, 
-                             deformer=i,
-                             path = path)
-#############################################
-#---example
-# weights_path = "C:\Users\harri\Documents\BDP\cha\jsh"
-# export_skins(weights_path)
-#############################################
-def import_skins(path):
-    skins = cmds.ls(type = "skinCluster")
-    if skins:
-        for i in skins:
-            cmds.deformerWeights(i + ".xml",
-                             im = True,
-                             method = "index",
-                             deformer=i,
-                             path = path)
 
-            geom = cmds.skinCluster(i,q=True, g = True)
-            cmds.skinPercent(i,geom,normalize = True)
-            cmds.skinCluster(i , e = True, forceNormalizeWeights = True)
+
+# def export_skins(path):
+#     # get all skin clusters in the scene and export them to xml files
+#     skins = cmds.ls(type = "skinCluster")
+#     for i in skins:
+#         cmds.deformerWeights(i + ".xml",
+#                              export = True, 
+#                              deformer=i,
+#                              path = path)
+# #############################################
+# #---example
+# # weights_path = "C:\Users\harri\Documents\BDP\cha\jsh"
+# # export_skins(weights_path)
+# #############################################
+# def import_skins(path):
+#     skins = cmds.ls(type = "skinCluster")
+#     if skins:
+#         for i in skins:
+#             cmds.deformerWeights(i + ".xml",
+#                              im = True,
+#                              method = "index",
+#                              deformer=i,
+#                              path = path)
+
+#             geom = cmds.skinCluster(i,q=True, g = True)
+#             cmds.skinPercent(i,geom,normalize = True)
+#             cmds.skinCluster(i , e = True, forceNormalizeWeights = True)
+
+
+# TODO things to think about, should we filter node types?
+# constants #
+# possible future filter for skinCluster export node types
+NODE_TYPES = [
+    "mesh",
+    "nurbsCurve",
+    "nurbsSurface",
+    "nurbsTrimmedSurface",
+    "subdiv",
+    "bezierCurve",
+    "bezierSurface",
+    "lattice"
+]
+
+
+
+
+
+
+
+
+
+
+
+
+############################################################################################################################################################
+# Supplemental Debugging for
+import maya.cmds as cmds
+
+def debug_get_connection_chain(node):
+    """Recursively retrieve the connection chain to the specified node."""
+    chain = []
+    current_node = node
+
+    while True:
+        # Get incoming connections for the current node
+        incoming = cmds.listConnections(current_node, source=True, destination=False)
+        if not incoming:
+            break  # No more connections to follow
+
+        # Assume the first incoming connection for simplicity
+        current_node = incoming[0]
+        chain.append(current_node)
+
+    return chain
+
+def debug_skin_connection_chain(node):
+    # Get the shape node if the input node is a transform
+    shapes = cmds.listRelatives(node, shapes=True, fullPath=True) or [node]
+
+    # This will hold all the found skin clusters
+    skin_clusters = set()
+
+    # Go through all the shapes
+    for shape in shapes:
+        # Get all incoming and outgoing connections of the shape
+        connections = cmds.listConnections(shape, connections=True, plugs=True) or []
+
+        # Look for any deformer-related connections (groupParts, tweak, skinCluster, etc.)
+        for i in range(0, len(connections), 2):
+            source_attr = connections[i]
+            dest_attr = connections[i + 1]
+            source_node = source_attr.split('.')[0]
+            dest_node = dest_attr.split('.')[0]
+
+            # Check if the destination attribute is a skinCluster
+            if 'skinCluster' in cmds.nodeType(dest_node):
+                skin_clusters.add(dest_node)
+                chain = debug_get_connection_chain(shape)  # Get the connection chain
+                chain_str = '->'.join(reversed(chain + [shape, dest_node]))  # Build the chain string
+                print(f"Connection chain for {dest_node}: {chain_str}")
+
+            # Check if the source attribute is a skinCluster
+            elif 'skinCluster' in cmds.nodeType(source_node):
+                skin_clusters.add(source_node)
+                chain = debug_get_connection_chain(dest_node)  # Get the connection chain
+                chain_str = '->'.join(reversed(chain + [dest_node, source_node]))  # Build the chain string
+                print(f"Connection chain for {source_node}: {chain_str}")
+
+    return list(skin_clusters)
+
+# usage #
+# skin_clusters = debug_skin_connection_chain("jsh_base_body_geo")
