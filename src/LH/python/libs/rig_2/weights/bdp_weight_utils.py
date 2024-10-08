@@ -1,55 +1,9 @@
-import time, os, shutil, sys, re
+import time, os, shutil, sys, re, json
+
 from maya import cmds
 
-
-############################# File Path Utils ###############################
-
-##############  Why we need to use \ for filepaths on Windows ###############
-# Leave it to windows to choose \ as the path delimiter, simply because DOS used / for command flags instead of the bash standard of -
-# In bash or shell even C, the flag option is usually a -(hyphen) -h for concise help or --help for more verbose help.
-# In a shell, for example, you can use rm -rf * to delete the whole internet, or maybe just your hard drive.  It can be tempting, but don't do it (test on your friend's computer first).
-# It goes without saying this f***s using special characters in strings and formatting. 
-# python, C, C++ and etc, use the backslash (\) as an escape character in strings.
-# This allows you to include special characters, such as newlines (\n), tabs (\t), or even literal backslashes (\\), within string literals.
-# That means we need to use sub to do a wildcard search and replace because maya uses Unix style / for paths
-def de_windows_os_path(filepath):
-    path =  os.path.normpath(filepath)
-    if '\\' in path: return re.sub(r'\\', '/', path)
-    return path
-############# Usage ###############
-# don't forget to double them backspaces, because \\ resolves to \ and doesn't break python. Or C++, or C, etc. Did I mention I hate this?
-# mayaified_directory = de_windows_os_path(filepath = "C:\\foobar\\skoobar\\skeebop\\skeedoobar\\" ) # on windows returns --- C:/foobar/skoobar/skeebop/skeedoobar
-# print("This is the normalized directory " + mayaified_directory)
-###################################
-
-# Make the Maya filepath Windows compatible
-def format_filepath(filepath):
-    # honestly, this is just for windows to make sure / becomes \
-    # much cleaner than re.sub(r'/', '\\', path) as this gets rid of redundant chars, ./..\, or whatever other nonsense you might end up with
-    return os.path.normpath(filepath)
-############# Usage ###############
-# normalized_directory = format_filepath(filepath = "C:/foobar/skoobar/skeebop/skeedoobar/" ) # on windows returns --- C:\foobar\skoobar\skeebop\skeedoobar
-# print("This is the normalized directory " + normalized_directory)
-###################################
-#############################################################################
-
-
 ######################################### Backup Utils ################################################
-OPERATING_SYSTEM = sys.platform
-
-# Have to get the path delimiter because microsoft is cool. Thanks a lot microsoft, we (don't) love you.
-def get_delimiter():
-    delimiter = "/"
-    if OPERATING_SYSTEM == "win32" or OPERATING_SYSTEM == "win64":
-        delimiter =  "\\"
-    return delimiter
-############# Usage ###############
-# delimiter = get_delimiter()
-# print("Your operating system is {0} so your path delimiter is {1} congratulations.".format(OPERATING_SYSTEM, delimiter))
-####################################
-
-DELIMITER = get_delimiter()
-
+DELIMITER = os.path.sep  # Use the appropriate path delimiter for the OS
 # Get the full path of the current scene
 def get_scene_dir():
     current_scene = cmds.file(q=True, sn=True)
@@ -60,130 +14,83 @@ def get_scene_dir():
     else:
         print("No saved scene is open. Save first, then try again")
         return None
-############# Usage ###############
+#################################### Usage ####################################
 # scene_dir = get_scene_dir()
 # print("The current scene has been saved here: " + scene_dir)
-###################################
-
+###############################################################################
 def generate_timestamp():
     t = time.localtime()
-    # doing a nonstandard date time format, for the sake of readability, mankind, and all that is holy.
-    # YYYY-MM-DD_HH-MM-SS (instead of standard YYYYMMDD-HHMMSS, f*** the rules, they aren't super readable)
+    # Creating a timestamp in a human-readable format: YYYY-MM-DD_HH-MM-SS
     return "{0}-{1}-{2}_{3}-{4}-{5}".format(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
-############# Usage ###############
-# timestamp = generate_timestamp()
-# print(timestamp)
-####################################
 
-def generate_backup_filename(filepath, file_name="weights", backup_directory_name="BAK", extension="xml"):
+def generate_backup_filename(filepath, filename):
+    filepath = os.path.normpath(f"{filepath}{DELIMITER}BAK")
+    # Ensure the directory exists
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"The directory '{filepath}' does not exist.")
+    base_name, ext = os.path.splitext(filename)
+    # Find existing versions
+    existing_versions = []
+    pattern = re.compile(rf"{re.escape(base_name)}_v(\d{{3}})_timestamp_.*{re.escape(ext)}")
+    # Check files in the directory and extract version numbers
+    for file in os.listdir(filepath):
+        match = pattern.match(file)
+        if match:
+            existing_versions.append(int(match.group(1)))  # Append the extracted version number
+    # Determine the next version number
+    version = max(existing_versions, default=0) + 1  # Start from v001 if no versions exist
     timestamp = generate_timestamp()
-    # weights.timestamp.xml
-    filename = "{0}_{1}.{2}".format(file_name, timestamp, extension)
-    clean_path = format_filepath("{0}{1}{2}{3}{4}".format(filepath, DELIMITER, backup_directory_name, DELIMITER, filename))
-    # /path/baseAsset/BAK/ + filename
-    return clean_path
-############# Usage ###############
-# backup_filename = generate_backup_filename(filepath=get_scene_dir(), file_name="weights")
-# print(backup_filename)
-# On windows returns C:\Users\harri\Documents\BDP\cha\jsh\BAK\weights_2024-10-2_22-24-32.xml 
-# On UNIX returns: C:/Users/harri/Documents/BDP/cha/jsh/BAK/weights_2024-10-2_22-24-32.xml
-####################################
+    backup_filename = os.path.join(filepath, f"{base_name}_v{version:03d}_timestamp_{timestamp}{ext}")
+    return backup_filename
+################################### Usage ###################################
+# filepath = r"C:\Users\harri\Documents\BDP\cha\jsh"
+# filename = "jsh_base_body_geo_upperFace_skinCluster.xml"
+# backup_filename = generate_backup_filename(filepath=filepath, filename=filename)
+#############################################################################
 
 def check_parent_directory(filepath, debug=False):
     # This only finds the path (BAK) just before the new file  and creates it if it doesn't exist
     # If other directories further up don't exist this will fail with an error
     # This fail is important because it is possible the entire file structure doesn't exist yet and
     # could indicate a previous error.
-    norm_path= os.path.dirname(os.path.normpath(filepath))
+    filepath = os.path.normpath("{0}{1}{2}".format(filepath, DELIMITER, "BAK"))
+    filepath= os.path.normpath(filepath)
     # Make sure the path exists
-    if not os.path.exists(norm_path):
-        os.mkdir(norm_path)
+    if not os.path.exists(filepath):
+        os.mkdir(filepath)
         if not debug: return
-        print("New directory created @ {0}".format(norm_path))
-############# Usage ###############
-scene_dir = get_scene_dir()
-backup_filename = generate_backup_filename(filepath=scene_dir)
-parent_dir = check_parent_directory(filepath=backup_filename, debug=True)
-print(parent_dir)
-####################################
+        print("New directory created @ {0}".format(filepath))
+################################### Usage ###################################
+# scene_dir = get_scene_dir()
+# filename = "jsh_base_body_geo_upperFace_skinCluster.xml"
+# check_parent_directory(filepath=scene_dir, debug=True)
+### --- If there is no folder called BAK in the directory, it will be created
+### --- This will print out: New directory created @ C:\Users\harri\Documents\BDP\cha\jsh\BAK
+#############################################################################
 
-# TODO Fix all of this crap, 
-# TODO needs to do the check_parent_directory to create the backup folder if it doesn't exist yet.  Otherwise the maya rig directory is going to get crowded.
-def backup_file(skincluster_name, file_to_backup, filename, filepath):
-    if not os.path.exists(file_to_backup):
-        return
-    full_backup_file_name = generate_backup_filename(filepath, filename)
-
-    shutil.copy(file_to_backup, full_backup_file_name)
-
-'''
-BUILDER_DIR = "builders"
-EXTENSION = ".py"
-
-def get_repo_default_path():
-    default_path = os.path.dirname(os.path.abspath(__file__))
-    default_path = os.path.dirname(os.path.normpath(default_path))
-    return os.path.dirname(os.path.normpath(default_path))
-
-def check_default_path(default_path):
-    if not default_path:
-        default_path = get_repo_default_path()
-    return default_path
-
-def get_filename_from_path(asset_name, strip=False, ext=EXTENSION):
-    file_name = asset_name.split(DELIMITER)[-1]
-    if strip and ext in file_name:
-        file_name = file_name.split(ext)[0]
-    return file_name
-
-def get_file_by_asset_name(asset_name, default_path=None, file="guides", ext=EXTENSION):
-    # DOES NOT check whether the file exists
-    default_path = check_default_path(default_path)
-    asset_dir = DELIMITER + asset_name
-    file_path = default_path + DELIMITER + BUILDER_DIR + asset_dir + DELIMITER + file + ext
-    return file_path
-
-def get_backup_dir_by_asset_name(asset_name, default_path=None):
-    if not default_path:
-        default_path = get_repo_default_path()
-    asset_dir = DELIMITER + asset_name
-    backup_path = default_path + DELIMITER + BUILDER_DIR + asset_dir + DELIMITER + "BAK"
-    return backup_path
-
-def get_asset_dir_by_asset_name(asset_name, default_path=None):
-    if not default_path:
-        default_path = get_repo_default_path()
-    asset_dir = DELIMITER + asset_name
-    path = default_path + DELIMITER + BUILDER_DIR + asset_dir
-    return path
-
-def generate_backup_file(path, dictionary):
-    # This only finds the path just before the new file (BAK) and creates it if it doesn't exist
-    # If other directories further up don't exist we want 
-    check_parent_directory(path)
-
-    file = open(path, "wb")
-    json.dump(dictionary, file, sort_keys = False, indent = 2)
-    file.close()
-    return dictionary
-
-'''
-    
+def backup_file(filepath, filename):
+    if not os.path.exists(filepath): return
+    # 1. Check whether file exists yet.
+    fullpath = "{0}/{1}".format(filepath, filename)
+    norm_path= os.path.normpath(fullpath)
+    # 2. If file doesn't exist return
+    if not os.path.exists(norm_path):return
+    # 3. File exists, run check_parent_directory(), to make sure the BAK dir exists
+    check_parent_directory(filepath=filepath)
+    # 4. Use generate_backup_filename() to rename with timestamp.
+    backup_name = generate_backup_filename(filepath=filepath, filename=filename)
+    shutil.copy(fullpath, backup_name)
+############################# Full Backup Utils Usage ###############################
+# filepath = r"C:\Users\harri\Documents\BDP\cha\jsh"
+# filename = "jsh_base_body_geo_upperFace_skinCluster.xml"
+# backup_file(filepath=filepath, filename=filename)
+#####################################################################################
 
 
 
-
-
-
-
-
-
-
-
-
-#########################################################
-############## BDP Weight Export Utils ##################
-#########################################################
+######################################################################################
+############################# BDP Weight Export Utils ################################
+######################################################################################
 
 def get_geom_skinclusters(geom):
     # Get the shape node if the input node is a transform
@@ -210,7 +117,7 @@ def get_geom_skinclusters(geom):
                 skin_clusters.add(source_attr.split('.')[0])
 
     return list(skin_clusters)
-### Usage
+####################################### Usage ########################################
 # skin_clusters = get_geom_skinclusters("jsh_base_body_geo")
 # for skin in skin_clusters:
 #     print(skin)
@@ -230,51 +137,268 @@ def filter_skins(geom="", skin_filter=None):
         if len(filtered) > 0:         
             filtered_skins.append(skin)
     return filtered_skins
-# Usage #
+####################################### Usage ########################################
 # filter_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
 ######################################################################################
 
-def export_skins(path="", geom="", skin_filter=[""]):
+def export_skins(path=None, geom="", skin_filter=[""]):
+    # If a path is not given, just default to the path that the current scene is saved to
+    if not path:
+        path = get_scene_dir()
     # Filter skins
     filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
     # Export filtered skins
     for skin in filtered_skins:
-        cmds.deformerWeights(skin + ".xml",
-                        export = True, 
-                        deformer=skin,
-                        path = path)
-# Usage #
-# weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
-# export_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
+        # Backup file
+        norm_path= os.path.normpath(path)
+        print(norm_path)
+        backup_file(filepath=norm_path, filename=skin + ".xml")
+        # Export weights
+        cmds.deformerWeights(skin + ".xml", export = True,  deformer=skin, path = path)
+####################################### Usage ########################################
+# export_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
 ######################################################################################
 
-def import_skins(path="", geom="", skin_filter=[""]):
+def import_skins(path=None, geom="", skin_filter=[""]):
+    # If a path is not given, just default to the path that the current scene is saved to
+    if not path:
+        path = get_scene_dir()
     # Filter skins
     filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
     # Export filtered skins
     for skin in filtered_skins:
-        cmds.deformerWeights(skin + ".xml",
-                            im = True,
-                            method = "index",
-                            deformer=skin,
-                            path = path)
-        
+        cmds.deformerWeights(skin + ".xml", im = True, method = "index", deformer=skin, path = path)
         # weight normalization for imported weights. Must be updated or points are disfigured at rest.
         # to make sure normalization has worked, translate the global movement controller 1000 units away, rotate global scale, and see if the points are drifting. 
         cmds.skinPercent(skin, geom, normalize = True)
         cmds.skinCluster(skin , e = True, forceNormalizeWeights = True)
-        print("# Imported deformer weights from '" + path + skin + ".xml'.")
-
-# Usage #
-# weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
-# import_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
+        # print("# Imported deformer weights from '" + path + skin + ".xml'.")
+        print("# Imported deformer weights from '{0}{1}.xml'.".format(path,skin))
+####################################### Usage ########################################
+# import_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
 ######################################################################################
 
- 
-######################################################################################
-# Full Usage #
-# weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
-# export_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
-# import_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
+########################## Full Import/Export Weights Usage ###########################
+# export_skins(path=None, geom="jsh_base_body_geo", skin_filter=["upperFace"])
+# import_skins(path=None, geom="jsh_base_body_geo", skin_filter=["upperFace"])
 ######################################################################################
 
+# TODO Finish!!!! 
+def list_skin_cluster_influences(geom, skin_filter=None):
+    # Find skin cluster attached to the mesh
+    all_skinclusters = list()
+    skin_influence_map = dict()
+    filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
+    # Export filtered skins
+    for skin in filtered_skins:
+        print(skin)
+        # Get the influences (bones) for the skin cluster
+        influences = cmds.skinCluster(skin, query=True, influence=True)
+        skin_influence_map[skin] = influences
+
+        all_skinclusters.append(influences)
+    for key in skin_influence_map.keys():
+        print(f'{key} : {skin_influence_map[key]}')
+        for influence in skin_influence_map[key]:
+            print(f'{key} : {influence}')
+
+    return skin_influence_map
+####################################### Usage ########################################
+# list_skin_cluster_influences(geom="jsh_base_body_geo", skin_filter=None)
+######################################################################################
+
+def get_compound_attr_connect_map(node, compound_attr):
+    """
+    Lists all connections for a given compound attribute on a node and returns them in a dictionary.
+    Args:
+    - node (str): The name of the node (e.g., a skinCluster).
+    - compound_attr (str): The name of the compound attribute (e.g., "matrix").
+    Returns:
+    - dict: A dictionary containing the connections.
+    """
+    # Dictionary to store the connections
+    matrix_connections_dict = {}
+    joint_connections_dict = {}
+    # Get the full path of the compound attribute (node + compound attribute)
+    full_attr = f"{node}.{compound_attr}"
+    # Check if the attribute exists and is compound
+    if not cmds.attributeQuery(compound_attr, node=node, exists=True):
+        raise ValueError(f"The attribute {compound_attr} does not exist on node {node}.")
+    if not cmds.attributeQuery(compound_attr, node=node, multi=True):
+        raise ValueError(f"The attribute {compound_attr} is not a compound array.")
+    # Get all indices for the compound array
+    indices = cmds.getAttr(full_attr, multiIndices=True)
+    # Loop through all indices and find incoming connections
+    for index in indices:
+        # Build the indexed attribute (e.g., skinCluster.matrix[0])
+        indexed_attr = f"{full_attr}[{index}]"
+        if "matrix[39]" in indexed_attr:
+            print("\n")
+            print("\n")
+
+            #print("index_attr " + indexed_attr)
+
+        # List incoming connections
+        connection = cmds.listConnections(indexed_attr, source=True, destination=False, plugs=True)[0]
+        # if "R_arm05Localized_multMatrix" in connection:
+        #     print("indexed attr connection " + connection)
+
+
+        mult_matrix_input0 = connection.split(".")[0]
+        mult_matrix_input0= f'{mult_matrix_input0}.matrixIn[0]'
+        mult_matrix_input0_connection = cmds.listConnections(mult_matrix_input0, source=True, destination=False, plugs=True)[0]
+        mult_matrix_input0_connection = f'{mult_matrix_input0_connection}[0]'
+        if "R_arm05Localized_multMatrix" in connection:
+            #print("joint out attr " + joint_out_attr)
+            print("input0 connection is " + mult_matrix_input0_connection)
+
+        if connection:
+            # Store connections in the dictionary
+            if "matrix[39]" in indexed_attr:
+                print(f"the dict is : matrix_connections_dict[{connection}] = {indexed_attr}")
+
+            matrix_connections_dict[connection] = indexed_attr
+            joint_connections_dict[mult_matrix_input0_connection] = indexed_attr
+        else:
+            matrix_connections_dict[connection] = None
+            joint_connections_dict[mult_matrix_input0_connection] = None
+
+
+    export_dict = {f'{node}_MATRIX_MULT':matrix_connections_dict,
+                   f'{node}_ENV':joint_connections_dict}
+    return export_dict
+####################################### Usage ########################################
+# connections_data = get_compound_attr_connect_map(node='teshi_base_body_geo_bodyMechanics_skinCluster',
+#                                                  compound_attr='matrix')
+######################################################################################
+
+def export_to_json(data, file_path=None, filename_prefix='',  suffix="MATRIX_CONNECTIONS"):
+    """
+    Exports a dictionary to a JSON file using the node name and a custom file path.
+    Args:
+    - data (dict): The dictionary to export.
+    - node (str): The node name to use in the JSON file name.
+    - file_path (str): The file path where the JSON file will be saved.
+    - suffix (str): The suffix to append to the filename.
+    """
+    # Create the full file name using the node name and suffix
+    if not file_path:
+        file_path = get_scene_dir()
+    file_name = f"{filename_prefix}_{suffix}.json"
+    full_file_path = os.path.join(file_path, file_name)
+
+    # Export the dictionary to a JSON file
+    with open(full_file_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+    print("\n")
+    print(f"Exported to {full_file_path}")
+    print("\n")
+
+####################################### Usage ########################################
+# connections_data = get_compound_attr_connect_map(node='teshi_base_body_geo_bodyMechanics_skinCluster',
+#                                                  compound_attr='matrix')
+# export_to_json(connections_data,
+#                filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',
+#                file_path=r'C:\Users\harri\Documents\BDP\cha\teshi',
+#                suffix='MATRIX_CONNECTIONS')
+######################################################################################
+
+class JsonAttributes:
+    '''
+    A simple class that creates attributes based on dictionary keys.
+
+    1. Extracts the first dimension keys of the dictionary
+    2. Dynamically creates variables with the names of the keys
+    3. Sets new variables with the second dimension dict
+    '''
+    def __init__(self, json_dict):
+        """
+        Args:
+        - json_dict (dict): a 2 dimensional dictionary that must be derived from the output of get_compound_attr_connect_map()
+                            this dict has key entries that pertain to specific skin cluster attributes that must be connected.
+                            For example: teshi_base_body_geo_bodyMechanics_skinCluster dictionary entry will return all of the connections from the skincluster to the multiMatrix nodes.
+        Creates: 
+        - self.variables, a dictionary of all the variables in the class
+        """
+
+        # Extract the first-level keys as attributes
+        self.variables = dict()
+        for key in json_dict:
+            setattr(self, key, json_dict[key])
+            self.variables[key] = json_dict[key]
+####################################### Usage ########################################
+# no usage, this class should be exclusively used with import_json_conn_map()
+######################################################################################
+
+def import_json_conn_map(file_path=None, filename_prefix='', suffix="MATRIX_CONNECTIONS"):
+    """
+    Imports a JSON file and returns its content as a dictionary.
+    Args:
+    - file_path (str): The path to the JSON file.
+    Returns:
+    - dict: The JSON content as a Python dictionary.
+    """
+    if not file_path:
+        file_path = get_scene_dir()
+
+    file_name = f"{filename_prefix}_{suffix}.json"
+    full_file_path = os.path.join(file_path, file_name)
+
+    with open(full_file_path, 'r') as json_file:
+        print("\n")
+        print(f"Imported from {full_file_path}")
+        print("\n")
+
+        return json.load(json_file)
+####################################### Usage ########################################
+# json_data = import_json_conn_map(file_path=r'C:\Users\harri\Documents\BDP\cha\teshi',
+#                                  filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',
+#                                  suffix="MATRIX_CONNECTIONS")
+# # Create an instance of JsonAttributes and assign the JSON data
+# json_attrs = JsonAttributes(json_data)
+# for key in json_attrs.variables:
+#     print(f'{key}:{json_attrs.variables[key]}')
+######################################################################################
+
+def connect_skins(connection_map, skincluster_name, dict_suffix):
+    """
+    Needs to save out a connection map to keep track of what all the connections originally were.
+    CANNOT lose track of which connection goes to which index, this would permanently break the rig!
+    If a mismatch does happen there would be a lot of trial and error to figure out which joint goes to which skincluster.matrix[index]
+
+    Args:
+    - connection_map (dict) - the
+    "teshi_base_body_geo_bodyMechanics_skinCluster_MATRIX_MULT": {"M_neckHead00Localized_multMatrix.matrixSum": "matrix[0]"}
+
+    """
+    for key in connection_map:
+        if f'{skincluster_name}{dict_suffix}' in key:
+            connection_dict = connection_map[key]
+            for key in connection_dict:
+                cmds.connectAttr(key, connection_dict[key], force=True)
+                # if "[39]" in connection_dict[key]:
+                #     print("\n")
+                #     print("KEY IS " + key)
+                #     print("VALUE IS " + connection_dict[key])
+                #     print("\n")
+                #     print(f"The driver attr is {key} : The driven attr is {connection_dict[key]}")
+                #     print(f"cmds.connectAttr({key}, {connection_dict[key]}, force=True)")
+
+#Connects the joints to the skin so weights can be painted
+def connect_skin_joints(connection_map, skincluster_name):
+    connect_skins(connection_map, skincluster_name, dict_suffix="_ENV")
+
+############################## connect_skin_joints Usage ####################################
+# json_data = import_json_conn_map(file_path=r'C:\Users\harri\Documents\BDP\cha\teshi',filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',suffix="MATRIX_CONNECTIONS")
+# connect_skin_joints(connection_map=json_data,skincluster_name="teshi_base_body_geo_bodyMechanics_skinCluster")
+#############################################################################################
+
+
+#Connects the matrix mults to the skin so weights can be painted
+def connect_matrix_mults(connection_map, skincluster_name):
+    connect_skins(connection_map, skincluster_name, dict_suffix="_MATRIX_MULT")
+
+####################################### connect_matrix_mults Usage ########################################
+# json_data = import_json_conn_map(file_path=r'C:\Users\harri\Documents\BDP\cha\teshi',filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',suffix="MATRIX_CONNECTIONS")
+# connect_matrix_mults(connection_map=json_data,skincluster_name="teshi_base_body_geo_bodyMechanics_skinCluster")
+###########################################################################################################

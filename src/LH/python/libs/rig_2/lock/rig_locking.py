@@ -23,14 +23,13 @@ def attribute_exists(obj, attr):
 #         if joint_radius:
 #             cmds.setAttr(i+".radius", joint_radius)
 
-
 ### Joint Related Constants ###
 
 # give a float value if you would like to set the joint size (depending on scale you may want to just set under display>Animation>Joint Size ...)
 JOINT_RADIUS = None # <----- defaulting to whatever your display joints size is.  Human scale shouldn't change too much. Set using the display menu ( display>Animation>Joint Size ...)
 # TODO if we end up needing a version of this for the Nowake rigs we might want to set a default for sea creatures, and another for humans.
 # Needed to turn on visibility of the skinning joints.
-UNLOCK_GROUPS = ["skel_grp", "rig_grp", "rigGeo_ndStep_grp", "rigGeo_200_grp", "spaces_grp", "modules_grp", "M_masterWalkOut_jnt", "M_freeze_env"]
+UNLOCK_GROUPS = ["skel_grp", "rig_grp", "rigGeo_ndStep_grp", "rigGeo_200_grp", "spaces_grp", "modules_grp", "M_freeze_env"]
 # FYI --- the relevent joint groups are "rig_grp", "rigGeo_ndStep_grp", "rigGeo_200_grp", "M_masterWalkOut_jnt"
 # other groups in the following list just need to be unlocked to allow visibility.
 
@@ -188,172 +187,6 @@ def find_jnts():
     for jnt in cmds.ls(type="joint"):
         print(jnt)
 
-############## BDP Weight Export Utils ##################
-
-def get_geom_skinclusters(geom):
-    # Get the shape node if the input node is a transform
-    shapes = cmds.listRelatives(geom, shapes=True, fullPath=True) or [geom]
-
-    # This will hold all the found skin clusters
-    skin_clusters = set() # <---- to avoid duplicates (shouldn't happen, but whatever)
-
-    # Go through all the shapes
-    for shape in shapes:
-        # Get all incoming and outgoing connections of the shape
-        connections = cmds.listConnections(shape, connections=True, plugs=True) or []
-
-        # Look for any deformer-related connections (groupParts, tweak, skinCluster, etc.)
-        for i in range(0, len(connections), 2):
-            source_attr = connections[i]
-            dest_attr = connections[i + 1]
-            
-            # Check for skinCluster in the deformer's connection chain
-            if 'skinCluster' in cmds.nodeType(dest_attr.split('.')[0]):
-                skin_clusters.add(dest_attr.split('.')[0])
-
-            elif 'skinCluster' in cmds.nodeType(source_attr.split('.')[0]):
-                skin_clusters.add(source_attr.split('.')[0])
-
-    return list(skin_clusters)
-### Usage
-# skin_clusters = get_geom_skinclusters("jsh_base_body_geo")
-# for skin in skin_clusters:
-#     print(skin)
-##########################################################################################
-
-
-# TODO add a normalization feature to import? Needs testing.
-def filter_skins(geom="", skin_filter=[""]):
-    skins = get_geom_skinclusters(geom=geom)
-    if skin_filter == ["all"]:
-        skin_filter = skins
-    filtered_skins = list()
-    # Filter skins
-    for skin in skins:
-        filtered = [f for f in skin_filter if f in skin]
-        if len(filtered) > 0:         
-            filtered_skins.append(skin)
-    return filtered_skins
-# Usage #
-# filter_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
-######################################################################################
-
-def export_skins(path="", geom="", skin_filter=[""]):
-    # Filter skins
-    filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
-    # Export filtered skins
-    for skin in filtered_skins:
-        cmds.deformerWeights(skin + ".xml",
-                        export = True, 
-                        deformer=skin,
-                        path = path)
-# Usage #
-# weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
-# export_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
-######################################################################################
-
-def import_skins(path="", geom="", skin_filter=[""]):
-    # Filter skins
-    filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
-    # Export filtered skins
-    for skin in filtered_skins:
-        cmds.deformerWeights(skin + ".xml",
-                            im = True,
-                            method = "index",
-                            deformer=skin,
-                            path = path)
-        
-        # weight normalization for imported weights. Must be updated or points are disfigured at rest.
-        # to make sure normalization has worked, translate the global movement controller 1000 units away, rotate global scale, and see if the points are drifting. 
-        cmds.skinPercent(skin, geom, normalize = True)
-        cmds.skinCluster(skin , e = True, forceNormalizeWeights = True)
-        print("# Imported deformer weights from '" + path + skin + ".xml'.")
-
-        # Exported deformer weights to 'C:/Users/harri/Documents/BDP/cha/jsh/jsh_base_body_geo_upperFace_skinCluster.xml'.
-
-# Usage #
-# weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
-# import_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
-######################################################################################
-
-
-# Full Usage #
-weights_path = "C:/Users/harri/Documents/BDP/cha/jsh"
-export_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
-import_skins(path=weights_path, geom="jsh_base_body_geo", skin_filter=["upperFace"])
-
-
-
-
-
-
-
-
-
-# def shape_from_xform(node):
-#     # Check if the node is of type 'transform'
-#     if cmds.objectType(node) == 'transform':
-#         # List all shapes under the transform node
-#         shapes = cmds.listRelatives(node, shapes=True, fullPath=True)
-#         if shapes:
-#             return shapes[0]  # Return the first shape found
-#     if cmds.objectType(node) == 'transform':
-#         # List all shapes under the transform node
-#         shapes = cmds.listRelatives(node, shapes=True, fullPath=True)
-#         if shapes:
-#             return shapes[0]  # Return the first shape found
-
-#     return None
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def export_skins(path):
-#     # get all skin clusters in the scene and export them to xml files
-#     skins = cmds.ls(type = "skinCluster")
-#     for i in skins:
-#         cmds.deformerWeights(i + ".xml",
-#                              export = True, 
-#                              deformer=i,
-#                              path = path)
-# #############################################
-# #---example
-# # weights_path = "C:\Users\harri\Documents\BDP\cha\jsh"
-# # export_skins(weights_path)
-# #############################################
-# def import_skins(path):
-#     skins = cmds.ls(type = "skinCluster")
-#     if skins:
-#         for i in skins:
-#             cmds.deformerWeights(i + ".xml",
-#                              im = True,
-#                              method = "index",
-#                              deformer=i,
-#                              path = path)
-
-#             geom = cmds.skinCluster(i,q=True, g = True)
-#             cmds.skinPercent(i,geom,normalize = True)
-#             cmds.skinCluster(i , e = True, forceNormalizeWeights = True)
-
-
-# TODO things to think about, should we filter node types?
-# constants #
-# possible future filter for skinCluster export node types
 NODE_TYPES = [
     "mesh",
     "nurbsCurve",
@@ -364,17 +197,6 @@ NODE_TYPES = [
     "bezierSurface",
     "lattice"
 ]
-
-
-
-
-
-
-
-
-
-
-
 
 ############################################################################################################################################################
 # Supplemental Debugging for
@@ -429,8 +251,242 @@ def debug_skin_connection_chain(node):
                 chain = debug_get_connection_chain(dest_node)  # Get the connection chain
                 chain_str = '->'.join(reversed(chain + [dest_node, source_node]))  # Build the chain string
                 print(f"Connection chain for {source_node}: {chain_str}")
-
     return list(skin_clusters)
-
-# usage #
+####################################### Usage ########################################
 # skin_clusters = debug_skin_connection_chain("jsh_base_body_geo")
+######################################################################################
+
+def setIsHistoricallyInteresting(value=1):
+    '''
+    Set isHistoricallyInteresting attribute for all nodes in scene.
+    The historicallyInteresting attribute is 0 on nodes which are only interesting to programmers.
+    1 for the TDs, 2 for the users.
+    @param value        Set ihi to 0: off, 1:on, 2:also on
+    setIsHistoricallyInteresting(value=0)  # hide history from channelbox
+    setIsHistoricallyInteresting(value=2)  # show history (a bit more than Maya's default)
+    '''
+    allNodes = cmds.ls()
+    failed = []
+    for node in allNodes:
+        plug = '{}.ihi'.format(node)
+        if cmds.objExists(plug):
+            try:
+                cmds.setAttr(plug, value)
+            except:
+                failed.append(node)
+    if failed:
+        print("Skipped the following nodes {}".format(failed))
+
+####################################### Usage ########################################
+#setIsHistoricallyInteresting(value=1)
+######################################################################################
+
+# TODO:
+# add print statements to function
+# add check if transform selected, find shapes, test on them
+# shrink usage to one line.
+def find_influencing_deformers_recursive(node, visited=None):
+    if visited is None:
+        visited = set()
+    # If node has already been visited, skip it
+    if node in visited:
+        return []
+    # Mark node as visited
+    visited.add(node)
+    deformers = []
+    # List all input connections to the node (both shape and deformers)
+    connections = cmds.listConnections(node, source=True, destination=False) or []
+    for conn in connections:
+        # Check if the connected node is a recognized deformer type
+        if cmds.nodeType(conn) in ['skinCluster', 'blendShape', 'lattice', 'cluster', 'nonLinear', 'ffd', 'wire', 'sculpt']:
+            deformers.append(conn)
+        # Recursively traverse the connections to find deeper deformers
+        deformers.extend(find_influencing_deformers_recursive(conn, visited))
+    return deformers
+####################################### Verbose Usage ########################################
+# # Select the mesh first
+# selected_mesh = cmds.ls(selection=True, dag=True, type="transform")
+# if selected_mesh:
+#     # Get the shape node of the selected mesh
+#     shapes = cmds.listRelatives(selected_mesh[0], shapes=True, noIntermediate=True)
+#     if shapes:
+#         deformers = find_influencing_deformers_recursive(shapes[0])
+#         if deformers:
+#             deformers = list(set(deformers))  # Remove duplicates
+#             print("Deformers influencing {}: {}".format(selected_mesh[0], deformers))
+#         else:
+#             print("No deformers found influencing the mesh.")
+#     else:
+#         print("No shape node found for the selected mesh.")
+# else:
+#     print("Please select a mesh.")
+######################################################################################
+
+def find_all_children_and_set_visibility(node, filter, object_type):
+    # List to store all child nodes and their parents
+    child_list = []
+    parent_list = []  # List to store parents for visibility updates
+    visibility_changed = []  # List to store names of objects with visibility changed
+
+    # Recursive function to find all children
+    def get_children(current_node):
+        # Get immediate children of the current node
+        children = cmds.listRelatives(current_node, children=True, fullPath=True)
+        if not children:
+            return False  # Base case: no more children, exit early
+        found_env_child = False  # Flag to check if any child has the check_string
+        for child in children:
+            child_list.append(child)  # Add current child to the list
+            # Check if the child has the check string in its name
+            if filter in child:
+                # Check the object type
+                child_type = cmds.nodeType(child)
+                print(f"Found child: {child} of type: {child_type}")  # Debug information
+                if child_type == object_type:
+                    found_env_child = True  # Mark that we found a child with the check_string
+                    visibility_changed.append(child)  # Store child name for visibility change
+                    # Check the visibility of the child
+                    visibility = cmds.getAttr(child + ".visibility")
+                    if not visibility:  # If visibility is off
+                        cmds.setAttr(child + ".visibility", 1)  # Set visibility to on
+                        print(f"Turning on visibility for: {child}")  # Debug information
+            # Store the current child as a parent for future visibility setting
+            parent_list.append(current_node)
+            # Check if the current child has its own children
+            if cmds.listRelatives(child, children=True):
+                if get_children(child):  # Recursive call to find this child's children
+                    found_env_child = True  # If any child has the check_string, mark it
+        return found_env_child  # Return if any child has the check_string
+    if get_children(node):  # Start the recursion with the initial node
+        # If we found a child with the check string, set visibility for all parents
+        for parent in parent_list:
+            # Check and set visibility for the current parent
+            visibility = cmds.getAttr(parent + ".visibility")
+            if not visibility:  # If visibility is off
+                cmds.setAttr(parent + ".visibility", 1)  # Set visibility to on
+                visibility_changed.append(parent)  # Store parent name for visibility change
+                print(f"Turning on visibility for parent: {parent}")  # Debug information
+    return child_list, visibility_changed
+####################################### Verbose Usage ########################################
+# # Get the currently selected object
+# selected_objects = cmds.ls(selection=True, long=True)
+# # User input for the string to check and the object type to filter
+# user_check_string = "env"  # Change this string as needed or get user input
+# user_object_type = "joint"  # Set the object type to "joint"
+# if selected_objects:
+#     selected_object = selected_objects[0]  # Take the first selected object
+#     all_children, changed_visibilities = find_all_children_and_set_visibility(selected_object, user_check_string, user_object_type)
+#     # Final debug printing
+#     if changed_visibilities:
+#         print("\nThe following objects had their visibility turned on:")
+#         for name in changed_visibilities:
+#             print(f"{name} of type {cmds.nodeType(name)}")  # Print the name and type
+#     else:
+#         print("No objects had their visibility turned on.")
+# else:
+#     print("Please select a group.")
+######################################################################################
+
+# Toggle joint vis in viewport display.
+# #This is not setting the visibility attributes, it is only happening on the viewport level.
+def toggle_jnt_display_vis():
+    viewPanels = cmds.getPanel( type='modelPanel')
+    for view in viewPanels:
+        joint_curr_vis = cmds.modelEditor(view, q=True, joints=True)
+        joint_curr_vis = cmds.modelEditor(view, e=True, joints=not joint_curr_vis)
+####################################### Usage ########################################
+# toggle_jnt_display_vis()
+######################################################################################
+
+def list_compound_attribute_connections(node, compound_attr):
+    """
+    Lists all connections for a given compound attribute on a node.
+    Args:
+    - node (str): The name of the node (e.g., a skinCluster).
+    - compound_attr (str): The name of the compound attribute (e.g., "matrix").
+    """
+    # Get the full path of the compound attribute (node + compound attribute)
+    full_attr = f"{node}.{compound_attr}"
+    # Check if the attribute exists and is compound
+    if not cmds.attributeQuery(compound_attr, node=node, exists=True):
+        raise ValueError(f"The attribute {compound_attr} does not exist on node {node}.")
+    if not cmds.attributeQuery(compound_attr, node=node, multi=True):
+        raise ValueError(f"The attribute {compound_attr} is not a compound array.")
+    # Get all indices for the compound array
+    indices = cmds.getAttr(full_attr, multiIndices=True)
+    # Loop through all indices and find incoming connections
+    for index in indices:
+        # Build the indexed attribute (e.g., skinCluster.matrix[0])
+        indexed_attr = f"{full_attr}[{index}]"
+        # List incoming connections
+        connections = cmds.listConnections(indexed_attr, source=True, destination=False, plugs=True)
+        if connections:
+            for conn in connections:
+                # conn will be something like "nodeName.attributeName"
+                print(f"Connection to {indexed_attr}: {conn}")
+        else:
+            print(f"No incoming connections to {indexed_attr}")
+####################################### Usage ########################################
+# list_compound_attribute_connections('teshi_base_body_geo_bodyMechanics_skinCluster', 'matrix')
+######################################################################################
+
+
+def list_compound_attribute_connections(node, compound_attr):
+    """
+    Lists all connections for a given compound attribute on a node.
+    Args:
+    - node (str): The name of the node (e.g., a skinCluster).
+    - compound_attr (str): The name of the compound attribute (e.g., "matrix").
+    """
+    # Get the full path of the compound attribute (node + compound attribute)
+    full_attr = f"{node}.{compound_attr}"
+    # Check if the attribute exists and is compound
+    if not cmds.attributeQuery(compound_attr, node=node, exists=True):
+        raise ValueError(f"The attribute {compound_attr} does not exist on node {node}.")
+    if not cmds.attributeQuery(compound_attr, node=node, multi=True):
+        raise ValueError(f"The attribute {compound_attr} is not a compound array.")
+    # Get all indices for the compound array
+    indices = cmds.getAttr(full_attr, multiIndices=True)
+    # Loop through all indices and find incoming connections
+    for index in indices:
+        # Build the indexed attribute (e.g., skinCluster.matrix[0])
+        indexed_attr = f"{full_attr}[{index}]"
+        # List incoming connections
+        connections = cmds.listConnections(indexed_attr, source=True, destination=False, plugs=True)
+        if connections:
+            for conn in connections:
+                # conn will be something like "nodeName.attributeName"
+                print(f"Connection to {indexed_attr}: {conn}")
+        else:
+            print(f"No incoming connections to {indexed_attr}")
+####################################### Usage ########################################
+# list_compound_attribute_connections('teshi_base_body_geo_bodyMechanics_skinCluster', 'matrix')
+######################################################################################
+
+
+def unlock_skinweights(node, compound_attr):
+    """
+    Lists all connections for a given compound attribute on a node.
+    Args:
+    - node (str): The name of the node (e.g., a skinCluster).
+    - compound_attr (str): The name of the compound attribute (e.g., "matrix").
+    """
+    # Get the full path of the compound attribute (node + compound attribute)
+    full_attr = f"{node}.{compound_attr}"
+    # Get all indices for the compound array
+    indices = cmds.getAttr(full_attr, multiIndices=True)
+    # Loop through all indices and find incoming connections
+    for index in indices:
+        # Build the indexed attribute (e.g., skinCluster.matrix[0])
+        indexed_attr = f"{full_attr}[{index}]"
+        # List incoming connections
+        connections = cmds.listConnections(indexed_attr, source=True, destination=False, plugs=True)
+        if connections:
+            for conn in connections:
+                # conn will be something like "nodeName.attributeName"
+                print(f"Connection to {indexed_attr}: {conn}")
+        else:
+            print(f"No incoming connections to {indexed_attr}")
+####################################### Usage ########################################
+# list_compound_attribute_connections('teshi_base_body_geo_bodyMechanics_skinCluster', 'matrix')
+######################################################################################
