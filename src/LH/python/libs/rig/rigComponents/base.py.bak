@@ -45,11 +45,11 @@ class Component(object):
                  do_guide = False,
                  ):
         """
-        @param side:
-        @param name:
-        @param suffix:
-        @param parent:
-        @param helperGeo: If it already exists in scene, just give the object as an arg
+        param side:
+        param name:
+        param suffix:
+        param parent:
+        param helperGeo: If it already exists in scene, just give the object as an arg
                           To create, give a dictionary created from export utils
                           By default a dictionary will be selected from elements
         """

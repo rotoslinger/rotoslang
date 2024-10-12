@@ -1,10 +1,18 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": "../../../../../AppData/Roaming/Python/Python311/site-packages/pymel"
 		},
 		{
-			"path": "../../../../../AppData/Roaming/Python/Python311/site-packages/pymel"
+			"path": "src/LH/python/libs"
 		}
-	]
+	],
+	"settings": {
+		"cSpell.words": [
+			"rigbdp",
+			"skincluster",
+			"skinclusters",
+			"TESTBUILD"
+		]
+	}
 }

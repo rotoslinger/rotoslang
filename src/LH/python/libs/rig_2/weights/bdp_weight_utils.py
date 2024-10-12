@@ -402,3 +402,19 @@ def connect_matrix_mults(connection_map, skincluster_name):
 # json_data = import_json_conn_map(file_path=r'C:\Users\harri\Documents\BDP\cha\teshi',filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',suffix="MATRIX_CONNECTIONS")
 # connect_matrix_mults(connection_map=json_data,skincluster_name="teshi_base_body_geo_bodyMechanics_skinCluster")
 ###########################################################################################################
+
+
+####################################### Full Connection Usage ########################################
+# # export #
+# connections_data = get_compound_attr_connect_map(node='teshi_base_body_geo_bodyMechanics_skinCluster', compound_attr='matrix')
+# export_to_json(connections_data, filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster', file_path=r'C:\Users\harri\Documents\BDP\cha\teshi', suffix='MATRIX_CONNECTIONS')
+
+# # import #
+# json_data = import_json_conn_map(file_path=r'C:\Users\harri\Documents\BDP\cha\teshi',filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',suffix="MATRIX_CONNECTIONS")
+
+# # connect joints to skincluster #
+# connect_skin_joints(connection_map=json_data, skincluster_name="teshi_base_body_geo_bodyMechanics_skinCluster")
+
+# # connect matrixMultipliers to skincluster #
+# connect_matrix_mults(connection_map=json_data, skincluster_name="teshi_base_body_geo_bodyMechanics_skinCluster")
+###########################################################################################################

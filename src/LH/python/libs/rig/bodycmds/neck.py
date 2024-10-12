@@ -44,40 +44,40 @@ class create_neck():
                  debug = False,
                  ):
         """
-        @type  side:                string
-        @param side:                usually C but L or R are also supported
+        type  side:                string
+        param side:                usually C but L or R are also supported
 
-        @type  name:                string
-        @param name:                the names of your neck
+        type  name:                string
+        param name:                the names of your neck
 
-        @type  joint:               string array
-        @param joint:               the neck joint that the rig will drive
+        type  joint:               string array
+        param joint:               the neck joint that the rig will drive
 
-        @type  driver:              string
-        @param driver:              what the neck will be attached to
+        type  driver:              string
+        param driver:              what the neck will be attached to
                                     usually the chest joint but anything that
                                     exists will work
 
-        @type  global_scale:        string
-        @param global_scale:        what the neck will be attached to
+        type  global_scale:        string
+        param global_scale:        what the neck will be attached to
                                     for scaling usually lowest point in
                                     hierarchy of global ctl
 
 
-        @type  skel_parent:          string
-        @param skel_parent:          where to parent newly created joints,
+        type  skel_parent:          string
+        param skel_parent:          where to parent newly created joints,
                                      effectors, and generally things animators
                                      don't want to see.
 
-        @type  rig_parent:           string
-        @param rig_parent:           where to parent ctls and other things
+        type  rig_parent:           string
+        param rig_parent:           where to parent ctls and other things
                                      animators would like to see
 
-        @type  ctl_size:             float
-        @param ctl_size:             a size for the neck control
+        type  ctl_size:             float
+        param ctl_size:             a size for the neck control
 
-        @type  debug:                bool
-        @param debug:                if debug is on, nothing will be locked and
+        type  debug:                bool
+        param debug:                if debug is on, nothing will be locked and
                                      ihi will remain 1
         """
 

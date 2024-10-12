@@ -42,23 +42,23 @@ class create_stdavar_ctrl():
                  ):
 
         """
-        @type  side:                string
-        @param side:                usually C but L or R are also supported
+        type  side:                string
+        param side:                usually C but L or R are also supported
 
-        @type  skel_parent:          string
-        @param skel_parent:          where to parent newly created joints,
+        type  skel_parent:          string
+        param skel_parent:          where to parent newly created joints,
                                      effectors, and generally things animators
                                      don't want to see.
 
-        @type  rig_parent:           string
-        @param rig_parent:           where to parent ctrls and other things
+        type  rig_parent:           string
+        param rig_parent:           where to parent ctrls and other things
                                      animators would like to see
 
-        @type  ctrl_sizes:            float array
-        @param ctrl_sizes:            sizes for the global & local controls
+        type  ctrl_sizes:            float array
+        param ctrl_sizes:            sizes for the global & local controls
 
-        @type  debug:                bool
-        @param debug:                if debug is on, nothing will be locked and
+        type  debug:                bool
+        param debug:                if debug is on, nothing will be locked and
                                      ihi will remain 1
         """
 

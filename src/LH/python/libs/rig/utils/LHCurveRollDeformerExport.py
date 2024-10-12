@@ -34,12 +34,12 @@ class exportDeformer(lh_deformer_export):
     def createInstanceVariables(self):
 
         """
-        @type  name:                        string
-        @param name:                        name of the deformer you want to
+        type  name:                        string
+        param name:                        name of the deformer you want to
                                             export
 
-        @type  export_path:                 string
-        @param export_path:                 path to export to
+        type  export_path:                 string
+        param export_path:                 path to export to
 
         """
 

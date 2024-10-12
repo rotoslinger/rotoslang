@@ -40,17 +40,17 @@ class draw_ctl():
                  ):
 
         """
-        @type  side:                string
-        @param side:                side the control is on C,L,R
+        type  side:                string
+        param side:                side the control is on C,L,R
 
-        @type  name:                string
-        @param name:                name of the ctl
+        type  name:                string
+        param name:                name of the ctl
 
-        @type  parent:              string
-        @param parent:              the transform this will be parented under
+        type  parent:              string
+        param parent:              the transform this will be parented under
 
-        @type  shape:               string
-        @param shape:               shape name, currently supported:
+        type  shape:               string
+        param shape:               shape name, currently supported:
                                     circle
                                     sphere
                                     switch
@@ -59,33 +59,33 @@ class draw_ctl():
                                     shoulder
                                     ik\\fk
 
-        @type  lock_attrs:          string array
-        @param lock_attrs:          the attribute names you want locked,
+        type  lock_attrs:          string array
+        param lock_attrs:          the attribute names you want locked,
                                     unkeyable, and hidden
 
-        @type  show_rot_order:      bool
-        @param show_rot_order:          if true, rotation order is exposed as a
+        type  show_rot_order:      bool
+        param show_rot_order:          if true, rotation order is exposed as a
                                     non keyable attribute
 
-        @type  size:                float
-        @param size:                average size of all points in ctl in units
+        type  size:                float
+        param size:                average size of all points in ctl in units
 
-        @type  orient:              float array
-        @param orient:              x,y,z values you want to rotate the points
+        type  orient:              float array
+        param orient:              x,y,z values you want to rotate the points
                                     by.  These values will not be reflected in
                                     the transform of the control
 
-        @type  offset:              float array
-        @param offset:              x,y,z values you want to translate the
+        type  offset:              float array
+        param offset:              x,y,z values you want to translate the
                                     points by.  These values will not be
                                     reflected in the transform of the control
 
-        @type  scale:               float array
-        @param scale:               x,y,z values you want to scale the
+        type  scale:               float array
+        param scale:               x,y,z values you want to scale the
                                     points by.  These values will not be
                                     reflected in the transform of the control
-        @type  hide:                bool
-        @param hide:                if true control visibility will be set to 0
+        type  hide:                bool
+        param hide:                if true control visibility will be set to 0
         """
 
         #---args
@@ -477,66 +477,66 @@ class create_ctl():
                  ):
 
         """
-        @type  side:                string
-        @param side:                the side the control is on C,L,R
+        type  side:                string
+        param side:                the side the control is on C,L,R
 
-        @type  name:                string
-        @param name:                name of the ctl
+        type  name:                string
+        param name:                name of the ctl
 
-        @type  parent:              string
-        @param parent:              the transform this will be parented under
+        type  parent:              string
+        param parent:              the transform this will be parented under
 
-        @type  shape:               string
-        @param shape:               shape name, currently supported:
+        type  shape:               string
+        param shape:               shape name, currently supported:
                                     circle
                                     sphere
                                     switch
                                     cube
                                     shoulder
 
-        @type  lock_attrs:          string array
-        @param lock_attrs:          the attribute names you want locked,
+        type  lock_attrs:          string array
+        param lock_attrs:          the attribute names you want locked,
                                     unkeyable, and hidden
 
-        @type  num_buffer:          int
-        @param num_buffer:          number of transforms to group ctl under
+        type  num_buffer:          int
+        param num_buffer:          number of transforms to group ctl under
 
-        @type  gimbal:              bool
-        @param gimbal:              whether or not you want a gimbal control
+        type  gimbal:              bool
+        param gimbal:              whether or not you want a gimbal control
                                     not recommended for controls with less than
                                     all 3 rotation attributes
 
-        @type  num_secondary:       bool
-        @param num_secondary:       creates extra controls which will be
+        type  num_secondary:       bool
+        param num_secondary:       creates extra controls which will be
                                     parented under the main ctl
 
-        @type  show_rot_order:      string array
-        @param show_rot_order:      the attribute names you want locked,
+        type  show_rot_order:      string array
+        param show_rot_order:      the attribute names you want locked,
                                     unkeyable, and hidden
 
-        @type  size:                float
-        @param size:                average size of all points in ctl in units
+        type  size:                float
+        param size:                average size of all points in ctl in units
 
-        @type  orient:              float array
-        @param orient:              x,y,z values you want to rotate the points
+        type  orient:              float array
+        param orient:              x,y,z values you want to rotate the points
                                     by.  These values will not be reflected in
                                     the transform of the control
 
-        @type  offset:              float array
-        @param offset:              x,y,z values you want to translate the
+        type  offset:              float array
+        param offset:              x,y,z values you want to translate the
                                     points by.  These values will not be
                                     reflected in the transform of the control
 
-        @type  scale:               float array
-        @param scale:               x,y,z values you want to scale the
+        type  scale:               float array
+        param scale:               x,y,z values you want to scale the
                                     points by.  These values will not be
                                     reflected in the transform of the control
 
-        @type  hide:                bool
-        @param hide:                if True control will be hidden
+        type  hide:                bool
+        param hide:                if True control will be hidden
 
-        @type  create_bone:                bool
-        @param create_bone:                if True create a create_bone
+        type  create_bone:                bool
+        param create_bone:                if True create a create_bone
         """
 
         #---args
@@ -830,38 +830,38 @@ class create_spline_ik():
                  hide = True,
                  ):
         """
-        @type  side:                string
-        @param side:                C or L or R
+        type  side:                string
+        param side:                C or L or R
 
-        @type  name:                string
-        @param name:                the name of your torso
+        type  name:                string
+        param name:                the name of your torso
 
-        @type  joints:              string array
-        @param joints:              the joints that will be in the ik,
+        type  joints:              string array
+        param joints:              the joints that will be in the ik,
                                     please list in hierarchical order
 
-        @type  curve_parent:        string
-        @param curve_parent:        where you would like to parent the curve
+        type  curve_parent:        string
+        param curve_parent:        where you would like to parent the curve
                                     if blank curve will not be parented
 
-        @type  inherit_transform:   bool
-        @param inherit_transform:   whether or not you want the curve to
+        type  inherit_transform:   bool
+        param inherit_transform:   whether or not you want the curve to
                                     inherit the transform of the group it is
                                     under. To avoid double movement I would
                                     recommend setting this to false
 
-        @type  cluster_parents:     string array
-        @param cluster_parents:     where to parent your locator cluster
+        type  cluster_parents:     string array
+        param cluster_parents:     where to parent your locator cluster
                                     handles.  This list should be as long
                                     as your joints, if left blank, clusters
                                     will not be parented
 
-        @type  ik_handle_parent:    string array
-        @param ik_handle_parent:    where to parent your ik handle if blank
+        type  ik_handle_parent:    string array
+        param ik_handle_parent:    where to parent your ik handle if blank
                                     ik handle will not be parented
 
-        @type  hide:                bool
-        @param hide:                if true hides the controls that are created
+        type  hide:                bool
+        param hide:                if true hides the controls that are created
 
         ##########################################################
         # #---example
@@ -1055,85 +1055,85 @@ class create_rivet_rig():
                  debug = False
                  ):
         """
-        @type  side:                 string
-        @param side:                 C or L or R
+        type  side:                 string
+        param side:                 C or L or R
 
-        @type  name:                 string
-        @param name:                 the name of your rivet
+        type  name:                 string
+        param name:                 the name of your rivet
 
-        @type  translate:            3 tuple
-        @param translate:            translation of the poly plane (Tx, Ty, Tz
+        type  translate:            3 tuple
+        param translate:            translation of the poly plane (Tx, Ty, Tz
                                      attributes)
 
-        @type  rotate:               3 tuple
-        @param rotate:               rotation of the poly plane (Rx, Ry, Rz
+        type  rotate:               3 tuple
+        param rotate:               rotation of the poly plane (Rx, Ry, Rz
                                      attributes)
 
-        @type  scale:            3 tuple
-        @param scale:            scale of the poly plane (Sx, Sy, Sz
+        type  scale:            3 tuple
+        param scale:            scale of the poly plane (Sx, Sy, Sz
                                      attributes)
 
-        @type  uv:                   2 doubles
-        @param uv:                   this will tell the point on poly constraint
+        type  uv:                   2 doubles
+        param uv:                   this will tell the point on poly constraint
                                      what u and v parameters you want to
                                      constrain to
 
-        @type  num_buffer:        unsigned int
-        @param num_buffer:        the amount of buffers you will have above
+        type  num_buffer:        unsigned int
+        param num_buffer:        the amount of buffers you will have above
                                      your ctl one is mandatory (even if you give
                                      0) but above that is your choice.
 
-        @type  rig_parent:            string array
-        @param rig_parent:            the group where you parent your skeleton
+        type  rig_parent:            string array
+        param rig_parent:            the group where you parent your skeleton
 
-        @type  skel_parent:           string array
-        @param skel_parent:           the group where you parent your skeleton
+        type  skel_parent:           string array
+        param skel_parent:           the group where you parent your skeleton
 
-        @type  shape:               string
-        @param shape:               ctl arg: shape name, currently supported:
+        type  shape:               string
+        param shape:               ctl arg: shape name, currently supported:
                                     circle
                                     sphere
                                     switch
                                     cube
                                     shoulder
 
-        @type  lock_attrs:          string array
-        @param lock_attrs:          ctl arg: the attribute names you want
+        type  lock_attrs:          string array
+        param lock_attrs:          ctl arg: the attribute names you want
                                     locked, unkeyable, and hidden
 
-        @type  gimbal:              bool
-        @param gimbal:              ctl arg: whether or not you want a gimbal
+        type  gimbal:              bool
+        param gimbal:              ctl arg: whether or not you want a gimbal
                                     control not recommended for controls with
                                     less than all 3 rotation attributes
 
-        @type  show_rot_order:      string array
-        @param show_rot_order:      ctl arg: the attribute names you want
+        type  show_rot_order:      string array
+        param show_rot_order:      ctl arg: the attribute names you want
                                     locked, unkeyable, and hidden
 
-        @type  size:                float
-        @param size:                ctl arg: average size of all points in ctl
+        type  size:                float
+        param size:                ctl arg: average size of all points in ctl
                                     in units
 
-        @type  orient:              float array
-        @param orient:              ctl arg: x,y,z values you want to rotate the
+        type  orient:              float array
+        param orient:              ctl arg: x,y,z values you want to rotate the
                                     points by.  These values will not be
                                     reflected in the transform of the control
 
-        @type  offset:              float array
-        @param offset:              ctl arg: x,y,z values you want to translate
+        type  offset:              float array
+        param offset:              ctl arg: x,y,z values you want to translate
                                     the points by.  These values will not be
                                     reflected in the transform of the control
 
-        @type  ctl_scale:           float array
-        @param ctl_scale:           ctl arg: x,y,z values you want to scale the
+        type  ctl_scale:           float array
+        param ctl_scale:           ctl arg: x,y,z values you want to scale the
                                     points by.  These values will not be
                                     reflected in the transform of the control
 
-        @type  hide:                bool
-        @param hide:                ctl arg: if True control will be hidden
+        type  hide:                bool
+        param hide:                ctl arg: if True control will be hidden
 
-        @type  global_scale:        string
-        @param global_scale:        what the rig will be attached to
+        type  global_scale:        string
+        param global_scale:        what the rig will be attached to
                                     for scaling usually lowest point in
                                     hierarchy of global ctl
         ##########################################################

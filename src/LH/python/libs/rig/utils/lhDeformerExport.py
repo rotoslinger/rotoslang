@@ -47,12 +47,12 @@
 #                  ):
 #
 #         """
-#         @type  name:                        string
-#         @param name:                        name of the deformer you want to
+#         type  name:                        string
+#         param name:                        name of the deformer you want to
 #                                             export
 #
-#         @type  export_path:                 string
-#         @param export_path:                 path to export to
+#         type  export_path:                 string
+#         param export_path:                 path to export to
 #
 #         """
 #
@@ -350,8 +350,8 @@
 #                  ):
 #
 #         """
-#         @type  path:                 string
-#         @param path:                 path to import from
+#         type  path:                 string
+#         param path:                 path to import from
 #         """
 #
 #         #---args
@@ -632,12 +632,12 @@
 #                  ):
 #
 #         """
-#         @type  name:                        string
-#         @param name:                        name of the deformer you want to
+#         type  name:                        string
+#         param name:                        name of the deformer you want to
 #                                             export
 #
-#         @type  export_path:                 string
-#         @param export_path:                 path to export to
+#         type  export_path:                 string
+#         param export_path:                 path to export to
 #
 #         """
 #
@@ -877,8 +877,8 @@
 #                  ):
 #
 #         """
-#         @type  path:                 string
-#         @param path:                 path to import from
+#         type  path:                 string
+#         param path:                 path to import from
 #         """
 #
 #         #---args

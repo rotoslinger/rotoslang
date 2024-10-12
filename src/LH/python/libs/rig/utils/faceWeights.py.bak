@@ -23,8 +23,8 @@ class create_symmetric_partners():
                  ):
         """
         
-        @type  geo:               string
-        @param geo:               geometry you want to build symmetric
+        type  geo:               string
+        param geo:               geometry you want to build symmetric
                                   partners from.  Best results the closer a
                                   mesh is to symmetric.  Right now only polygons
                                   are supported
@@ -108,27 +108,27 @@ class copy_double_array_weights():
                  symmetry_dict = None
                  ):
         """
-        @type  source:            string (full attr name deformer.doubleArray)
-        @param source:            attr you will copy from
+        type  source:            string (full attr name deformer.doubleArray)
+        param source:            attr you will copy from
 
-        @type  target:            list of strings
-        @param target:            attr(s) you will copy to
+        type  target:            list of strings
+        param target:            attr(s) you will copy to
 
-        @type  invert:            bool
-        @param invert:            whether or not you want to invert the weight
+        type  invert:            bool
+        param invert:            whether or not you want to invert the weight
                                   values before you paste them
 
-        @type  invert:            bool
-        @param invert:            whether or not you want to invert the weight
+        type  invert:            bool
+        param invert:            whether or not you want to invert the weight
                                   values before you paste them
 
-        @type  flip:              bool
-        @param flip:              if true weighting will be flipped from one
+        type  flip:              bool
+        param flip:              if true weighting will be flipped from one
                                   side of the mesh to the other. The closer
                                   symmetry is the better this will work
 
-        @type  symmetry_dict:     dictionary
-        @param symmetry_dict:     required if you want to flip, can be retrieved
+        type  symmetry_dict:     dictionary
+        param symmetry_dict:     required if you want to flip, can be retrieved
                                   using the create_symmetric_partners module
                                   the opposite id for each id in the double
                                   array
@@ -223,16 +223,16 @@ class mirror_double_array_attrs():
                  side = "L"
                  ):
         """
-        @type  source:            string
-        @param source:            attr you will mirror
+        type  source:            string
+        param source:            attr you will mirror
                                   geometry should be close to symmetric
                                      
-        @type  geo:               string
-        @param geo:               geo on which to mirror
+        type  geo:               string
+        param geo:               geo on which to mirror
                                   geometry should be close to symmetric
 
-        @type  side:              string
-        @param side:              "L" or "R" if "L" mirrors +x to -x and opposite
+        type  side:              string
+        param side:              "L" or "R" if "L" mirrors +x to -x and opposite
                                   if "R"
         """
         #----args
@@ -320,11 +320,11 @@ class mirror_anim_curves():
                  flip = False,
                  ):
         """
-        @type  anim_curve:            list
-        @param anim_curve:            anim curves     
+        type  anim_curve:            list
+        param anim_curve:            anim curves     
 
-        @type  side:                  string
-        @param side:                  if "L" mirrors from timeline right to left
+        type  side:                  string
+        param side:                  if "L" mirrors from timeline right to left
                                       if "R" mirrors from timeline left to right
                                       this happens under the assumption that you
                                       are looking at a character's face from the
@@ -333,12 +333,12 @@ class mirror_anim_curves():
                                       of the face, not the left side of the
                                       timeline, or the screen
 
-        @type  center_frame:          int
-        @param center_frame:          the mirror axis, can be thought of as
+        type  center_frame:          int
+        param center_frame:          the mirror axis, can be thought of as
                                       the scale pivot
 
-        @type  flip:                  bool
-        @param flip:                  if False mirrors from left to right
+        type  flip:                  bool
+        param flip:                  if False mirrors from left to right
         """
         #----args
         self.anim_curve                   = anim_curve
@@ -544,21 +544,21 @@ class copy_flip_anim_curves():
                  flip = False
                  ):
         """
-        @type  side:                  string
-        @param side:                  the side you are copying from
+        type  side:                  string
+        param side:                  the side you are copying from
         
-        @type  source:                string
-        @param source:                the curve to copy from
+        type  source:                string
+        param source:                the curve to copy from
 
-        @type  target:           string
-        @param target:           the curve to copy to
+        type  target:           string
+        param target:           the curve to copy to
 
-        @type  center_frame:          int
-        @param center_frame:          the mirror axis, can be thought of as
+        type  center_frame:          int
+        param center_frame:          the mirror axis, can be thought of as
                                       the scale pivot
 
-        @type  flip:                  bool
-        @param flip:                  if false only a regular copy is done
+        type  flip:                  bool
+        param flip:                  if false only a regular copy is done
         """
         #----args
         self.side                         = side
@@ -618,14 +618,14 @@ class rename_weight_attrs():
                  new = "",
                  ):
         """
-        @type  node:                 string
-        @param node:                 name of the node that has the attribute
+        type  node:                 string
+        param node:                 name of the node that has the attribute
         
-        @type  old:                  string
-        @param old:                  old attribute name: Weights
+        type  old:                  string
+        param old:                  old attribute name: Weights
         
-        @type  new:                  string
-        @param new:                  new attribute name: newWeights
+        type  new:                  string
+        param new:                  new attribute name: newWeights
         """
         #----args
         self.node                    = node
@@ -771,11 +771,11 @@ class get_cooresponding_attrs():
                  attr = "",
                  ):
         """
-        @type  node:                string
-        @param node:                the side you are copying from
+        type  node:                string
+        param node:                the side you are copying from
         
-        @type  attr:                string
-        @param attr:                the curve to copy from
+        type  attr:                string
+        param attr:                the curve to copy from
         """
         #----args
         self.node                         = node

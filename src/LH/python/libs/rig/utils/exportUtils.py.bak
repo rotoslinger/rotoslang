@@ -25,8 +25,8 @@ class meshData(object):
                  ):
 
         """
-        @type  name:                        string
-        @param name:                        name of the geo you want to get data from
+        type  name:                        string
+        param name:                        name of the geo you want to get data from
         """
 
         #---args
@@ -279,8 +279,8 @@ class nurbsSurfaceData():
                  ):
 
         """
-        @type  name:                        string
-        @param name:                        name of the deformer you want to
+        type  name:                        string
+        param name:                        name of the deformer you want to
                                             export
         """
 
@@ -411,8 +411,8 @@ class nurbsCurveData():
                  ):
 
         """
-        @type  name:                        string
-        @param name:                        name of the curve you want to
+        type  name:                        string
+        param name:                        name of the curve you want to
                                             export
         """
         if not name: name = cmds.ls(sl=True)[0]
@@ -569,8 +569,8 @@ class get_anim_curve_info():
                  anim_curve = [],
                  ):
         """
-        @type  anim_curve:            list
-        @param anim_curve:            anim curves
+        type  anim_curve:            list
+        param anim_curve:            anim curves
 
         """
         #----args

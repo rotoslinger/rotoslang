@@ -34,22 +34,22 @@ class lock_attrs():
                  cb = False):
 
         """
-        @type  node:                string
-        @param node:                name of the node that will have attrs 
+        type  node:                string
+        param node:                name of the node that will have attrs 
                                     locked
 
-        @type  attr:                string
-        @param attr:                attribute names if "all" will use
+        type  attr:                string
+        param attr:                attribute names if "all" will use
                                     translates, rotates and scales
 
-        @type  l:                   bool
-        @param l:                   lock
+        type  l:                   bool
+        param l:                   lock
 
-        @type  k:                   bool
-        @param k:                   keyable
+        type  k:                   bool
+        param k:                   keyable
 
-        @type  cb:                  bool
-        @param cb:                  channel box
+        type  cb:                  bool
+        param cb:                  channel box
         """
 
         #---args
@@ -91,8 +91,8 @@ class create_rig_hier():
     def __init__(self,
                  char_name = "character"):
         """
-        @type  char_name:                string
-        @param char_name:                character name
+        type  char_name:                string
+        param char_name:                character name
         """
         #---args
         self.char_name                   = char_name
@@ -169,12 +169,12 @@ class snap_pivots():
                  source=[]):
 
         """
-        @type  target:                string
-        @param target:                name of the transform that will be 
+        type  target:                string
+        param target:                name of the transform that will be 
                                       snapped to (driver)
 
-        @type  source:                string array
-        @param source:                names of the transforms that will be
+        type  source:                string array
+        param source:                names of the transforms that will be
                                       snapped (driven)
         """
 
@@ -280,20 +280,20 @@ class create_space_switches():
                  ):
         "gets the distance between 2 transforms"
         """
-        @type  ctl:                  string array
-        @param ctl:                  name of the ctl that will have the space
+        type  ctl:                  string array
+        param ctl:                  name of the ctl that will have the space
                                      switch attrs
 
-        @type  ctl_grp:              string array
-        @param ctl_grp:              name of the group above the ctl
+        type  ctl_grp:              string array
+        param ctl_grp:              name of the group above the ctl
         
-        @type  space_names:          string array
-        @param space_names:          the names you would like to give your
+        type  space_names:          string array
+        param space_names:          the names you would like to give your
                                      space switches (cleaner way of naming than
                                      using the space parents)
 
-        @type  space_parents:        string array
-        @param space_parents:        the things driving the ik control
+        type  space_parents:        string array
+        param space_parents:        the things driving the ik control
                                      during space switching, I usually use
                                      bind joint names. Does not check for
                                      cycle errors so I need to be careful.
@@ -419,21 +419,21 @@ class create_fk_align():
                  maintainOffset=False
                  ):
         """
-        @type  ctl:                  string array
-        @param ctl:                  name of the ctl that will have the space
+        type  ctl:                  string array
+        param ctl:                  name of the ctl that will have the space
                                      switch attrs
 
-        @type  ctl_grp:              string array
-        @param ctl_grp:              name of the group above the ctl
+        type  ctl_grp:              string array
+        param ctl_grp:              name of the group above the ctl
 
-        @type  default_align_parent: string array
-        @param default_align_parent: usually the name of the group above the 
+        type  default_align_parent: string array
+        param default_align_parent: usually the name of the group above the 
                                      ctl_grp or anything you want to be the 
                                      to be aligned to by default
 
 
-        @type  skel_group:           string array
-        @param skel_group:           the group where you parent your skeleton
+        type  skel_group:           string array
+        param skel_group:           the group where you parent your skeleton
         """
 
         #---args
@@ -997,7 +997,7 @@ def getGeoData(mayaObject=None):
 def createGeoFromData(geomDict=None, name=None, parent=None):
     """
     Creates geometry based on a dictionary created from exportUtils
-    @param geomDict: dictionary of geometry
+    param geomDict: dictionary of geometry
     @return: 
     """
     if (geomDict["type"] == "nurbsSurface"):

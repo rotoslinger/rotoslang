@@ -1,3 +1,5 @@
+import importlib, os, re
+
 from maya import cmds
 
 
@@ -21,6 +23,38 @@ def de_windows_os_path(filepath):
 # print("This is the normalized directory " + mayaified_directory)
 ###############################################################################
 
+######################################################################################
+
+def get_geom_skinclusters(geom):
+    # Get the shape node if the input node is a transform
+    shapes = cmds.listRelatives(geom, shapes=True, fullPath=True) or [geom]
+
+    # This will hold all the found skin clusters
+    skin_clusters = set() # <---- to avoid duplicates (shouldn't happen, but whatever)
+
+    # Go through all the shapes
+    for shape in shapes:
+        # Get all incoming and outgoing connections of the shape
+        connections = cmds.listConnections(shape, connections=True, plugs=True) or []
+
+        # Look for any deformer-related connections (groupParts, tweak, skinCluster, etc.)
+        for i in range(0, len(connections), 2):
+            source_attr = connections[i]
+            dest_attr = connections[i + 1]
+            
+            # Check for skinCluster in the deformer's connection chain
+            if 'skinCluster' in cmds.nodeType(dest_attr.split('.')[0]):
+                skin_clusters.add(dest_attr.split('.')[0])
+
+            elif 'skinCluster' in cmds.nodeType(source_attr.split('.')[0]):
+                skin_clusters.add(source_attr.split('.')[0])
+
+    return list(skin_clusters)
+####################################### Usage ########################################
+# skin_clusters = get_geom_skinclusters("jsh_base_body_geo")
+# for skin in skin_clusters:
+#     print(skin)
+##########################################################################################
 
 
 

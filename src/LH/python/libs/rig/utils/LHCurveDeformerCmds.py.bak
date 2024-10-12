@@ -25,30 +25,30 @@ class curveDeformerCmd():
                  
                  name=''):
         """
-        @type  driverCurve:          string
-        @param driverCurve:          the name of the curve that will drive the
+        type  driverCurve:          string
+        param driverCurve:          the name of the curve that will drive the
                                      geometry, or the first selection
 
-        @type  aimCurve:             string
-        @param aimCurve:             the name of the curve that the geometry
+        type  aimCurve:             string
+        param aimCurve:             the name of the curve that the geometry
                                      will aim at, or the second selection
 
-        @type  geom:                 string array
-        @param geom:                 the names of the geometry the will be deformed,
+        type  geom:                 string array
+        param geom:                 the names of the geometry the will be deformed,
                                      or the third selection and beyond
 
-        @type  ihi:                  int
-        @param ihi:                  sets the deformer isHistoricallyIntersting to 0
+        type  ihi:                  int
+        param ihi:                  sets the deformer isHistoricallyIntersting to 0
 
-        @type  lockAttrs:            int
-        @param lockAttrs:            if set to 1 all attributes in return 
+        type  lockAttrs:            int
+        param lockAttrs:            if set to 1 all attributes in return 
                                      deformer are locked and hidden
 
-        @type  side:                 string
-        @param side:                 defaults to C but L and R are also acceptable
+        type  side:                 string
+        param side:                 defaults to C but L and R are also acceptable
         
-        @type  name:                 string
-        @param name:                 description
+        type  name:                 string
+        param name:                 description
         """
 
         #----args

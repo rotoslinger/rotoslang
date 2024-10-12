@@ -55,34 +55,34 @@ class simple_component():
                  ):
 
         """
-        @type  side:                        string
-        @param side:                        usually C but L or R are also supported
+        type  side:                        string
+        param side:                        usually C but L or R are also supported
 
-        @type  skel_parent:                 string
-        @param skel_parent:                 where to parent newly created joints,
+        type  skel_parent:                 string
+        param skel_parent:                 where to parent newly created joints,
                                             effectors, and generally things animators
                                             don't want to see.
 
-        @type  rig_parent:                  string
-        @param rig_parent:                  where to parent ctrls and other things
+        type  rig_parent:                  string
+        param rig_parent:                  where to parent ctrls and other things
                                             animators would like to see
 
-        @type  ctrl_sizes:                  float array
-        @param ctrl_sizes:                  sizes for the global & local controls
+        type  ctrl_sizes:                  float array
+        param ctrl_sizes:                  sizes for the global & local controls
 
-        @type  debug:                       bool
-        @param debug:                       if debug is on, nothing will be locked and
+        type  debug:                       bool
+        param debug:                       if debug is on, nothing will be locked and
                                             ihi will remain 1
 
-        @type  create_wire_deformer:        bool
-        @param create_wire_deformer:        if True, a curve will be created with CVs 
+        type  create_wire_deformer:        bool
+        param create_wire_deformer:        if True, a curve will be created with CVs 
                                             at every joint, then a wire deformer will 
                                             be created. This curve will be parented to
                                             a new control which is named after the arg
                                             wire_deformer_root_name.
 
-        @type  wire_deformer_root_name:     string
-        @param wire_deformer_root_name:     the name you would like to give the control
+        type  wire_deformer_root_name:     string
+        param wire_deformer_root_name:     the name you would like to give the control
                                             where the the curve and curve base will be
                                             parented.
                                             

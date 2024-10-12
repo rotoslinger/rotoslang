@@ -130,8 +130,8 @@ def skin_infos(filter_geom_type=None, print_shapes=False, filter_geom_name=None)
 
 if __name__ == "__main__":
     try:
-        skin_info_ui.close()  # Close previous instance if it exists
-        skin_info_ui.deleteLater()
+        SkinInfoUI.close()  # Close previous instance if it exists
+        SkinInfoUI.deleteLater()
     except:
         pass
 

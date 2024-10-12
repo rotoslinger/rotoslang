@@ -28,59 +28,59 @@ class vectorDeformerCmd():
                  ):
         """
                                      
-        @type  weightGeo:            string (mesh)
-        @param weightGeo:            the name of the geo that will be used to
+        type  weightGeo:            string (mesh)
+        param weightGeo:            the name of the geo that will be used to
                                      raycast weighting
 
-        @type  geoms:                string array
-        @param geoms:                the names of the geometry the will be deformed,
+        type  geoms:                string array
+        param geoms:                the names of the geometry the will be deformed,
                                      or the second selection and beyond 
                                      can be mesh, nurbsSurface, or nurbsCurve
 
-        @type  control:              string
-        @param control:              where to put attributes, usually a control
+        type  control:              string
+        param control:              where to put attributes, usually a control
                                      if unset attributes will be created on 
                                      the returned deformer
 
-        @type  ihi:                  int
-        @param ihi:                  sets the deformer isHistoricallyIntersting to 0
+        type  ihi:                  int
+        param ihi:                  sets the deformer isHistoricallyIntersting to 0
 
-        @type  lockAttrs:            int
-        @param lockAttrs:            if set to 1 all attributes in return 
+        type  lockAttrs:            int
+        param lockAttrs:            if set to 1 all attributes in return 
                                      deformer are locked and hidden
 
-        @type  side:                 string
-        @param side:                 defaults to C but L and R are also acceptable
+        type  side:                 string
+        param side:                 defaults to C but L and R are also acceptable
 
         
-        @type  tNames:               string array
-        @param tNames:               the names of the t channels you want
+        type  tNames:               string array
+        param tNames:               the names of the t channels you want
                                      the size of this array will determine how
                                      many value attributes, weight channels, and
                                      animation curve values are created
                                      example ['L_mouth', 'R_mouth']
                                      
-        @type  rNames:               string array
-        @param rNames:               the names of the r channels you want
+        type  rNames:               string array
+        param rNames:               the names of the r channels you want
                                      the size of this array will determine how
                                      many value attributes, weight channels, and
                                      animation curve values are created
                                      example ['L_mouth', 'R_mouth']
                                      
-        @type  tPivots:              string array
-        @param tPivots:              OPTIONAL if you have already created 
+        type  tPivots:              string array
+        param tPivots:              OPTIONAL if you have already created 
                                      translation pivots you can specify them 
                                      here.  If you leave this blank new curves
                                      will be created for you.
                                      
-        @type  rPivots:              string array
-        @param rPivots:              OPTIONAL if you have already created 
+        type  rPivots:              string array
+        param rPivots:              OPTIONAL if you have already created 
                                      rotaional pivots you can specify them 
                                      here.  If you leave this blank new curves
                                      will be created for you.
 
-        @type  weightBase:           string array
-        @param weightBase:           Optional.  A copy of the geometry that will
+        type  weightBase:           string array
+        param weightBase:           Optional.  A copy of the geometry that will
                                      be deformed.  This allows weights to be 
                                      projected to a non moving geometry.  Very 
                                      important when you have multiple weight

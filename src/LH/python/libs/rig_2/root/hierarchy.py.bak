@@ -16,8 +16,8 @@ class base(object):
                  asset_name = "asset",
                  ):
         """
-        @type  asset_name:                string
-        @param asset_name:                asset name
+        type  asset_name:                string
+        param asset_name:                asset name
         """
         #---args
         self.asset_name                   = asset_name

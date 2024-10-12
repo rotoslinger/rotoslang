@@ -29,41 +29,41 @@ class curveRollDeformerCmd():
                  ):
         """
                                      
-        @type  weightGeo:            string (mesh)
-        @param weightGeo:            the name of the geo that will be used to
+        type  weightGeo:            string (mesh)
+        param weightGeo:            the name of the geo that will be used to
                                      raycast weighting
                                      
-        @type  inCurve:              string (curve)
-        @param inCurve:              the name of the curve that will be used as
+        type  inCurve:              string (curve)
+        param inCurve:              the name of the curve that will be used as
                                      a pivot
         
         
         
-        @type  geoms:                string array
-        @param geoms:                the names of the geometry the will be deformed,
+        type  geoms:                string array
+        param geoms:                the names of the geometry the will be deformed,
                                      or the second selection and beyond 
                                      can be mesh, nurbsSurface, or nurbsCurve
 
-        @type  control:              string
-        @param control:              where to put attributes, usually a control
+        type  control:              string
+        param control:              where to put attributes, usually a control
                                      if unset attributes will be created on 
                                      the returned deformer
 
-        @type  ihi:                  int
-        @param ihi:                  sets the deformer isHistoricallyIntersting to 0
+        type  ihi:                  int
+        param ihi:                  sets the deformer isHistoricallyIntersting to 0
 
-        @type  lockAttrs:            int
-        @param lockAttrs:            if set to 1 all attributes in return 
+        type  lockAttrs:            int
+        param lockAttrs:            if set to 1 all attributes in return 
                                      deformer are locked and hidden
 
-        @type  side:                 string
-        @param side:                 defaults to C but L and R are also acceptable
+        type  side:                 string
+        param side:                 defaults to C but L and R are also acceptable
         
-        @type  rNames:               string array
-        @param rNames:               names of attributes
+        type  rNames:               string array
+        param rNames:               names of attributes
                                              
-        @type  orientToCurve:        bool
-        @param orientToCurve:        whether or not the roll is oriented to the
+        type  orientToCurve:        bool
+        param orientToCurve:        whether or not the roll is oriented to the
                                      curve.  If False a 2 point curve (rollVec)
                                      will be created that can be used to specify 
                                      a custom pivot.  The pivot position will
@@ -73,8 +73,8 @@ class curveRollDeformerCmd():
                                      subtracting the first and second points of
                                      the new curve.
                                              
-        @type  rollVec:              string
-        @param rollVec:              OPTIONAL: a specify a rollVec curve here.
+        type  rollVec:              string
+        param rollVec:              OPTIONAL: a specify a rollVec curve here.
                                      Should be a 2 point curve.   If specified
                                      a new curve will not be created.
                                      

@@ -78,70 +78,70 @@ class create_torso():
                  debug = False,
                  ):
         """
-        @type  side:                string
-        @param side:                usually C but L or R are also supported
+        type  side:                string
+        param side:                usually C but L or R are also supported
 
-        @type  name:                string
-        @param name:                the name of your torso
+        type  name:                string
+        param name:                the name of your torso
 
-        @type  root_joint:          string
-        @param root_joint:          the root of the torso joint chain
+        type  root_joint:          string
+        param root_joint:          the root of the torso joint chain
                                     usually this would be the root of the whole
                                     skeleton if you give an empty string ''
                                     I will try to find the root automatically,
                                     but no guarantees
 
-        @type  torso_joints:        string array
-        @param torso_joints:        the torso joints that the rig will drive
+        type  torso_joints:        string array
+        param torso_joints:        the torso joints that the rig will drive
 
-        @type  hip_joint:           string array
-        @param hip_joint:           the joint that the rig will drive the hips
+        type  hip_joint:           string array
+        param hip_joint:           the joint that the rig will drive the hips
                                     if an empty string '' no hip will be 
                                     created
 
-        @type  driver:              string
-        @param driver:              what the shoulder will be attached to
+        type  driver:              string
+        param driver:              what the shoulder will be attached to
                                     usually the chest joint but anything that
                                     exists will work
 
-        @type  global_scale:        string
-        @param global_scale:        what the shoulder will be attached to
+        type  global_scale:        string
+        param global_scale:        what the shoulder will be attached to
                                     for scaling usually lowest point in
                                     hierarchy of global ctl
 
-        @type  skel_parent:          string
-        @param skel_parent:          where to parent newly created joints,
+        type  skel_parent:          string
+        param skel_parent:          where to parent newly created joints,
                                      effectors, and generally things animators
                                      don't want to see.
 
-        @type  rig_parent:           string
-        @param rig_parent:           where to parent ctls and other things
+        type  rig_parent:           string
+        param rig_parent:           where to parent ctls and other things
                                      animators would like to see
 
-        @type  fwd_ctl_sizes:        float
-        @param fwd_ctl_sizes:        a size for the torso control
+        type  fwd_ctl_sizes:        float
+        param fwd_ctl_sizes:        a size for the torso control
 
-        @type  rev_ctl_sizes:        float
-        @param rev_ctl_sizes:        a size for the torso control
+        type  rev_ctl_sizes:        float
+        param rev_ctl_sizes:        a size for the torso control
 
-        @type  ctl_orients:          float
-        @param ctl_orients:          orientation for the controls
+        type  ctl_orients:          float
+        param ctl_orients:          orientation for the controls
         
-        @type  ctl_offsets:          float
-        @param ctl_offsets:          translation offset for the controls
+        type  ctl_offsets:          float
+        param ctl_offsets:          translation offset for the controls
 
-        @type  switch_size:          float
-        @param switch_size:          switch size
+        type  switch_size:          float
+        param switch_size:          switch size
         
-        @type  switch_orient:        float
-        @param switch_orient:        switch orientation
+        type  switch_orient:        float
+        param switch_orient:        switch orientation
         
-        @type  switch_offset:        float
-        @param switch_offset:        switch translation offset
+        type  switch_offset:        float
+        param switch_offset:        switch translation offset
 
 
-        @type  debug:                bool
-        @param debug:                if debug is on, nothing will be locked and
+        type  debug:                bool
+        param debug:                if debug is on, nothing will be locked and
                                      ihi will remain 1
         """
 
