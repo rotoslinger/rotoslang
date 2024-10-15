@@ -92,11 +92,15 @@ def OLD_backup_file(filepath, filename):
 ######################################################################################
 
 def backup_file(full_path, backup_dir_name="BAK"):
-    if not os.path.exists(full_path): return
+    if not os.path.exists(full_path):
+        print(f'Backup file could not be created, {full_path}, does not exist.')
+        return
     path, filename = os.path.split(full_path)
+
     check_parent_directory(filepath=path)
     backup_name = generate_backup_filename(filepath=path, filename=filename, backup_dir_name=backup_dir_name)
     shutil.copy(full_path, backup_name)
+    print('BACKINGUP')
 ############################# backup_file Usage ################################
 # filepath = r"C:\Users\harri\Documents\BDP\cha\jsh\jsh_base_body_geo_upperFace_skinCluster.xml"
 # backup_dir = "jsh_base_body_geo_upperFace_skinCluster.xml"
@@ -169,7 +173,8 @@ def create_folder_structure(directory, dirs=None, debug=False):
 def join_and_norm(*paths):
     # a builtin helper function to keep code brief 
     # Simple way to join and clean up path name.  Important because we could be working multi platform.
-    return os.path.normpath(os.path.join(*paths))
+    paths = os.path.join(*paths)
+    return os.path.normpath(paths)
 # no usage, this is a builtin helper function, it should not be used by itself
 # ################################### join_and_norm Usage ########################################
 # dir=r"drive/mangled\path//"

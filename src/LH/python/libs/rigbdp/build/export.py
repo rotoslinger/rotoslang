@@ -82,28 +82,29 @@ def filter_skins(geom="", skin_filter=None):
 # filter_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
 ######################################################################################
 
-def export_skins(path=None, geom="", skin_filter=[""], backup_dir="weights_data/BAK"):
+def export_skinweight(path=None, geom="", skin_filter=[""], weight_data_path="weight_data", backup_dir="BAK"):
     # If a path is not given, just default to the path that the current scene is saved to
     if not path:
         path = get_scene_dir()
+
     # Filter skins
     filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
     # Export filtered skins
     for skin in filtered_skins:
-        filename= f"{skin}.xml"
-        filepath= file_utils.join_and_norm(path, filename) # func use os to join and normalize by operating system
-        bakpath= file_utils.join_and_norm(path, backup_dir)
-        # Backup file
-        # norm_path= os.path.normpath(path)
-        # file_utils.OLD_backup_file(filepath=norm_path, filename=skin + ".xml")
-        file_utils.backup_file(full_path=filepath, backup_dir_name=bakpath)
-        # Export weights
-        cmds.deformerWeights(skin + ".xml", export = True,  deformer=skin, path = path)
+        filename= f"{skin}.json"
+
+        filepath= os.path.join(path, weight_data_path)
+        filepath = filepath.replace('\\', "/")
+
+        # filepath= file_utils.join_and_norm(path, weight_data_path, filename) # func use os to join and normalize by operating system
+        bakpath= file_utils.join_and_norm(path, weight_data_path, filename)
+        file_utils.backup_file(full_path=bakpath)
+        cmds.deformerWeights(f'{skin}.json', format = 'JSON', export = True,  deformer=skin, path = filepath)
 ####################################### Usage ########################################
 # export_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
 ######################################################################################
 
-def import_skins(path=None, geom="", skin_filter=[""]):
+def import_skin_weight(path=None, geom="", skin_filter=[""], weight_data_path="weight_data"):
     # If a path is not given, just default to the path that the current scene is saved to
     if not path:
         path = get_scene_dir()
@@ -111,14 +112,17 @@ def import_skins(path=None, geom="", skin_filter=[""]):
     filtered_skins = filter_skins(geom=geom, skin_filter=skin_filter)
     # Export filtered skins
     for skin in filtered_skins:
+        filepath= os.path.join(path, weight_data_path)
+        filepath = filepath.replace('\\', "/")
+        print(f'FILE PATH {filepath}')
 
-        cmds.deformerWeights(skin + ".xml", im = True, method = "index", deformer=skin, path = path)
+        cmds.deformerWeights(skin + ".json", im = True, method = "index", deformer=skin, path = filepath)
         # weight normalization for imported weights. Must be updated or points are disfigured at rest.
         # to make sure normalization has worked, translate the global movement controller 1000 units away, rotate global scale, and see if the points are drifting. 
         cmds.skinPercent(skin, geom, normalize = True)
         cmds.skinCluster(skin , e = True, forceNormalizeWeights = True)
         # print("# Imported deformer weights from '" + path + skin + ".xml'.")
-        print("# Imported deformer weights from '{0}{1}.xml'.".format(path,skin))
+        print(f"# Imported deformer weights from '{filepath}/{skin}.json'.")
 ####################################### Usage ########################################
 # import_skins(geom="jsh_base_body_geo", skin_filter=["upperFace"])
 ######################################################################################
@@ -388,7 +392,7 @@ def export_obj(file_path, geometry):
 def import_obj(file_path):
         cmds.file(file_path, i=True, typ='OBJ', ignoreVersion=True, ra=True, options='groups=1;ptgroups=1;materials=0;smoothing=0;normals=1,mo=0,v=1')  # You can specify additional options if needed
 ###########################################################################################################
-##################################### not going to use this #################################################
+##################################### not going to use this ###############################################
 ###########################################################################################################
 
 import maya.cmds as cmds
@@ -418,10 +422,11 @@ def export_animation_to_json(control_list, file_path):
         json.dump(animation_data, json_file, indent=4)
     print(f'Animation data exported to {file_path}')
 
-# Example usage
-controls = ['M_spineChestFkGimbal_ctrl', 'M_spineDrivenIk02_ctrl', 'L_handReverseRollFinger_ctrl', 'M_spineDriverLastTangent_ctrl', 'R_handPinky01_ctrl', 'M_neckHeadIk00_ctrl', 'R_footReverseRollHeel_ctrl', 'L_handThumb00Gimbal_ctrl', 'L_clavicle_ctrl', 'L_handThumb02_ctrl', 'R_ikArmHandleGimbal_ctrl', 'M_spineBellyIk_ctrl', 'L_handIndex00_ctrl', 'R_handIndex01Gimbal_ctrl', 'L_ikLegHandle_ctrl', 'L_fkArm01Gimbal_ctrl', 'R_handRing01Gimbal_ctrl', 'M_neckHeadFk00Gimbal_ctrl', 'M_neckHeadGimbal_ctrl', 'L_ikArmPV_ctrl', 'L_handReverseBankOutGimbal_ctrl', 'R_fkLeg01_ctrl', 'R_footReverseRollToe_ctrl', 'R_handThumb00Gimbal_ctrl', 'L_ikArmRoot_ctrl', 'L_handIndex02Gimbal_ctrl', 'R_armUpperBendy_ctrl', 'L_handMiddle01Gimbal_ctrl', 'L_fkArm00Gimbal_ctrl', 'L_armSettings_ctrl', 'R_ikLegHandle_ctrl', 'R_ikArmPV_ctrl', 'R_handThumb02_ctrl', 'L_handIndex01_ctrl', 'R_clavicle_ctrl', 'R_handPinky03Gimbal_ctrl', 'L_legSlide_ctrl', 'L_hand_ctrl', 'L_footReverseRollHeelGimbal_ctrl', 'M_all_ctrl', 'M_spineChestIkOffsetPivot_ctrl', 'M_spineBellyFkGimbal_ctrl', 'L_legUpperBendy_ctrl', 'M_spineDriven03Tangent01_ctrl', 'R_handReverseBankIn_ctrl', 'L_footToeGimbal_ctrl', 'R_handReverseBankOutGimbal_ctrl', 'M_spineBreathBelly_ctrl', 'L_footReverseBankIn_ctrl', 'M_spineDrivenIk03_ctrl', 'L_ikLegRoot_ctrl', 'R_handIndex01_ctrl', 'L_fkLeg02Gimbal_ctrl', 'R_handIndex03Gimbal_ctrl', 'L_footReverseBankOutGimbal_ctrl', 'R_handIndex02_ctrl', 'R_handPinky00_ctrl', 'L_foot_ctrl', 'L_handMiddle01_ctrl', 'M_spineLocalHip_ctrl', 'M_spineRoot_ctrl', 'M_neckHeadFk00_ctrl', 'M_spineDriven02Tangent00_ctrl', 'L_footReverseRollToeGimbal_ctrl', 'R_handThumb01Gimbal_ctrl', 'L_handReverseRollBallGimbal_ctrl', 'R_handThumb00_ctrl', 'L_handPinky03_ctrl', 'L_handRing03_ctrl', 'R_foot_ctrl', 'L_armUpperBendy_ctrl', 'R_legLowerBendy_ctrl', 'R_armSettings_ctrl', 'M_spineDriven04Tangent00_ctrl', 'L_footLollipop_ctrl', 'M_world_ctrl', 'R_footToeGimbal_ctrl', 'L_handLollipop_ctrl', 'L_handPinky03Gimbal_ctrl', 'L_handTipSmart_ctrl', 'R_footReverseBankInGimbal_ctrl', 'R_handRing01_ctrl', 'M_spineBellyFk_ctrl', 'R_armSlide_ctrl', 'L_handPinky00Gimbal_ctrl', 'M_spineRootGimbal_ctrl', 'M_spineDrivenIk01_ctrl', 'R_handMiddle01_ctrl', 'R_legUpperBendy_ctrl', 'L_handReverseRollHeelGimbal_ctrl', 'L_handRing03Gimbal_ctrl', 'L_handPinky00_ctrl', 'L_handMiddle02Gimbal_ctrl', 'R_handReverseRollBallGimbal_ctrl', 'L_footReverseRollToe_ctrl', 'L_legLowerBendy_ctrl', 'M_neckHeadIk01_ctrl', 'R_handMiddle00Gimbal_ctrl', 'R_fkLeg02Gimbal_ctrl', 'M_spineDriverFirstTangent_ctrl', 'R_fkArm02_ctrl', 'L_handRing00Gimbal_ctrl', 'L_handIndex01Gimbal_ctrl', 'R_handRing03_ctrl', 'L_footReverseRollBallGimbal_ctrl', 'R_handIndex00_ctrl', 'L_handMiddle02_ctrl', 'L_handMiddle03_ctrl', 'R_hand_ctrl', 'R_handRing02Gimbal_ctrl', 'R_fkArm01_ctrl', 'R_handReverseRollFingerGimbal_ctrl', 'R_handMiddle00_ctrl', 'L_handMiddle03Gimbal_ctrl', 'M_layoutSub_ctrl', 'L_handIndex03Gimbal_ctrl', 'M_spineChestIk_ctrl', 'R_fkArm02Gimbal_ctrl', 'L_armSlide_ctrl', 'R_fkArm00Gimbal_ctrl', 'R_fkLeg00Gimbal_ctrl', 'R_handReverseBankInGimbal_ctrl', 'M_layout_ctrl', 'R_footReverseBankIn_ctrl', 'L_handIndex00Gimbal_ctrl', 'L_ikArmHandle_ctrl', 'R_footReverseRollBall_ctrl', 'R_handThumb02Gimbal_ctrl', 'R_ikLegPV_ctrl', 'R_handReverseRollHeel_ctrl', 'L_handPinky01_ctrl', 'R_handRing02_ctrl', 'M_spineDriven02Tangent01_ctrl', 'L_handReverseBankOut_ctrl', 'R_handLollipop_ctrl', 'M_spineChestFk_ctrl', 'R_handThumb01_ctrl', 'R_fkLeg02_ctrl', 'L_handMiddle00_ctrl', 'L_handRing02_ctrl', 'M_spineUpperChestGimbal_ctrl', 'R_handPinky01Gimbal_ctrl', 'R_armLowerBendy_ctrl', 'M_spineUpperChest_ctrl', 'M_neckHeadSettings_ctrl', 'R_footToe_ctrl', 'L_fkLeg02_ctrl', 'L_ikLegPV_ctrl', 'M_spineDriven01Tangent01_ctrl', 'L_handReverseBankInGimbal_ctrl', 'L_handRing01_ctrl', 'R_handIndex03_ctrl', 'M_spineBreathChest_ctrl', 'R_handMiddle01Gimbal_ctrl', 'L_fkLeg00_ctrl', 'R_handMiddle02_ctrl', 'R_handPinky02_ctrl', 'M_spineDriven03Tangent00_ctrl', 'R_handPinky03_ctrl', 'R_footLollipop_ctrl', 'L_handRing00_ctrl', 'R_fkArm01Gimbal_ctrl', 'L_fkArm01_ctrl', 'R_handReverseRollFinger_ctrl', 'L_handThumb02Gimbal_ctrl', 'M_spineBellyIkGimbal_ctrl', 'L_fkArm00_ctrl', 'R_footReverseRollBallGimbal_ctrl', 'R_legSettings_ctrl', 'L_ikLegHandleGimbal_ctrl', 'R_fkArm00_ctrl', 'L_armLowerBendy_ctrl', 'R_ikArmHandle_ctrl', 'L_handReverseRollBall_ctrl', 'L_fkLeg00Gimbal_ctrl', 'L_handIndex02_ctrl', 'M_spineHipFkGimbal_ctrl', 'R_handMiddle03Gimbal_ctrl', 'R_handIndex00Gimbal_ctrl', 'L_footReverseRollBall_ctrl', 'L_fkArm02_ctrl', 'L_handPinky01Gimbal_ctrl', 'L_ikArmHandleGimbal_ctrl', 'M_spineRootOffsetPivot_ctrl', 'M_spineChestFkOffsetPivot_ctrl', 'R_handReverseRollBall_ctrl', 'R_footReverseBankOut_ctrl', 'L_handPinky02_ctrl', 'L_handThumb01Gimbal_ctrl', 'L_fkLeg01_ctrl', 'R_handIndex02Gimbal_ctrl', 'R_footReverseRollToeGimbal_ctrl', 'R_handRing00Gimbal_ctrl', 'M_spineLocalHipGimbal_ctrl', 'M_spineDriven00Tangent01_ctrl', 'L_fkArm02Gimbal_ctrl', 'R_fkLeg00_ctrl', 'L_handRing02Gimbal_ctrl', 'R_fkLeg01Gimbal_ctrl', 'L_legSettings_ctrl', 'L_handPinky02Gimbal_ctrl', 'R_legSlide_ctrl', 'R_handMiddle02Gimbal_ctrl', 'L_handThumb01_ctrl', 'L_footToe_ctrl', 'R_handRing00_ctrl', 'L_handMiddle00Gimbal_ctrl', 'R_handReverseBankOut_ctrl', 'L_footReverseBankOut_ctrl', 'R_footReverseBankOutGimbal_ctrl', 'R_handPinky02Gimbal_ctrl', 'R_ikLegRoot_ctrl', 'L_footReverseRollHeel_ctrl', 'R_handReverseRollHeelGimbal_ctrl', 'R_handRing03Gimbal_ctrl', 'M_spineHipIk_ctrl', 'L_footReverseBankInGimbal_ctrl', 'M_spineHipIkGimbal_ctrl', 'M_spineChestIkGimbal_ctrl', 'R_ikArmRoot_ctrl', 'L_handReverseRollHeel_ctrl', 'R_handMiddle03_ctrl', 'R_footReverseRollHeelGimbal_ctrl', 'M_spineHipFk_ctrl', 'M_spineDriven01Tangent00_ctrl', 'L_handReverseBankIn_ctrl', 'L_handThumb00_ctrl', 'L_handIndex03_ctrl', 'R_handTipSmart_ctrl', 'L_handRing01Gimbal_ctrl', 'M_neckHead_ctrl', 'L_handReverseRollFingerGimbal_ctrl', 'R_ikLegHandleGimbal_ctrl', 'L_fkLeg01Gimbal_ctrl', 'R_handPinky00Gimbal_ctrl']
-path=r'C:\Users\harri\Documents\BDP\cha\teshi_TESTBUILD\animtest\anim.json'
-export_animation_to_json(controls, r'C:\Users\harri\Documents\BDP\cha\teshi_TESTBUILD\animtest\anim.json')
+####################################################### Example usage ##########################################################
+# controls = ['M_spineChestFkGimbal_ctrl', 'M_spineDrivenIk02_ctrl', 'L_handReverseRollFinger_ctrl', 'M_spineDriverLastTangent_ctrl', 'R_handPinky01_ctrl', 'M_neckHeadIk00_ctrl', 'R_footReverseRollHeel_ctrl', 'L_handThumb00Gimbal_ctrl', 'L_clavicle_ctrl', 'L_handThumb02_ctrl', 'R_ikArmHandleGimbal_ctrl', 'M_spineBellyIk_ctrl', 'L_handIndex00_ctrl', 'R_handIndex01Gimbal_ctrl', 'L_ikLegHandle_ctrl', 'L_fkArm01Gimbal_ctrl', 'R_handRing01Gimbal_ctrl', 'M_neckHeadFk00Gimbal_ctrl', 'M_neckHeadGimbal_ctrl', 'L_ikArmPV_ctrl', 'L_handReverseBankOutGimbal_ctrl', 'R_fkLeg01_ctrl', 'R_footReverseRollToe_ctrl', 'R_handThumb00Gimbal_ctrl', 'L_ikArmRoot_ctrl', 'L_handIndex02Gimbal_ctrl', 'R_armUpperBendy_ctrl', 'L_handMiddle01Gimbal_ctrl', 'L_fkArm00Gimbal_ctrl', 'L_armSettings_ctrl', 'R_ikLegHandle_ctrl', 'R_ikArmPV_ctrl', 'R_handThumb02_ctrl', 'L_handIndex01_ctrl', 'R_clavicle_ctrl', 'R_handPinky03Gimbal_ctrl', 'L_legSlide_ctrl', 'L_hand_ctrl', 'L_footReverseRollHeelGimbal_ctrl', 'M_all_ctrl', 'M_spineChestIkOffsetPivot_ctrl', 'M_spineBellyFkGimbal_ctrl', 'L_legUpperBendy_ctrl', 'M_spineDriven03Tangent01_ctrl', 'R_handReverseBankIn_ctrl', 'L_footToeGimbal_ctrl', 'R_handReverseBankOutGimbal_ctrl', 'M_spineBreathBelly_ctrl', 'L_footReverseBankIn_ctrl', 'M_spineDrivenIk03_ctrl', 'L_ikLegRoot_ctrl', 'R_handIndex01_ctrl', 'L_fkLeg02Gimbal_ctrl', 'R_handIndex03Gimbal_ctrl', 'L_footReverseBankOutGimbal_ctrl', 'R_handIndex02_ctrl', 'R_handPinky00_ctrl', 'L_foot_ctrl', 'L_handMiddle01_ctrl', 'M_spineLocalHip_ctrl', 'M_spineRoot_ctrl', 'M_neckHeadFk00_ctrl', 'M_spineDriven02Tangent00_ctrl', 'L_footReverseRollToeGimbal_ctrl', 'R_handThumb01Gimbal_ctrl', 'L_handReverseRollBallGimbal_ctrl', 'R_handThumb00_ctrl', 'L_handPinky03_ctrl', 'L_handRing03_ctrl', 'R_foot_ctrl', 'L_armUpperBendy_ctrl', 'R_legLowerBendy_ctrl', 'R_armSettings_ctrl', 'M_spineDriven04Tangent00_ctrl', 'L_footLollipop_ctrl', 'M_world_ctrl', 'R_footToeGimbal_ctrl', 'L_handLollipop_ctrl', 'L_handPinky03Gimbal_ctrl', 'L_handTipSmart_ctrl', 'R_footReverseBankInGimbal_ctrl', 'R_handRing01_ctrl', 'M_spineBellyFk_ctrl', 'R_armSlide_ctrl', 'L_handPinky00Gimbal_ctrl', 'M_spineRootGimbal_ctrl', 'M_spineDrivenIk01_ctrl', 'R_handMiddle01_ctrl', 'R_legUpperBendy_ctrl', 'L_handReverseRollHeelGimbal_ctrl', 'L_handRing03Gimbal_ctrl', 'L_handPinky00_ctrl', 'L_handMiddle02Gimbal_ctrl', 'R_handReverseRollBallGimbal_ctrl', 'L_footReverseRollToe_ctrl', 'L_legLowerBendy_ctrl', 'M_neckHeadIk01_ctrl', 'R_handMiddle00Gimbal_ctrl', 'R_fkLeg02Gimbal_ctrl', 'M_spineDriverFirstTangent_ctrl', 'R_fkArm02_ctrl', 'L_handRing00Gimbal_ctrl', 'L_handIndex01Gimbal_ctrl', 'R_handRing03_ctrl', 'L_footReverseRollBallGimbal_ctrl', 'R_handIndex00_ctrl', 'L_handMiddle02_ctrl', 'L_handMiddle03_ctrl', 'R_hand_ctrl', 'R_handRing02Gimbal_ctrl', 'R_fkArm01_ctrl', 'R_handReverseRollFingerGimbal_ctrl', 'R_handMiddle00_ctrl', 'L_handMiddle03Gimbal_ctrl', 'M_layoutSub_ctrl', 'L_handIndex03Gimbal_ctrl', 'M_spineChestIk_ctrl', 'R_fkArm02Gimbal_ctrl', 'L_armSlide_ctrl', 'R_fkArm00Gimbal_ctrl', 'R_fkLeg00Gimbal_ctrl', 'R_handReverseBankInGimbal_ctrl', 'M_layout_ctrl', 'R_footReverseBankIn_ctrl', 'L_handIndex00Gimbal_ctrl', 'L_ikArmHandle_ctrl', 'R_footReverseRollBall_ctrl', 'R_handThumb02Gimbal_ctrl', 'R_ikLegPV_ctrl', 'R_handReverseRollHeel_ctrl', 'L_handPinky01_ctrl', 'R_handRing02_ctrl', 'M_spineDriven02Tangent01_ctrl', 'L_handReverseBankOut_ctrl', 'R_handLollipop_ctrl', 'M_spineChestFk_ctrl', 'R_handThumb01_ctrl', 'R_fkLeg02_ctrl', 'L_handMiddle00_ctrl', 'L_handRing02_ctrl', 'M_spineUpperChestGimbal_ctrl', 'R_handPinky01Gimbal_ctrl', 'R_armLowerBendy_ctrl', 'M_spineUpperChest_ctrl', 'M_neckHeadSettings_ctrl', 'R_footToe_ctrl', 'L_fkLeg02_ctrl', 'L_ikLegPV_ctrl', 'M_spineDriven01Tangent01_ctrl', 'L_handReverseBankInGimbal_ctrl', 'L_handRing01_ctrl', 'R_handIndex03_ctrl', 'M_spineBreathChest_ctrl', 'R_handMiddle01Gimbal_ctrl', 'L_fkLeg00_ctrl', 'R_handMiddle02_ctrl', 'R_handPinky02_ctrl', 'M_spineDriven03Tangent00_ctrl', 'R_handPinky03_ctrl', 'R_footLollipop_ctrl', 'L_handRing00_ctrl', 'R_fkArm01Gimbal_ctrl', 'L_fkArm01_ctrl', 'R_handReverseRollFinger_ctrl', 'L_handThumb02Gimbal_ctrl', 'M_spineBellyIkGimbal_ctrl', 'L_fkArm00_ctrl', 'R_footReverseRollBallGimbal_ctrl', 'R_legSettings_ctrl', 'L_ikLegHandleGimbal_ctrl', 'R_fkArm00_ctrl', 'L_armLowerBendy_ctrl', 'R_ikArmHandle_ctrl', 'L_handReverseRollBall_ctrl', 'L_fkLeg00Gimbal_ctrl', 'L_handIndex02_ctrl', 'M_spineHipFkGimbal_ctrl', 'R_handMiddle03Gimbal_ctrl', 'R_handIndex00Gimbal_ctrl', 'L_footReverseRollBall_ctrl', 'L_fkArm02_ctrl', 'L_handPinky01Gimbal_ctrl', 'L_ikArmHandleGimbal_ctrl', 'M_spineRootOffsetPivot_ctrl', 'M_spineChestFkOffsetPivot_ctrl', 'R_handReverseRollBall_ctrl', 'R_footReverseBankOut_ctrl', 'L_handPinky02_ctrl', 'L_handThumb01Gimbal_ctrl', 'L_fkLeg01_ctrl', 'R_handIndex02Gimbal_ctrl', 'R_footReverseRollToeGimbal_ctrl', 'R_handRing00Gimbal_ctrl', 'M_spineLocalHipGimbal_ctrl', 'M_spineDriven00Tangent01_ctrl', 'L_fkArm02Gimbal_ctrl', 'R_fkLeg00_ctrl', 'L_handRing02Gimbal_ctrl', 'R_fkLeg01Gimbal_ctrl', 'L_legSettings_ctrl', 'L_handPinky02Gimbal_ctrl', 'R_legSlide_ctrl', 'R_handMiddle02Gimbal_ctrl', 'L_handThumb01_ctrl', 'L_footToe_ctrl', 'R_handRing00_ctrl', 'L_handMiddle00Gimbal_ctrl', 'R_handReverseBankOut_ctrl', 'L_footReverseBankOut_ctrl', 'R_footReverseBankOutGimbal_ctrl', 'R_handPinky02Gimbal_ctrl', 'R_ikLegRoot_ctrl', 'L_footReverseRollHeel_ctrl', 'R_handReverseRollHeelGimbal_ctrl', 'R_handRing03Gimbal_ctrl', 'M_spineHipIk_ctrl', 'L_footReverseBankInGimbal_ctrl', 'M_spineHipIkGimbal_ctrl', 'M_spineChestIkGimbal_ctrl', 'R_ikArmRoot_ctrl', 'L_handReverseRollHeel_ctrl', 'R_handMiddle03_ctrl', 'R_footReverseRollHeelGimbal_ctrl', 'M_spineHipFk_ctrl', 'M_spineDriven01Tangent00_ctrl', 'L_handReverseBankIn_ctrl', 'L_handThumb00_ctrl', 'L_handIndex03_ctrl', 'R_handTipSmart_ctrl', 'L_handRing01Gimbal_ctrl', 'M_neckHead_ctrl', 'L_handReverseRollFingerGimbal_ctrl', 'R_ikLegHandleGimbal_ctrl', 'L_fkLeg01Gimbal_ctrl', 'R_handPinky00Gimbal_ctrl']
+# path=r'C:\Users\harri\Documents\BDP\cha\teshi_TESTBUILD\animtest\anim.json'
+# export_animation_to_json(controls, r'C:\Users\harri\Documents\BDP\cha\teshi_TESTBUILD\animtest\anim.json')
+####################################################### Example usage ##########################################################
 
 def import_animation_from_json(file_path):
     """Import animation keyframes from a JSON file into specified controls."""
@@ -440,5 +445,7 @@ def import_animation_from_json(file_path):
 
     print(f'Animation data imported from {file_path}')
 
+####################################################### Example usage ##########################################################
 # Example usage
-import_animation_from_json(path)
+# import_animation_from_json(path)
+####################################################### Example usage ##########################################################

@@ -1,11 +1,33 @@
 # builtins
+import importlib
+
+# bdp
+# from rigbdp.build import locking
+# from rigbdp.ui import dyn_button_ui
+
+# # reloads
+# importlib.reload(locking)
+# importlib.reload(dyn_button_ui)
+
+# builtins
 import importlib, os, sys, json
 
 # third party
 from maya import cmds
 
 # bdp
-from rigbdp.build.export import get_scene_dir
+
+
+def get_scene_dir():
+    current_scene = cmds.file(q=True, sn=True)
+    # make sure the scene exists somewhere (you need to save to a directory to find out where the file is saved)
+    if current_scene:
+        # Extract the directory from the full scene path
+        return os.path.dirname(current_scene)
+    else:
+        print("No saved scene is open. Save first, then try again")
+        return None
+
 
 ############################################################################################################################################################
 ##################################################################### Rig Unlocking ########################################################################
@@ -330,13 +352,13 @@ def export_to_json(data, file_path=None, filename_prefix='',  suffix="MATRIX_CON
         file_path = get_scene_dir()
     file_name = f"{filename_prefix}_{suffix}.json"
     full_file_path = os.path.join(file_path, file_name)
-
-    # Export the dictionary to a JSON file
-    with open(full_file_path, 'w') as json_file:
-        json.dump(data, json_file, indent=4)
-    print("\n")
-    print(f"Exported to {full_file_path}")
-    print("\n")
+    if not os.path.exists(full_file_path):
+        # Export the dictionary to a JSON file
+        with open(full_file_path, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+        print("\n")
+        print(f"Exported to {full_file_path}")
+        print("\n")
 
 ####################################### Usage ########################################
 # connections_data = get_compound_attr_connect_map(node='teshi_base_body_geo_bodyMechanics_skinCluster',
@@ -390,9 +412,11 @@ def import_json_conn_map(file_path=None, filename_prefix='', suffix="CONNECTION_
     print("\n")
     print(f"Imported from {full_file_path}")
     print("\n")
-
+    if not os.path.exists(full_file_path):
+        return False
     with open(full_file_path, 'r') as json_file:
         return json.load(json_file)
+    
         
 ####################################### Usage ########################################
 # json_data = import_json_conn_map(file_path=r'C:\Users\harri\Documents\BDP\cha\teshi', filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster', suffix="CONNECTION_MAP")
@@ -726,8 +750,174 @@ def unlock_skinweights(node, compound_attr):
 # list_compound_attribute_connections('teshi_base_body_geo_bodyMechanics_skinCluster', 'matrix')
 ######################################################################################
 
-############################################################################################################################################################
-##################################################################### Debugging End ########################################################################
-############################################################################################################################################################
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################################################################################
+#################################################################################################################
+#################################################################################################################
+
+def create_dynamic_button_ui(button_dict, row_len=2, col_len=3,
+                             row_title=["row 1","row 2"],
+                             col_title=["column 1", "column 2", "column 3"],
+                             window_name="dynamicButtonWindow",
+                             window_title="Dynamic Button UI"):
+    """
+    Creates a UI that dynamically generates buttons based on a given dictionary.
+    
+    Args:
+        button_dict (dict): A dictionary where keys are button names (str), and values are the functions to call (func).
+        row_len (int): The number of buttons allowed in each row.
+        col_len (int): The number of buttons allowed in each column.
+        row_title (str): Title for the row section.
+        col_title (str): Title for the column section.
+    """
+    # Create a new window
+    if cmds.window(window_name, exists=True):
+        cmds.deleteUI(window_name, window=True)
+
+    window = cmds.window(window_name, title=window_title, widthHeight=(row_len*300, col_len*75),sizeable=False)
+    cmds.scrollLayout()  # Create a scrollable layout in case there are too many buttons
+    main_layout = cmds.gridLayout(numberOfColumns=row_len+1, cellWidthHeight=(100, 50))
+
+    # Add column titles
+    cmds.text(label="")
+    
+    for i in range(row_len):
+        cmds.text(label=f"{col_title[i]}")
+
+    # Add row titles and buttons dynamically
+    for row in range(col_len):
+        # Add row title
+        cmds.text(label=f"{row_title[row]}")
+        
+        # Add buttons in each row
+        for button_name, button_func in list(button_dict.items())[row * row_len : (row + 1) * row_len]:
+            cmds.button(label=button_name, command=lambda x, func=button_func: func())
+
+    cmds.showWindow(window)
+# ####################################################### usage #####################################################################
+# def example_function1():
+#     print("Button 1 Pressed!")
+# def example_function2():
+#     print("Button 2 Pressed!")
+# def example_function3():
+#     print("Button 3 Pressed!")
+# def example_function4():
+#     print("Button 4 Pressed!")
+# def example_function5():
+#     print("Button 5 Pressed!")
+# def example_function6():
+#     print("Button 6 Pressed!")
+
+# button_dict = {
+#     "Button 1": example_function1,
+#     "Button 2": example_function2,
+#     "Button 3": example_function3,
+#     "Button 4": example_function4,
+#     "Button 5": example_function5,
+#     "Button 6": example_function6,
+# }
+# create_dynamic_button_ui(button_dict, row_len=3, col_len=3,
+#                          row_title=["row 1","row 2"],
+#                          col_title=["column 1", "column 2", "column 3"],
+#                          window_name="dynamicButtonWindow",
+#                          window_title="Dynamic Button UI")
+# ####################################################################################################################################
+
+
+
+
+
+def lockui(char="teshi"):
+    def unlock_all():
+        # unlock the rig, allow selection, turn on ihi for every node in the scene
+        unlock_all(ihi_level=1, skin=False, walkout=False)
+
+    def vis_sculpt_jnts():
+        # # Vis walkout joints
+        vis_walkout_skin(skin=False, walkout=True)
+
+    def vis_weight_jnts():
+        # # Vis skin joints
+        vis_walkout_skin(skin=True, walkout=False)
+
+    # Toggle display visibility
+    def toggle_jnt_vis():
+        toggle_jnt_display_vis()
+
+    # Toggle jnt xray
+    def toggle_jnt_vis():
+        toggle_jnt_xray()
+
+
+
+    # export #
+    def unlock_skin_joints():
+        # import #
+        json_data = import_json_conn_map(filename_prefix=f'{char}_base_body_geo_bodyMechanics_skinCluster',suffix="CONNECTION_MAP")
+        if not json_data:
+            connections_data = get_compound_attr_connect_map(node=f'{char}_base_body_geo_bodyMechanics_skinCluster', compound_attr='matrix')
+            export_to_json(connections_data, filename_prefix=f'{char}_base_body_geo_bodyMechanics_skinCluster', suffix='CONNECTION_MAP')
+            # import #
+            json_data = import_json_conn_map(filename_prefix=f'{char}_base_body_geo_bodyMechanics_skinCluster',suffix="CONNECTION_MAP")
+
+        # connect joints to skincluster #
+        connect_skin_joints(connection_map=json_data, skincluster_name=f"{char}_base_body_geo_bodyMechanics_skinCluster")
+
+    # def connect_skin_joints():
+    #     # import #
+    #     json_data = import_json_conn_map(filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',suffix="CONNECTION_MAP")
+    #     if not json_data:
+    #         connections_data = get_compound_attr_connect_map(node='teshi_base_body_geo_bodyMechanics_skinCluster', compound_attr='matrix')
+    #         export_to_json(connections_data, filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster', suffix='CONNECTION_MAP')
+    #         # import #
+    #         json_data = import_json_conn_map(filename_prefix='teshi_base_body_geo_bodyMechanics_skinCluster',suffix="CONNECTION_MAP")
+    #     # connect matrixMultipliers to skincluster #
+    #     connect_matrix_mults(connection_map=json_data, skincluster_name="teshi_base_body_geo_bodyMechanics_skinCluster")
+    #     ##########################################################################################################
+
+
+    ###################################################################################################
+
+    # unlock the rig, allow selection, turn on ihi for every node in the scene
+
+    button_dict = {
+        "Unlock All": unlock_all,
+        "Sculpt Jnts": vis_sculpt_jnts,
+        "Weight Jnts": vis_weight_jnts,
+        "Jnt On/Off": toggle_jnt_vis,
+        "Xray On/Off": toggle_jnt_vis,
+        "Unlock Weights": unlock_skin_joints,
+    }
+
+    create_dynamic_button_ui(button_dict,
+                                           row_len=1, # --- how many horizontal buttons you want
+                                           col_len=6, # --- how many vertical buttons you want
+                                           row_title=["Unlock Rig",
+                                                      "Sculpt Jnts Vis",
+                                                      "Weight Jnts Vis",
+                                                      "Toggle Jnt Vis",
+                                                      "Toggle Jnt Xray",
+                                                      "Unlock Jnt Weight",
+                                                      ],
+                                           col_title=[""],
+                                           window_name="unlockui",
+                                           window_title="BDP Minimo Unlocking UI")
+    
+
+
+lockui("teshi")
+#lockui("jsh")
