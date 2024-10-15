@@ -5,11 +5,11 @@ import os, shutil, importlib
 import maya.cmds as cmds
 
 #bdp
-from rigbdp.shelf import add
-from rigbdp.shelf import bdpshelf
+# from rigbdp.shelf import add
+# from rigbdp.shelf import bdpshelf
 
-#reloads
-importlib.reload(add)
+# #reloads
+# importlib.reload(add)
 
 # -------------------------------------------------------------------------------
 # - Important to note --- importlib.reload() is broken for drag drop:
@@ -90,7 +90,7 @@ def onMayaDroppedPythonFile(debug=False):
             # Write the updated PYTHONPATH at the end
             f.write(new_pythonpath + "\n")
         print(f"PYTHONPATH updated in Maya.env successfully.")
-    bdpshelf.create()
+    # bdpshelf.create()
     # add.create(lockui, 'BDP Rigging', debug=False)
 
 ################################### Usage ############################################
