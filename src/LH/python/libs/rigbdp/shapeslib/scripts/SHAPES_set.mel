@@ -1,0 +1,2533 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc string shapesSet_createSet( string $name )
+{
+    //
+    // creates a driven set based on the current selection
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_groupSetAttrName;
+    global string $gShapes_setAttrName;
+
+    if ($gShapes_bsNode == "None")
+        return "";
+
+    // get the current group set based on the blend shape node connection
+    // if there is none create a new one
+    string $groupSet = shapesSet_getGroupSet();
+    if ($groupSet == "")
+        $groupSet = shapesSet_performCreateSet($gShapes_groupSetAttrName, $gShapes_groupSetAttrName, 1, 1);
+
+    // create the new driven set and add it to the group set
+    string $setName = "newDrivenSet";
+    if ($name != "")
+        $setName = $name;
+    $setName = shapesSet_performCreateSet($setName, $gShapes_setAttrName, 0, 1);
+    sets -e -fe $groupSet $setName;
+
+    // add the selection to the set
+    shapesSet_performAddToSet $setName;
+
+    // display the key count
+    shapesSet_displayDrivenSetKeyCount $setName;
+
+    return $setName;
+}
+
+
+global proc string shapesSet_performCreateSet( string $name, string $attr, int $group, int $execute )
+{
+    //
+    // create a new set either as the main group set or a driven set
+    // and connect it to the blend shape node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_duplicateSetAttributeString;
+
+    // get the current selection to restore it later
+    // clear the selection so that the new set is empty
+    string $sel[];
+    if ($execute)
+        $sel = `ls -sl`;
+
+    string $cmd;
+    $cmd += "select -cl;\n";
+
+    if ($execute)
+    {
+        string $uniqueName[] = shapesAction_newName($name);
+        if ($uniqueName[1] != "")
+            $name = $uniqueName[1];
+    }
+
+    $setName = $name;
+    $cmd += "sets -n " + $setName + ";\n";
+    $cmd += "addAttr -ln " + $attr + " -at \"message\" " + $setName + ";\n";
+
+    // in case of the group set only connect the message attributes
+    if ($group)
+        $cmd += "connectAttr -f " + $setName + "." + $attr + " " + $gShapes_bsNode + "." + $attr + ";\n";
+    // in case of the driven sets use the next available input of the message attribute
+    // on the blend shape node
+    else
+    {
+        $cmd += "connectAttr -f -na " + $setName + "." + $attr + " " + $gShapes_bsNode + "." + $attr + ";\n";
+        // add the value attribute
+        $cmd += "addAttr -ln value -at \"double\" -k 1 " + $setName + ";\n";
+        // add the set definition
+        $cmd += "if (!`attributeQuery -n " + $setName + " -ex SHAPES_drivenSet_attributes`)\n\t";
+        $cmd += "addAttr -ln SHAPES_drivenSet_attributes -dt \"string\" -h 1 " + $setName + ";\n";
+
+        // add the set attributes
+        // in case a set is duplicated its needs to inherit
+        // the attribute definition from the source set
+        string $setAttributeString = shapesSet_buildSetAttributeString();
+        if ($gShapes_duplicateSetAttributeString != "")
+            $setAttributeString = $gShapes_duplicateSetAttributeString;
+
+        if ($execute)
+            $cmd += "setAttr " + $setName + ".SHAPES_drivenSet_attributes -type \"string\" \"" + $setAttributeString + "\";\n";
+
+        // lock the set
+        $cmd += "lockNode -l 1 " + $setName + ";\n";
+    }
+
+    if (!$execute)
+        return $cmd;
+
+    eval $cmd;
+
+    int $newId = shapesData_getEmptyTargetIndex("drivenSet");
+    shapesData_addDataItem("drivenSet", $newId, $setName, 8);
+
+    // re-select the previous selection
+    select -r $sel;
+
+    return $setName;
+}
+
+
+global proc shapesSet_addToSet()
+{
+    //
+    // add the scene selection to the current set
+    //
+    global string $gShapes_drivenSetData[];
+
+    // get the nodes for editing
+    string $nodes[] = `ls -sl -tr`;
+    if (!size($nodes))
+        br_displayMessage -error "No joints or transforms selected for set creation";
+
+    // build the list with nodes and their attributes
+    string $nodeData[] = shapesSet_getSetMemberAttributes($nodes, 0);
+    for ($data in $nodeData)
+        $gShapes_drivenSetData[size($gShapes_drivenSetData)] = $data;
+
+    // fill the list with the selection attributes
+    shapesSet_listAttributes $gShapes_drivenSetData 0;
+}
+
+
+global proc shapesSet_performAddToSet( string $setName )
+{
+    //
+    // perform add the scene selection to the current set
+    //
+    global int $gShapes_newDrivenSet;
+    global string $gShapes_selectedTarget;
+
+    // when adding to an existing set the set name is the selected list item
+    if ($setName == "")
+        $setName = $gShapes_selectedTarget;
+
+    string $setNodes[];
+    shapesSet_getAttributesFromSetString($setName, 0, $setNodes, {}, {});
+
+    // add the selected objects to the new driven set
+    for ($node in $setNodes)
+        sets -e -fe $setName $node;
+
+    // add the default attributes
+    shapesSet_addDefaultAttr $setName $setNodes;
+
+    // set the first key
+    shapesSet_performSetKey $setName $setNodes 1 1;
+
+    if ($gShapes_newDrivenSet)
+    {
+        shapesList_autoOrderNewTarget $setName $gShapes_selectedTarget 0;
+        shapesList_listBlendShapeTargets 1;
+    }
+}
+
+
+global proc shapesSet_removeFromSet()
+{
+    //
+    // removes the selection from the current set
+    //
+    global int $gShapes_index;
+    global string $gShapes_currentEditSet;
+    global string $gShapes_drivenSetData[];
+
+    // get the joint or transform node selection
+    string $sel[] = `ls -sl -tr`;
+    if (!size($sel))
+        br_displayMessage -error "No joints or transforms selected for set creation";
+
+    // remove the selected objects from the driven set
+    string $removed[];
+    for ($s in $sel)
+    {
+        if (size(`listSets -object $s`) > 1)
+        {
+            br_displayMessage -warning "Unable to remove from the set because the members also belong to another set.";
+            return;
+        }
+
+        // remove the default attributes
+        // and the animation curves
+        shapesSet_removeDefaultAttr $gShapes_currentEditSet {$s} {};
+        $removed[size($removed)] = $s;
+
+        sets -e -rm $gShapes_currentEditSet $s;
+    }
+
+    // removed the objects from the data list and refresh the window
+    string $setData[];
+    for ($data in $gShapes_drivenSetData)
+    {
+        string $parts[] = stringToStringArray($data, ":");
+        if (!stringArrayContains($parts[0], $removed))
+            $setData[size($setData)] = $data;
+    }
+    $gShapes_drivenSetData = $setData;
+    if (size($setData))
+    {
+        // fill the list with the selection attributes
+        shapesSet_listAttributes $gShapes_drivenSetData 0;
+    }
+    // if all members have been removed delete the set
+    else
+    {
+        shapesSet_removeSet $gShapes_index;
+        shapesSet_closeDrivenSetAttributes;
+        shapesList_listBlendShapeTargets 1;
+    }
+}
+
+
+global proc string shapesSet_getGroupSet()
+{
+    //
+    // returns the name of the driven group set
+    // returns None if it doesn't exist
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_groupSetAttrName;
+
+    if (`attributeQuery -n $gShapes_bsNode -ex $gShapes_groupSetAttrName`)
+    {
+        string $conn[] = `listConnections -s 1 -d 0 -p 1 ($gShapes_bsNode + "." + $gShapes_groupSetAttrName)`;
+        if (size($conn))
+        {
+            string $items[] = stringToStringArray($conn[0], ".");
+            return $items[0];
+        }
+    }
+    return "";
+}
+
+
+global proc shapesSet_removeSet( int $id )
+{
+    //
+    // deletes the driven set
+    //
+    string $setName = shapesData_getListNameByIndex($id);
+
+    // delete the connected combo
+    if (!shapesCombo_removeCombo($setName, 1))
+        return;
+
+    // delete the connected weight driver
+    shapesDriver_deleteWeightDriver $setName 0;
+
+    // remove any other connection
+    string $conn[] = `listConnections -s 1 -d 0 -p 1 -c 1 ($setName + ".value")`;
+    if (size($conn))
+        disconnectAttr $conn[1] $conn[0];
+
+    // reset the set value
+    setAttr ($setName + ".value") 0;
+
+    string $members[] = shapesSet_getSetMembers($setName);
+
+    if (size($members))
+        shapesSet_removeDefaultAttr $setName $members {};
+
+    lockNode -l 0 $setName;
+    delete $setName;
+}
+
+
+global proc string[] shapesSet_removeAllSets()
+{
+    //
+    // deletes all driven sets when deleting the blend shape node
+    //
+    string $drivenSets[] = shapesSet_getDrivenSets();
+    if (!size($drivenSets))
+        return $drivenSets;
+
+    int $ids[] = shapesData_getShapeIds(0, $drivenSets);
+    if (size($ids))
+    {
+        for ($id in $ids)
+            shapesSet_removeSet $id;
+    }
+    string $groupSet = shapesSet_getGroupSet();
+    if ($groupSet != "")
+    {
+        lockNode -l 0 $groupSet;
+        delete $groupSet;
+    }
+    return $drivenSets;
+}
+
+
+global proc string[] shapesSet_getDrivenSets()
+{
+    //
+    // get all driven sets in the scene
+    // by connection from the blend shape node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_setAttrName;
+
+    string $sets[];
+    if (`attributeQuery -n $gShapes_bsNode -ex $gShapes_setAttrName`)
+    {
+        string $conn[] = `listConnections -s 1 -d 0 -p 1 ($gShapes_bsNode + "." + $gShapes_setAttrName)`;
+        for ($c in $conn)
+        {
+            string $temp[] = stringToStringArray($c, ".");
+            $sets[size($sets)] = $temp[0];
+        }
+    }
+    return $sets;
+}
+
+
+global proc string[] shapesSet_getDrivingSets( string $node, string $attr )
+{
+    //
+    // return a list of sets that drives the given attribute
+    //
+    string $connections[] = `listConnections -s 1 -d 0 -p 1 -scn 1 ($node + "." + $attr)`;
+    if (!size($connections))
+        return {};
+
+    string $setList[];
+    for ($conn in $connections)
+    {
+        string $nodeName[] = stringToStringArray($conn, ".");
+        if (startsWith(`nodeType $nodeName[0]`, "animCurve"))
+        {
+            string $drivingSet = shapesSet_getDrivingSetFromCurve($nodeName[0]);
+            if ($drivingSet != "")
+                $setList[size($setList)] = $drivingSet;
+        }
+        else if (`nodeType $nodeName[0]` == "blendWeighted")
+        {
+            string $curves[] = `listConnections -s 1 -d 0 -scn 1 $nodeName[0]`;
+            for ($c in $curves)
+            {
+                string $drivingSet = shapesSet_getDrivingSetFromCurve($c);
+                if ($drivingSet != "")
+                    $setList[size($setList)] = $drivingSet;
+            }
+        }
+    }
+    return $setList;
+}
+
+
+global proc string shapesSet_getDrivingSetFromCurve( string $curve )
+{
+    //
+    // return the driving set from the given curve
+    //
+    string $input[] = `listConnections -s 1 -d 0 -p 1 -scn 1 ($curve + ".input")`;
+    if (size($input))
+    {
+        string $items[] = stringToStringArray($input[0], ".");
+        if (`nodeType $items[0]` == "objectSet")
+            return $items[0];
+    }
+    return "";
+}
+
+
+global proc string shapesSet_getDrivingCurve( string $setName, string $plug )
+{
+    //
+    // returns the driving curve for a given plug;
+    // based either on the curve name or an existing message attribute
+    // which has been added when a new set curve has been created;
+    // this allows to get around the limitation that secondary animation curves, which
+    // pass through a blendWeighted node don't carry the proper node_attribute name
+    //
+    string $curves[] = `listConnections -s 0 -d 1 -scn 1 -type "animCurve" $setName`;
+    if (size($curves))
+    {
+        for ($c in $curves)
+        {
+            if (shapesSet_convertNameToPlug($c) == $plug)
+                return $c;
+            else
+            {
+                string $attrs[] = `listAttr -m -ud $c`;
+                if (size($attrs))
+                {
+                    if (size($attrs) > 1)
+                        br_displayMessage -warning ("The curve " + $curves[0] + " has more than one associated target");
+                    for ($attr in $attrs)
+                    {
+                        if (startsWith($attr, "SHAPES__"))
+                        {
+                            $attr = substitute("SHAPES__", $attr, "");
+                            if (shapesSet_convertNameToPlug($attr) == $plug)
+                                return $c;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return "";
+}
+
+
+global proc string shapesSet_convertNameToPlug( string $name )
+{
+    //
+    // convert the name of an animation curve to the actual plug name
+    // replaces the last underscore in a name to a dot
+    // L_jnt_translateX > L_jnt.translateX
+    //
+    string $items[] = stringToStringArray($name, "_");
+    string $parts[] = $items;
+    stringArrayRemoveAtIndex(size($parts) - 1, $parts);
+    string $result = stringArrayToString($parts, "_") + "." + $items[size($items) - 1];
+    return $result;
+}
+
+
+global proc shapesSet_addDefaultAttr( string $setName, string $nodes[] )
+{
+    //
+    // add default attributes for each item in the set
+    // based on the driven set attribute selection
+    //
+    string $setNodes[];
+    string $setAttrs[];
+    shapesSet_getAttributesFromSetString($setName, 0, $setNodes, $setAttrs, {});
+
+    lockNode -l 0 $setName;
+
+    for ($node in $nodes)
+    {
+        int $id = shapesArray_stringArrayFind($node, 0, $setNodes);
+        for ($attr in stringToStringArray($setAttrs[$id], ","))
+        {
+            string $attrString = "default_" + $node + "___" + $attr;
+            if (!`attributeQuery -n $setName -ex $attrString`)
+            {
+                addAttr -ln $attrString -at "float" -k 0 $setName;
+                float $value = `getAttr ($node + "." + $attr)`;
+                setAttr -l 1 ($setName + "." + $attrString) $value;
+            }
+        }
+    }
+    lockNode -l 1 $setName;
+}
+
+
+global proc shapesSet_removeDefaultAttr( string $setName, string $nodes[], string $removedPlugs[] )
+{
+    //
+    // remove all default attributes for the give nodes
+    // and delete any animation curves which are related to the default attributes
+    //
+    if (size($removedPlugs))
+        $nodes = $removedPlugs;
+
+    lockNode -l 0 $setName;
+
+    for ($node in $nodes)
+    {
+        string $attrs[] = {};
+        if (!size($removedPlugs))
+            $attrs = shapesSet_getDefaultAttributeList($setName, $node);
+        else
+        {
+            string $items[] = stringToStringArray($node, ".");
+            $attrs = {$items[1]};
+            $node = $items[0];
+        }
+
+        for ($attr in $attrs)
+        {
+            string $attrString = "default_" + $node + "___" + $attr;
+
+            if (!`attributeQuery -n $node -ex $attr`)
+                br_displayMessage -error "Unable to process default attributes because driven set members have been renamed";
+
+            float $value = `getAttr ($setName + "." + $attrString)`;
+
+            // delete any directly connected animation curve
+            string $conn[] = `listConnections -s 1 -d 0 -scn 1 -type "animCurve" ($node + "." + $attr)`;
+            if (size($conn))
+                delete $conn;
+
+            // delete any animation curve which is connected to a blendWeighted node
+            // case:
+            // an attribute is removed from a driven set but also belonging to a different set;
+            // because of this it's not directly driven but through a weightedBlend node;
+            // in this case it needs to be figured which curve node goes into the blend while matching
+            // the curve node which is controlled by the driven set
+            string $blendNodes[] = `listConnections -s 1 -d 0 -scn 1 -type "blendWeighted" ($node + "." + $attr)`;
+            string $curveNodes[] = `listConnections -s 0 -d 1 -scn 1 -type "animCurve" ($setName + ".value")`;
+            if (size($blendNodes))
+            {
+                string $blendInputs[] = `listConnections -s 1 -d 0 -scn 1 -type "animCurve" ($blendNodes[0] + ".input")`;
+                // if the animation curve from the blend node is the same as the one
+                // the driven set value drives it can be deleted
+                if (size($blendInputs) && size($curveNodes))
+                {
+                    for ($blendIn in $blendInputs)
+                    {
+                        if (stringArrayContains($blendIn, $curveNodes))
+                            delete $blendIn;
+                        else
+                        {
+                            // also check for floating animation curves which have no incoming connections
+                            // but are still connected to the blendWeighted node and thus have no function anymore
+                            string $curveInputs[] = `listConnections -s 1 -d 0 -scn 1 ($blendIn + ".input")`;
+                            if (!size($curveInputs))
+                                delete $blendIn;
+                        }
+                    }
+                }
+                // if after deleting the curve the blend node still exists but has no input connections
+                // delete the blend node as well
+                if (`objExists $blendNodes[0]`)
+                {
+                    string $blendInputs[] = `listConnections -s 1 -d 0 -scn 1 -type "animCurve" ($blendNodes[0] + ".input")`;
+                    if (!size($blendInputs))
+                        delete $blendNodes[0];
+                }
+            }
+            // only remove the attribute if the node doesn't belong to another set
+            if (shapesSet_getDrivenSet($node) == "" || size($removedPlugs))
+            {
+                setAttr -l 0 ($setName + "." + $attrString);
+                deleteAttr -at $attrString $setName;
+                // set the attribute to the default value
+                setAttr ($node + "." + $attr) $value;
+            }
+
+            // in case a node belongs to two sets the driving value goes through a blendWeighted node;
+            // deleting one set doesn't delete the blend but it has no functionality anymore;
+            // check if there is a blendWeighted node connected
+            // in case this blend has only one input curve left
+            // the blend is not needed anymore and can be deleted;
+            // the animation curve can be directly connected to the attribute;
+            // if the curve is a secondary sdk node it needs to be rebuild because the values are offset
+            shapesSet_removePassThruBlendNode $node $attr $value;
+        }
+    }
+    lockNode -l 1 $setName;
+}
+
+
+global proc string[] shapesSet_getDefaultAttributeList( string $setName, string $node )
+{
+    //
+    // returns a list of plugs for the default attribute of the driven set nodes
+    // returns only a list of attributes when the node name is given
+    //
+    string $plugList[];
+    string $attrList[];
+    string $attrs[] = `listAttr -ud $setName`;
+    for ($a in $attrs)
+    {
+        if (startsWith($a, "default_"))
+        {
+                $a = substitute("default_", $a, "");
+                string $items[] = `python("'" + $a + "'.split('___')")`;
+                $plugList[size($plugList)] = stringArrayToString($items, ".");
+                if ($items[0] == $node)
+                    $attrList[size($attrList)] = $items[1];
+        }
+    }
+
+    if ($node != "")
+        return $attrList;
+
+    return $plugList;
+}
+
+
+global proc shapesSet_resetToDefault()
+{
+    //
+    // sets the set members back to their default values
+    //
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    for ($plug in shapesSet_getDefaultAttributeList($gShapes_selectedTarget, ""))
+    {
+        string $plugItems[] = stringToStringArray($plug, ".");
+        string $attrString = "default_" + $plugItems[0] + "___" + $plugItems[1];
+        float $value = `getAttr ($gShapes_selectedTarget + "." + $attrString)`;
+        // set the attribute to the default value
+        if (catchQuiet(`setAttr $plug $value`))
+            br_displayMessage -error "Unable to process default attributes because driven set members have been renamed";
+    }
+}
+
+
+global proc shapesSet_removePassThruBlendNode( string $node, string $attr, float $defaultValue )
+{
+    //
+    // remove the connected blendWeighted node for the given attribute
+    // if it's passing through only a single incoming connection
+    // when previously connected curve nodes have been deleted;
+    // the blendWeighted has no function anymore and can be removed;
+    // the incoming animation curve gets directly connected to the driven attribute;
+    // if the curve is a secondary sdk node it needs to be rebuild because the values are offset
+    //
+    string $conn[] = `listConnections -s 1 -d 0 -scn 1 -type "blendWeighted" ($node + "." + $attr)`;
+    if (size($conn))
+    {
+        string $plugs[] = `listConnections -s 1 -d 0 -p 1 -scn 1 ($conn[0] + ".input")`;
+        if (size($plugs) == 1)
+        {
+            string $curveName[] = stringToStringArray($plugs[0], ".");
+            if (startsWith($curveName[0], "animCurve"))
+                shapesSet_rebuildSDK $curveName[0] ($node + "." + $attr) $defaultValue;
+            else
+            {
+                connectAttr -f $plugs[0] ($node + "." + $attr);
+
+                // delete the blendWeighted node
+                delete $conn[0];
+            }
+        }
+    }
+}
+
+
+global proc shapesSet_rebuildSDK( string $curve, string $drivenPlug, float $value )
+{
+    //
+    // rebuild the given curve and offset the key values
+    // used to derive a regular sdk curve from a secondary because
+    // of an exising blendWeighted node
+    //
+    string $driverPlug[] = `listConnections -s 1 -d 0 -p 1 -scn 1 ($curve + ".input")`;
+    if (!size($driverPlug))
+        return;
+
+    string $timeValueList[] = shapesSet_getKeyList("", $curve);
+
+    // delete the old curve node
+    delete $curve;
+
+    // the offset value needs to be inverted when removing a set which has world transformations
+    shapesSet_setSDKFromTimeValueList $driverPlug[0] $drivenPlug $timeValueList ($value * -1) 1;
+}
+
+
+global proc shapesSet_setSDKFromTimeValueList( string $driverPlug, string $drivenPlug, string $timeValueList[], float $offset, int $invert )
+{
+    //
+    // build a sdk from the given time value list
+    //
+    for ($timeValue in $timeValueList)
+    {
+        float $values[] = shapesArray_stringArrayToFloatArray(stringToStringArray($timeValue, ","));
+        setDrivenKeyframe -dv $values[0] -v (($values[1] - $offset) * $invert) -cd $driverPlug -itt "spline" -ott "spline" $drivenPlug;
+    }
+}
+
+
+global proc string shapesSet_getDrivenSet( string $node )
+{
+    //
+    // returns the name of the driven set the driven object belongs to
+    //
+    global string $gShapes_setAttrName;
+
+    string $sets[] = `listSets -object $node`;
+
+    string $drivenSet;
+    for ($s in $sets)
+    {
+        if (`attributeQuery -n $s -ex $gShapes_setAttrName` && $drivenSet == "")
+            $drivenSet = $s;
+    }
+    return $drivenSet;
+}
+
+
+global proc shapesSet_setKey()
+{
+    //
+    // keys the current set at the current value
+    //
+    global int $gShapes_index;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    if ($gShapes_bsNode != "None" && shapesData_isDrivenSet(shapesData_getListNameByIndex($gShapes_index)))
+    {
+        shapesSet_performSetKey $gShapes_selectedTarget {} 0 0;
+
+        if (`optionVar -q SHAPESTweakAutoMirrorOption`)
+        {
+            string $mirrored = shapesMirror_swapSideLabel($gShapes_selectedTarget);
+            if ($mirrored != $gShapes_selectedTarget && `objExists $mirrored`)
+            {
+                string $confirm = `confirmDialog    -t "SHAPES"
+                                                    -m "Match Mirrored Set?"
+                                                    -b "Match Opposite"
+                                                    -b "Match Centered"
+                                                    -b "Cancel"
+                                                    -db "Cancel"
+                                                    -cb "Cancel"
+                                                    -ds "Cancel"`;
+                if ($confirm == "Cancel")
+                    return;
+                else if ($confirm == "Match Opposite")
+                    shapesSet_mirrorDrivenSet 3;
+                else if ($confirm == "Match Centered")
+                    shapesSet_mirrorDrivenSet 4;
+            }
+
+            // try to set the current value for the current target;
+            // because when applying the mirror to the other side the current shape
+            // of the source side is not represented correctly anymore and needs to be updated;
+            // try, because the attribute could be connected or locked
+            catchQuiet(`setAttr ($gShapes_selectedTarget + ".value") getAttr($gShapes_selectedTarget + ".value")`);
+        }
+    }
+}
+
+
+global proc shapesSet_performSetKey( string $setName, string $selection[], int $new, int $default )
+{
+    //
+    // sets a driven key for some or all members of the set
+    // new is True if a new set has just been created
+    // new is False if nodes are added to the set
+    //
+    global int $gShapes_namespaceExists;
+    global int $gShapes_newDrivenSet;
+    global string $gShapes_drivenSetData[];
+
+    string $members[] = shapesSet_getSetMembers($setName);
+    if (size($selection))
+        $members = $selection;
+    if (!size($members))
+        return;
+
+    // for the initial key the driver value is 0
+    // for any additional keys get the current set value
+    string $connection[];
+    if ($new)
+    {
+        $connection = `listConnections -s 1 -d 0 -p 1 -c 1 ($setName + ".value")`;
+        if (size($connection))
+            disconnectAttr $connection[1] $connection[0];
+        setAttr ($setName + ".value") 0;
+    }
+
+    // collect all existing animation curves and store the last of each type
+    shapesSet_getLastCreatedAnimationCurve 1;
+
+    int $count;
+    for ($m in $members)
+    {
+        for ($attr in shapesSet_getDefaultAttributeList($setName, $m))
+        {
+            // before setting a key for new attributes
+            // check for each attribute that it's not already in the connected list
+            // this prevents that already keyed attributes get keyed again
+            // in case a set is edited and new attributes are added
+            int $setKey = 1;
+            if (size($gShapes_drivenSetData) && $new)
+            {
+                for ($data in $gShapes_drivenSetData)
+                {
+                    string $connected[];
+                    string $nodeName = shapesSet_decomposeDataString($data, {}, {}, $connected, {});
+                    if ($nodeName == $m && stringArrayContains($attr, $connected))
+                    {
+                        // if the attribute is in the connected list
+                        // check if the connection comes from a different set
+                        // in this case it's safe to set a key
+                        string $drivingSets[] = shapesSet_getDrivingSets($m, $attr);
+                        if (size($drivingSets) && stringArrayContains($setName, $drivingSets))
+                            $setKey = 0;
+                    }
+                }
+            }
+
+            if ($setKey)
+            {
+                // make sure the channel is not locked
+                setAttr -l 0 ($m + "." + $attr);
+
+                // remove any pre-existing curve with the same name which is not connected
+                shapesSet_deleteUnusedCurve $m $attr;
+
+                setDrivenKeyframe -cd ($setName + ".value") -itt "spline" -ott "spline" ($m + "." + $attr);
+
+                string $newCurve = shapesSet_getLastCreatedAnimationCurve(0);
+                if ($newCurve != "")
+                    shapesCommon_addMessageAttribute $newCurve ("SHAPES__" + $m + "_" + $attr) 0;
+
+                // set the infinity
+                if ($gShapes_newDrivenSet)
+                {
+                    if (`menuItem -q -cb shpUI_drivenSetInfinityItem`)
+                    {
+                        if ($gShapes_namespaceExists)
+                            $m = shapesMain_shortenNodePath($m, 0);
+                        shapesDriver_setCurveInfinity ($m + "_" + $attr) 4;
+                    }
+                }
+
+                $count ++;
+            }
+        }
+    }
+
+    if ($count > 0)
+        br_displayMessage -info ($count + " keys set for \"" + $setName + "\".");
+
+    if ($new && size($connection))
+        connectAttr $connection[1] $connection[0];
+
+    shapesSet_displayDrivenSetKeyCount $setName;
+}
+
+
+global proc shapesSet_deleteUnusedCurve( string $node, string $attr )
+{
+    //
+    // check if a curve with the given node name and attribute exists
+    // and deletes it if the curve is not connected with it's output;
+    // this is to prevent that curve names have duplicates (with numbering) in the scene
+    // when the attribute is keyes again
+    //
+    string $curveName = $node + "_" + $attr;
+    if (`objExists $curveName`)
+    {
+        if (startsWith(`nodeType $curveName`, "animCurve"))
+        {
+            string $conn[] = `listConnections -s 0 -d 1 ($curveName + ".output")`;
+            if (!size($conn))
+            {
+                lockNode -l 0 $curveName;
+                delete $curveName;
+            }
+        }
+    }
+}
+
+
+global proc string[] shapesSet_getKeyList( string $setName, string $curve )
+{
+    //
+    // returns a list of keyframe values for the given curve or current set
+    //
+    if ($curve == "")
+    {
+        string $curves[] = `listConnections -s 0 -d 1 -p 1 -scn 1 -type "animCurve" ($setName + ".value")`;
+        if (!size($curves))
+            return {};
+        string $items[] = stringToStringArray($curves[0], ".");
+        $curve = $items[0];
+    }
+
+    int $indexList[] = `getAttr -mi ($curve + ".ktv")`;
+    string $timeValueList[];
+    for ($i in $indexList)
+    {
+        float $values[] = `getAttr ($curve + ".ktv[" + $i + "]")`;
+        // angle based curves only return radians as values
+        // which need to be converted to degrees for setting new sdk curves
+
+        // Issue: 50706002
+        // Important change in 2019: Querying the keyTimeValues always returns degrees.
+        if (shapesCommon_getMayaVersion() < 2019)
+        {
+            if (size($values) > 1 && (`nodeType $curve` == "animCurveUA" || `nodeType $curve` == "animCurveTA"))
+                $values[1] = `rad_to_deg $values[1]`;
+        }
+        $timeValueList[size($timeValueList)] = shapesArray_floatArrayToString($values, ",");
+    }
+    return $timeValueList;
+}
+
+
+global proc shapesSet_deleteKey( int $all )
+{
+    //
+    // deletes the current or all driven keys
+    // except the first
+    //
+    global int $gShapes_index;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    if ($gShapes_bsNode == "None" || !shapesData_isDrivenSet(shapesData_getListNameByIndex($gShapes_index)))
+        return;
+
+    string $curves[] = `listConnections -s 0 -d 1 -p 1 -scn 1 -type "animCurve" ($gShapes_selectedTarget + ".value")`;
+    if (!size($curves))
+        return;
+
+    // delete current key for all members
+    if (!$all)
+    {
+        // get the current key index from the range text
+        string $rangeString = `text -q -l shpUI_drivenSetKeyCount`;
+        string $index[] = stringToStringArray($rangeString, " ");
+        if ($index[0] == "-" && !$all)
+        {
+            br_displayMessage -warning "Keys cannot be deleted when in between keys";
+            return;
+        }
+        int $id = $index[0];
+        for ($curve in $curves)
+        {
+            string $curveItems[] = stringToStringArray($curve, ".");
+            selectKey -k -index ($id - 1) $curveItems[0];
+            cutKey -cl -an "keys";
+        }
+    }
+    // delete all keys
+    else
+    {
+        for ($curve in $curves)
+        {
+            string $curveItems[] = stringToStringArray($curve, ".");
+            string $timeValueList[] = shapesSet_getKeyList($gShapes_selectedTarget, $curveItems[0]);
+            selectKey -k -index ("1:" + (size($timeValueList) - 1)) $curveItems[0];
+            cutKey -cl -an "keys";
+        }
+        setAttr ($gShapes_selectedTarget + ".value") 0;
+    }
+    shapesSet_displayDrivenSetKeyCount $gShapes_selectedTarget;
+}
+
+
+global proc shapesSet_displayDrivenSetKeyCount( string $setName )
+{
+    //
+    // displays the number of keys for the current set
+    //
+    global int $gShapes_drivenKeyId;
+
+    if ($setName == "")
+        return;
+
+    string $timeValueList[] = shapesSet_getKeyList($setName, "");
+    if (!size($timeValueList))
+        return;
+
+    int $count = size($timeValueList);
+
+    //
+    // display at which key the current slider value is
+    // go through all key indices and compare each to the current value
+    //
+    int $found;
+    int $key;
+    string $keyString;
+    float $value = `getAttr ($setName + ".value")`;
+
+    for ($i = 0; $i < $count; $i ++)
+    {
+        if (!$found)
+        {
+            float $timeValues[] = shapesArray_stringArrayToFloatArray(stringToStringArray($timeValueList[$i], ","));
+            // get the time value pair for the current index
+            if ($timeValues[0] == $value)
+            {
+                $key = $i + 1;
+                $keyString = $key;
+                $found = 1;
+                $gShapes_drivenKeyId = $key;
+            }
+            else if ($timeValues[0] < $value)
+            {
+                $keyString = "-";
+                $gShapes_drivenKeyId = $i + 1;
+            }
+            else
+                ;
+        }
+    }
+
+    text -e -l ($keyString + " / " + $count) shpUI_drivenSetKeyCount;
+
+    int $tweakToggle;
+
+    int $state[] = {0, 0};
+    if ($key == 1)
+    {
+        if ($count == 1)
+            ;
+        else
+            $state = {0, 1};
+    }
+    else if ($key == $count && $count > 1)
+        $state = {1, 0};
+    else if (($key < $count && $key > 0) || $keyString == "-")
+    {
+        $state = {1, 1};
+        if ($keyString != "-")
+            $tweakToggle = 1;
+    }
+
+    string $ext1;
+    string $ext2;
+    if (!$state[0])
+        $ext1 = "Off";
+    if (!$state[1])
+        $ext2 = "Off";
+
+    string $image1 = "SHAPES_drivenSetPreviousKey" + $ext1 + ".png";
+    string $image2 = "SHAPES_drivenSetNextKey" + $ext2 + ".png";
+    iconTextButton -e -i $image1 shpUI_drivenSetPreviousButton;
+    iconTextButton -e -i $image2 shpUI_drivenSetNextButton;
+
+    if ($state[0])
+        iconTextButton -e -c ("shapesSet_stepNextDrivenKey 0") shpUI_drivenSetPreviousButton;
+    else
+        iconTextButton -e -c shapesCommon_doNothing shpUI_drivenSetPreviousButton;
+
+    if ($state[1])
+        iconTextButton -e -c ("shapesSet_stepNextDrivenKey 1") shpUI_drivenSetNextButton;
+    else
+        iconTextButton -e -c shapesCommon_doNothing shpUI_drivenSetNextButton;
+
+    shapesSet_toggleTweakButton $tweakToggle $key;
+}
+
+
+global proc shapesSet_stepNextDrivenKey( int $next )
+{
+    //
+    // moves the channel slider to the next or previous driven key
+    //
+    global int $gShapes_drivenKeyId;
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    int $keyId;
+    if (!$next)
+        $keyId = $gShapes_drivenKeyId - 1;
+    else
+        $keyId = $gShapes_drivenKeyId + 1;
+
+    string $timeValueList[] = shapesSet_getKeyList($gShapes_selectedTarget, "");
+    int $count = size($timeValueList);
+
+    // make sure that the next key id is between 1 and the number of keys
+    if ($keyId < 1)
+        $keyId = 1;
+    if ($keyId > $count)
+        $keyId = $count;
+
+    $gShapes_drivenKeyId = $keyId;
+
+    // try because of incoming connections from shape drivers or sequences
+    string $timeValues[] = stringToStringArray($timeValueList[$keyId - 1], ",");
+    float $value =  $timeValues[0];
+    catchQuiet(`setAttr ($gShapes_selectedTarget + ".value") $value`);
+
+    shapesSet_displayDrivenSetKeyCount $gShapes_selectedTarget;
+}
+
+
+global proc string shapesSet_getLastCreatedAnimationCurve( int $init )
+{
+    //
+    // gathers the last animation curve of each type in the scene if init is true
+    // or returns the last animation curve set in comparison to the existing curves
+    //
+    global string $gShapes_lastAnimCurveUL;
+    global string $gShapes_lastAnimCurveUA;
+    global string $gShapes_lastAnimCurveUU;
+
+    string $lastCurveUL;
+    string $lastCurveUA;
+    string $lastCurveUU;
+
+    string $curves[] = `ls -type animCurve`;
+    for ($c in $curves)
+    {
+        if (startsWith($c, "animCurveUL"))
+            $lastCurveUL = $c;
+        else if (startsWith($c, "animCurveUA"))
+            $lastCurveUA = $c;
+        else if (startsWith($c, "animCurveUU"))
+            $lastCurveUU = $c;
+    }
+
+    if ($init)
+    {
+        $gShapes_lastAnimCurveUL = $lastCurveUL;
+        $gShapes_lastAnimCurveUA = $lastCurveUA;
+        $gShapes_lastAnimCurveUU = $lastCurveUU;
+        return "";
+    }
+
+    if ($lastCurveUL != $gShapes_lastAnimCurveUL)
+    {
+        $gShapes_lastAnimCurveUL = $lastCurveUL;
+        return $lastCurveUL;
+    }
+    else if ($lastCurveUA != $gShapes_lastAnimCurveUA)
+    {
+        $gShapes_lastAnimCurveUA = $lastCurveUA;
+        return $lastCurveUA;
+    }
+    else if ($lastCurveUU != $gShapes_lastAnimCurveUU)
+    {
+        $gShapes_lastAnimCurveUU = $lastCurveUU;
+        return $lastCurveUU;
+    }
+    else
+        return "";
+}
+
+
+global proc string shapesSet_duplicateDrivenSet( string $name, int $mirror )
+{
+    //
+    // creates a copy of the selected set
+    // but without any sdk except the base key
+    //
+    global int $gShapes_clearSliderFrame;
+    global int $gShapes_drivenSetProcess;
+    global string $gShapes_duplicateSetAttributeString;
+    global string $gShapes_previousTarget;
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_drivenSetProcess)
+    {
+        br_displayMessage -warning "Unable to duplicate while tweaking the driven set value";
+        return "";
+    }
+
+    // get the current selection to restore it later
+    string $selection[] = `ls -sl`;
+
+    $gShapes_previousTarget = $gShapes_selectedTarget;
+
+    string $drivenSets[] = `treeView -q -si shpUI_targetTree`;
+
+    $gShapes_clearSliderFrame = 0;
+
+    string $newName;
+    for ($setName in $drivenSets)
+    {
+        if (shapesData_isDrivenSet($setName))
+        {
+            $newName = $name;
+            if ($name == "")
+                $newName = $setName + "_copy";
+
+            string $uniqueName[] = shapesAction_newName($newName);
+            if ($uniqueName[1] != "")
+                $newName = $uniqueName[1];
+
+            string $members[] = shapesSet_getSetMembers($setName);
+            if (size($members))
+            {
+                if ($mirror)
+                {
+                    // create the mirrored name for all set members
+                    string $temp[] = {};
+                    for ($m in $members)
+                    {
+                        string $mm = shapesMirror_swapSideLabel($m);
+                        if ($mm == $m)
+                        {
+                            $gShapes_clearSliderFrame = 1;
+                            br_displayMessage -error ($m + " has no side (left/right) identifier");
+                        }
+                        if (!`objExists $mm`)
+                        {
+                            $gShapes_clearSliderFrame = 1;
+                            br_displayMessage -error ("Unable to create the mirrored set because the target sibling " + $mm + " does not exist");
+                        }
+                        $temp[size($temp)] = $mm;
+                    }
+                    $members = $temp;
+
+                    // replace the names in the driven set attibute string
+                    string $setNodes[];
+                    string $setAttrs[];
+                    string $setAttrsInv[];
+
+                    shapesSet_getAttributesFromSetString($setName, 0, $setNodes, $setAttrs, $setAttrsInv);
+                    string $nodeList[] = {};
+                    for ($i = 0; $i < size($setNodes); $i ++)
+                    {
+                        string $list[] = {};
+                        $list[0] = shapesMirror_swapSideLabel($setNodes[$i]);
+                        $list[1] = $setAttrs[$i];
+                        $list[2] = $setAttrsInv[$i];
+                        $nodeList[size($nodeList)] = stringArrayToString($list, ":");
+                    }
+                    $gShapes_duplicateSetAttributeString = stringArrayToString($nodeList, ";");
+                }
+                else
+                    $gShapes_duplicateSetAttributeString = `getAttr ($gShapes_previousTarget + ".SHAPES_drivenSet_attributes")`;
+
+                select -r $members;
+
+                shapesSet_createSet $newName;
+                $gShapes_duplicateSetAttributeString = "";
+            }
+        }
+    }
+
+    if ($newName != "")
+        shapesList_autoOrderNewTarget $newName $gShapes_selectedTarget 1;
+    shapesList_listBlendShapeTargets 1;
+
+    // re-select the previous target
+    treeView -e -cs shpUI_targetTree;
+    treeView -e -si $gShapes_previousTarget 1 shpUI_targetTree;
+    $gShapes_selectedTarget = $gShapes_previousTarget;
+
+    $gShapes_clearSliderFrame = 1;
+
+    // restore the selection
+    if (size($selection))
+        select -r $selection;
+
+    return $newName;
+}
+
+
+global proc shapesSet_selectDrivenSetItems( string $mode )
+{
+    //
+    // perform the selection of set members or curves
+    //
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    if ($mode == "members")
+    {
+        string $members[] = shapesSet_getSetMembers($gShapes_selectedTarget);
+        if (size($members))
+            select -r $members;
+    }
+    else if ($mode == "curves")
+    {
+        string $curves[] = `listConnections -s 0 -d 1 -p 1 -scn 1 -type "animCurve" ($gShapes_selectedTarget + ".value")`;
+        if (size($curves))
+        {
+            string $cList[];
+            for ($c in $curves)
+            {
+                string $items[] = stringToStringArray($c, ".");
+                $cList[size($cList)] = $items[0];
+            }
+            select -r $cList;
+        }
+    }
+}
+
+
+global proc string[] shapesSet_getSetMembers( string $setName )
+{
+    //
+    // returns a list of all members for the given set
+    // but not through regular membership but via the default attributes
+    //
+    string $exist[];
+    string $notExist[];
+    for ($plug in shapesSet_getDefaultAttributeList($setName, ""))
+    {
+        string $node[] = stringToStringArray($plug, ".");
+        if (`objExists $node[0]`)
+            $exist[size($exist)] = $node[0];
+        else
+            $notExist[size($notExist)] = $node[0];
+    }
+
+    $exist = stringArrayRemoveDuplicates($exist);
+    $notExist = stringArrayRemoveDuplicates($notExist);
+
+    if (size($notExist))
+        br_displayMessage -error ("The following driven set members do not exist or have been renamed: " + stringArrayToString($notExist, ", "));
+
+    return $exist;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// tweak driver value
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesSet_initTweakDrivenSetValue( int $key )
+{
+    //
+    // enter tweak mode to use the channel slider to
+    // redefine the driven set value for the current key
+    //
+    global int $gShapes_drivenSetProcess;
+    global string $gShapes_currentChannelSlider;
+
+    $gShapes_drivenSetProcess = 1;
+
+    // disable all other controls for the tweak mode
+    shapesSet_tweakDrivenSetValueToggleUI 0 0;
+
+    floatSliderButtonGrp    -e
+                            -bl "Exit"
+                            -bc ("shapesSet_exitTweakDrivenSetValue " + $key)
+                            -dc ("shapesSet_tweakDrivenSetValue " + $key + " #1")
+                            -cc ("shapesSet_tweakDrivenSetValue " + $key + " #1")
+                            $gShapes_currentChannelSlider;
+}
+
+
+global proc shapesSet_exitTweakDrivenSetValue( int $key )
+{
+    //
+    // exit tweak mode after setting the driven set value for the current key
+    //
+    global int $gShapes_drivenSetProcess;
+    global string $gShapes_currentChannelSlider;
+
+    // enable all other controls
+    shapesSet_tweakDrivenSetValueToggleUI 1 0;
+
+    floatSliderButtonGrp    -e
+                            -bl "Edit"
+                            -bc ("shapesSet_initTweakDrivenSetValue " + $key)
+                            -dc ("shapesDriver_attachDetachDriver 0 0 1")
+                            -cc ("shapesDriver_attachDetachDriver 1 0 1")
+                            $gShapes_currentChannelSlider;
+
+    $gShapes_drivenSetProcess = 0;
+}
+
+
+global proc shapesSet_tweakDrivenSetValue( int $key, float $value )
+{
+    //
+    // edit the driver value for the given key
+    //
+    global string $gShapes_selectedTarget;
+
+    string $curves[] = `listConnections -s 0 -d 1 -p 1 -scn 1 -type "animCurve" ($gShapes_selectedTarget + ".value")`;
+    if (!size($curves))
+        return;
+
+    for ($curve in $curves)
+    {
+        string $items[] = stringToStringArray($curve, ".");
+        keyframe -o "over" -index ($key - 1) -a -fc $value $items[0];
+    }
+}
+
+
+global proc shapesSet_toggleTweakButton( int $state, int $key )
+{
+    //
+    // toggles the button action for the channel slider
+    // when the driven set value is at a key between the first and last
+    //
+    global string $gShapes_currentChannelSlider;
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_currentChannelSlider == "" || !`floatSliderButtonGrp -ex $gShapes_currentChannelSlider`)
+        return;
+
+    if ($state)
+        floatSliderButtonGrp -e -bl "Edit" -bc ("shapesSet_initTweakDrivenSetValue " + $key) $gShapes_currentChannelSlider;
+    else
+        floatSliderButtonGrp -e -bl "Set" -bc ("shapesJob_sliderButtonCommand " + $gShapes_selectedTarget + ".value 1") $gShapes_currentChannelSlider;
+}
+
+
+global proc shapesSet_tweakDrivenSetValueToggleUI( int $enable, int $slider )
+{
+    //
+    // disables/enables ui elements
+    // based on entering/exiting the tweak value mode
+    //
+    // set the sculpt mode options enable state
+    shapesUI_manageUIModeDependencies -1 1 $enable;
+
+    if ($slider)
+        frameLayout -e -en $enable shpUI_sliderFrame;
+
+    if (!$enable)
+    {
+        // disable the target list
+        treeView -e -en 0 shpUI_targetTree;
+    }
+    else
+    {
+        // if there are targets in the list enable the list
+        string $items[] = shapesData_getTargetList();
+        if ($items[0] != "No shapes")
+            treeView -e -en 1 shpUI_targetTree;
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// define set attributes
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesSet_editDrivenSetAttributes( int $newSet )
+{
+    //
+    // opens the window for editing a new or existing set
+    //
+    global int $gShapes_index;
+    global int $gShapes_newDrivenSet;
+    global int $gShapes_splitProcess;
+    global string $gShapes_bsNode;
+    global string $gShapes_currentEditSet;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_currentEditRemoveList[];
+    global string $gShapes_drivenSetData[];
+
+    // create a new blendshape node if none exists
+    if ($gShapes_bsNode == "None")
+        shapesAction_addBlendShapeNode 1;
+
+    if ((!$newSet && !size(shapesData_getAllAttrItems())) || (!$newSet && !shapesData_isDrivenSet(shapesData_getListNameByIndex($gShapes_index))) || $gShapes_splitProcess)
+        return;
+
+    // clear the list for storing all attributes which might get removed
+    $gShapes_currentEditRemoveList = {};
+
+    // get the nodes for editing
+    string $nodes[];
+    if ($newSet)
+    {
+        $gShapes_currentEditSet = "";
+        // get the joint or transform node selection
+        $nodes = `ls -sl -tr`;
+        if (!size($nodes))
+            br_displayMessage -error "No joints or transforms selected for set creation";
+    }
+    else
+    {
+        if ($gShapes_selectedTarget == "")
+            return;
+        $nodes = shapesSet_getSetMembers($gShapes_selectedTarget);
+        if (!size($nodes))
+            return;
+        $gShapes_currentEditSet = $gShapes_selectedTarget;
+    }
+
+    $gShapes_newDrivenSet = $newSet;
+
+    // disable the ui
+    shapesSet_tweakDrivenSetValueToggleUI 0 1;
+
+    // disable any locking
+    shapesSet_lockNonDrivenSetAttributes 0;
+
+    // show the window
+    shapesUI_buildEditDrivenSetUI $newSet;
+
+    // build the list with nodes and their attributes
+    shapesSet_getSetMemberAttributes $nodes 1;
+
+    // in case a set is edited get the set attributes from the set
+    // and modify the default node data which has just been aquired
+    if (!$gShapes_newDrivenSet)
+         shapesSet_getAttributesFromSetString $gShapes_selectedTarget 1 {} {} {};
+
+    // fill the list with the selection attributes
+    shapesSet_listAttributes $gShapes_drivenSetData 0;
+
+    shapesSet_memberListSelectAll;
+
+    // set the curve infinity option
+    if (!$gShapes_newDrivenSet)
+    {
+        string $curves[] = `listConnections -s 0 -d 1 -p 1 -scn 1 -type "animCurve" ($gShapes_selectedTarget + ".value")`;
+        if (!size($curves))
+            return;
+        string $items[] = stringToStringArray($curves[0], ".");
+        if (`getAttr ($items[0] + ".preInfinity")` == 1)
+            menuItem -e -cb 1 shpUI_drivenSetInfinityItem;
+        else
+            menuItem -e -cb 0 shpUI_drivenSetInfinityItem;
+    }
+}
+
+
+global proc string[] shapesSet_getSetMemberAttributes( string $nodes[], int $keep )
+{
+    //
+    // returns a list of compiled attribute strings for all given nodes
+    // and their attributes
+    // the list is stored globally if the keep switch is set
+    //
+    global string $gShapes_drivenSetData[];
+
+    string $nodeList[];
+    for ($node in $nodes)
+    {
+        string $attributes[] = `listAttr -k $node`;
+        string $attrs[] = {};
+        string $states[] = {};
+        string $connected[] = {};
+        for ($attr in $attributes)
+        {
+            $attrs[size($attrs)] = $attr;
+            $states[size($states)] = "false";
+            if (size(`listConnections -s 1 -d 0 -scn 1 ($node + "." + $attr)`))
+                $connected[size($connected)] = $attr;
+        }
+        $nodeList[size($nodeList)] = shapesSet_composeDataString($node, $attrs, $states, $connected, {});
+    }
+
+    if ($keep)
+        $gShapes_drivenSetData = $nodeList;
+
+    return $nodeList;
+}
+
+
+global proc string shapesSet_buildSetAttributeString()
+{
+    //
+    // build a string from the set attributes
+    // for storing it on the set
+    //
+    global string $gShapes_drivenSetData[];
+
+    string $attrString;
+    string $nodeList[];
+    for ($data in $gShapes_drivenSetData)
+    {
+        string $attrs[];
+        string $states[];
+        string $invert[];
+        string $nodeName = shapesSet_decomposeDataString($data, $attrs, $states, {}, $invert);
+
+        string $attrList[] = {};
+        for ($a = 0; $a < size($attrs); $a ++)
+        {
+            if ($states[$a] == "true")
+                $attrList[size($attrList)] = $attrs[$a];
+        }
+        $nodeList[size($nodeList)] = $nodeName + ":" + stringArrayToString($attrList, ",") + ":" + stringArrayToString($invert, ",");
+    }
+    $attrString = stringArrayToString($nodeList, ";");
+
+    return $attrString;
+}
+
+
+global proc shapesSet_getAttributesFromSetString( string $setName, int $keep, string $setNodes[], string $setAttrs[], string $setAttrsInv[] )
+{
+    //
+    // update the current driven set attribute data
+    // with the attribute information from the set
+    //
+    global string $gShapes_drivenSetData[];
+
+    string $attrString = `getAttr ($setName + ".SHAPES_drivenSet_attributes")`;
+    if ($attrString == "")
+        return;
+
+    string $nodeList[] = stringToStringArray($attrString, ";");
+    for ($node in $nodeList)
+    {
+        string $items[] = stringToStringArray($node, ":");
+
+        string $attrList[];
+        string $invList[];
+        $setNodes[size($setNodes)] = shapesSet_decomposeDataString($node, $attrList, {}, {}, $invList);
+        $setAttrs[size($setAttrs)] = stringArrayToString($attrList, ",");
+        $setAttrsInv[size($setAttrsInv)] = stringArrayToString($invList, ",");
+
+        if ($keep)
+        {
+            for ($i = 0; $i < size($gShapes_drivenSetData); $i ++)
+            {
+                string $attributes[];
+                string $states[];
+                string $connected[];
+                string $invertList[];
+
+                string $nodeName = shapesSet_decomposeDataString($gShapes_drivenSetData[$i], $attributes, $states, $connected, $invertList);
+
+                if ($nodeName == $items[0])
+                {
+                    string $attrs[] = stringToStringArray($items[1], ",");
+                    for ($a = 0; $a < size($attrs); $a ++)
+                    {
+                        if (!stringArrayContains($attrs[$a], $attributes))
+                        {
+                            $attributes[size($attributes)] = $attrs[$a];
+                            $states[size($states)] = "true";
+                        }
+                        else
+                        {
+                            int $id = shapesArray_stringArrayFind($attrs[$a], 0, $attributes);
+                            $states[$id] = "true";
+                        }
+                    }
+                    $gShapes_drivenSetData[$i] = shapesSet_composeDataString($nodeName, $attributes, $states, $connected, stringToStringArray($items[2], ","));
+                }
+            }
+        }
+    }
+}
+
+
+global proc string shapesSet_composeDataString( string $nodeName, string $attrs[], string $states[], string $connected[], string $invert[] )
+{
+    //
+    // build a data string from the given arrays
+    //
+    string $attrsStates[] = {};
+    for ($a = 0; $a < size($attrs); $a ++)
+    {
+        $attrsStates[size($attrsStates)] = $attrs[$a];
+        $attrsStates[size($attrsStates)] = $states[$a];
+    }
+    string $parts[] = {$nodeName};
+    $parts[1] = stringArrayToString($attrsStates, ",");
+    $parts[2] = stringArrayToString($connected, ",");
+    if (!size($parts[2]))
+        $parts[2] = "-";
+    $parts[3] = stringArrayToString($invert, ",");
+    if (!size($parts[3]))
+        $parts[3] = "-";
+    return stringArrayToString($parts, ":");
+}
+
+
+global proc string shapesSet_decomposeDataString( string $data, string $attrs[], string $states[], string $connected[], string $invert[] )
+{
+    //
+    // extracts the element arrays from the given data string
+    //
+    string $parts[] = stringToStringArray($data, ":");
+
+    string $attrsStates[] = stringToStringArray($parts[1], ",");
+    // check if the attribute string contains booleans,
+    // which represent the keying state of the channels;
+    // if the booleans are missing the data string comes from the set string attribute
+    // which doesn't contain the booleans
+    if (`gmatch $parts[1] "*true*"` || `gmatch $parts[1] "*false*"`)
+    {
+        for ($i = 0; $i < size($attrsStates); $i += 2)
+        {
+            $attrs[size($attrs)] = $attrsStates[$i];
+            $states[size($states)] = $attrsStates[$i + 1];
+        }
+    }
+    else
+        $attrs = $attrsStates;
+
+    if (size($parts) > 1)
+    {
+        if ($parts[2] != "-")
+            $connected = stringToStringArray($parts[2], ",");
+    }
+    if (size($parts) > 2)
+    {
+        if ($parts[3] != "-")
+            $invert = stringToStringArray($parts[3], ",");
+    }
+
+    return $parts[0];
+}
+
+
+global proc shapesSet_listAttributes( string $nodeData[], int $attrOnly )
+{
+    //
+    // populates the attribute scroll lists with the given data
+    //
+    string $sel[] = `iconTextScrollList -q -si shpUI_drivenSetMemberList`;
+
+    // clear the lists
+    if (!$attrOnly)
+        iconTextScrollList -e -ra shpUI_drivenSetMemberList;
+    iconTextScrollList -e -ra shpUI_drivenSetAttributeList;
+    iconTextScrollList -e -ra shpUI_drivenSetKeyList;
+
+    string $attrList[];
+    string $keyList[];
+    string $connectedList[];
+    string $invertList[];
+
+    // get all the nodes of the given data
+    // which makes it easier to sort the list
+    string $nodes[];
+    for ($item in $nodeData)
+    {
+        string $parts[] = stringToStringArray($item, ":");
+        $nodes[size($nodes)] = $parts[0];
+    }
+
+    string $nodesSorted[] = sort($nodes);
+
+    for ($node in $nodesSorted)
+    {
+        // make sure only attributes of the currently selected member are displayed;
+        // i.e. when toggling attributes for only one member the set attributes for
+        // all members are displayed afterwards which can be confusing
+        int $collect = 1;
+        if (size($sel) && !stringArrayContains($node, $sel))
+            $collect = 0;
+
+        if ($collect)
+        {
+            int $id = shapesArray_stringArrayFind($node, 0, $nodes);
+
+            if (!$attrOnly)
+                iconTextScrollList -e -a $node shpUI_drivenSetMemberList;
+
+            string $attrs[];
+            string $states[];
+            string $connected[];
+            string $invert[];
+            string $nodeName = shapesSet_decomposeDataString($nodeData[$id], $attrs, $states, $connected, $invert);
+
+            string $attrsSorted[] = sort($attrs);
+
+            for ($a in $attrsSorted)
+            {
+                if (stringArrayContains($a, $connected))
+                    $connectedList[size($connectedList)] = $a;
+                if (stringArrayContains($a, $invert))
+                    $invertList[size($invertList)] = $a;
+                int $index = shapesArray_stringArrayFind($a, 0, $attrs);
+                if ($states[$index] == "false")
+                    $attrList[size($attrList)] = $a;
+                else
+                    $keyList[size($keyList)] = $a;
+            }
+        }
+    }
+
+    $attrList = stringArrayRemoveDuplicates($attrList);
+    $keyList = stringArrayRemoveDuplicates($keyList);
+    $attrList = sort($attrList);
+    $keyList = sort($keyList);
+
+    int $attrCount;
+    int $keyCount;
+    for ($a in $attrList)
+    {
+        iconTextScrollList -e -a $a shpUI_drivenSetAttributeList;
+        $attrCount ++;
+
+        shapesSet_addColoredListEntry $a "shpUI_drivenSetAttributeList" $attrCount $connectedList $invertList;
+    }
+    for ($a in $keyList)
+    {
+        iconTextScrollList -e -a $a shpUI_drivenSetKeyList;
+        $keyCount ++;
+
+        shapesSet_addColoredListEntry $a "shpUI_drivenSetKeyList" $keyCount $connectedList $invertList;
+    }
+}
+
+
+global proc shapesSet_addColoredListEntry( string $item, string $list, int $index, string $connectedList[], string $invertList[] )
+{
+    //
+    // color the list entries based on their connection and inverted state
+    //
+    // yellow = {0.95, 0.95, 0.646}
+    // red = {1.0, 0.25, 0.25}
+    // blue = {0.2, 0.667, 1.0}
+    float $values[] = shapesUI_getDrivenSetPrefs();
+
+    float $col1[] = {$values[0], $values[1], $values[2]};
+    float $col2[] = {$values[3], $values[4], $values[5]};
+
+    float $mult1[] = {0.0, 0.0, 0.0};
+    float $mult2[] = {0.0, 0.0, 0.0};
+
+    int $process;
+
+    if (stringArrayContains($item, $connectedList))
+    {
+        $mult1 = {$col1[0], $col1[1], $col1[2]};
+        $process = 1;
+    }
+    if (stringArrayContains($item, $invertList) && $list == "shpUI_drivenSetKeyList")
+    {
+        // change to mult2 for creating a mixed color
+        // and enable the colors below
+        $mult1 = {$col2[0], $col2[1], $col2[2]};
+        $process = 1;
+    }
+
+    if ($process)
+    {
+        float $color[] = {$mult1[0] + $mult2[0], $mult1[1] + $mult2[1], $mult1[2] + $mult2[2]};
+        //color[0] = color[0] / max(color[0], color[1], color[2])
+        //color[1] = color[1] / max(color[0], color[1], color[2])
+        //color[2] = color[2] / max(color[0], color[1], color[2])
+        iconTextScrollList -e -itc $index $color[0] $color[1] $color[2] $list;
+    }
+}
+
+
+global proc shapesSet_listMemberAttributes()
+{
+    //
+    // display the attributes for the current selection of set members
+    //
+    global string $gShapes_drivenSetData[];
+
+    string $nodes[] = `iconTextScrollList -q -si shpUI_drivenSetMemberList`;
+
+    if (!size($nodes))
+    {
+        iconTextScrollList -e -ra shpUI_drivenSetAttributeList;
+        iconTextScrollList -e -ra shpUI_drivenSetKeyList;
+        return;
+    }
+
+    // build the list with nodes and their attributes
+    string $nodeData[];
+    for ($node in $nodes)
+    {
+        for ($data in $gShapes_drivenSetData)
+        {
+            string $parts[] = stringToStringArray($data, ":");
+            if ($parts[0] == $node)
+                $nodeData[size($nodeData)] = $data;
+        }
+    }
+
+    // fill the list with the selection attributes
+    shapesSet_listAttributes $nodeData 1;
+}
+
+
+global proc string[] shapesSet_getMemberListSelection()
+{
+    //
+    // returns a list of all selected members in the member list
+    //
+    string $nodes[] = `iconTextScrollList -q -si shpUI_drivenSetMemberList`;
+    return $nodes;
+}
+
+
+global proc shapesSet_toggleDrivenSetAttribute( string $list )
+{
+    //
+    // toggles the attribute assignment for the selected node
+    //
+    global string $gShapes_currentEditRemoveList[];
+    global string $gShapes_drivenSetData[];
+
+    string $nodes[] = shapesSet_getMemberListSelection();
+    if (!size($nodes))
+        return;
+
+    string $attrs[] = `iconTextScrollList -q -si $list`;
+    if (!size($attrs))
+        return;
+
+    for ($node in $nodes)
+    {
+        for ($i = 0; $i < size($gShapes_drivenSetData); $i ++)
+        {
+            string $attributes[];
+            string $states[];
+            string $connected[];
+            string $invert[];
+            string $nodeName = shapesSet_decomposeDataString($gShapes_drivenSetData[$i], $attributes, $states, $connected, $invert);
+
+            if ($nodeName == $node)
+            {
+                for ($a = 0; $a < size($attrs); $a ++)
+                {
+                    int $id = shapesArray_stringArrayFind($attrs[$a], 0, $attributes);
+
+                    string $previous = $states[$id];
+                    string $state = "true";
+                    if ($previous == "true")
+                        $state = "false";
+                    $states[$id] = $state;
+
+                    // if removed from the list also remove the invert attribute info
+                    if ($states[$id] == "true" && stringArrayContains($attrs[$a], $invert))
+                        $invert = stringArrayRemove({$attrs[$a]}, $invert);
+
+                    // check if an added attribute is in the remove list
+                    // or add it to the remove list if removed
+                    string $plug = $node + "." + $attrs[$a];
+                    if (stringArrayContains($attrs[$a], $connected))
+                    {
+                        if ($states[$id] == "true" && stringArrayContains($plug, $gShapes_currentEditRemoveList))
+                            $gShapes_currentEditRemoveList = stringArrayRemove({$plug}, $gShapes_currentEditRemoveList);
+                        else if ($states[$id] == "false" && $previous == "true")
+                            $gShapes_currentEditRemoveList[size($gShapes_currentEditRemoveList)] = $plug;
+                    }
+                }
+
+                $gShapes_drivenSetData[$i] = shapesSet_composeDataString($nodeName, $attributes, $states, $connected, $invert);
+            }
+        }
+    }
+
+    shapesSet_listAttributes $gShapes_drivenSetData 1;
+}
+
+
+global proc shapesSet_toggleDrivenSetInvertAttribute()
+{
+    //
+    // toggles the attribute invert state for mirroring
+    //
+    global int $gShapes_newDrivenSet;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_drivenSetData[];
+
+    string $nodes[] = shapesSet_getMemberListSelection();
+    if (!size($nodes))
+        return;
+
+    string $attrs[] = `iconTextScrollList -q -si shpUI_drivenSetKeyList`;
+    if (!size($attrs))
+        return;
+
+    string $processCurves[];
+    for ($node in $nodes)
+    {
+        for ($i = 0; $i < size($gShapes_drivenSetData); $i ++)
+        {
+            string $attributes[];
+            string $states[];
+            string $connected[];
+            string $invertList[];
+            string $nodeName = shapesSet_decomposeDataString($gShapes_drivenSetData[$i], $attributes, $states, $connected, $invertList);
+
+            if ($nodeName == $node)
+            {
+                for ($attr in $attrs)
+                {
+                    int $id = shapesArray_stringArrayFind($attr, 0, $attributes);
+
+                    if (stringArrayContains($attr, $invertList))
+                        $invertList = stringArrayRemove({$attr}, $invertList);
+                    // only add to the invert list if the attribute belongs to the set attributes
+                    // this prevents that attributes get added to the wrong member in case of a multi-selection
+                    // because then the displayed attributes in the list are mixed
+                    else if ($states[$id] == "true")
+                        $invertList[size($invertList)] = $attr;
+
+                    // get the connected animation curve if any
+                    // and store it with the node and attribute
+                    // to be able to reverse it
+                    if (!$gShapes_newDrivenSet)
+                    {
+                        string $curve = shapesSet_getDrivingCurve($gShapes_selectedTarget, $node + "." + $attr);
+                        if ($curve != "" && $states[$id] == "true")
+                            $processCurves[size($processCurves)] = $curve;
+                    }
+                }
+                $gShapes_drivenSetData[$i] = shapesSet_composeDataString($nodeName, $attributes, $states, $connected, $invertList);
+            }
+        }
+    }
+    shapesSet_listMemberAttributes;
+
+    // mirror the any existing curves
+    if (size($processCurves))
+    {
+        string $confirm = `confirmDialog    -t "SHAPES"
+                                            -m "Process Existing Curves?"
+                                            -b "Mirror"
+                                            -b "Invert"
+                                            -b "Cancel"
+                                            -db "Cancel"
+                                            -cb "Cancel"
+                                            -ds "Cancel"`;
+        if ($confirm == "Cancel")
+            return;
+        else if ($confirm == "Mirror")
+        {
+            for ($curve in $processCurves)
+            {
+                selectKey $curve;
+                scaleKey -valueScale -1 -valuePivot 0;
+            }
+            br_displayMessage -info ("Mirrored " + size($processCurves) + " curves.");
+        }
+        else if ($confirm == "Invert")
+        {
+            for ($curve in $processCurves)
+            {
+                string $timeValueList[] = shapesSet_getKeyList($gShapes_selectedTarget, $curve);
+                float $timeValues[] = shapesArray_stringArrayToFloatArray(stringToStringArray($timeValueList[0], ","));
+                selectKey $curve;
+                scaleKey -valueScale -1 -valuePivot $timeValues[1];
+            }
+            br_displayMessage -info ("Inverted " + size($processCurves) + " curves.");
+        }
+    }
+}
+
+
+global proc shapesSet_memberListSelectAll()
+{
+    //
+    // selectes all nodes in the set member list
+    //
+    global string $gShapes_drivenSetData[];
+
+    string $selList[];
+    for ($data in $gShapes_drivenSetData)
+    {
+        string $parts[] = stringToStringArray($data, ":");
+        iconTextScrollList -e -si $parts[0] shpUI_drivenSetMemberList;
+    }
+
+    shapesSet_listMemberAttributes;
+}
+
+
+global proc shapesSet_closeDrivenSetAttributes()
+{
+    //
+    // reset the lists to the initial state
+    // and/or close the window
+    //
+    global int $gShapes_newDrivenSet;
+    global string $gShapes_drivenSetData[];
+
+    deleteUI SHAPESEditDrivenSetWin;
+    shapesUI_setColorManagedPots 1;
+
+    // enable the ui
+    shapesSet_tweakDrivenSetValueToggleUI 1 1;
+
+    $gShapes_newDrivenSet = 0;
+    $gShapes_drivenSetData = {};
+}
+
+
+global proc shapesSet_applyDrivenSetAttribute()
+{
+    //
+    // create a new set or apply the edits to an existing
+    //
+    global int $gShapes_newDrivenSet;
+    global string $gShapes_currentEditSet;
+    global string $gShapes_currentEditRemoveList[];
+    global string $gShapes_drivenSetData[];
+
+    // enable the ui
+    shapesSet_tweakDrivenSetValueToggleUI 1 1;
+
+    if ($gShapes_newDrivenSet)
+    {
+        // check if any attributes should be processed
+        // if the list is empty simply return
+        int $exists;
+        for ($data in $gShapes_drivenSetData)
+        {
+            string $attrs[];
+            string $states[];
+            shapesSet_decomposeDataString($data, $attrs, $states, {}, {});
+
+            for ($a = 0; $a < size($attrs); $a ++)
+            {
+                if ($states[$a] == "true")
+                {
+                    $exists = 1;
+                    break;
+                }
+            }
+        }
+
+        if ($exists)
+        {
+            // display the renaming warning
+            if (!`optionVar -q SHAPESHideSetMemberRenameMessage`)
+            {
+                string $confirm = `confirmDialog    -t "SHAPES"
+                                                    -m "Set members must not be renamed\nafter creating a Driven Set.\n\nRenaming set members leads to\ndecreased functionality."
+                                                    -b "OK"
+                                                    -b "Remember"
+                                                    -db "OK"
+                                                    -cb "OK"
+                                                    -ds "OK"`;
+                if ($confirm == "Remember")
+                    optionVar -iv SHAPESHideSetMemberRenameMessage 1;
+            }
+            shapesSet_createSet "";
+        }
+
+        shapesSet_closeDrivenSetAttributes;
+
+        // display the warning after closing the window because resetting the color managment
+        // causes command feedback and hides the message
+        if (!$exists)
+            br_displayMessage -warning "No Driven Set has been created because no attributes have been assigned";
+    }
+    else
+    {
+        // add the set attributes
+        setAttr ($gShapes_currentEditSet + ".SHAPES_drivenSet_attributes") -type "string" (shapesSet_buildSetAttributeString());
+
+        // add the selection to the set
+        shapesSet_performAddToSet $gShapes_currentEditSet;
+
+        // display the key count
+        shapesSet_displayDrivenSetKeyCount $gShapes_currentEditSet;
+
+        if (size($gShapes_currentEditRemoveList))
+            shapesSet_removeDefaultAttr $gShapes_currentEditSet {} $gShapes_currentEditRemoveList;
+
+        shapesSet_closeDrivenSetAttributes;
+    }
+}
+
+
+global proc shapesSet_toggleCurveInfinity( int $state )
+{
+    //
+    // enable/disable the curve infinity when editing a set
+    //
+    global string $gShapes_currentEditSet;
+
+    if ($gShapes_currentEditSet == "")
+        return;
+
+    string $curves[] = `listConnections -s 0 -d 1 -p 1 -scn 1 -type "animCurve" ($gShapes_currentEditSet + ".value")`;
+
+    for ($curve in $curves)
+    {
+        string $items[] = stringToStringArray($curve, ".");
+        setAttr ($items[0] + ".preInfinity") $state;
+        setAttr ($items[0] + ".postInfinity") $state;
+    }
+}
+
+
+global proc string[] shapesSet_lockNonDrivenSetAttributes( int $lock )
+{
+    //
+    // lock all attributes on the driven set nodes if they are not connected
+    //
+    global string $gShapes_selectedTarget;
+    global string $gShapes_lockedDrivenSetAttrs[];
+
+    if (!`optionVar -q SHAPESLockNonDrivenSetAttributes`)
+        return {};
+
+    // unlock all previously locked attributes
+    if (!$lock && size($gShapes_lockedDrivenSetAttrs))
+    {
+        for ($plug in $gShapes_lockedDrivenSetAttrs)
+            setAttr -l 0 $plug;
+        clear $gShapes_lockedDrivenSetAttrs;
+        return {};
+    }
+
+    if ($gShapes_selectedTarget == "" || !`objExists $gShapes_selectedTarget`)
+        return {};
+
+    string $members[] = shapesSet_getSetMembers($gShapes_selectedTarget);
+    if (!size($members))
+        return {};
+
+    string $plugList[] = shapesSet_getDefaultAttributeList($gShapes_selectedTarget, "");
+
+    string $locked[];
+    for ($m in $members)
+    {
+        string $attrs[] = `listAttr -k $m`;
+        for ($a in $attrs)
+        {
+            string $plug = $m + "." + $a;
+            if (!stringArrayContains($plug, $plugList))
+            {
+                setAttr -l $lock $plug;
+                $locked[size($locked)] = $plug;
+            }
+        }
+    }
+    $gShapes_lockedDrivenSetAttrs = $locked;
+
+    return $locked;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// mirroring
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesSet_mirrorDrivenSet( int $mode )
+{
+    //
+    // mode: 0 - flip
+    // mode: 1 - create opposite
+    // mode: 2 - create center mirror
+    // mode: 3 - match opposite
+    // mode: 4 - match center mirror
+    //
+    global int $gShapes_centerMirrorState;
+    global int $gShapes_createSequence;
+    global int $gShapes_drivenSetProcess;
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_drivenSetProcess)
+    {
+        br_displayMessage -warning ("// Unable to mirror while tweaking the driven set value //\n");
+        return;
+    }
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    string $targetList[];
+
+    string $sequencer = shapesDriver_getShapeSequencer($gShapes_selectedTarget, {});
+    string $tgts[] = shapesDriver_getShapeSequenceItems($gShapes_selectedTarget, "targets");
+    if ($sequencer != "" && !size($tgts))
+        $sequencer = "";
+
+    if ($sequencer == "" || $tgts[size($tgts) - 1] != $gShapes_selectedTarget)
+        $targetList[size($targetList)] = $gShapes_selectedTarget;
+    else if ($tgts[size($tgts) - 1] == $gShapes_selectedTarget)
+        $targetList = $tgts;
+
+    $gShapes_createSequence = 0;
+
+    for ($i = 0; $i < size($targetList); $i ++)
+    {
+        // get the animation curves for the current set
+        string $curves[] = `listConnections -s 0 -d 1 -scn 1 -type "animCurve" ($targetList[$i] + ".value")`;
+        if (size($curves))
+        {
+            // create the mirrored target name
+            string $target = shapesMirror_swapSideLabel($targetList[$i]);
+
+            // if the target should be copied to the other side
+            // check if the destination target exists
+            if ($mode >= 3)
+            {
+                if ($target == $targetList[$i])
+                    br_displayMessage -error ($targetList[$i] + " has no side (left/right) identifier");
+                if (!`objExists $target`)
+                    br_displayMessage -error ($targetList[$i] + " has no target sibling for the other side");
+            }
+
+            // create a new set if needed
+            if ($mode == 1)
+                $target = shapesSet_duplicateDrivenSet($target, 1);
+            else if ($mode == 2)
+                $target = shapesSet_duplicateDrivenSet($target, 0);
+            if ($target == "")
+                br_displayMessage -error "A name error occurred while mirroring the driven set";
+
+            // in case of a sequence
+            // if the last shape is processed set the flag
+            // to also create the sequence because the other targets already exist
+            if ($sequencer != "" && size($targetList) > 1 && $i == size($targetList) - 1)
+                $gShapes_createSequence = 1;
+
+            // update the driver list and ui to show the driver settings
+            shapesDriver_setCurrentShapeDriver($gShapes_selectedTarget);
+
+            // mirror the shape driver settings
+            int $center = shapesMirror_mirrorDriverSettings();
+            if ($center == -1 || $gShapes_centerMirrorState == -1)
+            {
+                $gShapes_createSequence = 0;
+                $gShapes_centerMirrorState = 0;
+                return;
+            }
+
+            // in case of mirror matching the previous curves need to be deleted
+            if ($mode >= 3)
+            {
+                string $prevCurves[] = `listConnections -s 0 -d 1 -scn 1 -type "animCurve" ($target + ".value")`;
+                if (size($prevCurves))
+                    delete $prevCurves;
+            }
+
+            // build the list with nodes and their attributes
+            string $setName = $targetList[$i];
+            if ($mode == 1 || $mode == 3)
+                $setName = $target;
+            string $nodes[] = shapesSet_getSetMembers($setName);
+            shapesSet_getSetMemberAttributes $nodes 1;
+            shapesSet_getAttributesFromSetString $setName 1 {} {} {};
+
+            shapesSet_performMirrorDrivenSet $targetList[$i] $target $curves $center $mode;
+        }
+    }
+}
+
+
+global proc shapesSet_performMirrorDrivenSet( string $sourceTarget, string $target, string $curves[], int $center, int $mode )
+{
+    //
+    // perform the mirror for the driven set
+    // and create the driving relationships
+    //
+    global string $gShapes_currentEditSet;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_drivenSetData[];
+
+    // mode: 0 - flip
+    // mode: 1 - create opposite
+    // mode: 2 - create center mirror
+    // mode: 3 - match opposite
+    // mode: 4 - match center mirror
+    //
+    if ($mode != 0)
+    {
+        for ($curve in $curves)
+        {
+            string $plug = shapesSet_getDrivenAttributeFromCurve($curve);
+            if ($plug == "")
+                br_displayMessage -error ("The animation curve " + $curve + " has no output connections");
+
+            string $conn[] = stringToStringArray($plug, ".");
+            string $node = $conn[0];
+            $node = shapesMirror_swapSideLabel($node);
+            string $attr = $conn[1];
+
+            for ($data in $gShapes_drivenSetData)
+            {
+                string $attrs[];
+                string $states[];
+                string $invertList[];
+                string $nodeName = shapesSet_decomposeDataString($data, $attrs, $states, {}, $invertList);
+
+                if ($node == $nodeName)
+                {
+                    string $timeValueList[] = shapesSet_getKeyList($sourceTarget, $curve);
+                    for ($a = 0; $a < size($attrs); $a ++)
+                    {
+                        if ($states[$a] == "true" && $attrs[$a] == $attr)
+                        {
+                            // mode 4 : match center mirror:
+                            // get the offset value for any attribute which is not in the invert list;
+                            // if the key values are not offset by the default values, meaning the values are used
+                            // directly for the new sdk keys, the values will be added on top of the already existing
+                            // values from the mirror source;
+                            // this causes the node to appear at a different starting position even when the drivers
+                            // from both sides are at 0;
+                            // this is the inverse action of what needs to be done when secondary driver curves need
+                            // to be rebuild
+                            float $value = 0;
+                            int $invert = 1;
+
+                            if ($mode == 2 || $mode == 4)
+                            {
+                                string $attrString = "default_" + $node + "___" + $attr;
+
+                                if (!`attributeQuery -n $sourceTarget -ex $attrString`)
+                                    br_displayMessage -error "Unable to process default attributes because driven set members have been renamed";
+                                else
+                                    $value = `getAttr ($sourceTarget + "." + $attrString)`;
+                            }
+
+                            if (stringArrayContains($attr, $invertList))
+                            {
+                                string $tempList[] = {};
+                                for ($item in $timeValueList)
+                                {
+                                    float $timeValues[] = shapesArray_stringArrayToFloatArray(stringToStringArray($item, ","));
+                                    $tempList[size($tempList)] = $timeValues[0] + "," + ($timeValues[1] * -1);
+                                }
+                                $timeValueList = $tempList;
+                                if ($mode == 2 || $mode == 4)
+                                    $invert = -1;
+                            }
+
+                            shapesSet_setSDKFromTimeValueList ($target + ".value") ($node + "." + $attrs[$a]) $timeValueList $value $invert;
+
+                            // set the infinity
+                            if (`getAttr ($curve + ".preInfinity")` != 0)
+                            {
+                                $gShapes_currentEditSet = $target;
+                                shapesSet_toggleCurveInfinity 1;
+                                $gShapes_currentEditSet = "";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($mode == 2 || $mode == 4)
+            shapesSet_invertCurves $target 0;
+
+        // create related shape drivers, sequences and combos
+        if ($mode == 1 || $mode == 2)
+        {
+            $gShapes_selectedTarget = $sourceTarget;
+            shapesMirror_completeRelationships $target $center;
+        }
+    }
+    else
+    {
+        // in flip mode only invert the curves
+        shapesSet_invertCurves $sourceTarget 1;
+    }
+}
+
+
+global proc string shapesSet_getDrivenAttributeFromCurve( string $curve )
+{
+    //
+    // returns the plug which is being driven by the given curve
+    // skips any blendWeighted nodes which might be in-between
+    //
+    string $plug[] = `listConnections -s 0 -d 1 -p 1 -scn 1 ($curve + ".output")`;
+    if (!size($plug))
+        return "";
+    string $items[] = stringToStringArray($plug[0], ".");
+    if (`nodeType $items[0]` == "blendWeighted")
+    {
+        $plug = `listConnections -s 0 -d 1 -p 1 -scn 1 ($items[0] + ".output")`;
+        if (!size($plug))
+            return "";
+    }
+    return $plug[0];
+}
+
+
+global proc shapesSet_invertCurves( string $setName, int $all )
+{
+    //
+    // reverse all curves of the given set
+    // which are tagged as inverting curves
+    //
+    global string $gShapes_selectedTarget;
+    global string $gShapes_drivenSetData[];
+
+    string $curves[] = `listConnections -s 0 -d 1 -scn 1 -type "animCurve" ($setName + ".value")`;
+    if (!size($curves))
+        br_displayMessage -error ("The set " + $setName + " has no output connections");
+
+    string $nodes[] = shapesSet_getSetMembers($setName);
+
+    // build the list with nodes and their attributes
+    shapesSet_getSetMemberAttributes $nodes 1;
+    shapesSet_getAttributesFromSetString $setName 1 {} {} {};
+
+    for ($curve in $curves)
+    {
+        string $plug = shapesSet_getDrivenAttributeFromCurve($curve);
+        if ($plug == "")
+            br_displayMessage -error ("The animation curve " + $curve + " has no output connections");
+
+        string $conn[] = stringToStringArray($plug, ".");
+        string $node = $conn[0];
+        string $attr = $conn[1];
+        for ($data in $gShapes_drivenSetData)
+        {
+            string $invert[];
+            string $nodeName = shapesSet_decomposeDataString($data, {}, {}, {}, $invert);
+
+            if ($node == $nodeName)
+            {
+                string $timeValueList[] = shapesSet_getKeyList($gShapes_selectedTarget, $curve);
+                float $timeValues[] = shapesArray_stringArrayToFloatArray(stringToStringArray($timeValueList[0], ","));
+                if (stringArrayContains($attr, $invert) || $all)
+                {
+                    selectKey $curve;
+                    scaleKey -valueScale -1 -valuePivot $timeValues[1];
+                }
+            }
+        }
+    }
+}
+
+
+global proc SHAPES_set(){}

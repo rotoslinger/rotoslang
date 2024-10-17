@@ -1,0 +1,204 @@
+performInterpolatorAdd 0;
+unusedPoseInterpolatorId;
+// Result: 0
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+listRelatives -parent -path "upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l_poseInterpolator
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+poseInterpolatorDrivers "|upperarm_l_poseInterpolator|upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+poseInterpolatorDriverIndex "|upperarm_l_poseInterpolator|upperarm_l_poseInterpolatorShape" "upperarm_l";
+// Result: 0
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+poseInterpolatorDriverName "|upperarm_l_poseInterpolator|upperarm_l_poseInterpolatorShape" 0;
+// Result: upperarm_l
+isPoseEditorGroupSelectedPIEnabled;
+// Result: 1
+isPoseEditorPIRefItemSelected;
+// Result: 0
+isPoseEditorAddPoseEnabled;
+// Result: 1
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+listRelatives -parent -path "upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l_poseInterpolator
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+listRelatives -parent -path "upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l_poseInterpolator
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+listRelatives -parent -path "upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l_poseInterpolator
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+listRelatives -parent -path "upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l_poseInterpolator
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+listRelatives -parent -path "upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l_poseInterpolator
+pluginInfo -q -l "poseInterpolator";
+// Result: 1
+listRelatives -parent -path "upperarm_l_poseInterpolatorShape";
+// Result: upperarm_l_poseInterpolator
+// Result: createPoseInterpolatorNode upperarm_l_poseInterpolator 1 0;
+// select -cl;select -add upperarm_l;
+setFilterScript "initialShadingGroup";
+// Result: 0
+setFilterScript "initialParticleSE";
+// Result: 0
+setFilterScript "defaultLightSet";
+// Result: 1
+setFilterScript "defaultObjectSet";
+// Result: 1
+setFilterScript "lambert2SG";
+// Result: 0
+setFilterScript "lambert3SG";
+// Result: 0
+setFilterScript "lambert4SG";
+// Result: 0
+setFilterScript "lambert5SG";
+// Result: 0
+setFilterScript "Tail:lambert2SG";
+// Result: 0
+setFilterScript "blinn1SG";
+// Result: 0
+setFilterScript "SKM_BungeeManSG";
+// Result: 0
+setFilterScript "SKM_BungeeManSG1";
+// Result: 0
+setFilterScript "Skeleton:SKM_BungeeManSG";
+// Result: 0
+setFilterScript "Skeleton:SKM_BungeeManSG1";
+// Result: 0
+setFilterScript "PantsSelect";
+// Result: 1
+setFilterScript "TailSelect";
+// Result: 1
+setFilterScript "set1";
+// Result: 1
+setFilterScript "TorsoArmSelection";
+// Result: 1
+setFilterScript "TorsoSelect";
+// Result: 1
+setFilterScript "LLegSelect";
+// Result: 1
+setFilterScript "RLegSelect";
+// Result: 1
+setFilterScript "topoSymmetrySet";
+// Result: 1
+setFilterScript "EarsSelect";
+// Result: 1
+setFilterScript "HeadSelect";
+// Result: 1
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+setFilterScript "initialShadingGroup";
+// Result: 0
+setFilterScript "initialParticleSE";
+// Result: 0
+setFilterScript "defaultLightSet";
+// Result: 1
+setFilterScript "defaultObjectSet";
+// Result: 1
+setFilterScript "lambert2SG";
+// Result: 0
+setFilterScript "lambert3SG";
+// Result: 0
+setFilterScript "lambert4SG";
+// Result: 0
+setFilterScript "lambert5SG";
+// Result: 0
+setFilterScript "Tail:lambert2SG";
+// Result: 0
+setFilterScript "blinn1SG";
+// Result: 0
+setFilterScript "SKM_BungeeManSG";
+// Result: 0
+setFilterScript "SKM_BungeeManSG1";
+// Result: 0
+setFilterScript "Skeleton:SKM_BungeeManSG";
+// Result: 0
+setFilterScript "Skeleton:SKM_BungeeManSG1";
+// Result: 0
+setFilterScript "PantsSelect";
+// Result: 1
+setFilterScript "TailSelect";
+// Result: 1
+setFilterScript "set1";
+// Result: 1
+setFilterScript "TorsoArmSelection";
+// Result: 1
+setFilterScript "TorsoSelect";
+// Result: 1
+setFilterScript "LLegSelect";
+// Result: 1
+setFilterScript "RLegSelect";
+// Result: 1
+setFilterScript "topoSymmetrySet";
+// Result: 1
+setFilterScript "EarsSelect";
+// Result: 1
+setFilterScript "HeadSelect";
+// Result: 1
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+ls -type mayaUsdProxyShapeBase -long;
+CBselectionChanged;
+refreshAE;
+listHistory -pdo true -lf false -il 2 "|root|pelvis|spine_01|spine_02|spine_03|spine_04|spine_05|spine_06|clavicle_l|upperarm_l";
+listHistory -pdo true -lf false -il 2 -f true "|root|pelvis|spine_01|spine_02|spine_03|spine_04|spine_05|spine_06|clavicle_l|upperarm_l";
+// Result: bindPose1
+menuItem -e -enable `isPoseEditorGroupSelectedPIEnabled` editMIGroup;
+// Result: editMIGroup
+menuItem -e -enable `isPoseEditorExportSelectionEnabled` fileExportSelection;
+// Result: fileExportSelection
+menuItem -e -enable `isPoseEditorAddPoseEnabled` posesMIAddPose;
+// Result: posesMIAddPose
+menuItem -e -enable `isPoseEditorUpdatePosesEnabled` posesMIUpdatePose;
+// Result: posesMIUpdatePose
+menuItem -e -enable `isPoseEditorAddNeutralPosesEnabled` posesMIAddNeutralPoses;
+// Result: posesMIAddNeutralPoses
+menuItem -e -enable `isPoseEditorPIorPoseMirrorEnabled` posesMIMirrorPose;
+// Result: posesMIMirrorPose
+autoUpdateAttrEd;
+updateAnimLayerEditor("AnimLayerTab");
+statusLineUpdateInputField;
+if (!`exists polyNormalSizeMenuUpdate`) {eval "source buildDisplayMenu";} polyNormalSizeMenuUpdate;
+dR_updateCounter;
+menuItem -e -enable `isAddSelectionAsCombinationTargetToSelectedBSDEnabled` seMIAddSelectionAsCombinationTarget;
+// Result: seMIAddSelectionAsCombinationTarget
+menuItem -e -enable `isAddSelectionAsTargetToSelectedBSDEnabled` seMIAddSelectionAsTarget;
+// Result: seMIAddSelectionAsTarget
+menuItem -e -enable `isAddSelectionAsInBetweenTargetEnabled` seMIAddSelectionAsInBetweenTarget;
+// Result: seMIAddSelectionAsInBetweenTarget
+dR_updateCommandPanel;
+timeField -edit -value `currentTime -query` TimeSlider|MainTimeSliderLayout|rowLayout1|timeField1;
+// Result: TimeSlider|MainTimeSliderLayout|rowLayout1|timeField1
+timeField -edit -value `currentTime -query` TimeSlider|MainTimeSliderLayout|rowLayout1|timeField1;
+// Result: TimeSlider|MainTimeSliderLayout|rowLayout1|timeField1
+MarkingMenuPopDown;
+if (`popupMenu -exists tempMM`) { deleteUI tempMM; }if (`popupMenu -exists tempMM2`) { deleteUI tempMM2; };
+MarkingMenuPopDown;
+if (`popupMenu -exists tempMM`) { deleteUI tempMM; }if (`popupMenu -exists tempMM2`) { deleteUI tempMM2; };
+MarkingMenuPopDown;
+if (`popupMenu -exists tempMM`) { deleteUI tempMM; }if (`popupMenu -exists tempMM2`) { deleteUI tempMM2; };
+MarkingMenuPopDown;
+if (`popupMenu -exists tempMM`) { deleteUI tempMM; }if (`popupMenu -exists tempMM2`) { deleteUI tempMM2; };

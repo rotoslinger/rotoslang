@@ -1,0 +1,228 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc float shapesCommon_getMayaVersion()
+{
+    //
+    // returns the maya version;
+    // tricky since the api version since maya 2018
+    // have a different format than before
+    //
+    float $version = `about -apiVersion`;
+    string $versionString = $version;
+    float $div = pow(10.0, (size($versionString) - 4));
+    $version /= $div;
+    // round to one decimal place so that 2018.02 becomes 2018
+    // but 2016.5 stays the same
+    int $versionInt = $version * 10;
+    $version = $versionInt / 10.0;
+    return $version;
+}
+
+
+global proc shapesCommon_doNothing()
+{
+    //
+    // dummy method to call when a command needs to be temporarily removed
+    //
+    ;
+}
+
+
+global proc int shapesCommon_confirmWindow( string $message, string $button )
+{
+    //
+    // opens a confirm dialog and returns the result
+    //
+    string $confirm = `confirmDialog -t "SHAPES" -m $message -b $button -b "Cancel" -db "Cancel" -cb "Cancel" -ds "Cancel"`;
+    if ($confirm == "Cancel")
+        return 0;
+    return 1;
+}
+
+
+global proc string shapesCommon_getShapeNode( string $node )
+{
+    //
+    // returns the shape node
+    //
+    string $shape[];
+    if (!`objExists $node`)
+        return $shape[0];
+    if (`nodeType $node` == "transform")
+        $shape = `listRelatives -s $node`;
+    else
+        return $node;
+    return $shape[0];
+}
+
+
+global proc string shapesCommon_getTransformNode( string $node )
+{
+    //
+    // returns the transform node
+    //
+    if (`nodeType $node` != "transform")
+    {
+        string $parent[] = `listRelatives -p $node`;
+        $node = $parent[0];
+    }
+    return $node;
+}
+
+
+global proc int shapesCommon_findEmptyMultiIndex( string $attr )
+{
+    //
+    // returns a valid index for adding to a multi attribute
+    // finds orphan indices if items have been deleted
+    //
+    int $index = -1;
+    int $ids[] = `getAttr -mi $attr`;
+    for ($i = 0; $i < size($ids); $i ++)
+    {
+        if ($i != $ids[$i] && $index == -1)
+        {
+            $index = $i;
+            break;
+        }
+    }
+    if ($index == -1)
+        $index = size($ids);
+    return $index;
+}
+
+
+global proc string shapesCommon_fullPath( string $name )
+{
+    //
+    // returns the full path name of the given node
+    //
+    string $long[] = `ls -l $name`;
+    return $long[0];
+}
+
+
+global proc string shapesCommon_removeNodePath( string $node )
+{
+    //
+    // returns the last item if a node path is present;
+    // this is possible in rare cases where the scene is referenced
+    // and listing the node's history returns the blend shape node
+    // with a node path, i.e. refNode:tweak|blendShapeNode;
+    // interesting thing is that even though the listHistory command
+    // returns such a node name the nodeType command fails to find the node
+    //
+    if (`gmatch $node "*|*"`)
+    {
+        string $parts[] = stringToStringArray($node, "|");
+        $node = $parts[size($parts) - 1];
+    }
+    return $node;
+}
+
+
+global proc string shapesCommon_removeReferencePath( string $node )
+{
+    //
+    // returns the last item if a referenced path is present
+    //
+    if (`gmatch $node "*:*"`)
+    {
+        string $parts[] = stringToStringArray($node, ":");
+        $node = $parts[size($parts) - 1];
+    }
+    return $node;
+}
+
+
+global proc string shapesCommon_getReferencePath( string $path )
+{
+    //
+    // returns the last item if a referenced path is present
+    //
+    if (`gmatch $path "*:*"`)
+    {
+        string $parts[] = stringToStringArray($path, ":");
+        stringArrayRemoveAtIndex(size($parts) - 1, $parts);
+        $path = stringArrayToString($parts, ":");
+    }
+    return $path;
+}
+
+
+global proc float shapesCommon_roundFloat( float $val, int $digits )
+{
+    //
+    // round the float value
+    //
+    int $pos = pow(10, $digits);
+    $val = floor(($val + 0.5 / $pos) * $pos) / $pos;
+    return $val;
+}
+
+
+global proc shapesCommon_addMessageAttribute( string $node, string $name, int $multi )
+{
+    //
+    // adds a message attribute to the given node
+    //
+    if (!`attributeQuery -n $node -ex $name`)
+    {
+        if ($multi)
+            addAttr -at "message" -ln $name -m -im 0 $node;
+        else
+            addAttr -at "message" -ln $name $node;
+    }
+}
+
+
+global proc int shapesCommon_addStringAttribute( string $node, string $name )
+{
+    //
+    // adds a custom attribute to the blendshape node
+    //
+    if (!`attributeQuery -n $node -ex $name`)
+    {
+        addAttr -ln $name -h 1 -dt "string" $node;
+        return 1;
+    }
+    return 0;
+}
+
+
+global proc SHAPES_common(){}

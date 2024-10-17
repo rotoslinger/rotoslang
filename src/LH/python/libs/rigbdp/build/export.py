@@ -3,7 +3,7 @@ import importlib, os, sys, json
 
 # third party
 from maya import cmds
-
+from maya import mel
 # bdp
 from rigbdp import decorator
 from rigbdp.build import file as file_utils
@@ -395,11 +395,16 @@ def import_obj(file_path):
 ##################################### not going to use this ###############################################
 ###########################################################################################################
 
-import maya.cmds as cmds
-
-def export_animation_to_json(control_list, file_path):
+@decorator.restore_selection
+def export_animation_to_json(control_list=[], file_path=""):
     """Export animation keyframes from specified controls to a JSON file."""
     animation_data = {}
+    if not file_path:
+        file_path = get_scene_dir() + "rom.json"
+    if not control_list:
+        cmds.select('__EXPORT__CONTROLS')
+        mel.eval('CBselectionChanged;')
+        control_list = cmds.ls(sl=True)
 
     for control in control_list:
         if cmds.objExists(control):
@@ -432,7 +437,8 @@ def import_animation_from_json(file_path):
     """Import animation keyframes from a JSON file into specified controls."""
     with open(file_path, 'r') as json_file:
         animation_data = json.load(json_file)
-
+    if not file_path:
+        file_path = get_scene_dir()
     for control, keyframes in animation_data.items():
         if cmds.objExists(control):
             for time, attrs in keyframes.items():

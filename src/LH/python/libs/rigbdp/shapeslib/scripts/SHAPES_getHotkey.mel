@@ -1,0 +1,82 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc string SHAPES_getHotkey( string $tool, int $forceUpdate )
+{
+    //
+    // return the hotkey for the given tool
+    // and save it to an environment variable if the force flag is set
+    //
+    string $cmdName;
+    string $command;
+    string $var;
+    if ($tool == "brush")
+    {
+        $cmdName = "SHAPESBrushMM";
+        $command = $cmdName + "Command";
+        $var = "SHAPESBrushHotkey";
+    }
+    else if ($tool == "compare")
+    {
+        $cmdName = "SHAPESCompareDraggerToolPress";
+        $command = $cmdName + "Command";
+        $var = "SHAPESCompareDraggerToolHotkey";
+    }
+
+    if (!`runTimeCommand -q -ex $command`)
+        return "";
+
+    if (`optionVar -ex $var` && !$forceUpdate)
+    {
+        string $value = `optionVar -q $var`;
+        if ($value != "" && $value != "NONE")
+            return $value;
+    }
+
+    string $key[];
+    int $count = `assignCommand -query -numElements`;
+    for ($i = 1; $i <= $count; $i ++)
+    {
+        string $name = `assignCommand -query -name $i`;
+        if ($name == $cmdName + "_NameCommand")
+        {
+            $key = `assignCommand -query -keyArray $i`;
+            optionVar -stringValue $var (stringArrayToString($key, ","));
+        }
+    }
+    return stringArrayToString($key, ",");
+}

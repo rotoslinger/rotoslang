@@ -1,0 +1,2118 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------------------------
+// FBX helper
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesSculpt_exportShapeAsFbx( string $shape )
+{
+    //
+    // asks the user where to export the shape to and stores the path
+    // the export window will reappear when the project changes
+    //
+    // get the project root and check if the data subfolder exists
+    string $root = `workspace -q -rd`;
+    string $exportDir = $root + "data";
+    if (!`filetest -e $exportDir`)
+        workspace -cr $exportDir;
+
+    string $oldPath;
+    if (`optionVar -ex SHAPESFbxExportPath`)
+        $oldPath = `optionVar -q SHAPESFbxExportPath`;
+    if ($oldPath == "" || $oldPath != $exportDir)
+    {
+        string $filter = "FBX export (*.fbx)";
+        string $path[] = `fileDialog2 -dir ($root + "data") -fm 3 -ff $filter -okc "Select" -cap "Select Shape Export Path"`;
+        if (!size($path))
+            $exportDir = $root + "data";
+        else
+            $exportDir = $path[0];
+    }
+    optionVar -sv SHAPESFbxExportPath $exportDir;
+    file -f -typ "FBX export" -es ($exportDir + "/newCorrective.fbx");
+}
+
+
+global proc int shapesSculpt_importShapeAsFbx()
+{
+    //
+    // imports the sculpted shape from the fbx file
+    // deletes all nodes which are not relevant for the mesh
+    // and makes sure it's correctly named
+    //
+    global int $gShapes_fbxExport;
+    global string $gShapes_name;
+
+    $gShapes_fbxExport = 0;
+
+    string $importDir = `optionVar -q SHAPESFbxExportPath`;
+
+    // check if the file exists
+    if (!`file -q -ex ($importDir + "/newCorrective.fbx")`)
+    {
+        // return to cancel
+        return 1;
+    }
+
+    // check if the corrective exists in the scene and delete it
+    if (`objExists $gShapes_name`)
+        delete $gShapes_name;
+
+    string $transform;
+    // import the fbx and delete all unnecessary nodes
+    string $nodeList[] = `file -i -op "fbx" -typ "FBX" -mnc 0 -pr -rnn ($importDir + "/newCorrective.fbx")`;
+    for ($node in $nodeList)
+    {
+        if (`nodeType $node` == "transform")
+            $transform = $node;
+        if (`nodeType $node` != "transform" && `nodeType $node` != "mesh")
+            delete $node;
+    }
+
+    rename $transform $gShapes_name;
+    sets -e -fe initialShadingGroup $gShapes_name;
+
+    // return not to cancel
+    return 0;
+}
+
+// ------------------------------------------------------------------------------------------------
+// sculpt init helper
+// ------------------------------------------------------------------------------------------------
+
+global proc int[] shapesSculpt_getHiddenFaceIndices( string $shape )
+{
+    //
+    // return the face indices for all hidden faces
+    // of the given mesh
+    //
+    int $ids[];
+
+    string $conn[] = `listConnections -s 1 -d 0 -c 1 -type "objectSet" $shape`;
+    for ($i = 0; $i < size($conn); $i += 2)
+    {
+        if (`gmatch $conn[$i + 1] "*HiddenFacesSet*"`)
+        {
+            string $items[] = stringToStringArray($conn[$i], ".");
+            $items[size($items) - 1] = "objectGrpCompList";
+            string $attr = stringArrayToString($items, ".");
+            $ids = `br_getComponentList -attribute $attr`;
+            break;
+        }
+    }
+
+    return $ids;
+}
+
+
+global proc shapesSculpt_hideFaces( string $shape, int $ids[] )
+{
+    //
+    // build a select string from the given face indices
+    // and hide the components
+    //
+    string $sel[] = `ls -sl`;
+
+    string $selectString = "select -r ";
+    for ($id in $ids)
+        $selectString += $shape + ".f[" + $id + "] ";
+
+    eval $selectString;
+    toggleVisibilityAndKeepSelection `optionVar -query toggleVisibilityAndKeepSelectionBehaviour`;
+
+    select -r $sel;
+}
+
+// ------------------------------------------------------------------------------------------------
+// sculpt mode
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesSculpt_initSculptMode( string $slider )
+{
+    //
+    // duplicates the selected mesh and connects it with the selected mesh
+    // the selected mesh is hidden and both objects are put into isolation
+    //
+    global int $gShapes_channelsActive;
+    global int $gShapes_customExport;
+    global int $gShapes_fbxExport;
+    global int $gShapes_index;
+    global int $gShapes_sculptProcess;
+    global int $gShapes_splitProcess;
+    global int $gShapes_tweakWithCombo;
+    global int $gShapes_userComparePref;
+    global float $gShapes_compareSliderValue;
+    global string $gShapes_bsNode;
+    global string $gShapes_name;
+    global string $gShapes_sculptSkin;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+    global string $gShapes_orderedTargetList[];
+    global string $gShapes_poseInfluenceSlider[];
+    global string $gShapes_sculptMesh[];
+    global string $gShapes_tweak[];
+
+    if (!$gShapes_channelsActive)
+    {
+        br_displayMessage -warning "Edit Mode is currently active";
+        return;
+    }
+
+    if ($gShapes_splitProcess)
+    {
+        br_displayMessage -warning "Unable to enter sculpt mode while splitting shapes";
+        return;
+    }
+
+    string $skinShape = shapesMain_getShapeNode();
+    if ($skinShape == "")
+        return;
+
+    string $view = shapesSculpt_getCurrentModelPanel();
+    if ($view == "")
+        br_displayMessage -error "No modeling panel is currently visible";
+
+    // make sure the weight driver is reconnected to the target channel
+    // but not if tweaking
+    if ($slider == "")
+        shapesDriver_attachDetachDriver 1 1 0;
+
+    // check if a helper or group attribute is selected
+    // in this case deselect to avoid any errors
+    if (size($gShapes_orderedTargetList))
+    {
+        if (shapesData_isHelper($gShapes_selectedTarget))
+            treeView -e -cs shpUI_targetTree;
+    }
+
+    // check if a driving node is selected when entering sculpt mode
+    // and a weight driver should be created
+    string $driver[] = shapesUI_getDriverNodeNames();
+    if ((!size($driver) || shapesList_isDriverGroup($driver[0])) &&
+        shapesUI_shapeDriverOption() != 1 &&
+        `optionVar -q SHAPESAutoAddShapeDriver` &&
+        size($gShapes_tweak))
+    {
+        string $msg = "Shape Driver Missing\n\nThe new shape is set to be driven but no driving node is selected as the shape driver.\n\nDo you want to continue with no shape driver?";
+
+        if (!shapesCommon_confirmWindow($msg, "Continue"))
+            return;
+        optionMenu -e -sl 1 shpUI_shapeDriverOption;
+    }
+
+    // setup sculpt compare but only if shot fix is not enabled;
+    // sculpt compare interferes with the reset function of shot fix
+    $gShapes_userComparePref = `optionVar -q SHAPESEnableSculptCompare`;
+    $gShapes_compareSliderValue = 1.0;
+    int $warning;
+    if ($slider != "" && !`symbolCheckBox -q -v shpUI_shotFixCheck`)
+    {
+        $gShapes_compareSliderValue = `floatSliderButtonGrp -q -v $slider`;
+        if ($gShapes_compareSliderValue >= 1)
+        {
+            shapesSculpt_jumpToTweakFrame $gShapes_compareSliderValue;
+
+            // if sculpt compare is enabled inform the user and disable it for the sculpt process
+            if ($gShapes_compareSliderValue > 1 && `optionVar -q SHAPESEnableSculptCompare`)
+            {
+                // display the warning later because activating isolation masks the warning message
+                $warning = 1;
+                optionVar -iv SHAPESEnableSculptCompare 0;
+            }
+        }
+    }
+
+    // create a new blendshape node if none exists
+    if ($gShapes_bsNode == "None")
+    {
+        // create a post blend shape node for shot fix mode
+        if (`symbolCheckBox -q -v shpUI_shotFixCheck`)
+            shapesAction_addBlendShapeNode 2;
+        else
+            shapesAction_addBlendShapeNode 1;
+    }
+
+    // disable the target list
+    treeView -e -en 0 shpUI_targetTree;
+
+    // check for a component selection
+    string $compSel[] = `filterExpand -sm 31`;
+    if (!size($compSel))
+    {
+        $compSel = `filterExpand -sm 32`;
+        if (!size($compSel))
+            $compSel = `filterExpand -sm 34`;
+    }
+
+    int $hiddenIds[] = shapesSculpt_getHiddenFaceIndices($skinShape);
+
+    // duplicate the selected mesh and rename it
+    displaySurface -x 0 $gShapes_skinMesh;
+    shapesAction_newCorrectiveName;
+    string $corrective[] = shapesAction_duplicateDeformedMesh($gShapes_skinMesh, 0);
+    // rename based on regular or shot fix edit mode
+    if (!`symbolCheckBox -q -v shpUI_shotFixCheck`)
+        $corrective[0] = `rename $corrective[0] $gShapes_name`;
+    else
+    {
+        string $shotFixName = shapesAnimation_shotFixNewName();
+        $corrective[0] = `rename $corrective[0] $shotFixName`;
+    }
+    string $rel[] = `listRelatives -s -ni $corrective[0]`;
+    $corrective[1] = $rel[0];
+    setAttr ($corrective[0] + ".v") 1;
+
+    // If set through the preferences connect the original mesh with the
+    // duplicate if using maya and if there is no custom pose influence
+    // setup.
+    // Since the Maya sculpt tools prohibit a connection to the
+    // deformed mesh since Maya 2020.3 this connection gets skipped if
+    // the Maya sculpt tools are preferred for edit mode.
+    string $connectInfo[];
+    if (shapesUI_getExportSculptPreference() == 0 &&
+        shapesUI_useMeshConnection() &&
+        !size($gShapes_poseInfluenceSlider))
+    {
+        $connectInfo = {$skinShape + ".worldMesh[0]", $corrective[1] + ".inMesh"};
+        connectAttr $connectInfo[0] $connectInfo[1];
+
+        // apply the default shader to the corrective mesh if needed
+        if (`optionVar -q SHAPESUseDefaultMaterial`)
+            sets -e -fe initialShadingGroup $corrective[0];
+        else
+        {
+            // for some reason it can happen that the connected mesh looses it's shader and displays only as wireframe
+            // simply apply the (first) shader of the skin mesh
+            string $shaderConn[] = `listConnections -s 0 -d 1 $skinShape`;
+            if (size($shaderConn))
+            {
+                int $shaded = 0;
+                for ($s in $shaderConn)
+                {
+                    if (`nodeType $s` == "shadingEngine" && !$shaded)
+                    {
+                        sets -e -fe $s $corrective[0];
+                        $shaded = 1;
+                    }
+                }
+            }
+        }
+    }
+    // apply the default shader to the corrective mesh
+    else
+        sets -e -fe initialShadingGroup $corrective[0];
+
+    shapesMain_setSkinVisibility 0;
+
+    shapesSculpt_deletePoseInfluenceSlider 0;
+
+    $gShapes_sculptProcess = 1;
+    $gShapes_tweakWithCombo = 0;
+
+    // set the names for the toggle buttons
+    $gShapes_sculptSkin = $gShapes_skinMesh;
+    $gShapes_sculptMesh = $corrective;
+
+    string $blendMeshes[];
+    // create the blend mesh if a second target is selected
+    // make sure that the second target is not a set, in case there are already target list items
+    if (shapesUI_getExportSculptPreference() == 0)
+    {
+        int $skip = 0;
+        if (shapesData_getShapeCount() && shapesData_isDrivenSet($gShapes_selectedTarget))
+            $skip = 1;
+
+        if (!$skip)
+        {
+            if ($slider == "")
+                $blendMeshes = shapesSculpt_createSculptBlendMesh(0);
+            else
+                $blendMeshes = shapesSculpt_createSculptBlendMesh(1);
+        }
+    }
+
+    // refresh the blend brush popup menu
+    if (`popupMenu -ex SHAPESBrushBlendMeshMenu`)
+    {
+        popupMenu -e -dai SHAPESBrushBlendMeshMenu;
+        SHAPESBrushPropertiesAddBlendMeshSubmenu SHAPESBrushBlendMeshMenu;
+    }
+
+    // redefine the tweak button for the slider
+    if ($slider != "")
+    {
+        floatSliderButtonGrp    -e
+                                -bl "Exit"
+                                -bc ("shapesSculpt_exitSculptMode " + $gShapes_skinMesh + " " + $corrective[0] + " \"" + stringArrayToString($connectInfo, ",") + "\" " + $view + " \"" + $slider + "\" 0 0")
+                                $slider;
+
+        $gShapes_tweak = {$gShapes_skinMesh, $corrective[0], stringArrayToString($connectInfo, ","), $view, $slider, "0", "0"};
+
+        // check if the current target drives a combo
+        string $targets[];
+        shapesCombo_getComboNodes($gShapes_selectedTarget, $targets, {}, {}, {});
+        if (size($targets))
+        {
+            // check if all combos are inactive
+            // because tweaking with combo propagation is only possible
+            // with single shapes
+            float $comboVal;
+            for ($tgt in $targets)
+                $comboVal += `getAttr ($gShapes_bsNode + "." + $tgt)`;
+            if ($comboVal == 0)
+                $gShapes_tweakWithCombo = 1;
+        }
+    }
+
+    // redefine the sculpt button command
+    shapesUI_toggleSculptButton($gShapes_skinMesh, $corrective[0], $connectInfo, $view, $slider, 0);
+
+    // enable the cancel menu item
+    menuItem    -e
+                -en 1
+                -c ("shapesSculpt_exitSculptMode " + $gShapes_skinMesh + " " + $corrective[0] + " \"" + stringArrayToString($connectInfo, ",") + "\" " + $view + " \"" + $slider + "\" 0 1")
+                shpUI_cancelItem;
+
+    // in case of a new target create a slider for the sculpt compare
+    if ($slider == "")
+        frameLayout -e -en 0 shpUI_sliderFrame;
+
+    // disable all ui elements
+    shapesUI_manageUIModeDependencies 1 0 0;
+
+    // send to mudbox, etc. if selected
+    if (shapesUI_getExportSculptPreference() != 0)
+    {
+        select -r $corrective[0];
+
+        // create a script job for checking when the model is send back
+        // runs only once until the connection has been changed due to the update
+        // only if auto apply shape is set and enabled
+        if (`optionVar -q SHAPESAutoApplyCorrectiveShape` && (`optionVar -q SHAPESExportMode` == 1 || `optionVar -q SHAPESExportMode` == 2))
+        {
+            string $cmd = "shapesSculpt_exitSculptMode " + $gShapes_skinMesh + " " + $corrective[0] + " \"" + stringArrayToString($connectInfo, ",") + "\" " + $view + " \"" + $slider + "\" " + $gShapes_tweakWithCombo + " 0";
+            scriptJob -connectionChange ($corrective[1] + ".inMesh") $cmd -runOnce 1;
+        }
+
+        string $zBrushPath = shapesGlobal_getZBrushPath();
+        if (shapesUI_getExportSculptPreference() == 1)
+            SendAsNewSceneMudbox;
+        else if (shapesUI_getExportSculptPreference() == 2)
+            eval ("source \"" + $zBrushPath + "GoZApps/Maya/GoZBrushFromMaya.mel\"");
+        else if (shapesUI_getExportSculptPreference() == 3)
+        {
+            shapesSculpt_exportShapeAsFbx $corrective[0];
+            $gShapes_fbxExport = 1;
+        }
+        // custom export
+        else if (shapesUI_getExportSculptPreference() == 4)
+        {
+            // unparent the mesh and make sure it's selected
+            catchQuiet($corrective = `parent -w $corrective[0]`);
+            select -r $corrective[0];
+            $gShapes_customExport = 1;
+        }
+    }
+    else
+    {
+        // create the compare setup but only if shot fix is not enabled;
+        // sculpt compare interferes with the reset function of shot fix
+        if (`optionVar -q SHAPESEnableSculptCompare` &&
+            (shapesData_getShapeCount() == 0 || !shapesData_isHelper($gShapes_selectedTarget) || $gShapes_index == -1) &&
+            !`symbolCheckBox -q -v shpUI_shotFixCheck`)
+            shapesSculpt_createCompareSetup $slider;
+
+        // isolate the meshes if using maya
+        if (`optionVar -q SHAPESSculptIsolation`)
+        {
+            select -r $gShapes_skinMesh $corrective[0];
+            enableIsolateSelect $view 1;
+        }
+
+        // hide any previously hidden faces
+        if (size($hiddenIds))
+            shapesSculpt_hideFaces $corrective[0] $hiddenIds;
+
+        if (`optionVar -q SHAPESAutoEnableSculpt`)
+        {
+            if (`optionVar -q SHAPESUseMayaSculptTool`)
+                eval (`optionVar -q "SHAPESDefaultMayaSculptTool"`);
+            else
+            {
+                SHAPESBrushToolCtx;
+                if (size($blendMeshes))
+                {
+                    if (size($blendMeshes[0]))
+                        SHAPESBrushContext -edit -blendMesh $blendMeshes[0] SHAPESBrushContext1;
+                    if (size($blendMeshes[1]))
+                        SHAPESBrushContext -edit -smoothMesh $blendMeshes[1] SHAPESBrushContext1;
+                }
+            }
+        }
+
+        select -r $corrective[0];
+
+        if (size($compSel))
+        {
+            string $compSelParts[];
+            tokenize $compSel[0] "." $compSelParts;
+            for ($i = 0; $i < size($compSel); $i ++)
+                $compSel[$i] = substitute($compSelParts[0], $compSel[$i], $corrective[0]);
+
+            select -r $compSel;
+            hilite $corrective[0];
+        }
+
+        if ($warning)
+            br_displayMessage -warning "Sculpt Compare will be disabled when tweaking overdriven shapes";
+
+        if (`optionVar -q SHAPESEnterEditUndoClear`)
+            flushUndo;
+    }
+}
+
+
+global proc shapesSculpt_exitSculptMode( string $skin, string $corrective, string $connectInfo, string $view, string $slider, int $comboTweak, int $cancel )
+{
+    //
+    // disable isolation mode and unhide the skin mesh
+    // disconnect the meshes and reset the buttons
+    //
+    global int $gShapes_applyTarget;
+    global int $gShapes_customExport;
+    global int $gShapes_fbxExport;
+    global int $gShapes_index;
+    global int $gShapes_isFirstBs;
+    global int $gShapes_isSkin;
+    global int $gShapes_replaceMode;
+    global int $gShapes_sculptProcess;
+    global int $gShapes_targetIndex;
+    global int $gShapes_userComparePref;
+    global string $gShapes_bsNode;
+    global string $gShapes_inbetweenSlider;
+    global string $gShapes_name;
+    global string $gShapes_restoreAnimationCompareString;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+    global string $gShapes_compareComboSlider[];
+    global string $gShapes_comparePlug[];
+    global string $gShapes_customOriginal[];
+    global string $gShapes_deletedShadingNodes[];
+
+    $gShapes_sculptProcess = 0;
+
+    // before any error can occur reconnect the blend plug when a combo target has been edited
+    // so that the setup is not compromised even if sculpting errors occur
+    if ($slider != "" && size($gShapes_comparePlug))
+        catchQuiet(`connectAttr $gShapes_comparePlug[1] $gShapes_comparePlug[0]`);
+
+    // -----------------------------------------------
+    // checks and cleanup
+    // -----------------------------------------------
+
+    // check if the mesh has been exported as fbx
+    if ($gShapes_fbxExport && !$cancel)
+        $cancel = shapesSculpt_importShapeAsFbx();
+
+    // check if the mesh has been custom exported
+    if ($gShapes_customExport)
+    {
+        string $sel[] = `ls -sl -type transform`;
+        if (size($sel) && size($sel) != 1)
+        {
+            br_displayMessage -warning "Select the corrective mesh to exit the sculpt mode";
+            return;
+        }
+        $gShapes_customExport = 0;
+        rename $sel[0] $gShapes_name;
+    }
+
+    // delete the blend mesh variables
+    shapesSculpt_deleteSculptBlendMesh;
+
+    if (`optionVar -q SHAPESEnableSculptCompare` && !`symbolCheckBox -q -v shpUI_shotFixCheck`)
+    {
+        columnLayout -e -m 0 shpUI_compareSliderColumn;
+        if ($gShapes_restoreAnimationCompareString != "")
+        {
+            eval $gShapes_restoreAnimationCompareString;
+            $gShapes_restoreAnimationCompareString = "";
+        }
+
+        // have to delete and rebuild the slider because it's still connected
+        // to the compare channel and this prevents the blend shape channel
+        // from being removed completely
+        shapesUI_buildSculptCompareSlider;
+
+        // remove the compare channel
+        string $cmd = "removeMultiInstance -b 1 " + $gShapes_bsNode + ".w[10000];\n";
+        int $valueList[] = shapesData_getTargetValues($gShapes_targetIndex);
+        if (size($valueList) > 1)
+        {
+            for ($value in $valueList)
+            {
+                $cmd += "removeMultiInstance -b 1 " + $gShapes_bsNode + ".it[0].itg[10000].iti[" + $value + "];\n";
+            }
+        }
+        $cmd += "removeMultiInstance -b 1 " + $gShapes_bsNode + ".it[0].itg[10000];\n";
+        eval $cmd;
+
+        // delete the additional combo sliders
+        if (size($gShapes_compareComboSlider))
+        {
+            shapesSculpt_toggleCompareComboConnections 1;
+            deleteUI shpUI_compareSliderComboColumn;
+        }
+
+        optionVar -rm SHAPESSculptCompareToolList;
+    }
+
+    // -----------------------------------------------
+    // ui cleanup
+    // -----------------------------------------------
+
+    shapesUI_toggleSculptButton $skin $corrective (stringToStringArray($connectInfo, ",")) $view $slider 1;
+
+    frameLayout -e -en 1 shpUI_sliderFrame;
+    // enable the sculpt mode options
+    shapesUI_manageUIModeDependencies 1 0 1;
+
+    // reset the menu items in case an inbetween was added
+    shapesUI_toggleAddNewTargetItemLabel 0;
+
+    // if there are targets in the list enable the list
+    string $items[] = shapesData_getTargetList();
+    if ($items[0] != "No shapes")
+        treeView -e -en 1 shpUI_targetTree;
+
+    if (`optionVar -q SHAPESSculptIsolation` && $view != "")
+        enableIsolateSelect $view 0;
+    setToolTo selectSuperContext;
+    selectMode -o;
+    shapesMain_setSkinVisibility 1;
+    displaySurface -x 0 $skin;
+
+    // -----------------------------------------------
+    // connections and mudbox/zbrush cleanup
+    // -----------------------------------------------
+
+    // disconnect the skin and corrective if using maya
+    string $cInfo[] = stringToStringArray($connectInfo, ",");
+    if (size($cInfo))
+    {
+        shapesSculpt_disconnectSculptMesh $corrective $cInfo;
+    }
+    // else delete the shading nodes which comes with the mesh from mudbox, zbrush, etc.
+    else if (shapesUI_getExportSculptPreference() != 0)
+    {
+        string $renderNode[] = `listConnections (shapesCommon_getShapeNode($corrective))`;
+        string $shadingGroup;
+        for ($rn in $renderNode)
+        {
+            if (`nodeType $rn` == "shadingEngine" && $rn != "initialShadingGroup")
+            {
+                shapesSculpt_deleteConnectedShadingNodes $rn;
+                $shadingGroup = $rn;
+            }
+        }
+        // mudbox imports meshes with two shading groups but only one is connected to the mesh
+        // delete the extra node (if it exists)
+        // i.e. pCube1SG1 (is connected) and pCube1SG
+        if ($shadingGroup != "")
+        {
+            string $extraNode = `substring $shadingGroup 1 (size($shadingGroup) - 1)`;
+            if (`objExists $extraNode`)
+            {
+                delete $extraNode;
+                $gShapes_deletedShadingNodes[size($gShapes_deletedShadingNodes)] = $extraNode;
+            }
+        }
+        string $deletedString = stringArrayToString($gShapes_deletedShadingNodes, ", ");
+        if (size($gShapes_deletedShadingNodes))
+            br_displayMessage -info ("Deleted imported nodes: " + $deletedString);
+        clear $gShapes_deletedShadingNodes;
+    }
+
+    if ($cancel)
+    {
+        shapesSculpt_exitSculptErrorCleanup $corrective $slider 0;
+        return;
+    }
+
+    // -----------------------------------------------
+    // non-first blend shape node
+    // -----------------------------------------------
+
+    // In case of a secondary blend shape node on a non-skin mesh the
+    // new shape can be directly applied.
+    if (!$gShapes_isFirstBs && shapesMain_isPostBlendShapeNode($gShapes_skinMesh, $gShapes_bsNode) == -1)
+    {
+        shapesSculpt_exitSculptModeFinalize $corrective $skin $slider $comboTweak $cancel;
+        return;
+    }
+
+    // if the current blendshape node is not the first we temporarily insert a
+    // custom intermediate shape and bypass the current blendshape node
+    // by connecting it directly to the skin cluster node
+    // this way we don't confuse the extraction process
+    // bypassing the blendshape node is no problem because it will get
+    // deactivated for the extraction process anyway
+    clear $gShapes_customOriginal;
+    string $inGeo[];
+    if (!$gShapes_isFirstBs && $gShapes_isSkin)
+    {
+        string $customMesh = shapesMain_getOriginalMesh("", 0);
+        if (!size($customMesh))
+        {
+            shapesSculpt_exitSculptErrorCleanup $corrective $slider 1;
+            return;
+        }
+
+        // Issue: 50706001
+        // In case of secondary blend shape nodes the custom
+        // intermediate needs to get connected to the blend shape node
+        // and not the skin cluster. Because bypassing the blend shape
+        // node doesn't take active target channels into account and
+        // and the extraction would include all active channels.
+        //string $skinCluster = shapesMain_findSkinClusterNode(shapesMain_getShapeNode());
+        $skinCluster = $gShapes_bsNode;
+
+        // store the geo connection to the skin cluster
+        $inGeo = `listConnections -p 1 -c 1 ($skinCluster + ".input[0].inputGeometry")`;
+
+        // two situations might arise:
+        // if the node before the skin cluster is a blendshape node the custom mesh can be
+        // connected directly to the skin cluster
+        // if the node before the skin cluster is a group parts node
+        // the custom mesh must connect to this node or the skin cluster node fails
+        // and so does the following extraction process
+        string $inGeoNode[] = stringToStringArray($inGeo[1], ".");
+        if (`nodeType $inGeoNode[0]` == "groupParts")
+            $inGeo = `listConnections -p 1 -c 1 ($inGeoNode[0] + ".inputGeometry")`;
+
+        connectAttr -f ($customMesh + ".worldMesh[0]") $inGeo[0];
+        // make it appear like a regular intermediate object
+        setAttr ($customMesh + ".intermediateObject") 1;
+        parent -s -r $customMesh $skin;
+        // delete the left over transform
+        delete $gShapes_customOriginal[0];
+    }
+
+    // -----------------------------------------------
+    // extraction prepare
+    // -----------------------------------------------
+
+    string $plug[];
+    string $comboPlugs[];
+    float $channelValue;
+    if ($slider != "" || $gShapes_inbetweenSlider != "")
+    {
+        // make sure that all related combo targets are disconnected from the combo;
+        // important because when tweaking a combo driver with the combo target active
+        // setting the driver to 0 also deactivates the target and the extraction result
+        // contains also the combo target
+        string $comboShapes[] = shapesCombo_getComboItems($gShapes_selectedTarget);
+        for ($cs in $comboShapes)
+        {
+            $plug = `listConnections -s 1 -d 0 -c 1 -p 1 ($gShapes_bsNode + "." + $cs)`;
+            if (size($plug))
+            {
+                $comboPlugs = stringArrayCatenate($comboPlugs, $plug);
+                disconnectAttr $plug[1] $plug[0];
+            }
+        }
+
+        $plug = `listConnections -s 1 -d 0 -c 1 -p 1 ($gShapes_bsNode + "." + $gShapes_selectedTarget)`;
+        if (size($plug))
+            disconnectAttr $plug[1] $plug[0];
+        $channelValue = `getAttr ($gShapes_bsNode + "." + $gShapes_selectedTarget)`;
+        setAttr ($gShapes_bsNode + "." + $gShapes_selectedTarget) 0;
+    }
+
+    // get all connected meshes and disconnect them because
+    // mesh connections disrupt the extraction process and
+    // lead to unexpected results due to how the blend shape node works
+    // Issue: 50706001
+    // For secondary blend shape nodes the custom intermediate is now
+    // connected to the blend shape node rather than the skin cluster.
+    // Because of this mesh connection it's important to only query the
+    // connections to the input targets and not all general mesh
+    // connections.
+    string $connectedShapes[] = `listConnections -s 1 -d 0 -c 1 -p 1 -type "mesh" ($gShapes_bsNode + ".inputTarget")`;
+    if (size($connectedShapes))
+    {
+        for ($c = 0; $c < size($connectedShapes); $c += 2)
+            disconnectAttr $connectedShapes[$c + 1] $connectedShapes[$c];
+    }
+
+    if (`symbolCheckBox -q -v shpUI_shotFixCheck` && !`iconTextCheckBox -q -v shpUI_shotFixRestCheck`)
+        setAttr ($gShapes_bsNode + ".envelope") 0;
+
+    // if the target list selection is tied to a rbf solver,
+    // either because it's the solver group or a target shape
+    // which is driven by a solver disconnect the solver and
+    // disable the channels so that edited pose can get extracted correctly
+    string $solver = shapesDriver_getRbfSolverFromListSelection();
+    string $rbfConn[];
+    if ($solver != "")
+    {
+        $rbfConn = `listConnections -s 0 -d 1 -p 1 -c 1 ($solver + ".output")`;
+        for ($i = 0; $i < size($rbfConn); $i += 2)
+        {
+            disconnectAttr $rbfConn[$i] $rbfConn[$i + 1];
+            setAttr $rbfConn[$i + 1] 0;
+        }
+    }
+
+    // -----------------------------------------------
+    // extraction
+    // -----------------------------------------------
+
+    string $extracted;
+    if ($gShapes_isSkin && shapesMain_isPostBlendShapeNode($gShapes_skinMesh, $gShapes_bsNode) == 0)
+    {
+        // get all necessary shape nodes
+        string $skinShape[] = `listRelatives -s -ni -f $skin`;
+        string $correctiveShape[] = `listRelatives -s -ni -f $corrective`;
+        string $intermediate;
+        // get the intermediate shape depending on whether it's the first blend shape or not
+        if (!size($gShapes_customOriginal))
+            $intermediate = shapesMain_getIntermediateShape($skin);
+        else
+            $intermediate = $gShapes_customOriginal[1];
+        $extracted = `br_sculptExtractDeltaMesh     -compare
+                                                    -mesh $skinShape[0]
+                                                    -originalMesh $intermediate
+                                                    $correctiveShape[0]`;
+    }
+    // For all other cases create a subtraction of all other shapes.
+    else
+    {
+        // For a post-deformer blend shape node on a skin mesh the base
+        // is the deformed mesh without any blend shape targets.
+        if (shapesMain_isPostBlendShapeNode($gShapes_skinMesh, $gShapes_bsNode) == 1)
+        {
+            // For some reason duplicating the mesh creates a cycle
+            // warning which doesn't happen when performing the
+            // procedure manually.
+            int $cycle = `cycleCheck -q`;
+            cycleCheck -e 0;
+
+            string $deformed[] = shapesAction_duplicateDeformedMesh($gShapes_skinMesh, 1);
+            $extracted = $deformed[0];
+
+            cycleCheck -e $cycle;
+        }
+        // For a non-skin mesh the base is the original mesh.
+        else
+        {
+            $extracted = shapesAction_duplicateOrginalMesh($gShapes_skinMesh + "_original");
+        }
+
+        string $current = shapesAction_duplicateMeshFromMenu(0, 0);
+        string $tempBS[] = `blendShape $current $corrective $extracted`;
+        blendShape -e -w 0 -1 -w 1 1 $tempBS[0];
+        delete -ch $extracted;
+        delete $current;
+    }
+
+    // -----------------------------------------------
+    // post extraction
+    // -----------------------------------------------
+
+    // re-connect all previously connected shapes
+    for ($c = 0; $c < size($connectedShapes); $c += 2)
+        connectAttr -f $connectedShapes[$c + 1] $connectedShapes[$c];
+
+    // reconnect the rbf solver
+    for ($i = 0; $i < size($rbfConn); $i += 2)
+        connectAttr -f $rbfConn[$i] $rbfConn[$i + 1];
+
+    if ($slider != "" || $gShapes_inbetweenSlider != "")
+    {
+        setAttr ($gShapes_bsNode + "." + $gShapes_selectedTarget) $channelValue;
+
+        // re-connect all stored connections
+
+        if (size($comboPlugs))
+        {
+            for ($i = 0; $i < size($comboPlugs); $i += 2)
+                connectAttr $comboPlugs[$i + 1] $comboPlugs[$i];
+        }
+
+        if (size($plug))
+            connectAttr -f $plug[1] $plug[0];
+    }
+
+    if (`symbolCheckBox -q -v shpUI_shotFixCheck` && !`iconTextCheckBox -q -v shpUI_shotFixRestCheck`)
+        setAttr ($gShapes_bsNode + ".envelope") 1;
+
+    // -----------------------------------------------
+    // extraction error handling
+    // -----------------------------------------------
+
+    if ($extracted == "0")
+    {
+        shapesSculpt_exitSculptErrorCleanup $corrective $slider 0;
+        return;
+    }
+    else if ($extracted == "-1")
+    {
+        shapesSculpt_exitSculptErrorCleanup $corrective $slider 1;
+        return;
+    }
+
+    // -----------------------------------------------
+    // non-first blend shape node
+    // -----------------------------------------------
+
+    // cleanup the temporary custom intermediate shape
+    if (!$gShapes_isFirstBs && $gShapes_isSkin)
+    {
+        // re-connect the previously connected node to the skin cluster
+        connectAttr -f $inGeo[1] $inGeo[0];
+        // delete the intermediate shape
+        delete $gShapes_customOriginal[1];
+        clear $gShapes_customOriginal;
+    }
+
+    // -----------------------------------------------
+    // finalizing
+    // -----------------------------------------------
+
+    delete $corrective;
+    rename $extracted $corrective;
+
+    // -----------------------------------------------
+    // partial blendshape
+    // -----------------------------------------------
+
+    // create a partial blend target in case the shape has been overdriven
+    // so that the actual shape used for extraction resembles the state at the channel value of 1
+    if ($slider != "")
+    {
+        float $value = `floatSliderButtonGrp -q -v $slider`;
+        string $label = `floatSliderButtonGrp -q -l $slider`;
+        if (!startsWith($label, "Inbetween"))
+        {
+            string $tempOriginal = shapesAction_duplicateOrginalMesh("");
+            string $tempBS[] = `blendShape $corrective $tempOriginal`;
+            if ($value == 0)
+                $value = 1;
+            blendShape -e -w 0 (1.0 / $value) $tempBS[0];
+            // delete the history to remove the blendshape
+            delete -ch $tempOriginal;
+            // the resulting shape is the new corrective shape
+            delete $corrective;
+            $corrective = `rename $tempOriginal $corrective`;
+
+            // reset the sculpt compare user setting to the previous state
+            optionVar -iv SHAPESEnableSculptCompare $gShapes_userComparePref;
+        }
+    }
+
+    shapesSculpt_exitSculptModeFinalize $corrective $skin $slider $comboTweak $cancel;
+}
+
+
+global proc shapesSculpt_exitSculptModeFinalize( string $corrective, string $skin, string $slider, int $comboTweak, int $cancel )
+{
+    //
+    // applies the sculpt result as a target shape
+    //
+    global int $gShapes_applyTarget;
+    global int $gShapes_replaceMode;
+    global int $gShapes_targetIndex;
+
+    if ($slider == "" && $gShapes_applyTarget)
+    {
+        if (!$gShapes_replaceMode)
+            shapesAction_addBlendShapeTarget $skin $corrective 1;
+        else
+            shapesAction_replaceBlendShapeTarget $corrective "" -1 $gShapes_targetIndex 1;
+
+        if (`symbolCheckBox -q -v shpUI_shotFixCheck`)
+            shapesAnimation_shotFixSetKey 1;
+    }
+    // tweak mode
+    else
+    {
+        shapesSculpt_exitTweakMode $corrective $slider $comboTweak 0 $cancel;
+
+        if (`symbolCheckBox -q -v shpUI_shotFixCheck`)
+            shapesAnimation_shotFixSetKey 0;
+    }
+}
+
+
+global proc shapesSculpt_exitSculptErrorCleanup( string $corrective, string $slider, int $query )
+{
+    //
+    // cleanup after exiting sculpt mode produced errors
+    // if no sculpting has been performed
+    //
+    global string $gShapes_inbetweenSlider;
+    global string $gShapes_selectedTarget;
+
+    if ($query)
+    {
+        string $msg = "Extraction Error\n\nDo you want to keep the sculpt mesh?";
+        string $confirm = `confirmDialog -t "SHAPES" -m $msg -b "Yes" -b "No" -db "No" -cb "No" -ds "No"`;
+        if ($confirm == "No")
+            delete $corrective;
+    }
+    else
+        delete $corrective;
+    // clear the inbetweenSlider
+    string $items[] = shapesMain_getChannelSliderList();
+    if (size($items))
+    {
+        if ($gShapes_inbetweenSlider != "")
+        {
+            deleteUI $gShapes_inbetweenSlider;
+            $gShapes_inbetweenSlider = "";
+        }
+        if ($slider != "")
+            shapesSculpt_exitTweakMode $corrective $slider 0 1 1;
+
+        string $nodes[] = shapesDriver_getConnectedWeightDriver($gShapes_selectedTarget);
+        int $type = shapesDriver_getWeightDriverType($nodes[0]);
+        if ($type)
+            shapesUI_togglePoseInfluenceItem 1;
+    }
+
+    shapesUI_toggleShotFixUI 1;
+}
+
+
+global proc string[] shapesSculpt_createSculptBlendMesh( int $listIndex )
+{
+    //
+    // create the blend mesh if sculpting in maya in enabled
+    // using the blend brush to blend from one target to another
+    //
+    global int $gShapes_index;
+    global int $gShapes_isFirstBs;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_customIntermediate;
+    global string $gShapes_skinMesh;
+    global string $gShapes_sculptBlendMeshes[];
+    global string $gShapes_sculptBlendPlug[];
+    global string $gShapes_sculptMesh[];
+
+    clear $gShapes_sculptBlendPlug;
+
+    // This array stores the utility meshes for the SHAPES brush. The
+    // first index is used for the blend brush and the second index for
+    // the original shape node which is used for reference smoothing.
+    string $blendMeshes[];
+
+    string $intermediateShape = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+    // If an error has occurred while searching for a node to connect to
+    // the result contains no meshes.
+    if (!size($intermediateShape))
+        return $blendMeshes;
+
+    // Rename the custom intermediate mesh in case of a secondary blend
+    // shape node since it's visible in the outliner.
+    $gShapes_customIntermediate = "";
+    if (!$gShapes_isFirstBs)
+    {
+        string $rel[] = `listRelatives -parent $intermediateShape`;
+        string $intermediateTransform = `rename $rel[0] "customIntermediateMesh"`;
+        $rel = `listRelatives -shapes $intermediateTransform`;
+        $intermediateShape = $rel[0];
+
+        $gShapes_customIntermediate = $intermediateTransform;
+    }
+
+    // store the intermediate shape name for the brush
+    // which is used when smoothing in relation to the original mesh
+    // to preserve the point spacing
+    $blendMeshes[1] = $intermediateShape;
+
+    // in case the undeformed original mesh should be used for blending
+    // the setup can be made simple by only passing the original mesh name
+    // to the blend brush
+    if (`optionVar -q SHAPESBlendToPreDeformation`)
+    {
+        $blendMeshes[0] = $intermediateShape;
+        return $blendMeshes;
+    }
+
+    string $shapes[] = `treeView -q -si shpUI_targetTree`;
+
+    // duplicate the original shape
+    string $original = shapesAction_duplicateOrginalMesh("original");
+
+    // extract the selected target
+    // if there is no other target yet the original mesh substitutes the target
+    // so that the blend mesh works in either case
+    string $target[];
+    if (shapesData_getShapeCount())
+    {
+        // if the current shape is being edited the blend mesh only needs
+        // to contain the original mesh
+        if (size($shapes) == $listIndex + 1)
+        {
+            // store the global indices to set them back afterwards
+            int $tempTargetIndex = $gShapes_targetIndex;
+            int $tempIndex = $gShapes_index;
+
+            $gShapes_targetIndex = shapesData_getShapeIndex($shapes[$listIndex]);
+            $gShapes_index = shapesData_getListIndex($shapes[$listIndex]);
+
+            // only extract the selected target if it's not from a connected blend shape node
+            int $extract = 1;
+            string $conn[] = `listConnections -s 1 -d 0 -p 1 ($gShapes_bsNode + ".it[0].itg[" + $gShapes_index + "].iti[6000].igt")`;
+            if (size($conn))
+            {
+                string $items[] = stringToStringArray($conn[0], ".");
+                if (`nodeType $items[0]` == "blendShape")
+                    $extract = 0;
+                else
+                {
+                    string $hist[] = `listHistory -gl 1 -pdo 1 -lf 1 -f 0 -il 2 $items[0]`;
+                    int $exists = 0;
+                    for ($h in $hist)
+                    {
+                        $h = shapesCommon_removeNodePath($h);
+                        if (`objExists $h` && `nodeType $h` == "blendShape" && $h != $gShapes_bsNode && !$exists)
+                        {
+                            $exists = 1;
+                            $extract = 0;
+                        }
+                    }
+                }
+            }
+            if ($extract)
+            {
+                // disconnect any incoming mesh so that the extraction process doesn't
+                // have to do it so that it can be reconnected after exiting edit mode
+                $conn = `listConnections -s -1 -d 0 -c 1 -p 1 -type "mesh" ($gShapes_bsNode + ".it[0].itg[" + $gShapes_index + "].iti[6000].igt")`;
+                if (size($conn))
+                {
+                    for ($c in $conn)
+                        $gShapes_sculptBlendPlug[size($gShapes_sculptBlendPlug)] = $c;
+                    disconnectAttr $conn[1] $conn[0];
+                }
+
+                $target = shapesAction_extractTarget("", -1, 0, 0);
+                if ($target[0] == "")
+                {
+                    string $temp[] = `duplicate $original`;
+                    $target[0] = $temp[0];
+                }
+            }
+            else
+            {
+                string $temp[] = `duplicate $original`;
+                $target[0] = $temp[0];
+            }
+
+            $gShapes_targetIndex = $tempTargetIndex;
+            $gShapes_index = $tempIndex;
+        }
+        else
+        {
+            string $temp[] = `duplicate $original`;
+            $target[0] = $temp[0];
+        }
+    }
+    else
+    {
+        string $temp[] = `duplicate $original`;
+        $target[0] = $temp[0];
+    }
+
+    // disable the blend shape node and duplicate the deformed mesh
+    // to include any other deformation or skinning
+    string $deformed[] = shapesAction_duplicateDeformedMesh($gShapes_skinMesh, 1);
+
+    // make the extracted target and the deformed shape targets on
+    // a new blend shape node on the original copy and set them active
+    string $tempBS[] = `blendShape $target[0] $deformed[0] $original`;
+    blendShape -e -w 0 1 -w 1 1 $tempBS[0];
+    refresh;
+    delete -ch $original;
+
+    string $temp[] = `listRelatives -s -ni $deformed[0]`;
+    $gShapes_sculptBlendMeshes[0] = $temp[0];
+    $temp = `listRelatives -s -ni $original`;
+    $gShapes_sculptBlendMeshes[1] = $temp[0];
+
+    for ($b in $gShapes_sculptBlendMeshes)
+    {
+        parent -r -s $b $gShapes_sculptMesh[0];
+        setAttr ($b + ".intermediateObject") 1;
+    }
+
+    // delete the extracted target and the deformed copy
+    delete $target[0] $deformed[0] $original;
+
+    // make the blend mesh current which is defined in the preferences
+    int $index = `optionVar -q SHAPESBlendToOriginal`;
+    $blendMeshes[0] = $gShapes_sculptBlendMeshes[$index];
+
+    return $blendMeshes;
+}
+
+
+global proc shapesSculpt_deleteSculptBlendMesh()
+{
+    //
+    // remove the blend mesh after exiting sculpt mode
+    //
+    global int $gShapes_isFirstBs;
+    global string $gShapes_customIntermediate;
+    global string $gShapes_sculptBlendPlug[];
+
+    if (`contextInfo -ex "SHAPESBrushContext1"`)
+    {
+        // If a custom original mesh has been created which is not a
+        // hidden shape of the sculpt mesh delete it. This is the case
+        // when the current blend shape node is not the first in the
+        // chain, which means that there is a difference between the
+        // original shape from the front of the chain and a custom
+        // intermediate created between deformers.
+        if (!$gShapes_isFirstBs && $gShapes_customIntermediate != "" && `objExists $gShapes_customIntermediate`)
+            delete $gShapes_customIntermediate;
+
+        SHAPESBrushContext -edit -blendMesh "" SHAPESBrushContext1;
+        SHAPESBrushContext -edit -smoothMesh "" SHAPESBrushContext1;
+    }
+
+    if (size($gShapes_sculptBlendPlug))
+    {
+        for ($c = 0; $c < size($gShapes_sculptBlendPlug); $c += 2)
+            connectAttr -f $gShapes_sculptBlendPlug[$c + 1] $gShapes_sculptBlendPlug[$c];
+    }
+}
+
+
+global proc shapesSculpt_deleteConnectedShadingNodes( string $node )
+{
+    //
+    // delete all shading nodes starting at the shading group of the mesh
+    // used to cleanup after receiving a mesh from mudbox
+    //
+    global string $gShapes_deletedShadingNodes[];
+
+    string $connected[] = `listConnections -s 1 -d 0 $node`;
+    delete $node;
+    $gShapes_deletedShadingNodes[size($gShapes_deletedShadingNodes)] = $node;
+    if (size($connected))
+    {
+        string $nodes[] = stringArrayRemoveDuplicates($connected);
+        for ($n in $nodes)
+        {
+            if (`nodeType $n` != "mesh" && `nodeType $n` != "transform")
+                shapesSculpt_deleteConnectedShadingNodes $n;
+        }
+    }
+}
+
+
+global proc shapesSculpt_exitTweakMode( string $corrective, string $slider, int $comboTweak, int $error, int $cancel )
+{
+    //
+    // called when exiting the tweak mode
+    // replaces the existing target
+    //
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_tweak[];
+
+    if (!$error)
+    {
+        // before applying the sculpted shape check if the tweaked result
+        // should get propagated to the combo target as well
+        if ($comboTweak)
+        {
+            string $comboShapes[];
+            int $multVal[];
+
+            string $targets[];
+            string $drivers[];
+
+            shapesCombo_getComboNodes($gShapes_selectedTarget, $targets, $drivers, {}, {});
+            for ($i = 0; $i < size($targets); $i ++)
+            {
+                string $extractList[] = shapesAction_extractTargetByName($targets[$i], -1);
+                $comboShapes[size($comboShapes)] = $extractList[0];
+
+                // when applying the tweak delta to the combos
+                // we need to prevent double transformations when the tweaked shape
+                // is the combo driver for double combos as well as triples and quads;
+                // the tweak delta can be applied to the double combo shapes directly
+                // but for triples and quads the influence needs to be reversed alternately;
+                // triples are -1, quads 1 again, fives -1, etc.
+                int $val = 1;
+                for ($item in stringToStringArray($drivers[$i], ","))
+                    $val *= -1;
+                $multVal[size($multVal)] = $val;
+            }
+
+            string $sourceShape[] = shapesAction_extractTargetByName($gShapes_selectedTarget, -1);
+
+            // create a difference shape from the current shape before and after the tweak
+            // by setting the before shape to 1 and the tweaked to -1
+
+            // duplicate the original shape
+            string $deltaShape = shapesAction_duplicateOrginalMesh("tweakDelta");
+            string $tempBS[] = `blendShape $sourceShape[0] $corrective $deltaShape`;
+            blendShape -e -w 0 1 -w 1 -1 $tempBS[0];
+            delete -ch $deltaShape;
+
+            // create a new mixed shape from the difference shape and each combo shape
+            int $count;
+            for ($shape in $comboShapes)
+            {
+                string $mixShape = shapesAction_duplicateOrginalMesh($shape + "_combined");
+                $tempBS = `blendShape $deltaShape $shape $mixShape`;
+                // for triples, quads, etc. the weight is reversed
+                blendShape -e -w 0 $multVal[$count] -w 1 1 $tempBS[0];
+                delete -ch $mixShape;
+                delete $shape;
+                $count ++;
+
+                shapesAction_replaceBlendShapeTarget $mixShape "" -1 (shapesData_getShapeIndex($shape)) 1;
+            }
+            delete $sourceShape[0] $deltaShape;
+        }
+        shapesAction_replaceBlendShapeTarget $corrective $slider -1 $gShapes_targetIndex 1;
+    }
+    // reset the button command
+    floatSliderButtonGrp -e -bl "Edit" -bc ("shapesSculpt_initSculptMode " + $slider) $slider;
+    clear $gShapes_tweak;
+
+    // make sure the weight driver is reconnected to the target channel
+    shapesDriver_attachDetachDriver 1 1 0;
+
+    if (!$cancel && `optionVar -q SHAPESTweakAutoMirrorOption`)
+    {
+        string $mirrored = shapesMirror_swapSideLabel($gShapes_selectedTarget);
+        if ($mirrored != $gShapes_selectedTarget && `attributeQuery -n $gShapes_bsNode -ex $mirrored`)
+        {
+            string $msg = "Match Mirrored Shape?";
+            if (shapesCommon_confirmWindow($msg, "Match Opposite"))
+                shapesMirror_mirrorTarget $slider 2 -1;
+        }
+    }
+
+    // Account for any new or obsolete components in case of a connected
+    // weights controller.
+    shapesWeights_updateControllerComponents($gShapes_bsNode, $gShapes_targetIndex);
+}
+
+
+global proc shapesSculpt_disconnectSculptMesh( string $corrective, string $cInfo[] )
+{
+    //
+    // disconnect the sculpt mesh from the skin mesh
+    // and process any vertex color nodes which might have
+    // been added through sculpting tools
+    //
+
+    // using the maya sculpt tools creates two color sets;
+    // using the SHAPES freeze brush creates a polyColorPerVertex node;
+    // these color nodes are inserted between mesh connection;
+    // as a result the connection cannot be found and deleted anymore
+    // causing the extraction to produce an incorrect result
+    string $cInfoItems[] = stringToStringArray($cInfo[0], ".");
+    string $hist[] = `listHistory $corrective`;
+    for ($i = 1; $i < size($hist); $i ++)
+    {
+        if ($hist[$i] == $cInfoItems[0])
+            break;
+        // for now just find and remove the color sets;
+        // this solution is not perfect as there still can be other nodes
+        // in between the connection causing the same issues but this
+        // should be rare and it's much safer to only delete specific nodes
+        // than risking deleting important nodes;
+        // this shouldn't happen because the mesh names are known
+        // but it's safer
+        if (`nodeType $hist[$i]` == "createColorSet" || `nodeType $hist[$i]` == "polyColorPerVertex")
+            delete $hist[$i];
+    }
+
+    if (`isConnected $cInfo[0] $cInfo[1]`)
+        disconnectAttr $cInfo[0] $cInfo[1];
+    else
+    {
+        string $meshConn[] = `listConnections -s 1 -d 0 -c 1 -p 1 ($corrective + ".inMesh")`;
+        if (size($meshConn))
+        {
+            disconnectAttr $meshConn[1] $meshConn[0];
+            $meshConn = stringToStringArray($meshConn[1], ".");
+            br_displayMessage -warning ("The sculpt mesh source connection cannot be found. The sculpt mesh has been disconnected from " + $meshConn[0]);
+        }
+    }
+}
+
+
+global proc shapesSculpt_toggleSculptModeDisplay()
+{
+    //
+    // toggles the display between the original shape and the corrective shape
+    // or sets the xray display for the original shape
+    //
+    global string $gShapes_sculptSkin;
+    global string $gShapes_sculptMesh[];
+
+    setAttr ($gShapes_sculptSkin + ".v") (1 - `getAttr ($gShapes_sculptSkin + ".v")`);
+    setAttr ($gShapes_sculptMesh[0] + ".v") (1 - `getAttr ($gShapes_sculptMesh[0] + ".v")`);
+}
+
+
+global proc string shapesSculpt_getCurrentModelPanel()
+{
+    //
+    // returns the name of the model panel
+    // if (the active panel is not a model panel all visible panels are evaluated
+    // and the first model panel returned
+    // returns none if no model panel is found
+    //
+    string $current = `getPanel -wf`;
+    if (`getPanel -to $current` == "modelPanel")
+        return $current;
+    string $allPanels[] = `getPanel -vis`;
+    for ($p in $allPanels)
+    {
+        if (`getPanel -to $p` == "modelPanel")
+            return $p;
+    }
+    return "";
+}
+
+
+global proc shapesSculpt_setBlendShapeEnvelope( int $status )
+{
+    //
+    // enable/disable all blendshape nodes
+    //
+    global string $gShapes_skinMesh;
+
+    string $bsNodes[] = shapesMain_listBlendShapeNodes($gShapes_skinMesh, 1);
+    for ($node in $bsNodes)
+    {
+        if ($node != "None")
+            setAttr ($node + ".envelope") $status;
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// sculpt compare
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesSculpt_createCompareSetup( string $slider )
+{
+    //
+    // create the nodes to compare the sculpt result
+    // to the original mesh or the current deformed state
+    // during sculpt mode
+    //
+    global int $gShapes_index;
+    global int $gShapes_targetIndex;
+    global int $gShapes_tweakWithCombo;
+    global float $gShapes_compareTimeRange[];
+    global string $gShapes_bsNode;
+    global string $gShapes_compareTarget;
+    global string $gShapes_inbetweenSlider;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_compareComboSlider[];
+    global string $gShapes_comparePlug[];
+    global string $gShapes_driverPlug[];
+    global string $gShapes_sculptMesh[];
+
+    // If the slider name is not given a new shape should get created.
+    shapesSculpt_getCompareRange(size($slider) == 0);
+
+    clear $gShapes_comparePlug;
+    $gShapes_compareTarget = $gShapes_selectedTarget;
+
+    float $tweakValue = 0;
+    if (`optionVar -q SHAPESSculptCompareLinearKeys`)
+    {
+        // skip the linearization of keys when tweaking inbetweens
+        int $skip;
+        if ($slider != "" && startsWith(`floatSliderButtonGrp -q -l $slider`, "Inbetween"))
+            $skip = 1;
+        else if ($gShapes_inbetweenSlider != "")
+            $skip = 1;
+
+        if (!$skip)
+        {
+            // in case of editing a combo target we need to store the connection and disconnect it
+            // because setting the target value with the connection in place results in an error;
+            // the connection is reestablished again afterwards, which is also necessary to show
+            // the related combo sliders
+            $gShapes_comparePlug = `listConnections -s 1 -d 0 -c 1 -p 1 ($gShapes_bsNode + "." + $gShapes_compareTarget)`;
+            if (size($gShapes_comparePlug))
+                disconnectAttr $gShapes_comparePlug[1] $gShapes_comparePlug[0];
+
+            // when setting the animation to linear the channel values get reset
+            // which conflicts with teaking in-betweens because the value will be set
+            // back to the base value and not the in-between value;
+            // as a workaround get the current value and restore it after setting the animation to linear
+            if ($gShapes_compareTarget != "")
+                $tweakValue = `getAttr ($gShapes_bsNode + "." + $gShapes_compareTarget)`;
+            shapesSculpt_collectAnimData;
+            if ($gShapes_compareTarget != "")
+                setAttr ($gShapes_bsNode + "." + $gShapes_compareTarget) $tweakValue;
+
+            if (size($gShapes_comparePlug))
+                connectAttr $gShapes_comparePlug[1] $gShapes_comparePlug[0];
+        }
+    }
+
+    // add all combo shapes as sliders as well
+    //
+    // the combo members don't show for combo targets when the tweak button has just been pressed;
+    // this disconnects the combo target from the combo nodes in order to be able to set the slider to the
+    // tweak value; but the connection has been stored and can be used;
+    // temporarily re-connect the combo to be able to query the combo members;
+    // then disconnect again and set the slider back to the tweak value
+    if ($slider != "")
+    {
+        $tweakValue = `floatSliderButtonGrp -q -v $slider`;
+        if (size($gShapes_driverPlug))
+            connectAttr $gShapes_driverPlug[0] $gShapes_driverPlug[1];
+    }
+
+    clear $gShapes_compareComboSlider;
+    string $comboShapes[] = shapesCombo_getComboItems($gShapes_compareTarget);
+    // it's important to check if tweakWithCombo is enabled; it not the combo sliders will show even
+    // if more than one combo shape is active
+    if (size($comboShapes) && $gShapes_tweakWithCombo)
+    {
+        columnLayout -adj 1 -p shpUI_compareSliderColumn shpUI_compareSliderComboColumn;
+            separator -st "in" -h 15;
+            text -l "Combo Members" -al "left" -fn "boldLabelFont" -h 20;
+            for ($shape in $comboShapes)
+                $gShapes_compareComboSlider[size($gShapes_compareComboSlider)] = shapesUI_buildSculptCompareComboSlider($shape, 1);
+            separator -st "in" -h 15;
+        setParent ..;
+    }
+
+    // after getting the combo members set everything back
+    if ($slider != "")
+    {
+        if (size($gShapes_driverPlug))
+            disconnectAttr $gShapes_driverPlug[0] $gShapes_driverPlug[1];
+        floatSliderButtonGrp -e -v $tweakValue $slider;
+
+        // doing the following disconnect in a general way doesn't work with new targets
+        // because then the skin deformation doesn't show;
+        // but this also doesn't matter because a new target isn't a combo target
+        // and thus can be ignored for the following case
+
+        // at this point all connections should be back to normal (see above);
+        // but if the current target is a combo target the active connection prevents the combo sliders
+        // to work independent from each other, which makes them useless for compare mode;
+        // instead disconnect the previously found plug and reconnect it after leaving edit mode
+        if (size($gShapes_comparePlug))
+            disconnectAttr $gShapes_comparePlug[1] $gShapes_comparePlug[0];
+    }
+
+    // in case the target has in-betweens, re-create the target by connecting/disconnecting the attributes;
+    // only if we are in tweak mode or when creating an in-between
+    if ($slider != "" || $gShapes_inbetweenSlider != "")
+    {
+        int $valueList[] = shapesData_getTargetValues($gShapes_targetIndex);
+        if (size($valueList) > 1)
+        {
+            for ($value in $valueList)
+            {
+                connectAttr -f  ($gShapes_bsNode + ".it[0].itg[" + $gShapes_targetIndex + "].iti[" + $value + "]")
+                                ($gShapes_bsNode + ".it[0].itg[10000].iti[" + $value + "]");
+                disconnectAttr  ($gShapes_bsNode + ".it[0].itg[" + $gShapes_targetIndex + "].iti[" + $value + "]")
+                                ($gShapes_bsNode + ".it[0].itg[10000].iti[" + $value + "]");
+            }
+        }
+    }
+
+    // show the compare slider
+    string $label = $gShapes_sculptMesh[0];
+    if ($slider != "")
+    {
+        $label = $gShapes_compareTarget;
+    }
+    else if ($gShapes_inbetweenSlider == "")
+    {
+        // make sure that the compare slider doesn't use the last selected shape;
+        // the slider should have no effect when creating a new shape
+        $gShapes_compareTarget = "";
+    }
+
+    floatSliderGrp -e -l $label shpUI_compareSlider;
+    columnLayout -e -m 1 shpUI_compareSliderColumn;
+
+    string $toolArgs[];
+    for ($i = 0; $i < 4; $i ++)
+        $toolArgs[size($toolArgs)] = $gShapes_compareTimeRange[$i];
+    $toolArgs[size($toolArgs)] = $gShapes_bsNode;
+    optionVar -sv SHAPESSculptCompareToolList (stringArrayToString($toolArgs, ","));
+}
+
+
+global proc shapesSculpt_compareSculpt()
+{
+    //
+    // action called when the compare slider is dragged
+    //
+    global int $gShapes_compareSliderDrag;
+    global float $gShapes_channelValue;
+    global float $gShapes_compareSliderValue;
+    global float $gShapes_compareTimeRange[];
+    global string $gShapes_bsNode;
+    global string $gShapes_compareTarget;
+    global string $gShapes_skinMesh;
+    global string $gShapes_channelPlug[];
+    global string $gShapes_preCompareSelection[];
+    global string $gShapes_sculptMesh[];
+
+    if (!$gShapes_compareSliderDrag)
+    {
+        $gShapes_preCompareSelection = `ls -sl -fl`;
+        $gShapes_compareSliderDrag = 1;
+
+        // get the current channel value and current channel driver to restore it later
+        $gShapes_channelValue = 1;
+        if ($gShapes_compareTarget != "")
+        {
+            $gShapes_channelValue = `getAttr ($gShapes_bsNode + "." + $gShapes_compareTarget)`;
+            clear $gShapes_channelPlug;
+            $gShapes_channelPlug = `listConnections -s 1 -d 0 -c 1 -p 1 ($gShapes_bsNode + "." + $gShapes_compareTarget)`;
+            if (size($gShapes_channelPlug))
+                disconnectAttr $gShapes_channelPlug[1] $gShapes_channelPlug[0];
+        }
+
+        // prepare the sculpt mesh for extraction;
+        // it needs to be disconnected and the current target needs to be off for the extraction process;
+        string $plug[] = `listConnections -s 1 -d 0 -c 1 -p 1 ($gShapes_sculptMesh[1] + ".inMesh")`;
+        if (size($plug))
+            disconnectAttr $plug[1] $plug[0];
+
+        // deactivate the current target so that the compare can work correctly without influencing it
+        if ($gShapes_compareTarget != "")
+            setAttr ($gShapes_bsNode + "." + $gShapes_compareTarget) 0;
+
+        // get all connected meshes and disconnect them because
+        // mesh connections disrupt the extraction process and
+        // lead to unexpected results due to how the blend shape node works
+        string $connectedShapes[] = `listConnections -s 1 -d 0 -c 1 -p 1 -type "mesh" ($gShapes_bsNode + ".inputTarget")`;
+        if (size($connectedShapes))
+        {
+            for ($c = 0; $c < size($connectedShapes); $c += 2)
+                disconnectAttr $connectedShapes[$c + 1] $connectedShapes[$c];
+        }
+
+        string $skinShape[] = `listRelatives -s -ni -f $gShapes_skinMesh`;
+        string $intermediate = shapesMain_getIntermediateShape($gShapes_skinMesh);
+        string $extracted = `br_sculptExtractDeltaMesh  -mesh $skinShape[0]
+                                                        -originalMesh $intermediate
+                                                        $gShapes_sculptMesh[1]`;
+
+        // re-connect all previous mesh plugs
+        if (size($connectedShapes))
+        {
+            for ($c = 0; $c < size($connectedShapes); $c += 2)
+                connectAttr -f $connectedShapes[$c + 1] $connectedShapes[$c];
+        }
+
+        int $value = shapesCommon_roundFloat($gShapes_compareSliderValue, 3) * 1000;
+        connectAttr ($extracted + ".worldMesh") ($gShapes_bsNode + ".it[0].itg[10000].iti[" + (5000 + $value) + "].igt");
+        delete $extracted;
+
+        // re-connect the sculpt mesh to the mesh output
+        if (size($plug))
+            connectAttr -f $plug[1] $plug[0];
+
+        select -r $gShapes_skinMesh;
+
+        setAttr ($gShapes_bsNode + ".w[10000]") 0;
+        connectControl shpUI_compareSlider ($gShapes_bsNode + ".w[10000]");
+
+        shapesSculpt_toggleCompareComboConnections 1;
+
+        shapesSculpt_toggleSculptModeDisplay;
+    }
+
+    // update the time if the start and end frame is not the same
+    if ($gShapes_compareTimeRange[0] != $gShapes_compareTimeRange[1] && !startsWith(`currentCtx`, "SHAPESCompareDraggerToolContext"))
+    {
+        float $sliderVal = `floatSliderGrp -q -v shpUI_compareSlider`;
+        currentTime ($sliderVal * $gShapes_compareTimeRange[2] * 100 + $gShapes_compareTimeRange[0]);
+    }
+}
+
+
+global proc shapesSculpt_resetCompare()
+{
+    //
+    // action called when the compare slider is dropped
+    //
+    global int $gShapes_compareSliderDrag;
+    global float $gShapes_channelValue;
+    global float $gShapes_compareTimeRange[];
+    global string $gShapes_bsNode;
+    global string $gShapes_compareTarget;
+    global string $gShapes_channelPlug[];
+    global string $gShapes_preCompareSelection[];
+    global string $gShapes_sculptMesh[];
+
+    $gShapes_compareSliderDrag = 0;
+
+    currentTime $gShapes_compareTimeRange[3];
+
+    // re-connect the driver to the current target channel
+    if (size($gShapes_channelPlug))
+    {
+        connectAttr -f $gShapes_channelPlug[1] $gShapes_channelPlug[0];
+        clear $gShapes_channelPlug;
+    }
+    // restore the channel value
+    if ($gShapes_compareTarget != "")
+        catchQuiet(`setAttr ($gShapes_bsNode + "." + $gShapes_compareTarget) $gShapes_channelValue`);
+
+    shapesSculpt_toggleCompareComboConnections 0;
+
+    shapesSculpt_toggleSculptModeDisplay;
+
+    // make sure that the slider snaps back to 0
+    evalDeferred("floatSliderGrp -e -v 0 shpUI_compareSlider");
+    setAttr ($gShapes_bsNode + ".w[10000]") 0;
+
+    // restore the selection
+    if (size($gShapes_preCompareSelection))
+    {
+        select -r $gShapes_preCompareSelection;
+        string $component[] = stringToStringArray($gShapes_preCompareSelection[0], ".");
+        if (size($component) > 1)
+            hilite -toggle $component[0];
+        clear $gShapes_preCompareSelection;
+    }
+    else
+        select -r $gShapes_sculptMesh[0];
+}
+
+
+global proc shapesSculpt_toggleCompareComboConnections( int $connect )
+{
+    //
+    // connects/disconnects combos
+    // when dragging the slider or exiting edit mode
+    //
+    global string $gShapes_compareComboSlider[];
+
+    if (size($gShapes_compareComboSlider))
+    {
+        for ($s in $gShapes_compareComboSlider)
+        {
+            string $items[] = stringToStringArray($s, ",");
+            if ($items[1] != "none")
+            {
+                if ($connect)
+                    connectAttr -f $items[2] $items[1];
+                else
+                    disconnectAttr $items[2] $items[1];
+            }
+        }
+    }
+}
+
+
+global proc shapesSculpt_getCompareRange( int $new )
+{
+    //
+    // gathers all time relevant information for the sculpt compare
+    // creates an array with:
+    // - selection start
+    // - selection end
+    // - time step (range / 100)
+    // - current time
+    //
+    global int $gShapes_index;
+    global float $gShapes_compareTimeRange[];
+    global string $gShapes_currentChannelSlider;
+
+    global string $gPlayBackSlider;
+
+    clear $gShapes_compareTimeRange;
+
+    string $timeRangeString = `timeControl -q -rng $gPlayBackSlider`;
+    $timeRangeString = substituteAllString($timeRangeString, "\"", "");
+    string $timeRangeList[] = stringToStringArray($timeRangeString, ":");
+    float $start = $timeRangeList[0];
+    float $end = $timeRangeList[1];
+    float $timeRange[] = {$start, $end};
+    $timeRange[1] -= 1;
+
+    $gShapes_compareTimeRange = {$timeRange[0], $timeRange[1]};
+
+    // if tweaking a shape
+    if (!$new && $gShapes_currentChannelSlider != "" && `floatSliderButtonGrp -ex $gShapes_currentChannelSlider`)
+    {
+        string $targetName = shapesData_getListNameByIndex($gShapes_index);
+        string $dataType = shapesData_getType($targetName);
+        int $dataIndex = shapesData_getIndex($dataType, $targetName);
+
+        // create a relationship string which ties the current target position with the current frame
+        float $value = `floatSliderButtonGrp -q -v $gShapes_currentChannelSlider`;
+        $value = shapesCommon_roundFloat($value, 3) * 1000 + 5000;
+
+        // check if the current time range has target position/time relationships;
+        // if they don't exist add the current values and if in-betweens already exist update them
+        float $storedRange[] = shapesData_getItemTimeRange($targetName);
+        if (size($storedRange) && size($storedRange) > 2)
+        {
+            int $found;
+            for ($i = 2; $i < size($storedRange); $i += 2)
+            {
+                if ($storedRange[$i] == $value)
+                {
+                    $storedRange[$i + 1] = `currentTime -q`;
+                    $found = 1;
+                    break;
+                }
+            }
+            if (!$found)
+            {
+                $storedRange[size($storedRange)] = $value;
+                $storedRange[size($storedRange)] = `currentTime -q`;
+            }
+        }
+        else
+        {
+            $storedRange[2] = $value;
+            $storedRange[3] = `currentTime -q`;
+        }
+
+        // if the time range for the current target is not defined
+        if (!size($storedRange))
+        {
+            // if there is a current time range selected
+            // use this range and set it as the default for the current target
+            if ($timeRange[0] != $timeRange[1])
+                shapesData_setFloatArray($dataType, $dataIndex, "TimeRange", $timeRange);
+        }
+        // in case there is a defined time range for the current target
+        else
+        {
+            // check if there is a newly defined range
+            // if there is a range use this and replace the stored range
+            if ($timeRange[0] != $timeRange[1])
+            {
+                float $valueList[] = $timeRange;
+                for ($i = 2; $i < size($storedRange); $i ++)
+                    $valueList[size($valueList)] = $storedRange[$i];
+                shapesData_setFloatArray($dataType, $dataIndex, "TimeRange", $valueList);
+
+            }
+            // if there is no range use the stored range
+            else
+            {
+                $start = $storedRange[0];
+                $end = $storedRange[1];
+                $gShapes_compareTimeRange = {$start, $end};
+
+                for ($i = 2; $i < size($storedRange); $i ++)
+                    $gShapes_compareTimeRange[$i + 2] = $storedRange[$i];
+            }
+        }
+    }
+    // for a new sculpt the range only needs to get stored
+    // this happens during exiting the sculpt mode
+    else
+    {
+        $gShapes_compareTimeRange[4] = "6000";
+        $gShapes_compareTimeRange[5] = `currentTime -q`;
+    }
+
+    // subtract another frame from the range end because making a selection from 1-10 selects actually 1-11
+    $gShapes_compareTimeRange[2] = ($gShapes_compareTimeRange[1] - $gShapes_compareTimeRange[0]) * 0.01;
+    $gShapes_compareTimeRange[3] = `currentTime -q`;
+}
+
+
+global proc shapesSculpt_storeCompareRange( int $index )
+{
+    //
+    // stores the compare range on the blend shape node
+    // after adding or replacing a target shape
+    //
+    global float $gShapes_compareTimeRange[];
+    global string $gShapes_inbetweenSlider;
+
+    // store the time range information if it exists
+    if (size($gShapes_compareTimeRange))
+    {
+        shapesData_setFloatArray("shape", $index, "TimeRange", $gShapes_compareTimeRange);
+        clear $gShapes_compareTimeRange;
+    }
+}
+
+
+global proc shapesSculpt_removeReplaceCompareRangeInbetweenItem( string $target, int $value, int $replaceValue )
+{
+    //
+    // removes the given inbetween value from the compare range
+    //
+    float $storedRange[] = shapesData_getItemTimeRange($target);
+    if (size($storedRange) > 2)
+    {
+        int $index = shapesArray_floatArrayFind($value, 4, $storedRange);
+        if ($index != -1)
+        {
+            if ($replaceValue == -1)
+            {
+                shapesArray_floatArrayRemoveAtIndex($index, $storedRange);
+                shapesArray_floatArrayRemoveAtIndex($index, $storedRange);
+            }
+            else
+            {
+                shapesArray_floatArrayRemoveAtIndex($index, $storedRange);
+                shapesArray_floatArrayInsertAtIndex($index, $storedRange, $replaceValue);
+            }
+        }
+    }
+
+    string $dataType = shapesData_getType($target);
+    int $dataIndex = shapesData_getIndex($dataType, $target);
+    shapesData_setFloatArray($dataType, $dataIndex, "TimeRange", $storedRange);
+}
+
+
+global proc shapesSculpt_jumpToTweakFrame( float $value )
+{
+    //
+    // set the current time to the end of the compare range
+    // when the given target value is 1
+    //
+    global int $gShapes_index;
+    global string $gShapes_selectedTarget;
+
+    if (!shapesData_isDrivenSet(shapesData_getListNameByIndex($gShapes_index)))
+    {
+        float $storedRange[] = shapesData_getItemTimeRange($gShapes_selectedTarget);
+        if (size($storedRange) && `optionVar -q SHAPESJumpToEditPose`)
+        {
+            if (size($storedRange) == 2 || $value >= 1)
+                currentTime $storedRange[1];
+            else
+            {
+                $value = shapesCommon_roundFloat($value, 3) * 1000 + 5000;
+                for ($i = 2; $i < size($storedRange); $i += 2)
+                {
+                    if ($value == $storedRange[$i])
+                        currentTime $storedRange[$i + 1];
+                }
+            }
+        }
+    }
+}
+
+
+global proc shapesSculpt_collectAnimData()
+{
+    //
+    // get all animation curves in the scene
+    // collect their data and set the keys to linear
+    //
+    global string $gShapes_restoreAnimationCompareString;
+
+    $gShapes_restoreAnimationCompareString = "";
+
+    string $curves[] = `ls -type "animCurveTA" -type "animCurveTL" -type "animCurveTU"`;
+    if (size($curves))
+    {
+        for ($c in $curves)
+            $gShapes_restoreAnimationCompareString += shapesSculpt_getAnimData($c);
+    }
+}
+
+
+global proc string shapesSculpt_getAnimData( string $curve )
+{
+    //
+    // returns a command string to restore all animation data
+    // after setting the keys within the current range to linear
+    //
+    global float $gShapes_compareTimeRange[];
+
+    // get the number of keys for the curve
+    int $indexList[] = `getAttr -mi ($curve + ".ktv")`;
+
+    // get the tangents
+    string $inTangents[] = `keyTangent -q -itt $curve`;
+    string $outTangents[] = `keyTangent -q -ott $curve`;
+    float $inAngle[] = `keyTangent -q -ia $curve`;
+    float $inWeight[] = `keyTangent -q -iw $curve`;
+    float $outAngle[] = `keyTangent -q -oa $curve`;
+    float $outWeight[] = `keyTangent -q -ow $curve`;
+
+    int $k;
+    string $keyString;
+    while (1)
+    {
+        if ($k >= size($indexList))
+            break;
+
+        float $value[] = `getAttr ($curve + ".ktv[" + $indexList[$k] + "]")`;
+        if ($value[0] >= $gShapes_compareTimeRange[0] && $value[0] <= $gShapes_compareTimeRange[1])
+        {
+            string $inTan = $inTangents[$k];
+            if ($inTan != "fixed")
+                $inTan = "-itt " + $inTan;
+            else
+                $inTan = "-ia " + $inAngle[$k] + " -iw " + $inWeight[$k];
+
+            string $outTan = $outTangents[$k];
+            if ($outTan != "fixed")
+                $outTan = "-ott " + $outTan;
+            else
+                $outTan = "-oa " + $outAngle[$k] + " -ow " + $outWeight[$k];
+
+            $keyString += "keyTangent -e -in " + $k + " " + $inTan + " " + $outTan + " " + $curve + ";\n";
+
+            // set the keys to linear
+            keyTangent -e -index $k -itt "linear" -ott "linear" $curve;
+        }
+        else if ($value[0] > $gShapes_compareTimeRange[1])
+            break;
+
+        $k ++;
+    }
+    return $keyString;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// pose influence
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesSculpt_createPoseInfluenceSlider()
+{
+    //
+    // creates the slider for defining the base sculpt shape
+    // when creating a new RBF or PI pose
+    //
+    global string $gShapes_selectedTarget;
+    global string $gShapes_poseInfluenceSlider[];
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    clear $gShapes_poseInfluenceSlider;
+
+    if (`floatSliderGrp -ex shpUI_compareSlider`)
+        deleteUI shpUI_compareSlider;
+
+    string $nodes[] = shapesDriver_getConnectedWeightDriver($gShapes_selectedTarget);
+
+    columnLayout -adj 1 -p shpUI_compareSliderColumn shpUI_compareSliderComboColumn;
+        string $conn[] = `listConnections -s 0 -d 1 -p 1 -c 1 ($nodes[0] + ".output")`;
+        for ($c = 0; $c < size($conn); $c += 2)
+        {
+            string $items[] = stringToStringArray($conn[$c + 1], ".");
+            $gShapes_poseInfluenceSlider[size($gShapes_poseInfluenceSlider)] = shapesUI_buildSculptCompareComboSlider($items[1], 0);
+        }
+
+        string $parentForm = `formLayout`;
+            string $btn = `button -l "Cancel" -w 70 -c "shapesSculpt_deletePoseInfluenceSlider 1" shpUI_cancelEditPoseInfluencesItem`;
+            formLayout  -e
+
+                        -af $btn "top" 5
+                        -af $btn "right" 0
+
+                        $parentForm;
+        setParent ..;
+
+        separator -st "in" -h 15;
+    setParent ..;
+
+    columnLayout -e -m 1 shpUI_compareSliderColumn;
+
+    shapesUI_togglePoseInfluenceItem 0;
+
+    // disable the target list
+    treeView -e -en 0 shpUI_targetTree;
+}
+
+
+global proc shapesSculpt_deletePoseInfluenceSlider( int $cancel )
+{
+    //
+    // removes the slider for defining the base sculpt shape
+    //
+    global string $gShapes_selectedTarget;
+    global string $gShapes_poseInfluenceSlider[];
+
+    if (`button -ex shpUI_cancelEditPoseInfluencesItem`)
+    {
+        if (size($gShapes_poseInfluenceSlider))
+        {
+            for ($s in $gShapes_poseInfluenceSlider)
+            {
+                string $items[] = stringToStringArray($s, ",");
+                if ($items[1] != "none")
+                    connectAttr -f $items[2] $items[1];
+            }
+        }
+
+        deleteUI shpUI_compareSliderComboColumn;
+
+        clear $gShapes_poseInfluenceSlider;
+
+        // rebuild the compare slider
+        shapesUI_buildSculptCompareSlider;
+        columnLayout -e -m 0 shpUI_compareSliderColumn;
+    }
+
+    if ($cancel)
+        treeView -e -en 1 shpUI_targetTree;
+
+    shapesUI_togglePoseInfluenceItem $cancel;
+}
+
+
+global proc SHAPES_sculpt(){}

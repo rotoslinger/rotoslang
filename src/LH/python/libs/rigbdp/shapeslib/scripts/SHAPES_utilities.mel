@@ -1,0 +1,3297 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc shapesUtil_processTweakNode( int $bake )
+{
+    //
+    // used if changes to the model have been made which are stored on the tweak node
+    // resulting in differences between the original shape node and what
+    // the blendshape works on
+    // this influences the correctness of extracting delta meshes
+
+    // bake = False: only the tweaks get deleted
+    // bake = True: apply to the tweaks to the origial mesh and the target shapes
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+    global string $gShapes_undoInfo;
+
+    if ($gShapes_bsNode == "None")
+        return;
+
+    // tweakNode is an array because of the recoursive loop
+    // it contains the node name and the depth value
+    string $tweakNode[] = shapesUtil_findTweakNode();
+    if (!size($tweakNode))
+        return;
+
+    string $msg;
+    if ($bake)
+        $msg = "Do you want to bake the tweaks to the original mesh?\n\n" + $gShapes_undoInfo;
+    else
+        $msg = "Do you want to cleanup the tweak node?";
+    if (!shapesCommon_confirmWindow($msg, "OK"))
+        return;
+
+    string $original = shapesMain_getOriginalMesh($gShapes_skinMesh, 1);
+    br_editTweakNode -bake $bake -originalMesh $original $tweakNode[0];
+}
+
+
+global proc string[] shapesUtil_findTweakNode()
+{
+    //
+    // returns the tweak node
+    // the return string is empty if a new tweak had to be created
+    //
+    global string $gShapes_skinMesh;
+
+    string $original = shapesMain_getOriginalMesh($gShapes_skinMesh, 1);
+
+    // temporarily disconnect any ramp weights nodes or finding the tweak node
+    // ends up in an infinity loop
+    string $conn[] = `listConnections -s 0 -d 1 -p 1 -c 1 -type "rampWeights" $original`;
+    if (size($conn))
+    {
+        for ($i = 0; $i < size($conn); $i += 2)
+            disconnectAttr $conn[$i] $conn[$i + 1];
+    }
+
+    string $tweakNode[] = shapesUtil_recourseFindTweak($original, 0);
+
+    if (!size($tweakNode))
+    {
+        string $message = "The tweak node is missing.\nDo you want to create a new one?";
+        if (shapesCommon_confirmWindow($message, "OK"))
+            shapesUtil_createTweakNode();
+    }
+
+    // re-connect the ramp weights nodes
+    if (size($conn))
+    {
+        for ($i = 0; $i < size($conn); $i += 2)
+            connectAttr -f $conn[$i] $conn[$i + 1];
+    }
+
+    return $tweakNode;
+}
+
+
+global proc string[] shapesUtil_recourseFindTweak( string $node, int $depth )
+{
+    //
+    // go through all connections to find the tweak node
+    //
+    string $conn[] = `listConnections -s 0 -d 1 -p 1 $node`;
+    int $endOfChain;
+    string $tweakNode[];
+    while (!$endOfChain && $depth < 10)
+    {
+        if (size($conn))
+        {
+            for ($c in $conn)
+            {
+                string $parts[] = stringToStringArray($c, ".");
+                if (`nodeType $parts[0]` == "tweak")
+                    return {$parts[0], $depth};
+                $tweakNode = shapesUtil_recourseFindTweak($parts[0], $depth + 1);
+                if (size($tweakNode))
+                    break;
+            }
+            $endOfChain = 1;
+        }
+        else
+            $endOfChain = 1;
+    }
+    return $tweakNode;
+}
+
+
+global proc shapesUtil_createTweakNode()
+{
+    //
+    // re-create a new tweak nodes and related nodes if none can be found in the history
+    //
+    global string $gShapes_skinMesh;
+
+    string $original = shapesMain_getOriginalMesh($gShapes_skinMesh, 1);
+    string $shape = shapesMain_getShapeNode();
+
+    int $id = 1;
+
+    // find an empty object groups index
+    string $ids[];
+    string $conn[] = `listConnections -s 1 -d 0 -p 1 -c 1 ($shape + ".instObjGroups[0].objectGroups")`;
+    for ($c = 0; $c < size($conn); $c += 2)
+    {
+
+        string $attr[] = stringToStringArray($conn[$c], ".");
+        $ids[size($ids)] = `match "[0-9]+" $attr[2]`;
+    }
+    $ids = sort($ids);
+
+    int $idFound;
+    int $max = $ids[size($ids) - 1];
+    for ($i = 1; $i < $max; $i ++)
+    {
+        if (!stringArrayContains($i, $ids) && !$idFound)
+        {
+            $id = $i;
+            $idFound = 1;
+        }
+    }
+
+    // get the current selection to restore it later
+    string $sel[] = `ls -sl`;
+    // create a temporary deformed mesh to get all the necessary nodes
+    string $temp[] = `polyCube`;
+    select -r $temp[0];
+    string $tempBs[] = `blendShape`;
+
+    // find the tweak node
+    string $tweak;
+    string $hist[] = `listHistory $temp[0]`;
+    for ($h in $hist)
+    {
+        $h = shapesCommon_removeNodePath($h);
+        if (`nodeType $h` == "tweak")
+            $tweak = $h;
+    }
+
+    string $groupParts[] = `listConnections -s 1 -d 0 ($tweak + ".input[0].inputGeometry")`;
+    string $groupId[] = `listConnections -s 1 -d 0 ($tweak + ".input[0].groupId")`;
+
+    // find the node the tweak node needs to connect to
+    // the same node the original mesh directly connects to if the tweak node is missing
+    // this is either the blend shape groups part node or
+    // if there is a skin cluster in between the skin cluster group parts node
+    string $groupPartsConn[] = `listConnections -s 0 -d 1 -p 1 ($original + ".worldMesh[0]")`;
+
+    // duplicate the found nodes
+    // except for the tweak set which automatically gets copied
+    // when the tweak node is duplicated
+    string $dup[] = `duplicate $tweak`;
+    $tweak = $dup[0];
+    $groupParts = `duplicate $groupParts[0]`;
+    $groupId = `duplicate $groupId[0]`;
+    string $tweakSet[] = `listConnections -s 0 -d 1 ($tweak + ".message")`;
+
+    // build all connections
+    connectAttr -f ($original + ".worldMesh[0]") ($groupParts[0] + ".inputGeometry");
+    connectAttr -f ($groupParts[0] + ".outputGeometry") ($tweak + ".input[0].inputGeometry");
+    connectAttr -f ($tweak + ".outputGeometry[0]") $groupPartsConn[0];
+
+    connectAttr -f ($tweak + ".vlist[0].vertex[0]") ($shape + ".tweakLocation");
+
+    connectAttr -f ($groupId[0] + ".groupId") ($groupParts[0] + ".groupId");
+    connectAttr -f ($groupId[0] + ".message") ($tweakSet[0] + ".groupNodes[0]");
+    connectAttr -f ($groupId[0] + ".groupId") ($tweak + ".input[0].groupId");
+    connectAttr -f ($groupId[0] + ".groupId") ($shape + ".instObjGroups[0].objectGroups[" + $id + "].objectGroupId");
+
+    connectAttr -f ($tweakSet[0] + ".memberWireframeColor") ($shape + ".instObjGroups[0].objectGroups[" + $id + "].objectGrpColor");
+    connectAttr -f ($shape + ".instObjGroups[0].objectGroups[" + $id + "]") ($tweakSet[0] + ".dagSetMembers[0]");
+
+    delete $temp;
+
+    // restore the selection
+    if (size($sel))
+        select -r $sel;
+}
+
+
+global proc shapesUtil_removeOrphanTarget()
+{
+    //
+    // deletes a remaining weight attribute if this has been
+    // left behind when deleting a target shape
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+
+    // make sure the correct attribute is selected
+    if (!`gmatch $gShapes_selectedTarget "weight\\[*"`)
+        return;
+
+    int $index = `match "[0-9]+" $gShapes_selectedTarget`;
+
+    // in order to fix the orphan create a new attribute alias
+    // and temporarily use a duplicate of the mesh to make it
+    // a functional attribute again
+    // then the attribute can be safely deleted
+    string $name = "orphanAttribute";
+    aliasAttr "orphanWeight" ($gShapes_bsNode + ".w[" + $index + "]");
+    string $temp = shapesAction_duplicateOrginalMesh("temp");
+    rename $temp $name;
+    blendShape -e -tc 0 -t $gShapes_skinMesh $index $name 1.0 $gShapes_bsNode;
+    delete $name;
+
+    shapesList_listBlendShapeTargets 1;
+    treeView -e -si $name 1 shpUI_targetTree;
+
+    shapesMain_buildTargetSlider;
+    shapesAction_removeBlendShapeTarget 0 0 0;
+}
+
+
+global proc shapesUtil_clearTargetCustomData()
+{
+    //
+    // removes all stored target, parent, label and range data
+    // from the blend shape node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    string $msg = "Reset all custom ordering, parenting, labels and ranges?";
+
+    if ($gShapes_skinMesh == "")
+    {
+        string $sel[] = `ls -sl`;
+        if (size($sel))
+        {
+            if (!shapesCommon_confirmWindow($msg, "OK"))
+                return;
+            string $bsNodes[] = shapesMain_listBlendShapeNodes($sel[0], 1);
+            for ($node in $bsNodes)
+                shapesData_deleteDataNode $node;
+        }
+        return;
+    }
+
+    if ($gShapes_bsNode == "None")
+        return;
+
+    if (!shapesCommon_confirmWindow($msg, "OK"))
+        return;
+
+    // create the data node with default values
+    shapesData_deleteDataNode($gShapes_bsNode);
+    shapesData_getDataNode($gShapes_bsNode);
+
+    shapesList_listBlendShapeTargets 1;
+    shapesList_storeCurrentOrder;
+}
+
+
+global proc shapesUtil_clearDriverCustomData()
+{
+    //
+    // removes all driver data from the blend shape node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    string $msg = "Reset all custom ordering and parenting?";
+
+    if ($gShapes_skinMesh == "")
+    {
+        string $sel[] = `ls -sl`;
+        if (size($sel))
+        {
+            if (!shapesCommon_confirmWindow($msg, "OK"))
+                return;
+            string $bsNodes[] = shapesMain_listBlendShapeNodes($sel[0], 1);
+            for ($node in $bsNodes)
+            {
+                // clear all list data but keep the custom drivers
+                string $items[] = shapesList_getCustomDriverList($node);
+                shapesData_setStringAttr("driver", (stringArrayToString($items, ",")));
+                shapesData_setStringAttr("driverGroup", "");
+            }
+        }
+        return;
+    }
+
+    if ($gShapes_bsNode == "None")
+        return;
+
+    if (!shapesCommon_confirmWindow($msg, "OK"))
+        return;
+
+    // clear all list data but keep the custom drivers
+    string $items[] = shapesList_getCustomDriverList($gShapes_bsNode);
+    shapesData_setStringAttr("driver", (stringArrayToString($items, ",")));
+    shapesData_setStringAttr("driverGroup", "");
+    shapesMain_listSkinClusterJoints;
+}
+
+
+global proc shapesUtil_removeReferenceEdits()
+{
+    //
+    // removes all reference edits made to the current blend shape node
+    // and asks the user to save as a new version
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    string $msg = "Remove all reference edits of the current blend shape node and save as a new version?";
+    if (!shapesCommon_confirmWindow($msg, "OK"))
+        return;
+
+    int $count;
+
+    string $refNode = `referenceQuery -rfn $gShapes_skinMesh`;
+    string $path = `referenceQuery -f $refNode`;
+
+    string $edits[] = `referenceQuery -fld 0 -scs 1 -le -sdp 1 -sns 1 -ec "setAttr" -es $path`;
+    for ($e in $edits)
+    {
+        if (`gmatch $e ("*" + $gShapes_bsNode + "*")`)
+        {
+            string $items[] = stringToStringArray($e, " ");
+            eval("referenceEdit -fld 1 -scs 1 -ec setAttr -r " + $items[1]);
+            $count ++;
+        }
+    }
+
+    br_displayMessage -info ("Removed " + $count + " edits from the current scene.");
+
+    SaveSceneAs;
+}
+
+
+global proc int[] shapesUtil_getReferenceEditIds()
+{
+    //
+    // return a list of blend shape node ids which have been created
+    // through reference edits
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    string $indexList[];
+
+    string $refNode = `referenceQuery -rfn $gShapes_skinMesh`;
+    string $path = `referenceQuery -f $refNode`;
+
+    string $edits[] = `referenceQuery -fld 0 -scs 1 -le -sdp 1 -sns 1 -ec "setAttr" -es $path`;
+    for ($e in $edits)
+    {
+        if (`gmatch $e ("*" + $gShapes_bsNode + "*")` && (`gmatch $e "*.inputTargetGroup*"` || `gmatch $e "*.itg*"`))
+        {
+            string $items[] = stringToStringArray($e, ".");
+            for ($i in $items)
+            {
+                if (`gmatch $i "*inputTargetGroup*"` || `gmatch $i "*itg*"`)
+                    $indexList[size($indexList)] = `match "[0-9]+" $i`;
+            }
+        }
+    }
+
+    $edits = `referenceQuery -fld 0 -scs 1 -le -sdp 1 -sns 1 -ec "connectAttr" -es $path`;
+    for ($e in $edits)
+    {
+        if (`gmatch $e ("*" + $gShapes_bsNode + "*")` && (`gmatch $e "*.inputTargetGroup*"` || `gmatch $e "*.itg*"`))
+        {
+            string $items[] = stringToStringArray($e, ".");
+            for ($i in $items)
+            {
+                if (`gmatch $i "*inputTargetGroup*"` || `gmatch $i "*itg*"`)
+                    $indexList[size($indexList)] = `match "[0-9]+" $i`;
+            }
+        }
+    }
+
+    $indexList = sort($indexList);
+    int $ids[];
+        for ($i in $indexList)
+            $ids[size($ids)] = $i;
+    return $ids;
+}
+
+
+global proc string[] shapesUtil_exportShapeSetup( int $exportMode, string $exportPath, string $targetBsNode )
+{
+    //
+    // export all targets and the blendshape node data
+    //
+    global int $gShapes_exportProcess;
+    global int $gShapes_rebuiltSetup;
+    global int $gShapes_targetIndex;
+    global int $gShapes_transferIndexList[];
+    global string $gShapes_bsNode;
+    global string $gShapes_groupSetAttrName;
+    global string $gShapes_rampPlug;
+    global string $gShapes_setAttrName;
+    global string $gShapes_sideIdentifier;
+    global string $gShapes_skinMesh;
+    global string $gShapes_exportConnection[];
+    global string $gShapes_rebuildConnection[];
+
+    string $bsNode = $gShapes_bsNode;
+    if ($targetBsNode != "")
+        $bsNode = $targetBsNode;
+    string $bsNodeFullName = $bsNode;
+
+    string $skin = $gShapes_skinMesh;
+    $gShapes_sideIdentifier = "";
+
+    // define the variables for exporting only specific indices
+    int $indexed;
+    int $exportList[];
+    string $processList[];
+
+    //
+    // export options
+    //
+
+    // get the options from the export window
+    string $exportOptionsString[] = stringToStringArray(`optionVar -q SHAPESExportOptions`, ",");
+    float $exportOptions[] = shapesArray_stringArrayToFloatArray($exportOptionsString);
+    int $referenceMode;
+    string $refPath;
+    string $bsNameWrite = $gShapes_bsNode;
+    int $mirror = 0;
+    // if reference edits should be exported
+    int $refOption = $exportOptions[1];
+    if ($exportMode)
+    {
+        if ($refOption > 1)
+        {
+            $exportList = shapesUtil_getReferenceEditIds();
+            if (!size($exportList))
+                br_displayMessage -error "No reference edits to export";
+            $referenceMode = 1;
+            $indexed = 1;
+            $bsNode = shapesMain_shortenNodePath($gShapes_bsNode, 0);
+            $skin = shapesMain_shortenNodePath($skin, 0);
+            // create the reference path only for replacement
+            string $refItems[] = stringToStringArray($gShapes_bsNode, ":");
+            stringArrayRemoveAtIndex(size($refItems) - 1, $refItems);
+            $refPath = stringArrayToString($refItems, ":") + ":";
+        }
+        if ($exportOptions[0] == 5)
+        {
+            $skin = shapesMirror_swapSideLabel($gShapes_skinMesh);
+            if (!`objExists $skin`)
+                br_displayMessage -error ("The mirrored mesh of '" + $gShapes_skinMesh + "' doesn't exist");
+            $bsNameWrite = shapesMirror_swapSideLabel($gShapes_bsNode);
+            if ($bsNameWrite == $gShapes_bsNode)
+                br_displayMessage -error "Unable to mirror the setup because the current blend shape node has no side identifier";
+            $mirror = 1;
+        }
+    }
+
+    //
+    // transfer options
+    //
+
+    // get the options from the transfer window
+    string $transferOptions[] = stringToStringArray(`optionVar -q SHAPESTransferOptions`, ",");
+    // include defines if only the targets should be processed (False)
+    // or if everything should get exported/transferred
+    int $include = 1;
+    int $deleteOldData = 0;
+    if (!$exportMode)
+    {
+        // only include if transferring with drivers or if
+        // the new mesh should be the driving master
+        if ($transferOptions[1] == "2" || $transferOptions[1] == "4")
+            $include = 0;
+
+        // export only the targets based on the selection option when transferring
+        int $transOption = $transferOptions[2];
+        if ($transOption > 1)
+        {
+            $exportList = $gShapes_transferIndexList;
+            $indexed = 1;
+            $include = 0;
+        }
+
+        // check if in transfer mode a new blend shape node should be created
+        // or an existing one is used;
+        // in case of an existing one the previous connected data node needs to
+        // be deleted
+        string $targetBsNode = `optionMenu -q -v shpUI_transferTargetNodeOption`;
+        if ($targetBsNode != "Create New")
+             $deleteOldData = 1;
+    }
+    else
+    {
+        if ($refOption == 2)
+            $include = 0;
+    }
+
+    // create the file names
+    string $exportName = $bsNode;
+    string $fileNameShort = $bsNode + ".mel";
+    string $fileName = $exportPath + "/" + $fileNameShort;
+    string $customImportPath = shapesUtil_getExportPath("/weights/" + $bsNode, 1);
+    // in case of a custom export path redefine the paths and names
+    if ($exportMode && `optionVar -q SHAPESUseCustomNodeDataExportPath`)
+    {
+        string $userPath = `textField -q -tx shpUI_exportPathField`;
+        $exportName = `python("import os; os.path.basename('" + $userPath + "').split('.')[0]")`;
+        $exportPath = `python("import os; os.path.dirname('" + $userPath + "')")`;
+        $fileNameShort = $exportName + ".mel";
+        $fileName = $exportPath + "/" + $fileNameShort;
+        $customImportPath = $exportPath;
+    }
+
+    // close the export window
+    if (`window -ex SHAPESExportWin`)
+        deleteUI SHAPESExportWin;
+
+    // open the file for writing
+    int $fileID = `fopen $fileName "w"`;
+
+    // store the global indices to set them back afterwards
+    int $tempIndex = $gShapes_targetIndex;
+
+    // get the current file type
+    string $fileType[] = `file -q -sn -type`;
+    string $currentExt = "ma";
+    if ($fileType[0] == "mayaBinary")
+        $currentExt = "mb";
+    string $fileOptions = "v=0";
+
+    // change the file type for the target export
+    // based on the chosen format
+    string $fileTypeMesh = $fileType[0];
+    string $fileExtMesh = $currentExt;
+    if ($exportMode && $exportOptions[2] > 1)
+    {
+        if ($exportOptions[2] == 2)
+        {
+            $fileTypeMesh = "OBJexport";
+            $fileExtMesh = "obj";
+            $fileOptions = "groups=1;ptgroups=0;materials=0;smoothing=0;normals=0";
+        }
+    }
+
+    string $writeName;
+
+    string $shapes[];
+    string $mainShapes[];
+    string $emptyCheck[];
+    string $drivenSets[];
+    string $renameList[];
+    string $helperAttr[];
+    string $combos[];
+    string $weightDriver[];
+    string $sdk[];
+    string $wtsCtrlNodes[];
+    string $sequenceCurves[];
+    string $connections;
+    string $rebuildConnections;
+
+    string $shapeWeights[];
+
+    // make sure no previous shape weight maps are stored
+    optionVar -rm SHAPESRestoreShapeWeights;
+
+    // write the import prodecure
+    string $procedure = shapesUtil_getImportMelProcedure($customImportPath);
+    fprint $fileID $procedure;
+    fprint $fileID "SHAPESImportGetLastCurve 1;\n";
+    fprint $fileID "\n";
+
+    // write the lines for getting the mesh name
+    fprint $fileID "{\n";
+    fprint $fileID ("string $geo = \"" + shapesMain_shortenNodePath($skin, 0) + "\";\n");
+    fprint $fileID "string $space = `SHAPES_getNamespace $geo`;\n";
+    fprint $fileID "\n";
+
+    // delete the original data node when in reference mode
+    // before importing the new data node
+    if ($referenceMode || $deleteOldData)
+    {
+        fprint $fileID ("catchQuiet(`delete " + $bsNode + "_data`);\n");
+        fprint $fileID "\n";
+    }
+
+    // import the shapes
+    fprint $fileID "// import shapes\n";
+    fprint $fileID ("file -i -type \"" + $fileTypeMesh + "\" -mnc 0 -pr \"" + $exportPath + "/" + $exportName + "_shapes." + $fileExtMesh + "\";\n");
+    fprint $fileID "// import data node\n";
+    fprint $fileID ("file -i -type \"" + $fileType[0] + "\" -mnc 0 -pr \"" + $exportPath + "/" + $exportName + "_shapes_data." + $currentExt + "\";\n");
+    if ($mirror)
+        fprint $fileID ("rename " + $bsNode + "_data " + $bsNameWrite + "_data;\n");
+    fprint $fileID "\n";
+
+    // create the blendshape node
+    if (!$referenceMode)
+    {
+        if ($targetBsNode == "")
+        {
+            fprint $fileID "// create blendshape node\n";
+            fprint $fileID ("deformer -type blendShape -foc -n " + $bsNameWrite + " ($space + $geo);\n");
+
+            fprint $fileID ("addAttr -longName SHAPESVersion -attributeType \"long\" " + $bsNameWrite + ";\n");
+            fprint $fileID ("setAttr -lock 1 " + $bsNameWrite + ".SHAPESVersion " + (shapesGlobal_getVersion()) + ";\n");
+
+            fprint $fileID ("addAttr -ln SHAPESData -at \"message\" " + $bsNameWrite + ";\n");
+            fprint $fileID ("addAttr -ln " + $gShapes_groupSetAttrName + " -at \"message\" " + $bsNameWrite + ";\n");
+            fprint $fileID ("addAttr -ln " + $gShapes_setAttrName + " -at \"message\" -m -im 0 " + $bsNameWrite + ";\n\n");
+            fprint $fileID ("addAttr -at message -ln SHAPESSolver -m -im 0 " + $bsNameWrite + ";\n");
+        }
+
+        fprint $fileID ("string $allShapes[] = `listRelatives -s -f ($space + $geo)`;\n");
+        fprint $fileID ("string $shapes[] = `listRelatives -s -ni -f ($space + $geo)`;\n");
+        fprint $fileID ("string $intermediates[] = stringArrayRemove({$shapes[0]}, $allShapes);\n");
+    }
+    fprint $fileID "\n";
+    fprint $fileID ("connectAttr -f " + $bsNameWrite + ".SHAPESData " + $bsNameWrite + "_data.SHAPESData;\n");
+    fprint $fileID "\n";
+
+    string $targetList[] = shapesData_getTargetList();
+
+    // initialize the progress bar
+    global string $gMainProgressBar;
+    progressBar -e -bp -ii 0 -max (size($targetList)) $gMainProgressBar;
+
+    fprint $fileID "// add the target shapes\n";
+    int $id;
+    int $drivenSetInit;
+
+    int $divisions = `optionVar -q SHAPESExportSubdivisions`;
+
+    for ($i = 0; $i < size($targetList); $i ++)
+    {
+        string $target = $targetList[$i];
+        $gShapes_targetIndex = shapesData_getShapeIndex($target);
+
+        progressBar -e -st ("Processing " + $target + " ... (index " + $i + ")") $gMainProgressBar;
+
+        // if only particular shapes should be exported
+        // check if the current index should be processed
+        int $process = 1;
+        if ($indexed)
+        {
+            if (!shapesArray_intArrayContains($gShapes_targetIndex, $exportList))
+                $process = 0;
+            else if ($referenceMode)
+            {
+                // in case of exporting only certain ids in reference mode
+                // the ids can't be in order
+                // but must be the exact ids from the reference edits
+                $id = $gShapes_targetIndex;
+            }
+        }
+
+        if ($process)
+        {
+            // store the current index to also filter the button list later
+            $processList[size($processList)] = $target;
+            int $values[] = shapesData_getTargetValues($gShapes_targetIndex);
+            int $helper = shapesData_isHelper($target);
+            int $drivenSet = shapesData_isDrivenSet($target);
+            string $wtsCtrl = shapesData_getWeightsControllerConnection($gShapes_targetIndex);
+            if (!$helper && !$drivenSet)
+            {
+                int $counter = 1;
+                $helper = 0;
+
+                // disconnect the weights controller node
+                // so that the target shape can be correctly extracted
+                string $wtsCtrlItems[] = stringToStringArray($wtsCtrl, ".");
+                string $wtsCtrlOutConn[] = shapesWeights_disconnectWeightsController($wtsCtrlItems[0], $target);
+
+                for ($v = 0; $v < size($values); $v ++)
+                {
+                    // clear the connection info
+                    // example: the result of the face blend shape node has a live connection to the body blend shape node
+                    // usually connections coming from meshes in the scene need to be broken in order
+                    // to be able to read the blend shape channel data
+                    // but in case of the live connection it needs to be re-connected later to make the setup work
+                    // the target extraction only returns the new shape node so the global $gShapes_exportConnection[] var is used
+                    // to transfer the connection information
+                    $gShapes_exportConnection = {};
+                    $gShapes_rebuildConnection = {};
+
+                    string $extracted[] = shapesAction_extractTarget("", $values[$v], 0, 0);
+                    string $shape = $extracted[0];
+
+                    if ($shape != "")
+                    {
+                        if ($values[$v] == 6000)
+                            $mainShapes[size($mainShapes)] = $target;
+
+                        // apply the optional smoothing only during export
+                        if ($exportMode && `optionVar -q SHAPESExportSmoothed`)
+                        {
+                            polySmooth -dv $divisions -sdt 2 -ch 0 $shape;
+                        }
+
+                        $shape = shapesCommon_fullPath(`rename $shape ($shape + "_extracted")`);
+                    }
+                    flushUndo;
+
+                    // use the connection info to build a re-connect string
+                    if (size($gShapes_exportConnection))
+                    {
+                        $gShapes_exportConnection[1] = substituteAllString($gShapes_exportConnection[1], "%index", $id);
+                        $connections += "connectAttr -f " + $gShapes_exportConnection[0] + " " + $gShapes_exportConnection[1] + ";\n";
+                        $gShapes_rebuildConnection[1] = substituteAllString($gShapes_rebuildConnection[1], "%index", $gShapes_targetIndex);
+                        $rebuildConnections += "connectAttr -f " + $gShapes_rebuildConnection[0] + " " + $gShapes_rebuildConnection[1] + ";";
+                    }
+
+                    // if the extraction returns none the current channel contains no point data
+                    // in this case create a helper attribute
+                    if ($shape != "")
+                    {
+                        if ($v == 0)
+                        {
+                            // the target name already exists in the scene create a unique name
+                            // and temporarily rename the existing object in order to be able
+                            // to rename the extracted shape
+                            // the renaming is reversed at the end of the process
+                            // newName() returns the old name and new name as a list
+                            string $uniqueName[] = shapesAction_newName($target);
+                            if ($uniqueName[1] != "")
+                            {
+                                string $long[] = `ls -l $uniqueName[0]`;
+                                if ($long[0] == "|" + $uniqueName[0])
+                                {
+                                    $renameList[size($renameList)] = $uniqueName[0];
+                                    $renameList[size($renameList)] = $uniqueName[1];
+                                    rename $uniqueName[0] $uniqueName[1];
+                                }
+                            }
+                            $shape = shapesCommon_fullPath(`rename $shape $target`);
+
+                            string $shapeWrite = $shape;
+                            if ($mirror)
+                            {
+                                $shapeWrite = shapesMirror_swapSideLabel($shape);
+                                $shapeWrite = shapesCommon_removeNodePath($shapeWrite);
+                                fprint $fileID ("rename " + $shape + " " + $shapeWrite + ";\n");
+                            }
+                            fprint $fileID ("blendShape -e -t ($space + $geo) " + $id + " " + $shapeWrite + " " + (($values[$v] - 5000) / 1000.0) + " " + $bsNameWrite + ";\n");
+                            $emptyCheck[size($emptyCheck)] = "SHAPES_setEmptyTargetData " + $bsNameWrite + " " + $id + " " + $values[$v] + ";\n";
+                        }
+                        else
+                        {
+                            $shape = shapesCommon_fullPath(`rename $shape ($target + "_inbetween" + $counter)`);
+                            fprint $fileID ("blendShape -e -ib -t ($space + $geo) " + $id + " " + $shape + " " + (($values[$v] - 5000) / 1000.0) + " " + $bsNameWrite + ";\n");
+                            $emptyCheck[size($emptyCheck)] = "SHAPES_setEmptyTargetData " + $bsNameWrite + " " + $id + " " + $values[$v] + ";\n";
+                            $counter ++;
+                        }
+                        $shapes[size($shapes)] = $shape;
+                    }
+                    else
+                    {
+                        $helperAttr[size($helperAttr)] = "addAttr -ln " + $target + " -k 1 " + $bsNameWrite + ";\n";
+                        $helper = 1;
+                    }
+                }
+
+                // re-connect the ramp weights node
+                if ($wtsCtrl != "")
+                    connectAttr $wtsCtrlOutConn[0] $wtsCtrlOutConn[1];
+
+                if (!$helper)
+                    $id ++;
+            }
+            else if (!$drivenSet)
+            {
+                string $attrName = $target;
+                if ($mirror)
+                    $attrName = shapesMirror_swapSideLabel($target);
+                $helperAttr[size($helperAttr)] = "addAttr -ln " + $attrName + " -k 1 " + $bsNameWrite + ";\n";
+                if (`getAttr -l ($gShapes_bsNode + "." + $target)`)
+                {
+                    $helperAttr[size($helperAttr)] = "setAttr -l 1 " + $bsNameWrite + "." + $attrName + ";\n";
+                }
+            }
+            // process the driven set
+            else if ($drivenSet)
+            {
+                // create the driven set master group
+                if (!$drivenSetInit)
+                {
+                    fprint $fileID (shapesSet_performCreateSet($gShapes_groupSetAttrName, $gShapes_groupSetAttrName, 1, 0));
+                    $drivenSetInit = 1;
+                    $drivenSets[size($drivenSets)] = $gShapes_groupSetAttrName;
+                }
+
+                // create the driven set
+                fprint $fileID (shapesSet_performCreateSet($target, $gShapes_setAttrName, 0, 0));
+                fprint $fileID ("sets -e -fe " + $gShapes_groupSetAttrName + " " + $target + ";\n");
+
+                // add the nodes to the set
+                string $members[] = shapesSet_getSetMembers($target);
+                if (size($members))
+                {
+                    fprint $fileID ("lockNode -l 0 " + $target + ";\n");
+
+                    fprint $fileID ("select -r " + stringArrayToString($members, " ") + ";\n");
+                    fprint $fileID ("sets -e -fe " + $target + ";\n");
+                    fprint $fileID ("select -cl;\n");
+
+                    string $attrString = "";
+                    // add the default attributes
+                    for ($node in $members)
+                    {
+                        string $attrList[] = shapesSet_getDefaultAttributeList($target, $node);
+                        for ($attr in $attrList)
+                        {
+                            $attrString = "default_" + $node + "___" + $attr;
+                            fprint $fileID ("addAttr -ln " + $attrString + " -at \"float\" -k 0 " + $target + ";\n");
+                            float $defaultValue = `getAttr ($target + "." + $attrString)`;
+                            fprint $fileID ("setAttr -l 1 " + $target + "." + $attrString + " " + $defaultValue + ";\n");
+                        }
+                    }
+
+                    $attrString = `getAttr ($target + ".SHAPES_drivenSet_attributes")`;
+                    fprint $fileID ("setAttr " + $target + ".SHAPES_drivenSet_attributes -type \"string\" \"" + $attrString + "\";\n");
+
+                    fprint $fileID ("lockNode -l 1 " + $target + ";\n");
+
+                    string $curves[] = `listConnections -s 0 -d 1 -type "animCurve" ($target + ".value")`;
+                    for ($c in $curves)
+                    {
+                        string $dest[] = `listConnections -s 0 -d 1 -p 1 -scn 1 ($c + ".output")`;
+                        if (size($dest))
+                        {
+                            string $tempNode[] = stringToStringArray($dest[0], ".");
+                            if (`nodeType $tempNode[0]` == "blendWeighted")
+                                $dest = `listConnections -s 0 -d 1 -p 1 -scn 1 ($tempNode[0] + ".output")`;
+                        }
+                        fprint $fileID (shapesUtil_readSdk($c, $dest[0], 1, 0));
+                    }
+
+                    $drivenSets[size($drivenSets)] = $target;
+                }
+            }
+            // export the weights
+            if (shapesData_hasWeights(shapesData_getShapeIndex($target)) && $wtsCtrl == "")
+            {
+                string $mapName = "export_" + $target;
+                string $weightsPath = "";
+                if ($exportMode && `optionVar -q SHAPESUseCustomNodeDataExportPath`)
+                    $weightsPath = $exportPath;
+                shapesWeights_exportShapeWeights $mapName $weightsPath 0 1 0;
+                $shapeWeights[size($shapeWeights)] = $mapName;
+            }
+        }
+        progressBar -e -s 1 $gMainProgressBar;
+    }
+    progressBar -e -ep $gMainProgressBar;
+
+    fprint $fileID "\n";
+
+    // write the names of the weight maps to the environment
+    if (size($shapeWeights))
+    {
+        fprint $fileID "// store the weight maps\n";
+        fprint $fileID ("optionVar -sv SHAPESRestoreShapeWeights \"" + stringArrayToString($shapeWeights, ",") + "\";\n");
+        fprint $fileID "\n";
+    }
+
+    // don't add the attributes in reference mode because they already exist in the original file
+    if (!$referenceMode)
+    {
+        // write the helper attributes
+        fprint $fileID "// add the helper attributes\n";
+        fprint $fileID (stringArrayToString($helperAttr, ""));
+        fprint $fileID "\n";
+    }
+
+    if (size($shapes))
+    {
+        string $deleteStrings[] = $shapes;
+        if ($mirror)
+        {
+            for ($i = 0; $i < size($deleteStrings); $i ++)
+                $deleteStrings[$i] = shapesMirror_swapSideLabel($deleteStrings[$i]);
+        }
+        string $deleteString = stringArrayToString($deleteStrings, " ");
+        fprint $fileID ("delete " + $deleteString + ";\n");
+    }
+
+    fprint $fileID "\n";
+    fprint $fileID "// check for empty channels\n";
+
+    string $emptyCheckString = stringArrayToString($emptyCheck, "");
+    if (size($emptyCheck))
+        fprint $fileID $emptyCheckString;
+
+    if ($include)
+    {
+        string $sequenceItems[];
+
+        fprint $fileID "\n";
+        fprint $fileID "// connect drivers to shapes\n";
+
+        progressBar -e -bp -ii 0 -max (size($targetList)) -st "Exporting Drivers..." $gMainProgressBar;
+        $gShapes_exportProcess = 1;
+
+        string $writeString;
+        for ($listItem in $targetList)
+        {
+            if (stringArrayContains($listItem, $processList))
+            {
+                string $target = $listItem;
+                string $inputs[] = shapesMain_getTargetInput(shapesMain_getQueryPlug($target));
+                string $node = $inputs[0];
+                string $type = $inputs[1];
+                int $index = shapesData_getShapeIndex($target);
+                string $wtsCtrl = shapesData_getWeightsControllerConnection($index);
+                string $queryPlug = shapesMain_getQueryPlug($target);
+
+                if ($mirror)
+                {
+                    treeView -e -cs shpUI_targetTree;
+                    treeView -e -si $target 1 shpUI_targetTree;
+                    refresh;
+                    shapesMain_buildTargetSlider;
+                    shapesDriver_performMirrorDriverSettings;
+                }
+
+                if ($type == "combo")
+                    ;
+                else if ($type == "wd")
+                {
+                    $writeString = shapesUtil_readWeightDriver($node, $bsNode, $queryPlug, $mirror);
+                    if ($referenceMode)
+                        $writeString = substituteAllString($writeString, $refPath, "");
+                    fprint $fileID $writeString;
+                    string $conn[] = `listRelatives -p $node`;
+                    $weightDriver[size($weightDriver)] = $conn[0];
+                    $conn = `listConnections ($node + ".driverMatrix")`;
+                    $weightDriver[size($weightDriver)] = $conn[0];
+                    // check for a sequence
+                    string $sequencer = shapesDriver_getShapeSequencer($target, {});
+                    if ($sequencer != "")
+                    {
+                        if (!stringArrayContains($target, $sequenceItems))
+                            $sequenceItems[size($sequenceItems)] = $target;
+                    }
+                }
+                else if ($type == "rbf" || $type == "pi")
+                {
+                    string $conn[] = `listRelatives -p $node`;
+                    if (!stringArrayContains($conn[0], $weightDriver))
+                    {
+                        $writeString = shapesUtil_readWeightDriver($node, $bsNode, $queryPlug, $mirror);
+                        if ($referenceMode)
+                            $writeString = substituteAllString($writeString, $refPath, "");
+                        fprint $fileID $writeString;
+                        $weightDriver[size($weightDriver)] = $conn[0];
+                    }
+                }
+                else if ($type == "sdk")
+                {
+                    $writeString = shapesUtil_readSdk($node, $queryPlug, 0, $mirror);
+                    if ($referenceMode)
+                        $writeString = substituteAllString($writeString, $refPath, "");
+                    fprint $fileID $writeString;
+                    if (!$mirror)
+                        $writeName = substituteAllString($node, $refPath, "");
+                    else
+                        $writeName = shapesMirror_swapSideLabel(substituteAllString($node, $refPath, ""));
+                    fprint $fileID ("addAttr -ln SHAPES_sdk -at message " + $writeName + ";\n");
+                    $sdk[size($sdk)] = $node;
+                    // check for a sequence
+                    string $sequencer = shapesDriver_getShapeSequencer($target, {});
+                    if ($sequencer != "")
+                    {
+                        if (!stringArrayContains($target, $sequenceItems))
+                            $sequenceItems[size($sequenceItems)] = $target;
+                    }
+                }
+                else if ($type == "animation")
+                    ;
+                else if ($type == "connection")
+                {
+                    string $input[] = `listConnections -s 1 -d 0 -p 1 $queryPlug`;
+                    fprint $fileID ("connectAttr -f " + substituteAllString($input[0], $refPath, "") + " " + $queryPlug + ";\n");
+                }
+                else if ($type == "msdk")
+                {
+                    $writeString = shapesUtil_readSdk($node, $queryPlug, 0, 0);
+                    if ($referenceMode)
+                        $writeString = substituteAllString($writeString, $refPath, "");
+                    fprint $fileID $writeString;
+                    $sdk[size($sdk)] = $node;
+                }
+
+                if ($wtsCtrl != "")
+                {
+                    string $wtsCtrlItems[] = stringToStringArray($wtsCtrl, ".");
+                    int $ctrlExists = 0;
+                    if (stringArrayContains($wtsCtrlItems[0], $wtsCtrlNodes))
+                        $ctrlExists = 1;
+                    string $ctrlType = "rampWeights";
+                    if (`nodeType $wtsCtrlItems[0]` == "weightsServer")
+                        $ctrlType = "weightsServer";
+                    int $id = shapesArray_stringArrayFind($target, 0, $mainShapes);
+
+                    if (!$ctrlExists)
+                    {
+                        fprint $fileID ("$ctrlNodeTemp = `brWeightsControllerCreateNode " + $gShapes_bsNode + " " + $target + " " + $ctrlType + "`;\n");
+                        fprint $fileID ("rename $ctrlNodeTemp " + $wtsCtrlItems[0] + ";\n");
+                        fprint $fileID ("$indexTemp = `brWeightsControllerConnectDeformer " + $wtsCtrlItems[0] + " " + $gShapes_bsNode + " " + $id + "`;\n");
+                        fprint $fileID ("brWeightsControllerConnectGeometry " + $wtsCtrlItems[0] + " $indexTemp " + $gShapes_bsNode + " " + $id + ";\n");
+                        fprint $fileID ("brWeightsControllerTransferComponents " + $wtsCtrlItems[0] + " $indexTemp " + $gShapes_bsNode + " " + $id + ";\n");
+                        if ($ctrlType == "rampWeights")
+                        {
+                            $writeString = shapesUtil_readRampWeights($wtsCtrlItems[0]);
+                        }
+                        else
+                        {
+                            $writeString = shapesUtil_readWeightsServer($wtsCtrlItems[0]);
+                            $writeString += brWeightsServerGetAllInfluences($wtsCtrlItems[0], {}, {}, {}, {}, {}, {}, {}, {}, 0);
+                        }
+                    }
+                    else
+                    {
+                        fprint $fileID ("$indexTemp = `brWeightsControllerConnectDeformer " + $wtsCtrlItems[0] + " " + $gShapes_bsNode + " " + $id + "`;\n");
+                        fprint $fileID ("brWeightsControllerConnectGeometry " + $wtsCtrlItems[0] + " $indexTemp " + $gShapes_bsNode + " " + $id + ";\n");
+                        fprint $fileID ("brWeightsControllerTransferComponents " + $wtsCtrlItems[0] + " $indexTemp " + $gShapes_bsNode + " " + $id + ";\n");
+                    }
+
+                    if (!$ctrlExists)
+                    {
+                        if ($referenceMode)
+                            $writeString = substituteAllString($writeString, $refPath, "");
+                        fprint $fileID $writeString;
+
+                        $wtsCtrlNodes[size($wtsCtrlNodes)] = $wtsCtrlItems[0];
+
+                        if ($ctrlType == "rampWeights")
+                        {
+                            string $conn[] = `listConnections -s 1 -d 0 -p 1 -c 1 -type "animCurve" $wtsCtrl`;
+                            if (size($conn))
+                            {
+                                string $driven[] = stringToStringArray($conn[0], ".");
+                                string $driver[] = stringToStringArray($conn[1], ".");
+                                $writeString = shapesUtil_readSdk($driver[0], $conn[0], 0, 0);
+                                if ($referenceMode)
+                                    $writeString = substituteAllString($writeString, $refPath, "");
+                                fprint $fileID $writeString;
+                                $writeName = substituteAllString($driver[0], $refPath, "");
+                                fprint $fileID ("addAttr -ln SHAPES_sdk -at message " + $writeName + ";\n");
+                                $sdk[size($sdk)] = $driver[0];
+                            }
+                            else
+                            {
+                                $conn = `listConnections -s 1 -d 0 -p 1 -c 1 -type "weightDriver" $wtsCtrl`;
+                                if (size($conn))
+                                {
+                                    string $driven[] = stringToStringArray($conn[0], ".");
+                                    string $driver[] = stringToStringArray($conn[1], ".");
+                                    $writeString = shapesUtil_readWeightDriver($driver[0], $bsNode, $conn[0], 0);
+                                    if ($referenceMode)
+                                        $writeString = substituteAllString($writeString, $refPath, "");
+                                    fprint $fileID $writeString;
+                                    string $rel[] = `listRelatives -p $driver[0]`;
+                                    $weightDriver[size($weightDriver)] = $rel[0];
+                                    if (!shapesDriver_getWeightDriverType($driver[0]))
+                                    {
+                                        $conn = `listConnections ($driver[0] + ".driverMatrix")`;
+                                        $weightDriver[size($weightDriver)] = $conn[0];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                progressBar -e -s 1 $gMainProgressBar;
+            }
+        }
+        progressBar -e -ep $gMainProgressBar;
+        $gShapes_exportProcess = 0;
+
+        fprint $fileID "\n";
+        fprint $fileID "// connect sequences\n";
+        for ($item in $sequenceItems)
+        {
+            string $sequencer = shapesDriver_getShapeSequencer($item, {});
+            string $driverPlug[] = `listConnections -s 1 -d 0 -p 1 ($sequencer + ".driverValue")`;
+            string $tan[] = shapesDriver_getShapeSequenceItems($item, "tangents");
+            string $curves[] = shapesDriver_getShapeSequenceItems($item, "curves");
+            string $writeString = shapesDriver_performCreateSequence(   $driverPlug[0],
+                                                                        shapesArray_stringArrayToFloatArray(shapesDriver_getShapeSequenceItems($item, "values")),
+                                                                        shapesDriver_getShapeSequenceItems($item, "targets"),
+                                                                        $tan[0],
+                                                                        0, 1,
+                                                                        $curves,
+                                                                        $mirror);
+            if ($referenceMode)
+                $writeString = substituteAllString($writeString, $refPath, "");
+            fprint $fileID $writeString;
+            $sequenceCurves = stringArrayCatenate($sequenceCurves, $curves);
+        }
+
+        fprint $fileID "\n";
+        fprint $fileID "// other connections\n";
+        if ($referenceMode)
+            $connections = substituteAllString($connections, $refPath, "");
+        fprint $fileID $connections;
+    }
+
+    // re-build all previous connections to the blend shape node
+    if ($rebuildConnections != "")
+    {
+        catchQuiet(`eval $rebuildConnections`);
+        $rebuildConnections = substituteAllString($rebuildConnections, ";", "; //\n// ");
+        br_displayMessage -info ("Re-connected attributes:\n" + $rebuildConnections);
+    }
+
+    if ($include)
+    {
+        fprint $fileID "\n";
+        fprint $fileID "// setup combos\n";
+
+        progressBar -e -bp -ii 0 -max (size($targetList)) -st "Exporting Combos..." $gMainProgressBar;
+
+        string $writeString;
+        for ($listItem in $targetList)
+        {
+            if (stringArrayContains($listItem, $processList))
+            {
+                string $target = $listItem;
+
+                string $targets[];
+                string $drivers[];
+                string $comboNodes[];
+                string $shapeDrivers[];
+
+                shapesCombo_getComboNodes($target, $targets, $drivers, $comboNodes, $shapeDrivers);
+                for ($i = 0; $i < size($targets); $i ++)
+                {
+                    if ($targets[$i] == $target)
+                    {
+                        // call the label swapping just to get the identifier
+                        shapesMirror_swapSideLabel($gShapes_bsNode);
+
+                        string $comboString = shapesCombo_performCreateCombo($targets[$i], stringToStringArray($drivers[$i], ","), 0, $mirror);
+                        if ($referenceMode)
+                            $comboString = substituteAllString($comboString, $refPath, "");
+                        fprint $fileID $comboString;
+                        string $nodes[] = stringToStringArray($comboNodes[$i], ",");
+                        if ($shapeDrivers[0] != "" && $shapeDrivers[0] != "-")
+                        {
+                            string $conn[] = `listConnections -p 1 -scn 1 -type "animCurve" ($nodes[0] + "." + shapesCombo_secondPlugName($nodes[0]))`;
+                            if (size($conn))
+                            {
+                                fprint $fileID "\n";
+                                fprint $fileID "// setup sdk driver\n";
+                                $conn = stringToStringArray($conn[0], ".");
+                                $writeString = shapesUtil_readSdk($conn[0], $nodes[0] + ".input2", 0, $mirror);
+                                if ($referenceMode)
+                                    $writeString = substituteAllString($writeString, $refPath, "");
+                                fprint $fileID $writeString;
+                                if (!$mirror)
+                                    $writeName = substituteAllString($conn[0], $refPath, "");
+                                else
+                                    $writeName = shapesMirror_swapSideLabel(substituteAllString($conn[0], $refPath, ""));
+                                fprint $fileID ("addAttr -ln SHAPES_sdk -at message " + $writeName + ";\n");
+                                $sdk[size($sdk)] = $conn[0];
+                            }
+                            else
+                            {
+                                $conn = `listConnections -p 1 -scn 1 -type "weightDriver" ($nodes[0] + "." + shapesCombo_secondPlugName($nodes[0]))`;
+                                if (!size($conn))
+                                    $conn = `listConnections -p 1 -scn 1 -type "poseInterpolator" ($nodes[0] + "." + shapesCombo_secondPlugName($nodes[0]))`;
+                                if (size($conn))
+                                {
+                                    fprint $fileID "\n";
+                                    fprint $fileID "// setup weight driver\n";
+                                    $conn = stringToStringArray($conn[0], ".");
+                                    $writeString = shapesUtil_readWeightDriver($conn[0], $bsNode, $nodes[0] + ".input2", $mirror);
+                                    if ($referenceMode)
+                                        $writeString = substituteAllString($writeString, $refPath, "");
+                                    fprint $fileID $writeString;
+                                    string $temp[] = `listRelatives -p $conn[0]`;
+                                    $weightDriver[size($weightDriver)] = $temp[0];
+                                    if (!shapesDriver_getWeightDriverType($conn[0]))
+                                    {
+                                        $temp = `listConnections ($conn[0] + ".driverMatrix")`;
+                                        $weightDriver[size($weightDriver)] = $temp[0];
+                                    }
+                                }
+                            }
+                        }
+                        for ($node in $nodes)
+                            $combos[size($combos)] = $node;
+                        fprint $fileID "\n";
+                    }
+                    progressBar -e -s 1 $gMainProgressBar;
+                }
+            }
+        }
+        progressBar -e -ep $gMainProgressBar;
+    }
+
+    fprint $fileID "\n";
+    fprint $fileID "// apply the weight maps\n";
+    fprint $fileID ("SHAPESImportBlendShapeSetup " + $bsNameWrite + ";\n");
+    fprint $fileID "\n";
+
+    fprint $fileID "select -cl;\n";
+    fprint $fileID "}\n";
+    fprint $fileID "print \"// Finished re-building the blend shape node. //\\n\";\n";
+    fclose $fileID;
+
+    // set the global indices back
+    $gShapes_targetIndex = $tempIndex;
+
+    // mirror the shapes if requested
+    if ($mirror)
+    {
+        string $axis = shapesMirror_getAxisString();
+        int $inv[] = {1, 1, 1};
+        if ($axis == "x")
+            $inv[0] = -1;
+        else if ($axis == "y")
+            $inv[1] = -1;
+        else
+            $inv[2] = -1;
+
+        select -r $shapes;
+        string $group = `group -r`;
+        xform -os -piv 0 0 0 $group;
+        xform -s $inv[0] $inv[1] $inv[2] $group;
+
+        string $freezeCmd = "makeIdentity -a 1 -t 0 -r 0 -s 1 -pn 1 ";
+        $freezeCmd += $group;
+        catchQuiet(`eval($freezeCmd)`);
+
+        select -r (`listRelatives -c $group`);
+        parent -w;
+        delete $group;
+    }
+
+    // disconnect the data node so it can be exported
+    string $dataNode = shapesData_getDataNode($bsNodeFullName);
+    if (!$referenceMode)
+    {
+        disconnectAttr ($bsNodeFullName + ".SHAPESData") ($dataNode + ".SHAPESData");
+    }
+    else
+    {
+        // in case of referenced mode the node needs to get duplicated
+        // or the namespace will remain on the exported node
+        string $dupList[] = `duplicate $dataNode`;
+        $dataNode = $dupList[0];
+    }
+
+    // export the extracted shapes
+    if (size($shapes))
+        select -r $shapes;
+    else
+        select -cl;
+
+    file -f -op $fileOptions -typ $fileTypeMesh -es ($exportPath + "/" + $exportName + "_shapes." + $fileExtMesh);
+    br_displayMessage -info ("Exported " + size($shapes) + " shapes to \"" + ($exportPath + "/" + $exportName + "_shapes." + $fileExtMesh) + "\".");
+
+    select -r $dataNode;
+    file -f -op "v=0" -typ $fileType[0] -es ($exportPath + "/" + $exportName + "_shapes_data." + $currentExt);
+    br_displayMessage -info ("Exported the data node to \"" + ($exportPath + "/" + $exportName + "_shapes_data." + $currentExt) + "\".");
+
+    select -cl;
+
+    // delete the extracted shapes
+    if (size($shapes))
+        delete $shapes;
+
+    // re-connect the data node
+    if (!$referenceMode)
+        connectAttr -f ($bsNodeFullName + ".SHAPESData") ($dataNode + ".SHAPESData");
+    else
+        delete $dataNode;
+
+    // rename any objects which have been renamed during the export
+    if (size($renameList))
+    {
+        for ($i = 0; $i < size($renameList); $i += 2)
+            rename $renameList[$i + 1] $renameList[$i];
+    }
+
+    int $setSize = size($drivenSets) - 1;
+    if ($setSize < 0)
+        $setSize = 0;
+    br_displayMessage -info ("Exported the blend shape setup with " + size($shapes) + " shapes and " + $setSize + " driven sets to \"" + $fileName + "\".");
+
+    // when called for only exporting the setup check if the nodes should get deleted
+    // when called from updating the mesh the nodes must be deleted
+
+    int $clean;
+    string $sourceBsNode;
+    string $sourceDataNode;
+    string $tempBsName;
+    string $tempDataName;
+
+    if ($exportMode)
+    {
+        if ($exportOptions[0] != 1 && !$mirror)
+            $clean = 1;
+
+        // to correctly apply the mirrored setup rename the source blend shape node
+        // to avoid a name clash because the name is stored in the exported setup;
+        // then load the opposite mesh and delete any existing blend shape node;
+        // with a clean mesh the setup can be imported
+        if ($mirror)
+        {
+            $sourceBsNode = $gShapes_bsNode;
+            $sourceDataNode = shapesData_getDataNode($gShapes_bsNode);
+            $tempBsName = `rename $gShapes_bsNode ($gShapes_bsNode + "_temp")`;
+            $tempDataName = `rename $sourceDataNode ($sourceDataNode + "_temp")`;
+            select -r $skin;
+            shapesMain_getMeshSelection 1;
+            select -cl;
+
+            string $bsNodes[] = shapesMain_listBlendShapeNodes($skin, 1);
+            if (stringArrayContains($bsNameWrite, $bsNodes))
+            {
+                optionMenu -e -v $bsNameWrite shpUI_bsOption;
+                shapesMain_updateSelectedBsNode;
+                shapesAction_deleteBlendShapeNode;
+            }
+        }
+    }
+    else
+    {
+        string $choiceList[] = {"1", "3", "5"};
+        if (stringArrayContains($transferOptions[1], $choiceList))
+            $clean = 1;
+    }
+
+    if ($clean)
+    {
+        if (size($combos))
+            delete $combos;
+        if (size($weightDriver))
+            delete $weightDriver;
+        if (size($sdk))
+        {
+            for ($c in $sdk)
+            {
+                // in case of a driver based combo the sdk was part of the combo
+                // and has been already deleted, thus not all sdk might exist anymore
+                if (`objExists $c`)
+                    delete $c;
+            }
+        }
+        if (size($sequenceCurves))
+            delete $sequenceCurves;
+        if (size($drivenSets))
+        {
+            for ($setName in $drivenSets)
+            {
+                catchQuiet(`setAttr ($setName + ".value") 0`);
+                lockNode -l 0 $setName;
+                delete $setName;
+            }
+        }
+
+        if (size($wtsCtrlNodes))
+        {
+            string $sel[] = `ls -sl -fl`;
+            for ($wtsCtrl in $wtsCtrlNodes)
+            {
+                select -r $wtsCtrl;
+                brWeightsControllerDeleteNode(`nodeType $wtsCtrl`, 1);
+                $gShapes_rampPlug = "";
+            }
+            select -r $sel;
+        }
+
+        // refresh the target list
+        shapesList_listBlendShapeTargets 1;
+    }
+
+    // remove the blend shape node if requested through the export options
+    if ($exportMode && $exportOptions[0] > 2 && !$mirror)
+        shapesAction_deleteBlendShapeNode;
+
+    // rebuild the blend shape setup if requested
+    if ($exportMode && $exportOptions[0] > 3)
+    {
+        if (size($renameList))
+        {
+            string $tempList[];
+            for ($i = 0; $i < size($renameList); $i += 2)
+            {
+                string $long[] = `ls -l $renameList[$i]`;
+                $tempList[size($tempList)] = "// " + $long[0];
+            }
+
+            string $msg = "\n// Unable to import the setup because of a name clash with an existing node.\n";
+            $msg += "// Affected node/s:\n" + stringArrayToString($tempList, "\n") + "\n";
+            $msg += "// Reload the scene and rename the node/s or the blend shape channel/s and export again.\n";
+            br_displayMessage -info $msg;
+            br_displayMessage -error "An error occurred. See script editor for details.";
+        }
+
+        shapesUtil_performImportShapeSetup $fileName;
+
+        if ($mirror)
+        {
+            rename $tempBsName $sourceBsNode;
+            rename $tempDataName $sourceDataNode;
+            shapesUtil_swapGroupSideIdentifier (shapesMirror_swapSideLabel($sourceDataNode));
+        }
+
+        // load the mesh with the new setup
+        $gShapes_rebuiltSetup = 1;
+        select -r $skin;
+        shapesMain_getMeshSelection 1;
+        select -cl;
+        $gShapes_rebuiltSetup = 0;
+    }
+
+    if ($exportMode && $refOption > 1)
+        shapesUtil_removeReferenceEdits;
+
+    return {$currentExt, $fileType[0]};
+}
+
+
+global proc string shapesUtil_readSdk( string $curve, string $target, int $drivenSet, int $mirror )
+{
+    //
+    // build a string for writing from the given sdk curve;
+    // if reading for a driven set during export the curve names need
+    // to be found procedually because the name can be arbitrary
+    // because of existing blendWeighted nodes
+    //
+    global string $gShapes_exportMirrorSetupSequenceData;
+
+    string $source[] = `listConnections -p 1 -scn 1 ($curve + ".input")`;
+
+    // get the number of keys for the sdk curve
+    int $indexList[] = `getAttr -mi ($curve + ".ktv")`;
+
+    // get the tangents
+    string $inTangents[] = `keyTangent -q -itt $curve`;
+    string $outTangents[] = `keyTangent -q -ott $curve`;
+
+    float $inAngle[] = `keyTangent -q -ia $curve`;
+    float $inWeight[] = `keyTangent -q -iw $curve`;
+    float $outAngle[] = `keyTangent -q -oa $curve`;
+    float $outWeight[] = `keyTangent -q -ow $curve`;
+
+    string $sourceName = $source[0];
+
+    string $namespaceString;
+    if (`gmatch $sourceName "*:*"`)
+    {
+        string $refParts[] = stringToStringArray($sourceName, ":");
+        string $parts[] = stringToStringArray($refParts[size($refParts) - 1], ".");
+        $namespaceString = "string $driver = `SHAPES_getNamespace " + $parts[0] + "` + \"" + $refParts[size($refParts) - 1] + "\";\n";
+        $sourceName = "$driver";
+    }
+
+    if ($mirror || ($mirror && $gShapes_exportMirrorSetupSequenceData != ""))
+    {
+        string $refParts[] = stringToStringArray($sourceName, ":");
+        string $parts[] = stringToStringArray($refParts[size($refParts) - 1], ".");
+        if ($mirror)
+            $sourceName = shapesMirror_swapSideLabel($parts[0]);
+        else
+            $sourceName = $gShapes_exportMirrorSetupSequenceData;
+        $sourceName += "." + $parts[1];
+        stringArrayRemoveAtIndex(size($refParts) - 1, $refParts);
+        string $sep;
+        if (size($refParts) > 0)
+            $sep = ":";
+        $sourceName = stringArrayToString($refParts, ":") + $sep + $sourceName;
+
+        $target = shapesMirror_swapAllSideLabels($target);
+    }
+
+    string $write = "{\n";
+    $write += $namespaceString;
+    string $angleWeightString;
+    for ($k = 0; $k < size($indexList); $k ++)
+    {
+        // get the time value pair for the current index
+        float $values[] = `getAttr ($curve + ".ktv[" + $indexList[$k] + "]")`;
+        //if ($mirror) {}
+
+        string $inTan = $inTangents[$k];
+        if ($inTan != "fixed")
+            $inTan = " -itt " + $inTan;
+        else
+        {
+            $inTan = "";
+            // use the index instead of time because the actual key time
+            // might differ slightly after setting and the values would not be set
+            $angleWeightString += "keyTangent -e -in " + $k + " -ia " + $inAngle[$k] + " -iw " + $inWeight[$k] + ";\n";
+        }
+
+        string $outTan = $outTangents[$k];
+        if ($outTan != "fixed")
+            $outTan = " -ott " + $outTan;
+        else
+        {
+            $outTan = "";
+            // use the index instead of time because the actual key time
+            // might differ slightly after setting and the values would not be set
+            $angleWeightString += "keyTangent -e -in " + $k + " -oa " + $outAngle[$k] + " -ow " + $outWeight[$k] + ";\n";
+        }
+
+        $write += "setDrivenKeyframe -dv " + $values[0] + " -v " + $values[1] + " -cd " + $sourceName + $inTan + $outTan + " " + $target + ";\n";
+    }
+
+    string $curveName = $curve;
+    if ($mirror)
+        $curveName = shapesMirror_swapSideLabel($curve);
+
+    // during the export of a setup mirror readSdk is called from the sequence creation;
+    // in this case the given curve name doesn't contain a side identifier which is
+    // necessary to create unique nodes but for example the target string has already the right name;
+    // use $gShapes_exportMirrorSetupSequenceData to recognize this special case;
+    // take the attribute from the given curve name and combine it with the side-labeled sequencer node
+    if ($gShapes_exportMirrorSetupSequenceData != "" && !$mirror)
+    {
+        string $parts[] = stringToStringArray($curve, "_");
+        $curveName = $gShapes_exportMirrorSetupSequenceData + "_" + $parts[size($parts) - 1];
+    }
+
+    if ($drivenSet)
+    {
+        $write += "string $tempCurve = `SHAPESImportGetLastCurve 0`;\n";
+        $write += "if ($tempCurve == \"\") $tempCurve = \"" + $curveName + "\";\n";
+        string $items[] = stringToStringArray($target, ".");
+        $write += "addAttr -ln SHAPES__" + $items[0] + "_" + $items[1] + " -at message $tempCurve;\n";
+    }
+    else
+    {
+        $write += "string $tempCurve = \"" + $curveName + "\";\n";
+        $target = substitute("\\.", $target, "_");
+        $write += "rename " + $target + " $tempCurve;\n";
+    }
+
+    $write += "select -r $tempCurve;\n";
+
+    int $pre = `getAttr ($curve + ".preInfinity")`;
+    int $post = `getAttr ($curve + ".postInfinity")`;
+    $write += "setAttr ($tempCurve + \".preInfinity\") " + $pre + ";\n";
+    $write += "setAttr ($tempCurve + \".postInfinity\") " + $post + ";\n";
+    $write += $angleWeightString;
+    $write += "}\n";
+    $write += "select -cl;\n";
+
+    return $write;
+}
+
+
+global proc string shapesUtil_readWeightDriver( string $wdShape, string $bsNode, string $target, int $mirror )
+{
+    //
+    // build a string for writing from the given weight driver node
+    //
+    int $rbf = shapesDriver_getWeightDriverType($wdShape);
+    string $poseAttr = shapesDriver_getPoseAttribute($wdShape);
+    int $pi = 0;
+    if (`nodeType $wdShape` == "poseInterpolator")
+        $pi = 1;
+
+    string $wdShapeName = $wdShape;
+    string $transform[] = `listRelatives -p $wdShape`;
+    string $transformName = $transform[0];
+    string $parentWd[] = `listRelatives-p $transform[0]`;
+    string $readerMat[];
+    string $drvNode[];
+    string $parentLoc[];
+    int $driverIds[];
+    string $rbfDrivers[];
+    string $rbfControllers[];
+    if (!$rbf)
+    {
+        $readerMat = `listConnections -s 1 -d 0 ($wdShape + ".readerMatrix")`;
+        $drvNode = `listConnections -s 1 -d 0 ($wdShape + ".driverMatrix")`;
+        $parentLoc = `listRelatives -p $drvNode`;
+    }
+    else if ($rbf || $pi)
+    {
+        $rbfDrivers = shapesDriver_getWeightDriverDriver($wdShape, $driverIds);
+
+        for ($i = 0; $i < size($driverIds); $i ++)
+        {
+            string $conn[] = `listConnections -s 1 -d 0 ($wdShape + ".driverList[" + $driverIds[$i] + "].controlNode")`;
+            if (size($conn))
+                $rbfControllers[size($rbfControllers)] = $conn[0];
+            else
+                $rbfControllers[size($rbfControllers)] = "none";
+        }
+    }
+
+    string $spaceCheck[] = {$parentWd[0], $parentLoc[0]};
+    string $varList[] = {"$parent1", "$parent2"};
+    string $varListRbf[];
+
+    string $namespaceString;
+    for ($i = 0; $i < size($spaceCheck); $i ++)
+    {
+        if (`gmatch $spaceCheck[$i] "*:*"`)
+        {
+            string $refParts[] = stringToStringArray($spaceCheck[$i], ":");
+            $namespaceString += "string $parent" + $i + " = `SHAPES_getNamespace " + $refParts[size($refParts) - 1] + "` + \"" + $refParts[size($refParts) - 1] + "\";\n";
+            if ($i == 0)
+                $parentWd[0] = "$parent" + $i;
+            else if ($i == 1)
+                $parentLoc[0] = "$parent" + $i;
+        }
+    }
+    for ($i = 0; $i < size($rbfDrivers); $i ++)
+    {
+        if (`gmatch $rbfDrivers[$i] "*:*"`)
+        {
+            string $refParts[] = stringToStringArray($rbfDrivers[$i], ":");
+            $namespaceString += "string $driver" + $i + " = `SHAPES_getNamespace " + $refParts[size($refParts) - 1] + "` + \"" + $refParts[size($refParts) - 1] + "\";\n";
+            $varListRbf[size($varListRbf)] = "$driver" + $i;
+        }
+    }
+    for ($i = 0; $i < size($rbfControllers); $i ++)
+    {
+        if (`gmatch $rbfControllers[$i] "*:*"`)
+        {
+            string $refParts[] = stringToStringArray($rbfControllers[$i], ":");
+            $namespaceString += "string $controller" + $i + " = `SHAPES_getNamespace " + $refParts[size($refParts) - 1] + "` + \"" + $refParts[size($refParts) - 1] + "\";\n";
+            $rbfControllers[$i] = "$controller" + $i;
+        }
+        else
+            $rbfControllers[$i] = "none";
+    }
+
+    // when mirroring the names for reading the attributes must be different
+    // than the names which appear in the rebuild command
+    string $drvNodeWrite[] = $drvNode;
+    string $wdShapeNameWrite = $wdShapeName;
+    string $transformNameWrite = $transformName;
+    string $parentWdWrite[] = $parentWd;
+    int $parentIsCentered = 0;
+
+    if ($mirror)
+    {
+        $wdShapeNameWrite = shapesMirror_swapAllSideLabels($wdShapeName);
+        $transformNameWrite = shapesMirror_swapAllSideLabels($transformName);
+        $parentWdWrite[0] = shapesMirror_swapSideLabel($parentWd[0]);
+
+        if ($parentWdWrite[0] == $parentWd[0])
+            $parentIsCentered = 1;
+
+        if (!$rbf)
+        {
+            $readerMat[0] = shapesMirror_swapAllSideLabels($readerMat[0]);
+            $drvNodeWrite[0] = shapesMirror_swapAllSideLabels($drvNode[0]);
+            $parentLoc[0] = shapesMirror_swapSideLabel($parentLoc[0]);
+        }
+        else if ($rbf || $pi)
+        {
+            for ($i = 0; $i < size($rbfDrivers); $i ++)
+                $rbfDrivers[$i] = shapesMirror_swapSideLabel($rbfDrivers[$i]);
+        }
+    }
+
+    string $write = "{\n";
+    $write += $namespaceString;
+    $write += "string $wd = `createNode " + (`nodeType $wdShape`) + "`;\n";
+    $write += "string $transform[] = `listRelatives -p $wd`;\n";
+    $write += "rename $transform[0] " + $transformNameWrite + ";\n";
+    $write += "setAttr -l 1 " + $transformNameWrite + ".v;\n";
+    $write += "parent " + $transformNameWrite + " " + $parentWdWrite[0] + ";\n";
+    if (!$rbf)
+    {
+        $write += "spaceLocator -n " + $drvNodeWrite[0] + ";\n";
+        $write += "parent " + $drvNodeWrite[0] + " " + $parentLoc[0] + ";\n";
+    }
+
+    float $mat[];
+    if (!$rbf)
+    {
+        $mat = `xform -q -m $transform[0]`;
+        $write += "xform -m " + shapesArray_floatArrayToString($mat, " ") + " " + $transformNameWrite + ";\n";
+        $mat = `xform -q -m $drvNode[0]`;
+        $write += "xform -m " + shapesArray_floatArrayToString($mat, " ") + " " + $drvNodeWrite[0] + ";\n";
+    }
+    else
+    {
+        $mat = `xform -q -m $rbfDrivers[0]`;
+        $write += "xform -m " + shapesArray_floatArrayToString($mat, " ") + " " + $transformNameWrite + ";\n";
+    }
+
+    if (!$rbf && ($mirror && `optionVar -q SHAPESBehaviorMirror`))
+    {
+        float $angle = `floatFieldGrp -q -v1 shpUI_rangeField`;
+        if ($angle < 0)
+        {
+            // get the direction
+            string $dir[] = {"x", "y", "z"};
+            int $axisVal = `optionMenuGrp -q -sl shpUI_axisOption` - 1;
+            $write += "setAttr " + $transformNameWrite + ".t" + $dir[$axisVal] + " " + (`getAttr ($transform[0] + ".t" + $dir[$axisVal])` * -1) + ";\n";
+            $write += "setAttr " + $drvNodeWrite[0] + ".t" + $dir[$axisVal] + " " + (`getAttr ($drvNode[0] + ".t" + $dir[$axisVal])` * -1) + ";\n";
+        }
+    }
+
+    if (!$rbf)
+    {
+        $write += "setAttr " + $drvNodeWrite[0] + ".v 0;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".tx;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".ty;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".tz;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".rx;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".ry;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".rz;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".sx;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".sy;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".sz;\n";
+        $write += "setAttr -l 1 -k 0 " + $drvNodeWrite[0] + ".v;\n";
+
+        $write += "setAttr " + $wdShapeNameWrite + ".direction " + `getAttr ($wdShape + ".direction")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".invert " + `getAttr ($wdShape + ".invert")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".useRotate " + `getAttr ($wdShape + ".useRotate")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".twist " + `getAttr ($wdShape + ".twist")` + ";\n";
+        if (!$mirror)
+            $write += "setAttr " + $wdShapeNameWrite + ".angle " + `getAttr ($wdShape + ".angle")` + ";\n";
+        else
+        {
+            float $angle = `floatFieldGrp -q -v1 shpUI_rangeField`;
+            $write += "setAttr " + $wdShapeNameWrite + ".angle " + (abs($angle)) + ";\n";
+            if ($angle < 0)
+                $write += "setAttr " + $wdShapeNameWrite + ".invert 1;\n";
+        }
+        $write += "setAttr " + $wdShapeNameWrite + ".twistAngle " + `getAttr ($wdShape + ".twistAngle")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".centerAngle " + `getAttr ($wdShape + ".centerAngle")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".interpolation " + `getAttr ($wdShape + ".interpolation")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".useTranslate " + `getAttr ($wdShape + ".useTranslate")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".grow " + `getAttr ($wdShape + ".grow")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".translateMin " + `getAttr ($wdShape + ".translateMin")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".translateMax " + `getAttr ($wdShape + ".translateMax")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".iconSize " + `getAttr ($wdShape + ".iconSize")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".iconColorR " + `getAttr ($wdShape + ".iconColorR")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".iconColorG " + `getAttr ($wdShape + ".iconColorG")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".iconColorB " + `getAttr ($wdShape + ".iconColorB")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".drawCone " + `getAttr ($wdShape + ".drawCone")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".drawCenterCone " + `getAttr ($wdShape + ".drawCenterCone")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".drawWeight " + `getAttr ($wdShape + ".drawWeight")` + ";\n";
+        $write += "setAttr " + $wdShapeNameWrite + ".active " + `getAttr ($wdShape + ".active")` + ";\n";
+    }
+    else
+    {
+        if (!$pi)
+        {
+            int $state = `getAttr ($wdShape + ".opposite")`;
+            if ($mirror && `nodeType $rbfDrivers[0]` == "joint")
+                $state = 1 - $state;
+
+            $write += "setAttr " + $wdShapeNameWrite + ".type 1;\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".kernel " + `getAttr ($wdShape + ".kernel")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".evaluate " + `getAttr ($wdShape + ".evaluate")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".rbfMode " + `getAttr ($wdShape + ".rbfMode")` + ";\n";
+
+            $write += "setAttr " + $wdShapeNameWrite + ".radius " + `getAttr ($wdShape + ".radius")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".radiusType " + `getAttr ($wdShape + ".radiusType")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".meanDistance " + `getAttr ($wdShape + ".meanDistance")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".variance " + `getAttr ($wdShape + ".variance")` + ";\n";
+
+            $write += "setAttr " + $wdShapeNameWrite + ".useInterpolation " + `getAttr ($wdShape + ".useInterpolation")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".twistAxis " + `getAttr ($wdShape + ".twistAxis")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".scale " + `getAttr ($wdShape + ".scale")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".allowNegativeWeights " + `getAttr ($wdShape + ".allowNegativeWeights")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".opposite " + $state + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".distanceType " + `getAttr ($wdShape + ".distanceType")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".drawOrigin " + `getAttr ($wdShape + ".drawOrigin")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".drawDriver " + `getAttr ($wdShape + ".drawDriver")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".drawTwist " + `getAttr ($wdShape + ".drawTwist")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".drawPoses " + `getAttr ($wdShape + ".drawPoses")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".poseLength " + `getAttr ($wdShape + ".poseLength")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".drawIndices " + `getAttr ($wdShape + ".drawIndices")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".indexDistance " + `getAttr ($wdShape + ".indexDistance")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".iconSize " + `getAttr ($wdShape + ".iconSize")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".driverIndex " + `getAttr ($wdShape + ".driverIndex")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".driverColorR " + `getAttr ($wdShape + ".driverColorR")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".driverColorG " + `getAttr ($wdShape + ".driverColorG")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".driverColorB " + `getAttr ($wdShape + ".driverColorB")` + ";\n";
+        }
+        else
+        {
+            $write += shapesPI_addRbfAttributes($wdShapeNameWrite, 0);
+
+            $write += "setAttr " + $wdShapeNameWrite + ".regularization " + `getAttr ($wdShape + ".regularization")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".interpolation " + `getAttr ($wdShape + ".interpolation")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".outputSmoothing " + `getAttr ($wdShape + ".outputSmoothing")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".allowNegativeWeights " + `getAttr ($wdShape + ".allowNegativeWeights")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".enableRotation " + `getAttr ($wdShape + ".enableRotation")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".enableTranslation " + `getAttr ($wdShape + ".enableTranslation")` + ";\n";
+
+            $write += "setAttr " + $wdShapeNameWrite + ".driver[0].driverTwistAxis " + `getAttr ($wdShape + ".driver[0].driverTwistAxis")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".driver[0].driverRotateOrder " + `getAttr ($wdShape + ".driver[0].driverRotateOrder")` + ";\n";
+            $write += "setAttr " + $wdShapeNameWrite + ".driver[0].driverEulerTwist " + `getAttr ($wdShape + ".driver[0].driverEulerTwist")` + ";\n";
+        }
+
+        string $axis = shapesMirror_getAxisString();
+        int $isDefault = shapesDriver_isDefaultMatrix($wdShape + ".driverList[" + $driverIds[0] + "].poseParentMatrix");
+
+        for ($i = 0; $i < size($driverIds); $i ++)
+        {
+            if (!size($varListRbf))
+                $write += "connectAttr -f " + $rbfDrivers[$i] + ".worldMatrix[0] " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "].driverInput;\n";
+            else
+                $write += "connectAttr -f (" + $varListRbf[$i] + " + \".worldMatrix[0]\") " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "].driverInput;\n";
+
+            string $conn[] = `listConnections -s 1 -d 0 ($wdShape + ".driverList[" + $driverIds[$i] + "].controlNode")`;
+            if (size($conn))
+            {
+                if ($mirror)
+                    $conn[0] = shapesMirror_swapSideLabel($conn[0]);
+                if ($rbfControllers[$i] == "none")
+                    $write += "connectAttr -f " + $conn[0] + ".message " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "].controlNode;\n";
+                else
+                    $write += "connectAttr -f (" + $rbfControllers[$i] + " + \".message\") " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "].controlNode;\n";
+            }
+
+            int $isJoint = 0;
+            if (`nodeType $rbfDrivers[$i]` == "joint")
+                $isJoint = 1;
+            int $mIds[] = shapesDriver_mirrorRbfGetMatrixIds($axis, $isJoint);
+
+            int $ids[] = `getAttr -mi ($wdShape + ".driverList[" + $driverIds[$i] + "]." + $poseAttr)`;
+            for ($id in $ids)
+            {
+                $mat = `getAttr ($wdShape + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseMatrix")`;
+                if ($mirror)
+                {
+                    for ($mId in $mIds)
+                        $mat[$mId] *= -1;
+                }
+                $write += "setAttr " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseMatrix -type \"matrix\" " + shapesArray_floatArrayToString($mat, " ") + ";\n";
+
+                $mat = `getAttr ($wdShape + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseParentMatrix")`;
+                if ($mirror && !$isDefault && !$parentIsCentered)
+                {
+                    for ($mId in $mIds)
+                        $mat[$mId] *= -1;
+                }
+                $write += "setAttr " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseParentMatrix -type \"matrix\" " + shapesArray_floatArrayToString($mat, " ") + ";\n";
+
+                $write += "setAttr " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseMode " + `getAttr ($wdShape + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseMode")` + ";\n";
+
+                string $attrs[] = `getAttr ($wdShape + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].cpa")`;
+                $write += "setAttr " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].cpa -type \"stringArray\" " + size($attrs) + " " + stringArrayToString($attrs, " ") + ";\n";
+                float $values[] = `getAttr ($wdShape + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].cpv")`;
+                if ($mirror)
+                    shapesDriver_mirrorRbfControlPoseValues $attrs $values $axis;
+                $write += "setAttr " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].cpv -type \"doubleArray\" " + size($values) + " " + shapesArray_floatArrayToString($values, " ") + ";\n";
+
+                $write += "setAttr " + $wdShapeNameWrite + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].cpro " + `getAttr ($rbfDrivers[$i] + ".rotateOrder")` + ";\n";
+            }
+        }
+
+        if ($pi)
+        {
+            $ids = `getAttr -mi ($wdShape + ".pose")`;
+            for ($id in $ids)
+            {
+                float $values[] = `getAttr ($wdShape + ".pose[" + $id + "].poseRotation[0]")`;
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].poseRotation[0] -type \"doubleArray\" 4 " + shapesArray_floatArrayToString($values, " ") + ";\n";
+                $values = `getAttr ($wdShape + ".pose[" + $id + "].poseTranslation[0]")`;
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].poseTranslation[0] -type \"doubleArray\" 3 " + shapesArray_floatArrayToString($values, " ") + ";\n";
+
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].isIndependent " + `getAttr ($wdShape + ".pose[" + $id + "].isIndependent")` + ";\n";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].poseRotationFalloff " + `getAttr ($wdShape + ".pose[" + $id + "].poseRotationFalloff")` + ";\n";
+                $write += "catchQuiet(`setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].poseTranslationFalloff " + `getAttr ($wdShape + ".pose[" + $id + "].poseTranslationFalloff")` + "`);\n";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].poseType " + `getAttr ($wdShape + ".pose[" + $id + "].poseType")` + ";\n";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].poseFalloff " + `getAttr ($wdShape + ".pose[" + $id + "].poseFalloff")` + ";\n";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].isEnabled " + `getAttr ($wdShape + ".pose[" + $id + "].isEnabled")` + ";\n";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "].poseName -type \"string\" " + `getAttr ($wdShape + ".pose[" + $id + "].poseName")` + ";\n";
+
+                string $dataName = "poseControllerData[0].poseControllerDataItem[" + $id + "].poseControllerDataItemName";
+                string $dataType = "poseControllerData[0].poseControllerDataItem[" + $id + "].poseControllerDataItemType";
+                string $dataValue = "poseControllerData[0].poseControllerDataItem[" + $id + "].poseControllerDataItemValue";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "]." + $dataName + " -type \"string\" " + `getAttr ($wdShape + ".pose[" + $id + "]." + $dataName)` + ";\n";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "]." + $dataType + " " + `getAttr ($wdShape + ".pose[" + $id + "]." + $dataType)` + ";\n";
+                $write += "setAttr " + $wdShapeNameWrite + ".pose[" + $id + "]." + $dataValue + " " + `getAttr ($wdShape + ".pose[" + $id + "]." + $dataValue)` + ";\n";
+            }
+
+            $ids = `getAttr -mi ($wdShape + ".driver[0].driverController")`;
+            for ($id in $ids)
+            {
+                string $conn[] = `listConnections -s 1 -d 0 -p 1 -c 1 ($wdShape + ".driver[0].driverController[" + $id + "]")`;
+                if ($mirror)
+                {
+                    for ($c = 0; $c < size($conn); $c ++)
+                    {
+                        string $items[] = stringToStringArray($conn[$c], ".");
+                        $items[0] = shapesMirror_swapAllSideLabels($items[0]);
+                        $conn[$c] = stringArrayToString($items, ".");
+                    }
+                }
+                $write += "connectAttr -f " + $conn[1] + " " + $conn[0] + ";\n";
+            }
+        }
+    }
+
+    if (!$pi)
+    {
+        shapesDriver_setGetWeightDriverBlendCurve 1 $wdShapeName 0;
+        string $blendCurveString = shapesDriver_setGetWeightDriverBlendCurve(0, $wdShapeName, 0);
+        if ($mirror)
+            $blendCurveString = substituteAllString($blendCurveString, $wdShapeName, $wdShapeNameWrite);
+        $write += $blendCurveString;
+    }
+
+    if (!$rbf)
+    {
+        $write += "connectAttr " + $drvNodeWrite[0] + ".worldMatrix[0] " + $wdShapeNameWrite + ".driverMatrix;\n";
+        $write += "connectAttr " + $readerMat[0] + ".worldMatrix[0] " + $wdShapeNameWrite + ".readerMatrix;\n";
+        if ($mirror)
+            $write += "connectAttr " + $wdShapeNameWrite + ".outWeight " + (shapesMirror_swapAllSideLabels($target)) + ";\n";
+        else
+            $write += "connectAttr " + $wdShapeNameWrite + ".outWeight " + $target + ";\n";
+    }
+    else
+    {
+        if ($pi)
+        {
+            string $driver[] = `listConnections -s 1 -d 0 ($wdShapeName + ".driver[0].driverMatrix")`;
+            if ($mirror)
+                $driver[0] = shapesMirror_swapSideLabel($driver[0]);
+            $write += "connectAttr -f " + $driver[0] + ".jointOrient " + $wdShapeNameWrite + ".driver[0].driverOrient;\n";
+            $write += "connectAttr -f " + $driver[0] + ".matrix " + $wdShapeNameWrite + ".driver[0].driverMatrix;\n";
+            $write += "connectAttr -f " + $driver[0] + ".rotateAxis " + $wdShapeNameWrite + ".driver[0].driverRotateAxis;\n";
+            $write += "connectAttr -f " + $driver[0] + ".rotateOrder " + $wdShapeNameWrite + ".driver[0].driverRotateOrder;\n";
+        }
+
+        int $ids[] = `getAttr -mi ($wdShape + ".output")`;
+        for ($id in $ids)
+        {
+            if ($id != 0)
+            {
+                string $conn[] = `listConnections -s 0 -d 1 -c 1 -p 1 ($wdShape + ".output[" + $id + "]")`;
+                if (size($conn))
+                {
+                    string $connItems[] = stringToStringArray($conn[1], ".");
+                    if ($mirror)
+                        $connItems[0] = shapesMirror_swapSideLabel($connItems[0]);
+                    $write += "connectAttr " + $wdShapeNameWrite + ".output[" + $id + "] " + $connItems[0] + "." + $connItems[1] + ";\n";
+                }
+            }
+        }
+    }
+
+    // add the message attributes
+    $write += "addAttr -at message -ln SHAPES_wd " + $wdShapeNameWrite + ";\n";
+    if ($rbf)
+    {
+        $write += "addAttr -at message -ln solverGroupMessage " + $wdShapeNameWrite + ";\n";
+        $write += "addAttr -ln solverGroup -h 1 -dt \"string\" " + $wdShapeNameWrite + ";\n";
+        string $solverGrp = `getAttr ($wdShape + ".solverGroup")`;
+        if ($mirror)
+        {
+            $solverGrp = shapesMirror_swapSideLabel($solverGrp);
+            $bsNode = shapesMirror_swapSideLabel($bsNode);
+        }
+        $write += "setAttr " + $wdShapeNameWrite + ".solverGroup -type \"string\" " + $solverGrp + ";\n";
+        $write += "connectAttr -f -na " + $wdShapeNameWrite + ".solverGroupMessage " + $bsNode + ".SHAPESSolver;\n";
+    }
+
+    $write += "}\n";
+
+    return $write;
+}
+
+
+global proc string shapesUtil_readCurveRampAttribute( string $ramp, string $attribute )
+{
+    //
+    // build a string for writing from the given curve ramp node
+    //
+    string $write = "";
+    float $values[];
+    int $indices[] = `getAttr -mi ($ramp + "." + $attribute)`;
+    for ($id in $indices)
+    {
+        $values[size($values)] = `getAttr ($ramp + "." + $attribute + "[" + $id + "]." + $attribute + "_Position")`;
+        $values[size($values)] = `getAttr ($ramp + "." + $attribute + "[" + $id + "]." + $attribute + "_FloatValue")`;
+        $values[size($values)] = `getAttr ($ramp + "." + $attribute + "[" + $id + "]." + $attribute + "_Interp")`;
+    }
+
+    $id = 0;
+    for ($i = 0; $i < size($values); $i += 3)
+    {
+        $write += "setAttr " + $ramp + "." + $attribute + "[" + $id + "]." + $attribute + "_Position " + $values[$i] + ";\n";
+        $write += "setAttr " + $ramp + "." + $attribute + "[" + $id + "]." + $attribute + "_FloatValue " + $values[$i + 1] + ";\n";
+        $write += "setAttr " + $ramp + "." + $attribute + "[" + $id + "]." + $attribute + "_Interp " + $values[$i + 2] + ";\n";
+        $id ++;
+    }
+
+    return $write;
+}
+
+
+global proc string shapesUtil_readRampWeights( string $ramp )
+{
+    //
+    // build a string for writing from the given rampWeights node
+    //
+    string $write = "";
+    $write += "setAttr " + $ramp + ".axis " + `getAttr ($ramp + ".axis")` + ";\n";
+    $write += "setAttr " + $ramp + ".rangeStart " + `getAttr ($ramp + ".rangeStart")` + ";\n";
+    $write += "setAttr " + $ramp + ".rangeEnd " + `getAttr ($ramp + ".rangeEnd")` + ";\n";
+    $write += "setAttr " + $ramp + ".offset " + `getAttr ($ramp + ".offset")` + ";\n";
+    $write += "setAttr " + $ramp + ".multiply " + `getAttr ($ramp + ".multiply")` + ";\n";
+    $write += "setAttr " + $ramp + ".mirror " + `getAttr ($ramp + ".mirror")` + ";\n";
+    $write += "setAttr " + $ramp + ".invert " + `getAttr ($ramp + ".invert")` + ";\n";
+    $write += "setAttr " + $ramp + ".clamp " + `getAttr ($ramp + ".clamp")` + ";\n";
+    $write += "setAttr " + $ramp + ".centered " + `getAttr ($ramp + ".centered")` + ";\n";
+    $write += "setAttr " + $ramp + ".useTransform " + `getAttr ($ramp + ".useTransform")` + ";\n";
+
+    $write += shapesUtil_readCurveRampAttribute($ramp, "blendCurve");
+
+    return $write;
+}
+
+
+global proc string shapesUtil_readWeightsServer( string $server )
+{
+    //
+    // build a string for writing from the given rampWeights node
+    //
+    string $write = "";
+    $write += "setAttr " + $server + ".globalScale " + `getAttr ($server + ".globalScale")` + ";\n";
+    $write += "setAttr " + $server + ".globalRadius " + `getAttr ($server + ".globalRadius")` + ";\n";
+    $write += "setAttr " + $server + ".globalInfluenceScale " + `getAttr ($server + ".globalInfluenceScale")` + ";\n";
+    $write += "setAttr " + $server + ".invert " + `getAttr ($server + ".invert")` + ";\n";
+    $write += "setAttr " + $server + ".flood " + `getAttr ($server + ".flood")` + ";\n";
+    $write += "setAttr " + $server + ".useUV " + `getAttr ($server + ".useUV")` + ";\n";
+    $write += "setAttr " + $server + ".colorR " + `getAttr ($server + ".colorR")` + ";\n";
+    $write += "setAttr " + $server + ".colorG " + `getAttr ($server + ".colorG")` + ";\n";
+    $write += "setAttr " + $server + ".colorB " + `getAttr ($server + ".colorB")` + ";\n";
+    $write += "setAttr " + $server + ".colorA " + `getAttr ($server + ".colorA")` + ";\n";
+    $write += "setAttr " + $server + ".alpha " + `getAttr ($server + ".alpha")` + ";\n";
+
+    $write += shapesUtil_readCurveRampAttribute($server, "falloff");
+    $write += shapesUtil_readCurveRampAttribute($server, "curveFalloff");
+
+    return $write;
+}
+
+
+global proc shapesUtil_swapGroupSideIdentifier( string $dataNode )
+{
+    //
+    // replaces the side identifier for all groups on the data node
+    //
+    string $swapList[];
+    int $ids[] = `getAttr -mi ($dataNode + ".group")`;
+    for ($id in $ids)
+    {
+        string $name = `getAttr ($dataNode + ".group[" + $id + "].groupTarget")`;
+        $swapList[size($swapList)] = $name;
+        $name = shapesMirror_swapSideLabel($name);
+        setAttr ($dataNode + ".group[" + $id + "].groupTarget") -type "string" $name;
+    }
+
+    string $parentList[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+    string $orderList[] = stringToStringArray(`getAttr ($dataNode + "." + "order")`, ",");
+    for ($i = 0; $i < size($parentList); $i ++)
+    {
+        if (stringArrayContains($parentList[$i], $swapList))
+            $parentList[$i] = shapesMirror_swapSideLabel($parentList[$i]);
+    }
+    for ($i = 0; $i < size($orderList); $i ++)
+    {
+        if (stringArrayContains($orderList[$i], $swapList))
+            $orderList[$i] = shapesMirror_swapSideLabel($orderList[$i]);
+    }
+    setAttr ($dataNode + "." + "parent") -type "string" (stringArrayToString($parentList, ","));
+    setAttr ($dataNode + "." + "order") -type "string" (stringArrayToString($orderList, ","));
+}
+
+
+global proc string shapesUtil_getExportPath( string $subdir, int $create )
+{
+    //
+    // returns the path for exporting/importing the blendshape setup
+    //
+    $subdir = substituteAllString($subdir, ":", "/");
+    string $exportPath = "";
+
+    if (`optionVar -q SHAPESCustomDataPath` == "0")
+        optionVar -sv SHAPESCustomDataPath "";
+
+    if (`optionVar -q SHAPESUseCustomDataPath` && `optionVar -q SHAPESCustomDataPath` != "")
+    {
+        $exportPath = `optionVar -q SHAPESCustomDataPath` + $subdir;
+    }
+    else
+    {
+        string $dataPath = "data/SHAPES" + $subdir;
+        string $workPath = `workspace -q -rd`;
+        $exportPath = $workPath + $dataPath;
+    }
+
+    if (!`filetest -e $exportPath`)
+    {
+        if ($create)
+            workspace -cr $exportPath;
+        else
+            return "";
+    }
+    return $exportPath;
+}
+
+
+global proc shapesUtil_buildImportMenu( string $menu )
+{
+    //
+    // populate the import menu/list with the existing files
+    //
+    global string $gShapes_bsNode;
+
+    string $bsNode = shapesMain_getBlendShapeShortName();
+
+    string $path;
+    string $ext;
+    if ($menu == "shpUI_importMenuItem")
+    {
+        $path = "/setup";
+        $ext = "mel";
+        menu -e -dai $menu;
+    }
+    else if ($menu == "shpUI_shapeWeightsList")
+    {
+        $path = "/weights/" + $bsNode;
+        $ext = shapesWeights_getFileExtension("bsw");
+        textScrollList -e -ra shpUI_shapeWeightsList;
+    }
+    else if ($menu == "shpUI_regionList")
+    {
+        $path = "/regions/" + $bsNode;
+        $ext = shapesWeights_getFileExtension("bsr");
+        textScrollList -e -ra shpUI_regionList;
+    }
+    else
+        return;
+
+    string $exportPath;
+    string $fileList[];
+
+    if ($bsNode != "None" || $menu == "shpUI_importMenuItem")
+    {
+        $exportPath = shapesUtil_getExportPath($path, 0);
+        if ($exportPath == "")
+            return;
+        else
+            $fileList = `getFileList -fld $exportPath -fs ("*." + $ext)`;
+    }
+
+    if ($ext == "mel")
+    {
+        menuItem -l "Select File ..." -p $menu -c ("shapesUtil_importFromCustomPath \"" + $exportPath + "\"");
+        menuItem -d 1 -p $menu;
+    }
+
+    for ($file in $fileList)
+    {
+        string $name[] = stringToStringArray($file, ".");
+        if ($ext == "mel")
+            menuItem -l $name[0] -p $menu -c ("shapesUtil_importShapeSetup \"" + $exportPath + "/" + $file + "\"");
+        else
+            textScrollList -e -a $name[0] -en 1 $menu;
+    }
+    if (!size($fileList))
+    {
+        if ($ext == "mel")
+            menuItem -l "None" -p $menu -en 0;
+        else
+            textScrollList -e -a "None" -en 0 $menu;
+    }
+}
+
+
+global proc shapesUtil_importShapeSetup( string $path )
+{
+    //
+    // opens a confirmation dialog for executing the given mel file
+    //
+    string $items[] = stringToStringArray($path, "/");
+    $items = stringToStringArray($items[size($items) - 1], ".");
+    string $msg = "Import " + $items[0] + " to rebuild the setup?";
+    if (shapesCommon_confirmWindow($msg, "Import"))
+        shapesUtil_performImportShapeSetup $path;
+}
+
+
+global proc shapesUtil_performImportShapeSetup( string $path )
+{
+    //
+    // executes the given mel file
+    //
+    eval ("source \"" + $path + "\"");
+
+    shapesList_listBlendShapeTargets 1;
+}
+
+
+global proc shapesUtil_importFromCustomPath( string $path )
+{
+    //
+    // opens the file dialog for choosing the node data from a custom path
+    //
+    if (`optionVar -ex SHAPESCustomNodeDataExportPath` && `optionVar -q SHAPESCustomNodeDataExportPath` != "")
+        $path = `optionVar -q SHAPESCustomNodeDataExportPath`;
+
+    string $filter = "Mel files (*.mel)";
+    string $filePath[] = `fileDialog2 -dir $path -fm 1 -ff $filter -okc "Select" -cap "Select Node Setup"`;
+    if (size($filePath))
+    {
+        shapesUtil_performImportShapeSetup $filePath[0];
+        string $items[] = stringToStringArray($filePath[0], "/");
+        stringArrayRemoveAtIndex(size($items) - 1, $items);
+        optionVar -sv SHAPESCustomNodeDataExportPath (stringArrayToString($items, "/"));
+    }
+}
+
+
+global proc string shapesUtil_getImportMelProcedure( string $customImportPath )
+{
+    string $ext = shapesWeights_getFileExtension("bsw");
+
+    string $mel;
+    $mel += "global proc SHAPESImportBlendShapeSetup(string $node)\n";
+    $mel += "{\n";
+    $mel += "   string $attr[] = `listAttr -m -k -lf $node`;\n";
+    $mel += "   stringArrayRemoveAtIndex(0, $attr);\n";
+    $mel += "   \n";
+    $mel += "   if (!`optionVar -ex SHAPESRestoreShapeWeights`)\n";
+    $mel += "       return;\n";
+    $mel += "   \n";
+    $mel += "   string $importPath = \"" + $customImportPath + "\";\n";
+    $mel += "   \n";
+    $mel += "   if (!`filetest -d $importPath`)\n";
+    $mel += "       return;\n";
+    $mel += "   \n";
+    $mel += "   string $weightListString = `optionVar -q SHAPESRestoreShapeWeights`;\n";
+    $mel += "   string $weightList[];\n";
+    $mel += "   tokenize $weightListString \",\" $weightList;\n";
+    $mel += "   string $targets[];\n";
+    $mel += "   string $prefix = \"\";\n";
+    $mel += "   for ($weight in $weightList)\n";
+    $mel += "   {\n";
+    $mel += "       string $items[];\n";
+    $mel += "       tokenize $weight \"_\" $items;\n";
+    $mel += "       $prefix = $items[0];\n";
+    $mel += "       stringArrayRemoveAtIndex(0, $items);\n";
+    $mel += "       $targets[size($targets)] = stringArrayToString($items, \"_\");\n";
+    $mel += "   }\n";
+    $mel += "   \n";
+    $mel += "   for ($target in $targets)\n";
+    $mel += "   {\n";
+    $mel += "       for ($i = 0; $i < size($attr); $i ++)\n";
+    $mel += "       {\n";
+    $mel += "           if ($target == $attr[$i])\n";
+    $mel += "           {\n";
+    $mel += "               string $fileName = $importPath + \"/\" + $prefix + \"_\" + $target + \"." + $ext + "\";\n";
+    $mel += "               int $fileID = `fopen $fileName \"r\"`;\n";
+    $mel += "               string $fileLine = `fgetline $fileID`;\n";
+    $mel += "               \n";
+    $mel += "               while (size($fileLine) > 0)\n";
+    $mel += "               {\n";
+
+    if ($ext == "json")
+    {
+        $mel += "                   if (!startsWith($fileLine, \"{\") && !startsWith($fileLine, \"}\"))\n";
+        $mel += "                   {\n";
+        $mel += "                       string $values[];\n";
+        $mel += "                       $fileLine = `substitute \",\" $fileLine \"\"`;\n";
+        $mel += "                       tokenize $fileLine \":\" $values;\n";
+        $mel += "                       $values[0] = `substituteAllString $values[0] \"\\\"\" \"\"`;\n";
+        $mel += "                       int $val1 = $values[0];\n";
+        $mel += "                       float $val2 = $values[1];\n";
+        $mel += "                       setAttr ($node + \".it[0].itg[\" + $i + \"].tw[\" + $val1 + \"]\") $val2;\n";
+        $mel += "                   }\n";
+    }
+    else
+    {
+        $mel += "                   string $values[];\n";
+        $mel += "                   tokenize $fileLine \" \" $values;\n";
+        $mel += "                   float $val = $values[1];\n";
+        $mel += "                   setAttr ($node + \".it[0].itg[\" + $i + \"].tw[\" + $values[0] + \"]\") $val;\n";
+    }
+
+    $mel += "                   $fileLine = `fgetline $fileID`;\n";
+    $mel += "               }\n";
+    $mel += "               fclose $fileID;\n";
+    $mel += "           }\n";
+    $mel += "       }\n";
+    $mel += "   }\n";
+    $mel += "   optionVar -rm SHAPESRestoreShapeWeights;\n";
+    $mel += "}\n\n";
+
+    $mel += "global proc string SHAPESImportGetLastCurve(int $init){\n";
+    $mel += "   global string $SHAPESImportLastCurveUL;\n";
+    $mel += "   global string $SHAPESImportLastCurveUA;\n";
+    $mel += "   global string $SHAPESImportLastCurveUU;\n";
+    $mel += "   string $lastCurveUL;\n";
+    $mel += "   string $lastCurveUA;\n";
+    $mel += "   string $lastCurveUU;\n";
+    $mel += "   string $curves[] = `ls -type \"animCurve\"`;\n";
+    $mel += "   for ($c in $curves){\n";
+    $mel += "       if (`gmatch $c \"animCurveUL*\"`)\n";
+    $mel += "           $lastCurveUL = $c;\n";
+    $mel += "       else if (`gmatch $c \"animCurveUA*\"`)\n";
+    $mel += "           $lastCurveUA = $c;\n";
+    $mel += "       else if (`gmatch $c \"animCurveUU*\"`)\n";
+    $mel += "           $lastCurveUU = $c;\n";
+    $mel += "   }\n";
+    $mel += "   if ($init == 1){\n";
+    $mel += "       $SHAPESImportLastCurveUL = $lastCurveUL;\n";
+    $mel += "       $SHAPESImportLastCurveUA = $lastCurveUA;\n";
+    $mel += "       $SHAPESImportLastCurveUU = $lastCurveUU;\n";
+    $mel += "       return \"\";\n";
+    $mel += "   }\n";
+    $mel += "   if ($lastCurveUL != $SHAPESImportLastCurveUL){\n";
+    $mel += "       $SHAPESImportLastCurveUL = $lastCurveUL;\n";
+    $mel += "       return $lastCurveUL;\n";
+    $mel += "   }\n";
+    $mel += "   else if ($lastCurveUA != $SHAPESImportLastCurveUA){\n";
+    $mel += "       $SHAPESImportLastCurveUA = $lastCurveUA;\n";
+    $mel += "       return $lastCurveUA;\n";
+    $mel += "   }\n";
+    $mel += "   else if ($lastCurveUU != $SHAPESImportLastCurveUU){\n";
+    $mel += "       $SHAPESImportLastCurveUU = $lastCurveUU;\n";
+    $mel += "       return $lastCurveUU;\n";
+    $mel += "   }\n";
+    $mel += "   else return \"\";\n";
+    $mel += "}\n\n";
+
+    $mel += "global proc string SHAPES_getNamespace(string $name){\n";
+    $mel += "   if (catchQuiet(`select -r (\"*:\" + $name)`))\n";
+    $mel += "       return \"\";\n";
+    $mel += "   string $sel[] = `ls -sl`;\n";
+    $mel += "   string $items[] = stringToStringArray($sel[0], \":\");\n";
+    $mel += "   stringArrayRemoveAtIndex(size($items) - 1, $items);\n";
+    $mel += "   string $space = stringArrayToString($items, \":\") + \":\";\n";
+    $mel += "   return $space;\n";
+    $mel += "}\n\n";
+
+    $mel += "global proc SHAPES_setEmptyTargetData(string $bsNode, int $id, int $pos){\n";
+    $mel += "   string $comp[] = `eval(\"getAttr \" + $bsNode + \".it[0].itg[\" + $id + \"].iti[\" + $pos + \"].ict\")`;\n";
+    $mel += "   if (!size($comp)){\n";
+    $mel += "       setAttr ($bsNode + \".it[0].itg[\" + $id + \"].iti[\" + $pos + \"].ict\") -type componentList 1 vtx[0];\n";
+    $mel += "       setAttr ($bsNode + \".it[0].itg[\" + $id + \"].iti[\" + $pos + \"].ipt\") -type pointArray 1 0 0 0 1;\n";
+    $mel += "   }\n";
+    $mel += "}\n\n";
+
+    return $mel;
+}
+
+
+global proc shapesUtil_transferBlendShapeSetup( string $exportPath )
+{
+    //
+    // updated the entire blend shape setup based on the selected mesh
+    // i.e. after topology changes
+    //
+    global int $gShapes_rebuiltSetup;
+    global int $gShapes_transferIndexList[];
+    global string $gShapes_bsNode;
+    global string $gShapes_exportWin;
+    global string $gShapes_skinMesh;
+    global string $gShapes_orderedTargetList[];
+
+    // get the general options
+    // currently:
+    // get the name of the blend shape node the setup should be transferred to
+    string $bsNode = $gShapes_bsNode;
+    string $targetBsNode = `optionMenu -q -v shpUI_transferTargetNodeOption`;
+    if ($targetBsNode == "Create New")
+        $targetBsNode = "";
+    else
+        $bsNode = $targetBsNode;
+
+    if (`window -ex $gShapes_exportWin`)
+        deleteUI $gShapes_exportWin;
+
+    string $sel[] = shapesMain_verifySelection();
+    // returns {"head", "headShape"}
+    if (!size($sel))
+        br_displayMessage -error "No mesh selected for transfer";
+
+    if ($sel[0] == $gShapes_skinMesh)
+        br_displayMessage -error "The selected mesh is the current SHAPES mesh";
+
+    // check if the target mesh has the same name as one of the targets
+    // in this case rename the target mesh
+    int $exists;
+    string $existingTargets[];
+    for ($tgt in shapesData_getTargetList())
+    {
+        if ($tgt == $sel[0])
+            $exists = 1;
+        if (`objExists $tgt`)
+            $existingTargets[size($existingTargets)] = $tgt;
+    }
+    if ($exists)
+    {
+        string $uniqueName[] = shapesAction_newName($sel[0]);
+        string $confirm = `confirmDialog    -t "SHAPES"
+                                            -m ("The target mesh shares the same name as a blend shape target.\n\nThe target mesh will be renamed to: " + $uniqueName[1])
+                                            -b "Continue"
+                                            -b "Cancel"
+                                            -db "Continue"
+                                            -cb "Cancel"
+                                            -ds "Cancel"`;
+        if ($confirm == "Cancel")
+            return;
+
+        $sel[0] = `rename $sel[0] $uniqueName[1]`;
+    }
+
+    // make sure that none of the target names exist in the scene
+    // to avoid any name clashing which is hard to solve during the process
+    if (size($existingTargets))
+    {
+        for ($t in $existingTargets)
+        {
+            string $uniqueName[] = shapesAction_newName($t);
+            if ($uniqueName[1] != "")
+                rename $uniqueName[0] $uniqueName[1];
+            else
+                br_displayMessage -error "A name error occured while renaming existing target shapes";
+        }
+    }
+
+    // get the transfer options from the window
+    string $options[] = stringToStringArray(`optionVar -q SHAPESTransferOptions`, ",");
+
+    // option for creating only a wrap deformer
+    if ($options[5] == "2")
+    {
+        shapesUtil_createWrap $gShapes_skinMesh $sel[0];
+        return;
+    }
+
+    // only process the targets based on the ui option
+    int $progressSize = size(shapesData_getTargetList());
+    string $transferTargetList[];
+    $gShapes_transferIndexList = {};
+    int $transOption = $options[2];
+    if ($transOption > 1)
+    {
+        if (!size($gShapes_orderedTargetList))
+            br_displayMessage -error "No targets or groups selected in the list";
+
+        $transferTargetList = shapesList_getTargetListSelection($transOption);
+        $progressSize = size($transferTargetList);
+    }
+
+    //--------------------------------------
+    // create the updated target shapes
+    //--------------------------------------
+
+    // create the wrap mesh
+    string $wrapShape[] = shapesUtil_createNewMesh("SHAPESWrap_geo");
+
+    // store all connections to the blend shape node
+    // and reset all channels
+    string $connected[];
+    string $targetList[];
+    string $valuesArray[];
+    for ($target in shapesData_getTargetList())
+    {
+        if (!shapesData_isHelper($target))
+        {
+            $targetList[size($targetList)] = $target;
+            int $index = shapesData_getShapeIndex($target);
+
+            int $valArray[] = shapesData_getTargetValues($index);
+            $valuesArray[size($valuesArray)] = shapesArray_intArrayToString($valArray, ",");
+
+            string $plug[] = `listConnections -s 1 -d 0 -p 1 ($gShapes_bsNode + "." + $target)`;
+            if (size($plug))
+                $connected[size($connected)] = $plug[0] + "," + $gShapes_bsNode + "." + $target;
+
+            $plug = `listConnections -s 0 -d 1 -p 1 ($gShapes_bsNode + "." + $target)`;
+            if (size($plug))
+            {
+                for ($p in $plug)
+                    $connected[size($connected)] = $gShapes_bsNode + "." + $target + "," + $p;
+            }
+
+            if (stringArrayContains($target, $transferTargetList))
+                $gShapes_transferIndexList[size($gShapes_transferIndexList)] = $index;
+        }
+    }
+
+    // disconnect all channels, even the outputs to make sure that there are no
+    // influences from combo connections
+    for ($c in $connected)
+    {
+        string $plugs[] = stringToStringArray($c, ",");
+        disconnectAttr $plugs[0] $plugs[1];
+    }
+
+    // set all channels to 0
+    for ($target in $targetList)
+        setAttr ($gShapes_bsNode + "." + $target) 0;
+
+    // connect the blend shape output to the wrap mesh
+    connectAttr ($gShapes_bsNode + ".outputGeometry[0]") ($wrapShape[1] + ".inMesh");
+    // create a copy of the selected mesh to use as the wrap target
+    // it will be deleted afterwards
+    // easier to use a duplicate because the wrap creates additional shape nodes
+    // which must be deleted afterwards, but this is more elaborate than deleting the copy
+    doBakeNonDefHistory 1 {"prePost"};
+    string $wrapTarget[] = `duplicate $sel[0]`;
+    string $wrapTargetShape = shapesCommon_getShapeNode($wrapTarget[0]);
+
+    // get the face count of both meshes to calculate the smoothing level
+    int $sourceFaceCount[] = `polyEvaluate -v $wrapShape[0]`;
+    int $targetFaceCount[] = `polyEvaluate -v $wrapTarget[0]`;
+
+    // calculate the subdivision levels
+    int $subDiv;
+    if ($targetFaceCount[0] > $sourceFaceCount[0])
+        $subDiv = ($targetFaceCount[0] / $sourceFaceCount[0]) / 4;
+
+    // smooth the wrap mesh to avoid any artifacts because of different mesh resolutions
+    if ($subDiv > 0)
+        polySmooth -dv $subDiv -mth 0 -c 1 -sl 1 -dpe 1 -ro 1 -ch 1 $wrapShape[1];
+
+    // in case of a final wrapped duplicate create another copy of the mesh
+    string $wrapDuplicate[];
+    if ($options[5] == "3")
+        $wrapDuplicate = `duplicate $sel[0]`;
+
+    // create the wrap and get the deformer node
+    string $wrapNode = shapesUtil_createWrap($wrapShape[0], $wrapTarget[0]);
+
+    // create a group to collect all new target shapes
+    string $grp = `createNode transform -n "SHAPESTargets_grp"`;
+    string $newTargets[];
+
+    // process either all targets or only based on the selection option
+    if (size($transferTargetList))
+        $targetList = $transferTargetList;
+
+    global string $gMainProgressBar;
+    progressBar -e -bp -ii 0 -max $progressSize $gMainProgressBar;
+
+    string $wtsCtrlOutConn[];
+
+    // go through each shape, turn it on and duplicate the wrapped mesh
+    for ($i = 0; $i < size($targetList); $i ++)
+    {
+        progressBar -e -st ("Processing " + $targetList[$i] + " ...") $gMainProgressBar;
+
+        float $values[] = shapesArray_stringToFloatArray($valuesArray[$i], ",");
+
+        // disconnect the ramp weights node
+        // so that the target shape can be correctly extracted
+        int $index = shapesData_getShapeIndex($targetList[$i]);
+        string $wtsCtrl = shapesData_getWeightsControllerConnection($index);
+        clear $wtsCtrlOutConn;
+        if ($wtsCtrl != "")
+        {
+            string $wtsCtrlItems[] = stringToStringArray($wtsCtrl, ".");
+            $wtsCtrlOutConn = shapesWeights_disconnectWeightsController($wtsCtrlItems[0], $targetList[$i]);
+        }
+
+        int $counter = 1;
+        for ($v in $values)
+        {
+            float $value = ($v - 5000) / 1000.0;
+            string $valueString = "";
+            if ($v != 6000)
+            {
+                $valueString = "_inbetween" + $counter;
+                $counter ++;
+            }
+            // enable the target to extract it
+            setAttr ($gShapes_bsNode + "." + $targetList[$i]) $value;
+
+            string $newShape[] = shapesUtil_createNewMesh($targetList[$i] + $valueString);
+            select -r $newShape[0];
+            parent $newShape[0] $grp;
+            $newTargets[size($newTargets)] = $newShape[0];
+            $newShape = `ls -sl -l`;
+
+            // make sure the target has the correct name
+            // having an object with the same name at world level might have renamed it
+            if ($newShape[0] != $targetList[$i] + $valueString)
+                $newShape[0] = `rename $newShape[0] ($targetList[$i] + $valueString)`;
+            else
+                $newShape[0] = $targetList[$i] + $valueString;
+
+            // transfer the current state to the new mesh
+            connectAttr -f ($wrapTargetShape + ".worldMesh[0]") ($newShape[0] + ".inMesh");
+            refresh;
+            disconnectAttr ($wrapTargetShape + ".worldMesh[0]") ($newShape[0] + ".inMesh");
+            setAttr ($newShape[0] + ".v") 0;
+        }
+
+        // deactivate the target
+        setAttr ($gShapes_bsNode + "." + $targetList[$i]) 0;
+
+        // re-connect the ramp weights node
+        if (size($wtsCtrlOutConn))
+            connectAttr $wtsCtrlOutConn[0] $wtsCtrlOutConn[1];
+
+        progressBar -e -s 1 $gMainProgressBar;
+
+        flushUndo;
+    }
+    progressBar -e -ep $gMainProgressBar;
+
+    // delete the wrap deformer, wrap mesh and wrap target
+    delete $wrapNode $wrapShape[0] $wrapTarget;
+
+    // re-connect all channels
+    for ($c in $connected)
+    {
+        string $plugs[] = stringToStringArray($c, ",");
+        connectAttr $plugs[0] $plugs[1];
+    }
+
+    //--------------------------------------
+    // export the setup
+    //--------------------------------------
+
+    // export the entire setup
+    // returns the current extension and file type for the export file
+    string $fileInfo[] = shapesUtil_exportShapeSetup(0, $exportPath, $targetBsNode);
+    // unparent the targets so that they export without the group
+    parent -w $newTargets;
+    // delete the group
+    delete $grp;
+    // export the updated target shapes
+    select -r $newTargets;
+    file -f -op "v=0" -typ $fileInfo[1] -es ($exportPath + "/" + $bsNode + "_shapes." + $fileInfo[0]);
+    // delete the shapes
+    delete $newTargets;
+    select -cl;
+
+    // rename the mesh
+    string $prevSkinMesh = `rename $gShapes_skinMesh ($gShapes_skinMesh + $options[4])`;
+    rename $sel[0] $gShapes_skinMesh;
+
+    // also rename the blend shape node
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    rename $gShapes_bsNode ($gShapes_bsNode + $options[4]);
+    rename $dataNode ($dataNode + $options[4]);
+
+
+    // check for a skin cluster
+    // if there is one offer to transfer it
+    // on case of no skin cluster only re-import the setup
+    string $sourceSkin = shapesMain_findSkinClusterNode($prevSkinMesh);
+
+    string $newSkin;
+    if ($sourceSkin != "" && $options[0] == "1")
+    {
+        // check if the new mesh is already skinned
+        // and continue if the skin should be copied
+        string $skinNode = shapesMain_findSkinClusterNode($gShapes_skinMesh);
+        if ($skinNode != "")
+        {
+            // remove the skin cluster
+            skinCluster -e -ub $gShapes_skinMesh;
+            br_displayMessage -info ("Removed current skin cluster \"" + $skinNode + "\" from \"" + $gShapes_skinMesh + "\".");
+        }
+
+        // create the names for the skin clusters
+        $newSkin = $sourceSkin;
+        $sourceSkin = `rename $sourceSkin ($sourceSkin + $options[4])`;
+
+        // get the influence objects
+        string $infls[] = `skinCluster -q -inf $sourceSkin`;
+        if (!size($infls))
+            br_displayMessage -error ("No influence objects found for skinCluster " + $sourceSkin);
+
+        // select the influences and the skin shape
+        select -r $infls;
+        select -add $gShapes_skinMesh;
+
+        // check for the version
+        // up to Maya 2012 the bind method flag is not available
+        string $bindMethod = "-bm 0 ";
+
+        // get the attributes of the skinCluster node
+        int $normalize = `getAttr ($sourceSkin + ".normalizeWeights")`;
+        int $maxInfl = `getAttr ($sourceSkin + ".maxInfluences")`;
+        float $dropoff[] = `getAttr ($sourceSkin + ".dropoff")`;
+        string $flagString = $bindMethod + " -nw " + $normalize + " -mi " + $maxInfl + " -dr " + $dropoff[0];
+
+        // create the new skinCluster
+        string $newSkinCluster[] = eval("newSkinCluster \"-tsb " + $flagString + " -omi true -rui false\"");
+        rename $newSkinCluster[0] $newSkin;
+
+        // copy the skin
+        copySkinWeights -ss $sourceSkin -ds $newSkin -nr -nm -sa "closestPoint" -ia "closestJoint" -ia "name" -ia "oneToOne";
+
+        br_displayMessage -info ("Transferred skinning from \"" + $prevSkinMesh + "\" to \"" + $gShapes_skinMesh + "\".");
+    }
+
+    // import the blend shape setup
+    eval("source \"" + $exportPath + "/" + $bsNode + ".mel\"");
+
+    setAttr ($gShapes_skinMesh + ".v") 1;
+    if ($options[6] == "1")
+        setAttr ($prevSkinMesh + ".v") 0;
+
+    // store the current node name
+    // and set it to the user defined node name
+    // to be able to load the targets in the list
+    // reset the node name afterwards
+    string $tempBsName = $gShapes_bsNode;
+    $gShapes_bsNode = $bsNode;
+    // important to suppress the selection of the last selected target shape in the list
+    $gShapes_selectedTarget = "";
+    shapesList_listBlendShapeTargets 1;
+    $gShapes_bsNode = $tempBsName;
+
+    // remove the exported setup
+    catchQuiet(`python("import shutil; shutil.rmtree('" + $exportPath + "')")`);
+
+    //
+    // apply the renaming option
+    //
+
+    string $result = $gShapes_skinMesh;
+    string $previous = $prevSkinMesh;
+
+    // no change
+    if ($options[3] == "1")
+    {
+        // revert the new mesh to it's original name
+        $result = `rename $gShapes_skinMesh $sel[0]`;
+        // rename the old mesh to it's original name
+        $previous = `rename $prevSkinMesh $gShapes_skinMesh`;
+        // rename the wrap duplicate
+        if ($options[5] == "3")
+            $wrapDuplicate[0] = `rename $wrapDuplicate[0] ($sel[0] + "_wrapped")`;
+    }
+    // keep previous name
+    else if ($options[3] == "2")
+    {
+        // rename the wrap duplicate
+        if ($options[5] == "3")
+            $wrapDuplicate[0] = `rename $wrapDuplicate[0] ($gShapes_skinMesh + "_wrapped")`;
+    }
+    // swap names
+    else if ($options[3] == "3")
+    {
+        // rename the old mesh to the name of the new mesh
+        $previous = `rename $prevSkinMesh $sel[0]`;
+        // rename the wrap duplicate
+        if ($options[5] == "3")
+            $wrapDuplicate[0] = `rename $wrapDuplicate[0] ($gShapes_skinMesh + "_wrapped")`;
+    }
+
+    // rename the old blend shape node
+    string $oldBsNode = `rename ($gShapes_bsNode + $options[4]) $gShapes_bsNode`;
+    string $oldDataNode = `rename ($dataNode + $options[4]) $dataNode`;
+
+    // rename the skin cluster if it exists
+    if ($sourceSkin != "" && $options[0] == "1")
+        rename $sourceSkin $newSkin;
+
+    // optionally delete the previous skin mesh
+    if ($options[1] == "1")
+        delete $previous;
+
+    // load the mesh with the new setup
+    $gShapes_rebuiltSetup = 1;
+    select -r $result;
+    shapesMain_getMeshSelection 1;
+    select -cl;
+    $gShapes_rebuiltSetup = 0;
+
+    // connect the blend shape nodes when transferring
+    $transOption = $options[1];
+    if ($transOption > 3)
+    {
+        // old is master
+        if ($options[1] == "4")
+            select $oldBsNode $bsNode;
+        // new is master
+        else if ($options[1] == "5")
+            select $bsNode $oldBsNode;
+        // clear the list selection to prevent that only some channels
+        // are getting connected
+        shapesUI_clearListSelection "shpUI_targetTree" "target";
+        shapesUtil_connectBlendShapeNodes;
+
+        // store the current node name
+        // and set it to the user defined node name
+        // to be able to load the targets in the list
+        // reset the node name afterwards
+        string $tempBsName = $gShapes_bsNode;
+        $gShapes_bsNode = $bsNode;
+        shapesList_listBlendShapeTargets 1;
+        $gShapes_bsNode = $tempBsName;
+    }
+
+    //
+    // apply the optional duplicate wrapping
+    //
+
+    if ($options[1] != "1" && $options[5] == "3")
+    {
+        shapesUtil_createWrap $previous $wrapDuplicate[0];
+        setAttr ($previous + ".v") 1;
+        setAttr ($wrapDuplicate[0] + ".v") 1;
+
+        string $wrapDuplicateShape = shapesCommon_getShapeNode($wrapDuplicate[0]);
+
+        // create the message connection between the blend shape node
+        // and the wrapped mesh
+        if (!`attributeQuery -n $gShapes_bsNode -ex SHAPESWrapMesh`)
+            addAttr -at "message" -ln "SHAPESWrapMesh" $gShapes_bsNode;
+        addAttr -at "message" -ln "SHAPESWrapMesh" $wrapDuplicateShape;
+        connectAttr -f ($gShapes_bsNode + ".SHAPESWrapMesh") ($wrapDuplicateShape + ".SHAPESWrapMesh");
+
+        menuItem -e -en 1 shpUI_tweakTransferMenuItem;
+    }
+}
+
+
+global proc string shapesUtil_createWrap( string $wrapShape, string $wrapTarget )
+{
+    //
+    // creates a wrap deformer and returns the deformer node
+    //
+    select -r $wrapTarget $wrapShape;
+    // create the wrap
+    // first set the wrap settings through the environment
+    optionVar -iv exclusiveBind 1;
+    // the threshold is already set through the checkbox in the transfer window
+    //optionVar -iv autoWeightThreshold 1;
+    CreateWrap;
+
+    // get the wrap deformer node
+    string $wrapNode[] = `listConnections -s 0 -d 1 $wrapShape`;
+
+    return $wrapNode[0];
+}
+
+
+global proc string[] shapesUtil_createNewMesh( string $name )
+{
+    //
+    // creates a new mesh object with the given name
+    //
+    string $shape = `createNode mesh`;
+    string $transform[] = `listRelatives -p $shape`;
+    $name = `rename $transform[0] $name`;
+    string $shapeNode = shapesCommon_getShapeNode($name);
+    return {$name, $shapeNode};
+}
+
+
+global proc shapesUtil_setWeightDriverMatrix()
+{
+    //
+    // connects the weight driver reader matrix with the selected node in the scene
+    //
+    global string $gShapes_selectedTarget;
+
+    string $sel[] = `ls -sl -tr -l`;
+    if (!size($sel))
+        return;
+
+    string $queryPlug = shapesMain_getQueryPlug($gShapes_selectedTarget);
+    string $input[] = shapesMain_getTargetInput($queryPlug);
+    if (!size($input))
+        return;
+    // check for a connected weight driver
+    if ($input[1] != "wd" && $input[1] != "rbf")
+        return;
+
+    // connect the selection matrix to the weight driver
+    evalEcho("connectAttr -f " + $sel[0] + ".worldMatrix[0] " + $input[0] + ".readerMatrix;");
+}
+
+
+global proc shapesUtil_connectBlendShapeNodes()
+{
+    //
+    // gets the currently selected blend shape nodes
+    // and connects all target channels
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    string $sel[] = `ls -sl -type "blendShape"`;
+    if (size($sel) != 2)
+        br_displayMessage -error "Select two blend shape nodes to connect";
+
+    shapesUtil_performConnectBlendShapeNodes $sel[0] $sel[1];
+
+    if ($sel[1] == $gShapes_bsNode)
+        shapesMain_listBlendShapeNodes $gShapes_skinMesh 0;
+}
+
+
+global proc shapesUtil_performConnectBlendShapeNodes( string $bs1, string $bs2 )
+{
+    //
+    // connects all target channels of the given blend shape nodes
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_drivenNodeAttr;
+    global string $gShapes_masterNodeAttr;
+
+    string $targetList[] = `listAttr -m -lf -st "weight*" $bs1`;
+    string $helperList[] = `listAttr -ud -k $bs1`;
+
+    string $sel[] = `treeView -q -si shpUI_targetTree`;
+
+    for ($target in $targetList)
+    {
+        int $connect = 1;
+        if (size($sel) && !stringArrayContains($target, $sel))
+            $connect = 0;
+        if ($connect)
+        {
+            if (`attributeQuery -n $bs2 -ex $target`)
+            {
+                if (!size(`listConnections -s 1 -d 0 ($gShapes_bsNode + "." + $target)`))
+                    connectAttr -f ($bs1 + "." + $target) ($bs2 + "." + $target);
+            }
+        }
+    }
+
+    if (size($helperList))
+    {
+        for ($helper in $helperList)
+        {
+            int $connect = 1;
+            if (size($sel) && !stringArrayContains($helper, $sel))
+                $connect = 0;
+            if ($connect)
+            {
+                if (`attributeQuery -n $bs2 -ex $helper` && !`getAttr -l ($bs1 + "." + $helper)`)
+                    connectAttr -f ($bs1 + "." + $helper) ($bs2 + "." + $helper);
+            }
+        }
+    }
+
+    // add the message attributes to identify driver and driven
+    shapesCommon_addMessageAttribute $bs1 $gShapes_masterNodeAttr 0;
+    shapesCommon_addMessageAttribute $bs2 $gShapes_drivenNodeAttr 0;
+
+    // check if the connection exists
+    string $plug[] = `listConnections -s 1 -d 0 -p 1 ($bs2 + "." + $gShapes_drivenNodeAttr)`;
+    int $connect = 1;
+    if (size($plug) && $plug[0] == ($bs1 + "." + $gShapes_masterNodeAttr))
+        $connect = 0;
+    if ($connect)
+        connectAttr -f ($bs1 + "." + $gShapes_masterNodeAttr) ($bs2 + "." + $gShapes_drivenNodeAttr);
+}
+
+
+global proc shapesUtil_disconnectBlendShapeNodes()
+{
+    //
+    // break connections for all channels on the current blend shape node
+    // or only for the selected target shapes
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_drivenNodeAttr;
+    global string $gShapes_skinMesh;
+
+    string $targetList[] = `listAttr -m -lf -st "weight*" $gShapes_bsNode`;
+    string $helperList[] = `listAttr -ud -k $gShapes_bsNode`;
+
+    string $sel[] = `treeView -q -si shpUI_targetTree`;
+
+    for ($target in $targetList)
+    {
+        int $connect = 1;
+        if (size($sel) && !stringArrayContains($target, $sel))
+            $connect = 0;
+        if ($connect)
+            shapesUtil_performDisconnectBlendShapeNodes $target;
+    }
+
+    if (size($helperList))
+    {
+        for ($helper in $helperList)
+        {
+            int $connect = 1;
+            if (size($sel) && !stringArrayContains($helper, $sel))
+                $connect = 0;
+            if ($connect)
+                shapesUtil_performDisconnectBlendShapeNodes $helper;
+        }
+    }
+
+    if (!size($sel))
+        shapesUtil_performDisconnectBlendShapeNodes $gShapes_drivenNodeAttr;
+
+    shapesMain_listBlendShapeNodes $gShapes_skinMesh 0;
+}
+
+
+global proc shapesUtil_performDisconnectBlendShapeNodes( string $target )
+{
+    //
+    // disconnects the blend shape channel from its driver
+    //
+    global string $gShapes_bsNode;
+
+    string $plug[] = `listConnections -s 1 -d 0 -p 1 ($gShapes_bsNode + "." + $target)`;
+    if (size($plug))
+        disconnectAttr $plug[0] ($gShapes_bsNode + "." + $target);
+}
+
+
+global proc shapesUtil_toggleTweakSkin()
+{
+    //
+    // toggle the envelope attribute of all blend shape nodes
+    //
+    global string $gShapes_skinMesh;
+
+    string $labelOff = "Enter Skin Tweak Mode";
+    string $labelOn = "Exit Skin Tweak Mode";
+
+    int $value;
+    if (`menuItem -q -l shpUI_tweakSkinMenuItem` == $labelOff)
+    {
+        menuItem -e -l $labelOn shpUI_tweakSkinMenuItem;
+        $value = 0;
+    }
+    else
+    {
+        menuItem -e -l $labelOff shpUI_tweakSkinMenuItem;
+        $value = 1;
+    }
+
+    string $nodes[] = shapesMain_listBlendShapeNodes($gShapes_skinMesh, 1);
+    for ($n in $nodes)
+        setAttr ($n + ".envelope") $value;
+}
+
+
+global proc int shapesUtil_verifyMultipleActiveChannels( string $target )
+{
+    //
+    // returns true if there are other channels actve than the given one
+    //
+    global string $gShapes_bsNode;
+
+    int $result = 0;
+    for ($tgt in shapesData_getTargetList())
+    {
+        if ($tgt != $target && `getAttr ($gShapes_bsNode + "." + $tgt)` != 0)
+            $result = 1;
+    }
+    return $result;
+}
+
+
+global proc shapesUtil_exportBlendShapeDeltas( int $selected )
+{
+    //
+    // exports all blend shape deltas to a json file
+    //
+    global string $gShapes_bsNode;
+
+    if ($gShapes_bsNode == "None" || $gShapes_bsNode == "")
+        return;
+
+    string $exportPath = shapesUtil_getExportPath("/deltas/" + $gShapes_bsNode, 1);
+    if ($exportPath == "")
+        return;
+
+    string $filter = "JSON files (*.json)";
+    string $filePath[] = `fileDialog2 -dir $exportPath -fm 0 -ff $filter -okc "Export" -cap "Export Deltas"`;
+    if (!size($filePath))
+        return;
+
+    int $result;
+    string $names[];
+    if ($selected)
+        $names = shapesList_getTargetListSelection(2);
+    else
+        $names = shapesData_getShapeList();
+    int $ids[] = shapesData_getShapeIds(1, $names);
+
+    string $cmd = "br_blendShapeExportData -delta -fileName \"" + $filePath[0] + "\" ";
+    for ($i = 0; $i < size($ids); $i ++)
+        $cmd += "-index " + $ids[$i] + " -channelName " + $names[$i] + " ";
+    $cmd += $gShapes_bsNode;
+    $result = `eval $cmd`;
+
+    if ($result)
+        br_displayMessage -info ("Exported deltas to \"" + $filePath[0] + "\".");
+    else
+        br_displayMessage -error ("Errors occurred during the export. See script editor for details.");
+}
+
+
+global proc shapesUtil_importBlendShapeDeltas( int $selected )
+{
+    //
+    // reads all delta items from the json file
+    // and opens the import window
+    //
+    global string $gShapes_bsNode;
+
+    if ($gShapes_bsNode == "None" || $gShapes_bsNode == "")
+        return;
+
+    string $path = shapesUtil_getExportPath("/deltas/" + $gShapes_bsNode, 1);
+    if ($path == "")
+        return;
+
+    string $filter = "JSON files (*.json)";
+    string $filePath[] = `fileDialog2 -dir $path -fm 1 -ff $filter -okc "Select" -cap "Select Deltas File"`;
+    if (!size($filePath))
+        return;
+
+    string $items[] = `br_blendShapeImportData -listDeltas -fileName $filePath[0] $gShapes_bsNode`;
+
+    shapesUI_buildImportDeltasUI $gShapes_bsNode $filePath[0] $items $selected;
+}
+
+
+global proc shapesUtil_performImportBlendShapeDeltas( string $bsNode, string $file, string $columnLayout, int $selected )
+{
+    //
+    // imports the blend shape deltas from the json file
+    //
+    string $layouts[] = `columnLayout -q -ca $columnLayout`;
+    string $modeItems[] = `formLayout -q -ca $layouts[0]`;
+    int $rename = `checkBox -q -v $modeItems[2]`;
+    int $remap = `checkBox -q -v $modeItems[4]`;
+
+    string $names[];
+    int $srcIds[];
+    int $destIds[];
+    for ($i = 2; $i < size($layouts); $i ++)
+    {
+        string $items[] = `formLayout -q -ca $layouts[$i]`;
+        if (`checkBox -q -v $items[0]`)
+        {
+            $names[size($names)] = `text -q -l $items[1]`;
+            $srcIds[size($srcIds)] = `intField -q -v $items[3]`;
+            $destIds[size($destIds)] = `intField -q -v $items[5]`;
+        }
+    }
+
+    deleteUI SHAPESDeltaImportWin;
+
+    string $sel[];
+    if ($selected)
+        $sel = `ls -sl -type blendShape`;
+
+    string $cmd = "br_blendShapeImportData -delta -remap -fileName \"" + $file + "\" ";
+    for ($i = 0; $i < size($srcIds); $i ++)
+        $cmd += "-sourceIndex " + $srcIds[$i] + " -destinationIndex " + $destIds[$i] + " ";
+    int $result = `eval ($cmd + $bsNode)`;
+    for ($s in $sel)
+        eval ($cmd + $s);
+
+    if ($result)
+    {
+        br_displayMessage -info ("Imported deltas from \"" + $file + "\".");
+
+        if ($rename)
+        {
+            string $shapeList[] = shapesData_getShapeList();
+            for ($shape in $shapeList)
+            {
+                int $id = shapesData_getShapeIndex($shape);
+                for ($i = 0; $i < size($destIds); $i ++)
+                {
+                    if ($id == $destIds[$i] && $shape != $names[$i])
+                    {
+                        string $checkName[] = shapesAction_newChannelName($bsNode, $names[$i]);
+                        if ($checkName[1] != "")
+                            $names[$i] = $checkName[1];
+
+                        aliasAttr $names[$i] ($bsNode + "." + $shape);
+                        shapesData_setString((shapesData_getType($names[$i])), $id, "Target", $names[$i]);
+                    }
+                }
+            }
+        }
+
+        shapesList_listBlendShapeTargets 1;
+        // update the lists for ordering, parents and expand states
+        shapesList_storeCurrentOrder;
+        // replace the alias name on the stored alias string on the data node
+        shapesData_storeAliasList;
+    }
+    else
+        br_displayMessage -error ("Errors occurred during the import. See script editor for details.");
+}
+
+
+global proc shapesUtil_setNextAvailableDeltaIndex( string $form, string $field )
+{
+    //
+    // sets the remap field to the next available index
+    // considering all other indices
+    //
+    global string $gShapes_bsNode;
+
+    int $index = -1;
+    int $ids[] = `getAttr -mi ($gShapes_bsNode + ".w")`;
+
+    // add all defined mapping indices
+    string $parentLayout = `formLayout -q -p $form`;
+    string $forms[] = `columnLayout -q -ca $parentLayout`;
+    for ($i = 2; $i < size($forms); $i ++)
+    {
+        string $controls[] = `formLayout -q -ca $forms[$i]`;
+        int $id = `intField -q -v $controls[5]`;
+        if (shapesArray_intArrayFind($id, 0, $ids) == -1)
+            $ids[size($ids)] = $id;
+    }
+    $ids = `sort $ids`;
+
+    for ($i = 0; $i < size($ids); $i ++)
+    {
+        if ($i != $ids[$i] && $index == -1)
+        {
+            $index = $i;
+            break;
+        }
+    }
+    if ($index == -1)
+        $index = size($ids);
+
+    intField -e -v $index $field;
+}
+
+
+global proc SHAPES_utilities(){}

@@ -1,0 +1,856 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc int shapesCombo_createCombo()
+{
+    //
+    // creates a multiply node and connects them to the blendshape targets
+    //
+    global string $gShapes_selectedTarget;
+    global string $gShapes_orderedTargetList[];
+    global string $gShapes_targetTrackList[];
+
+    if (size($gShapes_targetTrackList) != 0)
+    {
+        $gShapes_orderedTargetList = $gShapes_targetTrackList;
+    }
+
+    if (size($gShapes_orderedTargetList) == 0)
+        br_displayMessage -error "Unable to create a combo without a shape selection";
+
+    if (size($gShapes_orderedTargetList) == 1)
+        br_displayMessage -error "Unable to create a combo with only one shape selected";
+
+    string $comboTarget = $gShapes_orderedTargetList[size($gShapes_orderedTargetList) - 1];
+
+    string $input[] = shapesMain_getTargetInput(shapesMain_getQueryPlug($comboTarget));
+    if ($input[1] == "combo")
+        br_displayMessage -error "The selected target is already used by another combo";
+
+    string $targets[] = $gShapes_orderedTargetList;
+    stringArrayRemoveAtIndex(size($targets) - 1, $targets);
+    shapesCombo_performCreateCombo $comboTarget $targets 1 0;
+
+    $gShapes_selectedTarget = $comboTarget;
+    shapesList_refreshTargetItem $gShapes_orderedTargetList;
+
+    $gShapes_targetTrackList = {};
+
+    return 1;
+}
+
+
+global proc string shapesCombo_performCreateCombo( string $comboTarget, string $comboDriver[], int $execute, int $mirror )
+{
+    //
+    // multi-source combos
+    // create a multiply node based combo network
+    // from the given target and driver nodes/attributes
+    // returns the creation string for exporting the setup
+    //
+    global string $gShapes_sideIdentifier;
+
+    string $attrName = "SHAPES_" + $comboTarget + "_combo";
+    string $multName = $attrName + "_mult";
+    if ($mirror)
+    {
+        if (startsWith($gShapes_sideIdentifier, "_"))
+            $multName = $attrName + "_mult" + $gShapes_sideIdentifier;
+        else if (endsWith($gShapes_sideIdentifier, "_"))
+            $multName = $gShapes_sideIdentifier + $attrName + "_mult";
+        $gShapes_sideIdentifier = "";
+    }
+
+    string $nodes[];
+    string $cmd;
+    // create the master multiply node
+    string $masterNode[] = shapesCombo_createComboMultiplyNode($multName, $attrName, -1, 1);
+    $nodes[size($nodes)] = $masterNode[0];
+    $cmd += $masterNode[1];
+    $cmd += "setAttr " + $nodes[0] + ".input2 1;\n";
+
+    for ($i = 0; $i < size($comboDriver); $i ++)
+    {
+        // create a multiplyDivide node and rename it to match the driver/driven name combo
+        string $multNodeResult[] = shapesCombo_createComboMultiplyNode($multName, $attrName, $i + 1, 0);
+        string $multNode = $multNodeResult[0];
+        $cmd += $multNodeResult[1];
+        // connect the shape with the first input
+        string $queryPlug = shapesMain_getQueryPlug($comboDriver[$i]);
+        if ($mirror)
+            $queryPlug = shapesMirror_swapAllSideLabels($queryPlug);
+        $cmd += "connectAttr " + $queryPlug + " " + $multNode + ".input1;\n";
+        // connect the message attribute with the master node
+        $cmd += "connectAttr -f -na " + $multNode + "." + $attrName + " " + $nodes[0] + "." + $attrName + ";\n";
+        // set the second input to 1 so no inputs will get forgotten
+        $cmd += "setAttr " + $multNode + ".input2 1;\n";
+        $nodes[size($nodes)] = $multNode;
+        // connect the previous multiply node with the second input
+        if ($i > 0)
+            $cmd += "connectAttr " + $nodes[$i] + ".output " + $multNode + ".input2;\n";
+    }
+
+    // connect to the master multiply node
+    $cmd += "connectAttr " + $nodes[size($nodes) - 1] + ".output" + " " + $nodes[0] + ".input1;\n";
+
+    // omit this step when exporting the setup because all connections are already there
+    if ($execute)
+    {
+        string $queryPlug = shapesMain_getQueryPlug($comboTarget);
+        // check if the target shape is already driven
+        // if it is, connect it to the second input of the master node
+        string $plug[] = `listConnections -s 1 -d 0 -p 1 $queryPlug`;
+        if (size($plug))
+            $cmd += "connectAttr " + $plug[0] + " " + $nodes[0] + ".input2;\n";
+    }
+
+    string $queryPlug = shapesMain_getQueryPlug($comboTarget);
+    if ($mirror)
+        $queryPlug = shapesMirror_swapAllSideLabels($queryPlug);
+    $cmd += "connectAttr -f " + $nodes[0] + ".output " + $queryPlug + ";\n";
+
+    if ($execute)
+    {
+        // make sure that the multiply nodes don't already exist in the scene
+        // to avoid any errors because of duplicate names or attributes
+        shapesCombo_removeUnusedMultiplyNode $nodes;
+
+        eval $cmd;
+    }
+
+    return $cmd;
+}
+
+
+global proc string[] shapesCombo_createComboMultiplyNode( string $multName, string $attrName, int $index, int $multi )
+{
+    //
+    // create a multiply node used for the combos
+    //
+    if ($index != -1)
+        $multName += $index;
+
+    string $tempName = "SHAPES_temp_multiply";
+    string $cmd;
+    $cmd += "createNode multDoubleLinear -name " + $tempName + ";\n";
+    $cmd += "rename " + $tempName + " " + $multName + ";\n";
+    $cmd += "setAttr " + $multName + ".isHistoricallyInteresting 0;\n";
+    $multNode = $multName;
+    if ($attrName != "")
+    {
+        if ($multi)
+            $cmd += "addAttr -at message -ln " + $attrName + " -m -im 0 " + $multNode + ";\n";
+        else
+            $cmd += "addAttr -at message -ln " + $attrName + " " + $multNode + ";\n";
+    }
+    return {$multNode, $cmd};
+}
+
+
+global proc shapesCombo_removeUnusedMultiplyNode( string $nodes[] )
+{
+    //
+    // delete the given nodes if they are not in use
+    // usually unused nodes have either the second input not connected
+    // or in case of the master node the ouput is disconnected
+    //
+    for ($node in $nodes)
+    {
+        if (`objExists $node`)
+        {
+            string $plugName = shapesCombo_secondPlugName($node);
+            string $outputName = shapesCombo_outputPlugName($node);
+            if (!size(`listConnections -p 1 ($node + "." + $plugName)`) || !size(`listConnections -p 1 ($node + "." + $outputName)`))
+                delete $node;
+        }
+    }
+}
+
+
+global proc shapesCombo_mirrorCombo( string $target )
+{
+    //
+    // get the combo info from the mirror source target
+    // and apply it to the mirrored shape
+    //
+    global string $gShapes_selectedTarget;
+
+    string $targets[];
+    string $drivers[];
+
+    shapesCombo_getComboNodes($gShapes_selectedTarget, $targets, $drivers, {}, {});
+    string $driverList[];
+    for ($i = 0; $i < size($targets); $i ++)
+    {
+        if ($gShapes_selectedTarget == $targets[$i])
+        {
+            string $dkDriver[] = stringToStringArray($drivers[$i], ",");
+            for ($driver in $dkDriver)
+            {
+                $driverList[size($driverList)] = shapesMirror_swapSideLabel($driver);
+                if (!`treeView -q -iex $driverList[size($driverList) - 1] shpUI_targetTree`)
+                {
+                    br_displayMessage -warning ("Unable to create the mirrored combo because the opposite driver sibling for \"" + $driver + "\" is missing");
+                    return;
+                }
+            }
+        }
+    }
+
+    if (size($driverList) == 0)
+        return;
+
+    shapesCombo_performCreateCombo $target $driverList 1 0;
+}
+
+
+global proc int shapesCombo_removeCombo( string $shape, string $driver )
+{
+    //
+    // removes the combo multiplier and connects the shape driver directly to the blendshape target
+    //
+    string $targets[];
+    string $drivers[];
+    string $comboNodes[];
+    string $shapeDrivers[];
+
+    shapesCombo_getComboNodes($shape, $targets, $drivers, $comboNodes, $shapeDrivers);
+    for ($i = 0; $i < size($targets); $i ++)
+    {
+        if ($driver && $shape != $targets[$i])
+        {
+            string $msg = "\"" + $shape + "\" is a combo driver for \"" + $targets[$i] + "\".\n\nDo you want to continue?";
+            if (!shapesCommon_confirmWindow($msg, "OK"))
+                return 0;
+        }
+
+        string $refreshList[] = shapesCombo_deleteComboMultiplierAndReconnect($targets[$i], $drivers[$i], $comboNodes[$i], $shapeDrivers[$i]);
+        $refreshList[size($refreshList)] = $shape;
+        shapesList_refreshTargetItem $refreshList;
+    }
+
+    return 1;
+}
+
+
+global proc string[] shapesCombo_deleteComboMultiplierAndReconnect( string $targetString, string $drivers, string $comboNodes, string $shapeDriver )
+{
+    //
+    // deletes the combo multiplier and re-connects the shape driver to the target channel
+    //
+    string $comboNodeItems[] = stringToStringArray($comboNodes, ",");
+    string $target[] = `listConnections -p 1 ($comboNodeItems[0] + "." + shapesCombo_outputPlugName($comboNodeItems[0]))`;
+
+    if (size($target) > 1)
+        br_displayMessage -error ("Unable to delete " + $comboNodeItems[0] + " because the output is connected to more than one node");
+
+    // add all driver shapes to the refresh list
+    string $refreshList[] = stringToStringArray($drivers, ",");
+    // also add the target shape
+    $refreshList[size($refreshList)] = $targetString;
+
+    // in case a shape driver exists re-connect it
+    if ($shapeDriver != "")
+    {
+        string $queryPlug = shapesMain_getQueryPlug($targetString);
+        connectAttr -f $shapeDriver $queryPlug;
+    }
+
+    for ($node in $comboNodeItems)
+    {
+        if (`objExists $node`)
+            delete $node;
+    }
+
+    return $refreshList;
+}
+
+
+global proc shapesCombo_deleteComboMultiplier( string $shape )
+{
+    //
+    // delete all multiplier nodes of the combo
+    //
+    string $targets[];
+    string $drivers[];
+    string $comboNodes[];
+    string $shapeDrivers[];
+
+    shapesCombo_getComboNodes($shape, $targets, $drivers, $comboNodes, $shapeDrivers);
+
+    // check if there are shape drivers present;
+    // these need to get deleted first or they will remain
+    // after deleting the combo
+    if (size($shapeDrivers))
+    {
+        for ($target in $targets)
+            shapesDriver_performDeleteWeightDriver($target);
+    }
+
+    for ($item in $comboNodes)
+    {
+        string $comboNodeItems[] = stringToStringArray($item, ",");
+        for ($node in $comboNodeItems)
+        {
+            if (`objExists $node`)
+                delete $node;
+        }
+    }
+}
+
+
+global proc shapesCombo_renameComboMultiplier( string $target )
+{
+    //
+    // rename the combo multiplier
+    //
+    string $targets[];
+    string $comboNodes[];
+    string $shapeDrivers[];
+
+    shapesCombo_getComboNodes($target, $targets, {}, $comboNodes, $shapeDrivers);
+    for ($i = 0; $i < size($targets); $i ++)
+    {
+        for ($n in stringToStringArray($comboNodes[$i], ","))
+        {
+            string $parts[] = stringToStringArray($n, "_");
+            string $newNameItems[] = {$parts[0], $targets[$i], $parts[size($parts) - 2], $parts[size($parts) - 1]};
+            string $newName = stringArrayToString($newNameItems, "_");
+            rename $n $newName;
+        }
+    }
+    // refresh the buttons, especially the annotations to list the new name
+    if (size($targets))
+        shapesList_refreshTargetItem $targets;
+    if ($shapeDrivers[0] != "" && $shapeDrivers[0] != "-")
+        shapesList_refreshTargetItem $shapeDrivers;
+}
+
+
+global proc int shapesCombo_verifyShapeBasedCombo( string $multNode )
+{
+    //
+    // checks if the given multiplier node handles a shape based combo
+    //
+    global string $gShapes_bsNode;
+
+    string $source[] = `listConnections -p 1 ($multNode + "." + shapesCombo_secondPlugName($multNode))`;
+    // check if the second source is the blendshape node
+    // in this case the combo is a shape based combo
+    int $shapeCombo = 0;
+    if (size($source))
+    {
+        string $items[] = stringToStringArray($source[0], ".");
+        if ($items[0] == $gShapes_bsNode)
+            $shapeCombo = 1;
+    }
+    return $shapeCombo;
+}
+
+
+global proc string[] shapesCombo_getComboMasterNode( string $node, int $driver )
+{
+    //
+    // returns the name of the master multiply node of a combo
+    //
+    string $attrList[] = `listAttr -m -ud $node`;
+    if (!size($attrList))
+        return {};
+    // remove the [] from the multi attribute (in case of the driven node)
+    string $temp[] = stringToStringArray($attrList[0], "[");
+    string $msgAttr = $temp[0];
+
+    // get the master node through the message attribute
+    //
+    // if the provided node is already the master node checking for connected nodes
+    // is mainly to make sure that the setup is correct and that the master node
+    // is connected to the other multiply nodes
+    string $conn[] = `listConnections -s (!$driver) -d $driver -sh 1 ($node + "." + $msgAttr)`;
+    if (!size($conn))
+    {
+        // in case of a legacy combo the message attribute is not connected
+        // in this case we set the connected node to the already found node
+        // this causes a double entry which needs to be removed later
+        $conn = {$node};
+    }
+
+    // in case of coming from the target shape the search can end here
+    // because the master node has already been verified
+    // all found connected nodes will be returned and used for getComboNodes
+    if (!$driver)
+        return $conn;
+
+    // make sure that the found master node has a message attribute
+    $attrList = `listAttr -m -ud $conn[0]`;
+    if (!size($attrList))
+        return {};
+
+    return {$conn[0]};
+}
+
+
+global proc shapesCombo_getComboNodes( string $shape, string $targets[], string $drivers[], string $comboNodes[], string $shapeDrivers[] )
+{
+    //
+    // returns all relevant nodes of the combo
+    //
+    if ($shape == "")
+        return;
+
+    string $master[];
+    string $comboMultNodes[];
+
+    string $driver[];
+
+    string $queryPlug = shapesMain_getQueryPlug($shape);
+
+    // find the master node
+    // if the shape is driven by the combo the connected multiply node is the master
+    // in this case the message attribute has incoming connections;
+    // if the shape is the driver it's multiply node is messaging to the master node
+
+    int $cnCount = 0;
+
+    // check if there is a multiply node driving the shape
+    string $multNode[] = shapesCombo_getSourceMultiplyNodes($queryPlug);
+    if (size($multNode))
+    {
+        for ($m in $multNode)
+        {
+            string $nodeList[] = shapesCombo_getComboMasterNode($m, 0);
+            if (!size($nodeList))
+                return;
+
+            $targets[size($targets)] = $shape;
+            $comboMultNodes[size($comboMultNodes)] = stringArrayToString($nodeList, ",");
+            $master[size($master)] = $m;
+
+            $cnCount ++;
+        }
+    }
+    // if the shape is not driven by a combo it must the one of the drivers
+    else
+    {
+        // check if the shape is outputting to a multiply node
+        $multNode = shapesCombo_getDestinationMultiplyNodes($queryPlug);
+        if (!size($multNode))
+            return;
+
+        for ($m in $multNode)
+        {
+            string $comboMaster[] = shapesCombo_getComboMasterNode($m, 1);
+            if (!size($comboMaster))
+                return;
+
+            // get the driven shape from the multiply node output
+            string $conn[] = `listConnections -p 1 ($comboMaster[0] + "." + shapesCombo_outputPlugName($comboMaster[0]))`;
+            $targets[size($targets)] = shapesMain_getFilteredTargetFromPlug($conn[0]);
+            $master[size($master)] = $comboMaster[0];
+            // simple way to retrieve the multiply nodes because the master node has been found
+            string $nodeList[] = shapesCombo_getComboMasterNode($comboMaster[0], 0);
+            $comboMultNodes[size($comboMultNodes)] = stringArrayToString($nodeList, ",");
+
+            $cnCount ++;
+        }
+    }
+
+    // get all driver nodes
+    for ($i = 0; $i < $cnCount; $i ++)
+    {
+        string $driverNodes[] = stringToStringArray($comboMultNodes[$i], ",");
+        string $items[] = {};
+        for ($n in $driverNodes)
+        {
+            string $conn[] = `listConnections -p 1 ($n + "." + shapesCombo_firstPlugName($n))`;
+            if (size($conn))
+                $items[size($items)] = shapesMain_getFilteredTargetFromPlug($conn[0]);
+        }
+        $drivers[size($drivers)] = stringArrayToString($items, ",");
+    }
+
+    // add the master multiply node to the node list
+    // in case of a legacy combo the found combo multiplier node and the master node are the same
+    // don't add the master node in this case
+    for ($i = 0; $i < $cnCount; $i ++)
+    {
+        string $cmNodes[] = stringToStringArray($comboMultNodes[$i], ",");
+        if (!stringArrayContains($master[$i], $cmNodes))
+            stringArrayInsertAtIndex(0, $cmNodes, $master[$i]);
+        $comboNodes[size($comboNodes)] = stringArrayToString($cmNodes, ",");
+
+        // if the second input of the master node is connected from a shape driver
+        // list this connection as well
+        string $plug = shapesCombo_getComboSecondaryDriver($queryPlug, $cmNodes[0]);
+        if (`gmatch $plug "None:*"`)
+        {
+            string $temp[] = stringToStringArray($plug, ":");
+            string $driverTemp[] = stringToStringArray($drivers[$i], ",");
+            $driverTemp[size($driverTemp)] = $temp[1];
+            $drivers[$i] = stringArrayToString($driverTemp, ",");
+            $plug = "-";
+        }
+
+        $shapeDrivers[0] = $plug;
+    }
+}
+
+
+global proc string shapesCombo_getComboSecondaryDriver( string $plug, string $multNode )
+{
+    //
+    // returns the plug if the target shape is driven by a combo
+    // and the second input of the combo master node is controlled by a shape driver;
+    // this check replaces getComboNodes() when collecting target information
+    // for ($building the target list and should be faster than getComboNodes()
+    //
+    // check if there is a multiply node driving the shape
+    if ($multNode == "")
+    {
+        string $conn[] = shapesCombo_getSourceMultiplyNodes($plug);
+        if (!size($conn))
+            return "";
+        $multNode = $conn[0];
+    }
+
+    // if the second input of the master node is connected from a shape driver
+    // list this connection as well
+    string $conn[] = `listConnections -p 1 ($multNode + "." + shapesCombo_secondPlugName($multNode))`;
+    if (!size($conn))
+        return "";
+    // in case of a legacy shape based combo the second input is connected
+    // to a target of the blend shape node and can be added to the driver list
+    else
+    {
+        string $temp[] = stringToStringArray($conn[0], ".");
+        if (`nodeType $temp[0]` == "blendShape")
+            return ("None:" + $temp[1]);
+    }
+
+    return $conn[0];
+}
+
+
+global proc string[] shapesCombo_getComboItems( string $shape )
+{
+    //
+    // returns all related combo items for the given shape
+    //
+    string $targets[];
+    string $drivers[];
+
+    shapesCombo_getComboNodes($shape, $targets, $drivers, {}, {});
+    string $tgts[];
+    for ($i = 0; $i < size($targets); $i ++)
+    {
+        $tgts[size($tgts)] = $targets[$i];
+        for ($d in stringToStringArray($drivers[$i], ","))
+            $tgts[size($tgts)] = $d;
+    }
+    $tgts = stringArrayRemoveDuplicates($tgts);
+
+    $tgts = stringArrayRemove({$shape}, $tgts);
+    return $tgts;
+}
+
+
+global proc string[] shapesCombo_getSourceMultiplyNodes( string $plug )
+{
+    //
+    // return the source multiply nodes whether it's a multiplyDivide
+    // or a multDoubleLinear
+    //
+    string $nodes[] = `listConnections -s 1 -d 0 -type "multDoubleLinear" $plug`;
+    if (!size($nodes))
+        $nodes = `listConnections -s 1 -d 0 -type "multiplyDivide" $plug`;
+    return $nodes;
+}
+
+
+global proc string[] shapesCombo_getDestinationMultiplyNodes( string $plug )
+{
+    //
+    // return the destination multiply nodes whether it's a multiplyDivide
+    // or a multDoubleLinear
+    //
+    string $nodes[] = `listConnections -s 0 -d 1 -type "multDoubleLinear" $plug`;
+    if (!size($nodes))
+        $nodes = `listConnections -s 0 -d 1 -type "multiplyDivide" $plug`;
+    return $nodes;
+}
+
+
+global proc string shapesCombo_firstPlugName( string $node )
+{
+    if (`nodeType $node` == "multDoubleLinear")
+        return "input1";
+    else
+        return "input1X";
+}
+
+
+global proc string shapesCombo_secondPlugName( string $node )
+{
+    if (`nodeType $node` == "multDoubleLinear")
+        return "input2";
+    else
+        return "input2X";
+}
+
+
+global proc string shapesCombo_outputPlugName( string $node )
+{
+    if (`nodeType $node` == "multDoubleLinear")
+        return "output";
+    else
+        return "outputX";
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// combo editing
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesCombo_editComboItems( string $target )
+{
+    //
+    // initializes the combo edit process
+    // selects all driving shapes and the driven shape
+    // of the combo in the target list
+    //
+    global float $gShapes_driverCol[];
+    global float $gShapes_targetCol[];
+    global string $gShapes_currentComboTarget;
+
+    global string $gShapes_comboEditTarget;
+    global string $gShapes_comboEditDrivers[];
+
+    string $targets[];
+    string $drivers[];
+
+    shapesCombo_getComboNodes($target, $targets, $drivers, {}, {});
+
+    // create a copy of the current combo list to use for editing
+    $gShapes_comboEditTarget = $targets[0];
+    $gShapes_comboEditDrivers = stringToStringArray($drivers[0], ",");
+
+    // store the current target for the update process
+    $gShapes_currentComboTarget = $targets[0];
+
+    treeView -e -cs shpUI_targetTree;
+    shapesMain_buildTargetSlider;
+
+    for ($item in stringToStringArray($drivers[0], ","))
+    {
+        shapesUI_expandParentItem $item;
+        treeView -e -lbc $item $gShapes_driverCol[0] $gShapes_driverCol[1] $gShapes_driverCol[2] shpUI_targetTree;
+    }
+    treeView -e -lbc $targets[0] $gShapes_targetCol[0] $gShapes_targetCol[1] $gShapes_targetCol[2] shpUI_targetTree;
+
+    shapesUI_showEditComboUI 1;
+    shapesCombo_editComboToggleUI 0;
+}
+
+
+global proc shapesCombo_addRemoveComboItems( int $add )
+{
+    //
+    // add/remove the selected items in the list to the currently shown combo
+    // items will be color coded and the current combo selection list is updated
+    //
+    global float $gShapes_driverCol[];
+    global string $gShapes_comboEditTarget;
+    global string $gShapes_comboEditDrivers[];
+
+    string $selection[] = `treeView -q -si shpUI_targetTree`;
+    if (!size($selection))
+        return;
+
+    if ($add)
+    {
+        for ($item in $selection)
+        {
+            $gShapes_comboEditDrivers[size($gShapes_comboEditDrivers)] = $item;
+            treeView -e -lbc $item $gShapes_driverCol[0] $gShapes_driverCol[1] $gShapes_driverCol[2] shpUI_targetTree;
+
+            // if the selection is the same as the combo target remove the target
+            if ($item == $gShapes_comboEditTarget)
+                $gShapes_comboEditTarget = "";
+        }
+    }
+    else
+    {
+        for ($item in $selection)
+        {
+            // reset the target color
+            treeView -e -lbc $item -1 -1 -1 shpUI_targetTree;
+            if (stringArrayContains($item, $gShapes_comboEditDrivers))
+                $gShapes_comboEditDrivers = stringArrayRemove({$item}, $gShapes_comboEditDrivers);
+        }
+    }
+
+    treeView -e -cs shpUI_targetTree;
+}
+
+
+global proc shapesCombo_setComboTarget()
+{
+    //
+    // sets the selected item as the new combo target
+    //
+    global float $gShapes_targetCol[];
+    global string $gShapes_comboEditTarget;
+    global string $gShapes_comboEditDrivers[];
+
+    string $selection[] = `treeView -q -si shpUI_targetTree`;
+    if (!size($selection))
+        return;
+
+    // reset the previous target color
+    if ($gShapes_comboEditTarget != "")
+        treeView -e -lbc $gShapes_comboEditTarget -1 -1 -1 shpUI_targetTree;
+
+    $gShapes_comboEditTarget = $selection[0];
+    treeView -e -lbc $selection[0] $gShapes_targetCol[0] $gShapes_targetCol[1] $gShapes_targetCol[2] shpUI_targetTree;
+
+    if (stringArrayContains($selection[0], $gShapes_comboEditDrivers))
+        $gShapes_comboEditDrivers = stringArrayRemove({$selection[0]}, $gShapes_comboEditDrivers);
+
+    treeView -e -cs shpUI_targetTree;
+}
+
+
+global proc shapesCombo_updateCombo()
+{
+    //
+    // exists edit combo mode
+    // the old combo is deleted and a new one created
+    //
+    global string $gShapes_currentComboTarget;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_orderedTargetList[];
+
+    global string $gShapes_comboEditTarget;
+    global string $gShapes_comboEditDrivers[];
+
+    if ($gShapes_comboEditTarget == "")
+        br_displayMessage -error "The updated combo has no target";
+
+    if (!size($gShapes_comboEditDrivers))
+        br_displayMessage -error "The updated combo has no driver";
+
+    // delete the old combo
+    shapesCombo_removeCombo $gShapes_currentComboTarget 0;
+
+    // create a new combo based on the selection
+    shapesCombo_performCreateCombo $gShapes_comboEditTarget $gShapes_comboEditDrivers 1 0;
+
+    // update the target list
+    $gShapes_selectedTarget = $gShapes_comboEditTarget;
+    shapesList_refreshTargetItem $gShapes_orderedTargetList;
+
+    shapesCombo_cancelEditCombo;
+}
+
+
+global proc shapesCombo_cancelEditCombo()
+{
+    //
+    // exits the combo edit mode without making modifications
+    //
+    global int $gShapes_comboProcess;
+
+    // refresh the target list
+    shapesList_listBlendShapeTargets 0;
+
+    shapesUI_showEditComboUI 0;
+    shapesCombo_editComboToggleUI 1;
+    $gShapes_comboProcess = 0;
+}
+
+
+global proc string[] shapesCombo_filterHelperAttributes( string $list[] )
+{
+    //
+    // removes any helper attributes from the given list
+    // to make sure that only blend shape targets are processed
+    //
+    int $ids[] = shapesData_getListIndices($list);
+    string $tempList[];
+    for ($i = 0; $i < size($ids); $i ++)
+    {
+        if (!shapesData_isHelper(shapesData_getListNameByIndex($ids[$i])))
+            $tempList[size($tempList)] = $list[$i];
+        else
+            br_displayMessage -warning ("Unable to process \"" + $list[$i] + "\" because it is a helper attribute");
+    }
+    return $tempList;
+}
+
+
+global proc shapesCombo_editComboToggleUI( int $enable )
+{
+    //
+    // disables/enables ui elements
+    // based on entering/exiting the edit combo mode
+    //
+    // set the sculpt mode options enable state
+    shapesUI_manageUIModeDependencies -1 1 $enable;
+
+    if ($enable)
+    {
+        treeView    -e
+                    -adr 1
+                    -arp 1
+                    -dad shapesList_dragDropCallback
+                    -ecc shapesList_expandCollapseItem
+                    -scc shapesMain_buildTargetSlider
+                    shpUI_targetTree;
+    }
+    else
+    {
+        treeView    -e
+                    -adr 0
+                    -arp 0
+                    -dad shapesCommon_doNothing
+                    -ecc shapesCommon_doNothing
+                    -scc shapesCommon_doNothing
+                    shpUI_targetTree;
+    }
+}
+
+
+global proc SHAPES_combo(){}

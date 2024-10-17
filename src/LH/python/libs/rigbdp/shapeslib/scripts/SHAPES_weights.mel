@@ -1,0 +1,1715 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------------------------
+// weight maps
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesWeights_paintShapeWeights()
+{
+    global int $gShapes_index;
+    global int $gShapes_paintWeightsProcess;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+
+    //
+    // start to paint weights for the current shape
+    //
+    if ($gShapes_skinMesh == "")
+        return;
+
+    if ($gShapes_selectedTarget == "")
+        return;
+
+    if (shapesData_isDrivenSet(shapesData_getListNameByIndex($gShapes_index)))
+        return;
+
+    select -r $gShapes_skinMesh;
+
+    // toggle the ui elements
+    shapesUI_paintWeightsToggleUI 0;
+
+    $gShapes_paintWeightsProcess = 1;
+
+    shapesWeights_activatePaintBlendShapeWeightsTool $gShapes_bsNode $gShapes_selectedTarget $gShapes_targetIndex 0;
+}
+
+
+global proc shapesWeights_activatePaintBlendShapeWeightsTool( string $node, string $target, int $index, int $base )
+{
+    //
+    // activate the paint blend shape weights tool
+    //
+    string $attr = "paintTargetWeights";
+    if ($base)
+        $attr = "baseWeights";
+
+    // hide the tool settings so that the target selection doesn't get overridden
+    if (`optionVar -q SHAPESHidePaintWeightsToolSettings`)
+        setToolSettingsVisible false;
+
+    // the following command must be used in order to be able to paint
+    // on the right blend shape node if there is more than one;
+    // simply using the paint blend shapes tool still has a bug, where only one blend shape node
+    // will be respected and listed in the tool options window
+    artSetToolAndSelectAttr("artAttrCtx", ("blendShape." + $node + "." + $attr));
+
+    // set to replace mode when chosen from the preferences
+    if (`optionVar -q SHAPESUseWeightsPaintReplaceMode`)
+        artAttrCtx -e -selectedattroper "absolute" `currentCtx`;
+
+    if ($base)
+        return;
+
+    // make sure the target is also selected in the tool settings
+    source artAttrBlendShapeCallback;
+    catchQuiet(`artBlendShapeSelectTarget artAttrCtx $target`);
+    // sets the paintable index of the blend shape node
+    shapesWeights_setBlendShapePaintTargetIndex $node $index;
+}
+
+
+global proc shapesWeights_setBlendShapePaintTargetIndex( string $node, int $index )
+{
+    //
+    // set the paint target index for the blend shape node
+    //
+    string $attr = ".inputTarget[0]";
+    setAttr ($node + $attr + ".pti") $index;
+}
+
+
+global proc shapesWeights_exitPaintShapeWeights()
+{
+    //
+    // finish painting weights for the current shape
+    //
+    global int $gShapes_index;
+    global int $gShapes_paintWeightsProcess;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    // toggle the ui elements
+    shapesUI_paintWeightsToggleUI 1;
+
+    $gShapes_paintWeightsProcess = 0;
+
+    // indicate the weights on the target
+    shapesList_refreshTargetList;
+
+    setToolTo selectSuperContext;
+
+    // Maya 2016 has a viewport 2.0 refresh bug which still shows the weights
+    // after switching to another tool; reselecting the mesh forces a redraw
+    select -cl;
+    select -r $gShapes_skinMesh;
+}
+
+
+global proc shapesWeights_setWeightButtonsState( int $state )
+{
+    //
+    // enable/disable the weight buttons when entering/leaving paint mode
+    //
+    string $items[] = `rowLayout -q -ca shpUI_shapeWeightsLayout`;
+    stringArrayRemoveAtIndex(0, $items);
+    for ($i in $items)
+    {
+        if (`gmatch $i "*iconTextButton*"`)
+            iconTextButton -e -en $state $i;
+    }
+}
+
+
+global proc shapesWeights_smoothShapeWeights()
+{
+    //
+    // smoothes the entire weight map
+    //
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    if (`currentCtx` != "artAttrBlendShapeContext")
+        shapesWeights_activatePaintBlendShapeWeightsTool $gShapes_bsNode $gShapes_selectedTarget $gShapes_targetIndex 0;
+
+    artAttrCtx -e -sao "smooth" `currentCtx`;
+    artAttrCtx -e -clear `currentCtx`;
+    artAttrCtx -e -sao "absolute" `currentCtx`;
+}
+
+
+global proc shapesWeights_shapeWeightsFlush( float $value, int $regionId )
+{
+    //
+    // flush all weights with the given value
+    //
+    global int $gShapes_regionProcess;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+    global string $gShapes_skinMesh;
+
+    if ($regionId != -1 && shapesRegion_regionIsLocked($regionId))
+        return;
+
+    string $bsNode = $gShapes_bsNode;
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+    int $index = $gShapes_targetIndex;
+
+    if ($gShapes_regionProcess)
+    {
+        $bsNode = $gShapes_regionBS;
+        $intermediate = shapesMain_getOriginalMesh($gShapes_regionTarget, 0);
+        $index = -1;
+    }
+
+    string $context = `currentCtx`;
+    setToolTo selectSuperContext;
+    br_blendShapeEditWeights -flush $value -originalMesh $intermediate -index $index $bsNode;
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+    setToolTo $context;
+}
+
+
+global proc shapesWeights_copyShapeWeights()
+{
+    //
+    // copy the weights of the current shape
+    //
+    global int $gShapes_targetIndex;
+    global int $gShapes_weightsDataIndices[];
+    global float $gShapes_weightsDataValues[];
+    global string $gShapes_bsNode;
+
+    int $indices[] = `br_blendShapeEditWeights -getIndices -index $gShapes_targetIndex $gShapes_bsNode`;
+    float $weights[] = `br_blendShapeEditWeights -getWeights -index $gShapes_targetIndex $gShapes_bsNode`;
+    if (!size($indices))
+    {
+        br_displayMessage -warning "No weights to copy";
+        return;
+    }
+
+    $gShapes_weightsDataIndices = $indices;
+    $gShapes_weightsDataValues = $weights;
+}
+
+
+global proc shapesWeights_pasteShapeWeights( string $node, string $index )
+{
+    //
+    // copy the weights of the current shape
+    //
+    global int $gShapes_weightsDataIndices[];
+    global float $gShapes_weightsDataValues[];
+
+    shapesWeights_setShapeWeights($node,
+                                  $index,
+                                  $gShapes_weightsDataIndices,
+                                  $gShapes_weightsDataValues);
+}
+
+
+global proc shapesWeights_setShapeWeightsForSelected( int $indices[], float $values[] )
+{
+    //
+    // sets the given weights for the selected targets
+    //
+    global string $gShapes_bsNode;
+
+    int $nIds[] = shapesData_getShapeIds(1, {});
+    int $ids[] = shapesData_getShapeIds(0, {});
+
+    for ($n = 0; $n < size($nIds); $n ++)
+    {
+        // check if one of the selected targets is a helper attribute
+        // might be possible through multi selection
+        if (!shapesData_isHelper(shapesData_getListNameByIndex($ids[$n])))
+            shapesWeights_setShapeWeights($gShapes_bsNode, $nIds[$n], $indices, $values);
+    }
+}
+
+
+global proc shapesWeights_setShapeWeights( string $node, string $index, int $indices[], float $values[] )
+{
+    //
+    // sets the given weights for the given target index
+    //
+
+    string $cmd = "br_blendShapeEditWeights -setWeights -index " + $index + " ";
+    for ($i = 0; $i < size($indices); $i ++)
+        $cmd += "-weightIndex " + $indices[$i] + " -weight " + $values[$i] + " ";
+    $cmd += $node;
+    eval $cmd;
+
+}
+
+
+global proc shapesWeights_removeShapeWeights( int $paste, string $shapes[] )
+{
+    //
+    // deletes all weights from the current shape
+    // and optionally paste the stored weights to the current shape
+    //
+    global int $gShapes_targetIndex;
+    global int $gShapes_weightsDataIndices[];
+    global string $gShapes_bsNode;
+    global float $gShapes_weightsDataValues[];
+
+    int $nIds[] = shapesData_getShapeIds(1, $shapes);
+    int $ids[] = shapesData_getShapeIds(0, $shapes);
+
+    for ($n = 0; $n < size($nIds); $n ++)
+    {
+        // check if one of the selected targets is a helper attribute
+        // might be possible through multi selection
+        if (!shapesData_isHelper(shapesData_getListNameByIndex($ids[$n])))
+            br_blendShapeEditWeights -delete -index $nIds[$n] $gShapes_bsNode;
+    }
+
+    if ($paste)
+        shapesWeights_setShapeWeightsForSelected($gShapes_weightsDataIndices, $gShapes_weightsDataValues);
+
+    shapesList_refreshTargetList;
+
+    // sets the paintable index of the blend shape node
+    if (`currentCtx` == "artAttrBlendShapeContext")
+        shapesWeights_paintShapeWeights;
+}
+
+
+global proc string shapesWeights_getFileExtension( string $default )
+{
+    //
+    // returns the file extension based on the preference setting
+    //
+    if (!`optionVar -q SHAPESFileType`)
+        return $default;
+    else
+        return "json";
+}
+
+
+global proc shapesWeights_exportShapeWeights( string $mapName, string $exportPath, int $freeze, int $overwrite, int $base )
+{
+    //
+    // export the weights of the current shape
+    // the mapName is given when exporting the entire setup
+    //
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+
+    string $shape[];
+
+    string $upper1 = "Weight";
+    string $upper2 = "Weights";
+    string $lower2 = "weights";
+
+    if ($freeze)
+    {
+        string $sel[] = `ls -sl -tr`;
+        if (!size($sel))
+            return;
+
+        $shape = `listRelatives -s -ni $sel[0]`;
+        if (!size($shape))
+            br_displayMessage -error ($sel[0] + " has no shape node");
+        if (`nodeType $shape[0]` != "mesh")
+            br_displayMessage -error ($shape[0] + " is not a mesh object");
+
+        $upper1 = "Freeze";
+        $upper2 = "Frozen";
+        $lower2 = "frozen";
+    }
+
+    // first check is there is a given path;
+    // in case of exporting the setup with a custom path
+    if ($exportPath == "")
+        $exportPath = shapesUtil_getExportPath("/weights/" + $gShapes_bsNode, 1);
+    if ($exportPath == "")
+        return;
+
+    if ($mapName == "")
+    {
+        string $selMap[] = `textScrollList -q -si shpUI_shapeWeightsList`;
+        string $prompt = `promptDialog  -t ("Export " + $upper2)
+                                        -m ("Set " + $upper1 + " Map Name")
+                                        -tx $selMap
+                                        -b "OK"
+                                        -b "Cancel"
+                                        -db "OK"
+                                        -cb "Cancel"
+                                        -ds "Cancel"`;
+        if ($prompt == "Cancel")
+            return;
+
+        $mapName = `promptDialog -q -tx`;
+    }
+
+    string $fileName = $exportPath + "/" + $mapName + "." + shapesWeights_getFileExtension("bsw");
+
+    if (!$overwrite)
+    {
+        if (`file -q -ex $fileName`)
+        {
+            string $msg = $upper1 + " map \"" + $mapName + "\" already exists.\n\nDo you want to replace it?";
+            if (!shapesCommon_confirmWindow($msg, "OK"))
+                return;
+        }
+    }
+
+    int $result;
+    if (!$freeze)
+    {
+        int $index = $gShapes_targetIndex;
+        if ($base)
+            $index = -1;
+        $result = `br_blendShapeEditWeights -export -fileName $fileName -i $index $gShapes_bsNode`;
+    }
+    else
+        $result = `br_blendShapeEditWeights -export -fileName $fileName -freezePaint -originalMesh $shape[0]`;
+
+    if ($mapName != "" && $result)
+    {
+        br_displayMessage -info ("Exported " + $lower2 + " to \"" + $fileName + "\".");
+
+        shapesUI_toggleWeightsContextMenu 0;
+        shapesUtil_buildImportMenu "shpUI_shapeWeightsList";
+    }
+}
+
+
+global proc int shapesWeights_importShapeWeights( int $freeze, int $backup )
+{
+    //
+    // import the weights to the current shape
+    //
+    global int $gShapes_index;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+
+    int $return = 0;
+
+    string $exportPath = shapesUtil_getExportPath("/weights/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return $return;
+
+    string $mapName[] = `textScrollList -q -si shpUI_shapeWeightsList`;
+    if (!size($mapName))
+        return $return;
+    string $fileName = $exportPath + "/" + $mapName[0] + "." + shapesWeights_getFileExtension("bsw");
+    if ($backup)
+    {
+        if (shapesWeights_backupWeightMapExists("weights"))
+            $fileName += "~";
+        else
+            return $return;
+    }
+
+    if ($freeze)
+    {
+        $return = shapesWeights_setPaintFreezeWeights($fileName);
+        return 1;
+    }
+
+    // read the weights from the file and apply them
+    $return = `br_blendShapeEditWeights -import -fileName $fileName -index $gShapes_targetIndex $gShapes_bsNode`;
+
+    if ($return)
+        br_displayMessage -info ("Imported weight map \"" + $fileName + "\".");
+
+    // sets the paintable index of the blend shape node
+    if (`currentCtx` == "artAttrBlendShapeContext")
+        shapesWeights_setBlendShapePaintTargetIndex $gShapes_bsNode $gShapes_targetIndex;
+
+    shapesList_refreshTargetList;
+
+    return $return;
+}
+
+
+global proc shapesWeights_invertShapeWeights()
+{
+    //
+    // inverts the weight map of the current shape
+    //
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    if ($gShapes_skinMesh == "")
+        return;
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+
+    int $nIds[] = shapesData_getShapeIds(1, {});
+    int $ids[] = shapesData_getShapeIds(0, {});
+
+    for ($n = 0; $n < size($nIds); $n ++)
+        br_blendShapeEditWeights -invert -index $nIds[$n] -originalMesh $intermediate $gShapes_bsNode;
+
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+
+    shapesList_refreshTargetList;
+
+    // sets the paintable index of the blend shape node
+    if (`currentCtx` == "artAttrBlendShapeContext")
+        shapesWeights_paintShapeWeights;
+}
+
+
+global proc shapesWeights_mirrorSelectedShapeWeights( int $flip )
+{
+    //
+    // mirrors the weight map of the current shape
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    // change the tool to avoid any warnings
+    // duplicating the mesh with the paint tool active results in
+    // // Warning: Invalid UV map on mesh.
+    string $lastTool = `currentCtx`;
+
+    int $nIds[] = shapesData_getShapeIds(1, {});
+    shapesWeights_mirrorShapeWeights($gShapes_bsNode, $nIds, $gShapes_skinMesh, $flip);
+
+    shapesList_refreshTargetList;
+
+    if (`gmatch $lastTool "*artAttrBlendShapeContext*"`)
+        shapesWeights_paintShapeWeights;
+}
+
+
+global proc shapesWeights_mirrorShapeWeights( string $node, int $indices[], string $mesh, int $flip )
+{
+    //
+    // mirrors the weight map of the current shape
+    //
+
+    // change the tool to avoid any warnings
+    // duplicating the mesh with the paint tool active results in
+    // // Warning: Invalid UV map on mesh.
+    setToolTo selectSuperContext;
+
+    string $axis = shapesMirror_getAxisString();
+    int $dir = `optionVar -q SHAPESMirrorDirection`;
+
+    float $tolerance = `optionVar -q SHAPESMirrorToleranceValue`;
+
+    string $intermediate = shapesMain_getOriginalMesh($mesh, 0);
+
+    // check if the mirror mode is order based and the shape has order mapping stored;
+    // if the mapping data doesn't exist but the order based mirroring is enabled
+    // the mirror mode needs to be set back to position based mirroring
+    if (`optionVar -q SHAPESSymmetry` && !shapesMirror_hasOrderMapping(shapesMain_getShapeNode()))
+        shapesUI_setSymmetryStatus 0;
+
+    string $orderBasedFlag = "";
+    if (`optionVar -q SHAPESSymmetry`)
+        $orderBasedFlag = "-ob \"" + shapesMain_getShapeNode() + "\" ";
+
+    string $type = "mirror";
+    if ($flip)
+        $type = "flip";
+
+    for ($n = 0; $n < size($indices); $n ++)
+    {
+        string $cmd = "br_blendShapeEditWeights -" + $type + " ";
+        $cmd += $orderBasedFlag;
+        $cmd += "-index " + $indices[$n] + " ";
+        $cmd += "-originalMesh \"" + $intermediate + "\" ";
+        $cmd += "-axis \"" + $axis + "\" ";
+        $cmd += "-direction " + $dir + " ";
+        $cmd += "-tolerance " + $tolerance + " ";
+        $cmd += $node + ";";
+
+        int $result = `eval $cmd`;
+    }
+
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+}
+
+
+global proc shapesWeights_trimShapeWeights( int $positive )
+{
+    //
+    // trims the weights to appear only on the positive axis
+    //
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    int $nIds[] = shapesData_getShapeIds(1, {});
+    int $ids[] = shapesData_getShapeIds(0, {});
+
+    string $axis = shapesMirror_getAxisString();
+    float $tolerance = `optionVar -q SHAPESMirrorToleranceValue`;
+
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+
+    for ($n = 0; $n < size($nIds); $n ++)
+        br_blendShapeEditWeights    -trim
+                                    -index $nIds[$n]
+                                    -originalMesh $intermediate
+                                    -axis $axis
+                                    -direction $positive
+                                    -tolerance $tolerance
+                                    $gShapes_bsNode;
+
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+
+    // sets the paintable index of the blend shape node
+    if (`currentCtx` == "artAttrBlendShapeContext")
+        shapesWeights_paintShapeWeights;
+}
+
+
+global proc string[] shapesWeights_getListBasedInfo( string $type )
+{
+    //
+    // return a list of infos about the given list type
+    // unifying renaming and deleting of weight and region maps
+    //
+    // info order:
+    // [0] list, [1] typePath, [2] upCase, [3] lowCase, [4] ext, [5] context
+    string $info[];
+    if ($type == "weights")
+        $info = {"shpUI_shapeWeightsList", "weights", "Weight", "weight", ("." + shapesWeights_getFileExtension("bsw"))};
+    else if ($type == "region")
+        $info = {"shpUI_regionList", "regions", "Region", "region", ("." + shapesWeights_getFileExtension("bsr"))};
+    return $info;
+}
+
+
+global proc shapesWeights_renameWeightMap( string $type )
+{
+    //
+    // renames the weight/region map file on disk
+    //
+    global string $gShapes_bsNode;
+
+    string $info[] = shapesWeights_getListBasedInfo($type);
+
+    string $oldName[] = `textScrollList -q -si $info[0]`;
+
+    string $exportPath = shapesUtil_getExportPath("/" + $info[1] + "/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return;
+
+    string $prompt = `promptDialog  -t "Rename"
+                                    -m ("New " + $info[2] + " Map Name")
+                                    -tx $oldName[0]
+                                    -b "OK"
+                                    -b "Cancel"
+                                    -db "OK"
+                                    -cb "Cancel"
+                                    -ds "Cancel"`;
+    if ($prompt == "Cancel")
+        return;
+
+    string $mapName = `promptDialog -q -tx`;
+
+    string $oldFileName = $exportPath + "/" + $oldName[0] + $info[4];
+    string $fileName = $exportPath + "/" + $mapName + $info[4];
+
+    python("import os; os.rename('" + $oldFileName + "', '" + $fileName + "')");
+
+    string $cmd;
+    if ($info[1] == "regions")
+        $cmd = "shapesUI_toggleRegionListMenuItems 0";
+    else
+        $cmd = "shapesUI_toggleWeightsContextMenu 0";
+    eval $cmd;
+    shapesUtil_buildImportMenu $info[0];
+
+    // in case of region file renaming also check
+    // if the current region map name needs to be updated as well
+    if ($info[1] == "regions")
+    {
+        string $fieldText = `textField -q -tx shpUI_currentRegionNameField`;
+        if ($fieldText == $oldName[0])
+        {
+            textField -e -tx $mapName shpUI_currentRegionNameField;
+
+            string $node = "SHAPESRegionData";
+            lockNode -l 0 $node;
+            setAttr ($node + ".regionMap") -type "string" $mapName;
+            lockNode -l 1 $node;
+        }
+    }
+}
+
+
+global proc shapesWeights_deleteWeightMap( string $type )
+{
+    //
+    // deletes the weight/region map file on disk
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_undoInfo;
+
+    string $info[] = shapesWeights_getListBasedInfo($type);
+
+    string $mapName[] = `textScrollList -q -si $info[0]`;
+
+    string $msg = "Delete " + $info[3] + " map file?\n\n" + $gShapes_undoInfo;
+    if (!shapesCommon_confirmWindow($msg, "Delete"))
+        return;
+
+    string $exportPath = shapesUtil_getExportPath("/" + $info[1] + "/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return;
+
+    string $fileName = $exportPath + "/" + $mapName[0] + $info[4];
+
+    python("import os; os.remove('" + $fileName + "')");
+
+    br_displayMessage -info ("Deleted " + $info[3] + " map " + $fileName + ".");
+
+    string $cmd;
+    if ($info[1] == "regions")
+        $cmd = "shapesUI_toggleRegionListMenuItems 0";
+    else
+        $cmd = "shapesUI_toggleWeightsContextMenu 0";
+    eval $cmd;
+    shapesUtil_buildImportMenu $info[0];
+
+    if ($info[3] == "region")
+        shapesRegion_clearRegionData $mapName[0];
+}
+
+
+global proc shapesWeights_duplicateWeightMap( string $type, int $asBackup )
+{
+    //
+    // creates a copy or backup of the weight/region map file on disk
+    //
+    global string $gShapes_bsNode;
+
+    string $info[] = shapesWeights_getListBasedInfo($type);
+
+    string $currentName[] = `textScrollList -q -si $info[0]`;
+
+    string $exportPath = shapesUtil_getExportPath("/" + $info[1] + "/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return;
+
+    string $currentFileName = $exportPath + "/" + $currentName[0] + $info[4];
+    string $fileName;
+    if (!$asBackup)
+        $fileName = $exportPath + "/" + $currentName[0] + "_copy" + $info[4];
+    else
+        $fileName = $currentFileName + "~";
+
+    python("import shutil; shutil.copy2('" + $currentFileName + "', '" + $fileName + "')");
+
+    if (!$asBackup)
+    {
+        br_displayMessage -info ("Copied map to " + $fileName + ".");
+        shapesUtil_buildImportMenu $info[0];
+    }
+    else
+    {
+        br_displayMessage -info ("Created backup of map " + $currentFileName + ".");
+    }
+}
+
+
+global proc int shapesWeights_backupWeightMapExists( string $type )
+{
+    global string $gShapes_bsNode;
+
+    string $info[] = shapesWeights_getListBasedInfo($type);
+
+    string $currentName[] = `textScrollList -q -si $info[0]`;
+
+    string $exportPath = shapesUtil_getExportPath("/" + $info[1] + "/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return 0;
+
+    string $currentFileName = $exportPath + "/" + $currentName[0] + $info[4] + "~";
+    int $exists = `filetest -e $currentFileName`;
+
+    if (!$exists)
+        br_displayMessage -warning ("A backup map for " + $currentName[0] + " does not exist");
+
+    return $exists;
+}
+
+
+global proc shapesWeights_showMapFile( string $type )
+{
+    global string $gShapes_bsNode;
+
+    string $info[] = shapesWeights_getListBasedInfo($type);
+
+    string $exportPath = shapesUtil_getExportPath("/" + $info[1] + "/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return;
+
+    string $currentName[] = `textScrollList -q -si $info[0]`;
+
+    string $cmd = "from pySHAPES.utils import files; files.openFolderWithFile(\"" + $exportPath + "/" + $currentName[0] + $info[4] + "\")";
+    python $cmd;
+}
+
+
+global proc shapesWeights_freezeShapeWeights( string $shapes[] )
+{
+    //
+    // applies the scaled vertex position from the the weight map to the
+    // target shape and deletes the weight map
+    //
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+
+    // the freezing needs to be performed through a command string collection
+    // because if executing the command through a loop an error occurs
+    // that the weight information cannot be found even though it should make no difference
+    string $cmd;
+
+    int $nIds[] = shapesData_getShapeIds(1, $shapes);
+    int $ids[] = shapesData_getShapeIds(0, $shapes);
+    for ($n = 0; $n < size($nIds); $n ++)
+    {
+        int $values[] = shapesData_getTargetValues($nIds[$n]);
+        for ($v in $values)
+            $cmd += "br_blendShapeEditWeights -freeze -index " + $nIds[$n] + " -targetItem " + $v + " " + $gShapes_bsNode + ";\n";
+    }
+    eval $cmd;
+
+    shapesList_refreshTargetList;
+
+    // sets the paintable index of the blend shape node
+    if (`currentCtx` == "artAttrBlendShapeContext")
+        shapesWeights_paintShapeWeights;
+}
+
+
+global proc int shapesWeights_setPaintFreezeWeights( string $fileName )
+{
+    //
+    // writes the vertex color information for the freeze brush
+    // from the weight list file
+    //
+    string $sel[] = `ls -sl -tr`;
+    if (!size($sel))
+        return 0;
+
+    string $shape[] = `listRelatives -s -ni $sel[0]`;
+    if (!size($shape))
+        br_displayMessage -error ($sel[0] + " has no shape node");
+    if (`nodeType $shape[0]` != "mesh")
+        br_displayMessage -error ($shape[0] + " is not a mesh object");
+
+    string $currentContext = `currentCtx`;
+    PaintVertexColorTool;
+
+    if (!`optionVar -q SHAPESUseMayaSculptTool`)
+    {
+        string $artContext = `currentCtx`;
+        if ($currentContext != "artAttrColorPerVertexContext")
+            br_displayMessage -error "The brush freeze paint mode must be enabled to write the freeze data";
+
+        // flood everything black to set all vertices
+        artAttrPaintVertexCtx -e -colorRGBValue 0 0 0 $artContext;
+        artAttrPaintVertexCtx -e -clear $artContext;
+        artAttrPaintVertexCtx -e -colorRGBValue 0.4 0.7 1.0 -selectedattroper "absolute" $artContext;
+    }
+
+    int $return = `br_blendShapeEditWeights -import -freezePaint -fileName $fileName -originalMesh $shape[0]`;
+
+    setToolTo $currentContext;
+
+    return $return;
+}
+
+
+global proc shapesWeights_combineWeightMap( int $add )
+{
+    //
+    // adds or subtracts the weights from the selected weight map file
+    // to/from the the current weights
+    //
+    global int $gShapes_index;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    string $exportPath = shapesUtil_getExportPath("/weights/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return;
+
+    string $mapName[] = `textScrollList -q -si shpUI_shapeWeightsList`;
+    if (!size($mapName))
+        return;
+    string $fileName = $exportPath + "/" + $mapName[0] + "." + shapesWeights_getFileExtension("bsw");
+
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+
+    string $cmd = "br_blendShapeEditWeights ";
+    if ($add)
+        $cmd += "-addWeights ";
+    else
+        $cmd += "-subtract ";
+    $cmd += "-fileName \"" + $fileName + "\" -index " + $gShapes_targetIndex + " -originalMesh " + $intermediate + " " + $gShapes_bsNode;
+
+    // read the weights from the file and apply them
+    int $return = `eval $cmd`;
+
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+
+    if ($return)
+    {
+        shapesList_refreshTargetList;
+
+        // sets the paintable index of the blend shape node
+        if (`currentCtx` == "artAttrBlendShapeContext")
+            shapesWeights_paintShapeWeights;
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// ramp weights & weights server
+// ------------------------------------------------------------------------------------------------
+
+
+global proc shapesWeights_editWeightsController( string $shape, int $index, string $ctrl )
+{
+    //
+    // displays the options to create, edit or delete a ramp weights node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_rampPlug;
+
+    string $buttonList[] = {"OK", "Cancel"};
+    string $msg;
+    string $conn[];
+
+    string $type = "";
+    string $items[] = stringToStringArray($ctrl, ".");
+    if (size($items))
+    {
+        if (`nodeType $items[0]` == "rampWeights")
+            $type = "rampWeights";
+        else if (`nodeType $items[0]` == "weightsServer")
+            $type = "weightsServer";
+    }
+
+    if ($ctrl != "")
+    {
+        if ($type == "rampWeights")
+        {
+            $msg = "Process Ramp Weights";
+
+            // check if a driver for the offset is already present
+            $buttonList = {"Select", " Create Driver ", "Delete", "Cancel"};
+            if (`gmatch $ctrl "*.*"`)
+                $buttonList = {"Select", " Select Driver ", " Delete Driver ", " Open Editor ", "Delete", "Delete Node", "Cancel"};
+        }
+        else if ($type == "weightsServer")
+        {
+            if (!shapesWeights_weightsServerGetTransfer($ctrl))
+            {
+                $msg = "Process Weights Server";
+                $buttonList = {"Select", " Edit Influences ", " Open Editor ", "Delete", "Delete Node", "Cancel"};
+            }
+            else
+            {
+                $msg = "Weights Server Influence Map";
+                $buttonList = {"Delete", "Cancel"};
+            }
+        }
+    }
+    string $confirm = "";
+    if ($ctrl != "")
+    {
+        string $cmd = "confirmDialog -t \"SHAPES\" -m \"" + $msg + "\" -b \"" + stringArrayToString($buttonList, "\" -b \"") + "\" -db \"Cancel\" -cb \"Cancel\" -ds \"Cancel\"";
+        $confirm = `eval $cmd`;
+    }
+    else
+    {
+        shapesUI_buildCreateWeightsControllerUI $shape $index;
+        return;
+    }
+
+    if ($confirm == "Cancel")
+        return;
+
+    if ($ctrl != "")
+    {
+        string $rampAttr = "";
+        if ($type == "rampWeights")
+        {
+            $rampAttr = "offset";
+            if (`optionMenu -q -ex shpUI_rampAttrOption`)
+                $rampAttr = `optionMenu -q -v shpUI_rampAttrOption`;
+
+            if (`gmatch $ctrl "*.*"`)
+                $gShapes_rampPlug = $ctrl;
+            else
+                $gShapes_rampPlug = $ctrl + "." + $rampAttr;
+        }
+
+        if ($confirm == "Delete")
+        {
+            if ($type == "rampWeights" || ($type == "weightsServer" && !shapesWeights_weightsServerGetTransfer($ctrl)))
+                shapesWeights_deleteWeightsController $items[0] $type $shape $index 1;
+            else
+                shapesWeights_deleteInfluenceMapSetup $ctrl;
+        }
+        if ($confirm == "Delete Node")
+        {
+            shapesWeights_deleteWeightsController $items[0] $type $shape $index 0;
+        }
+        else if ($confirm == "Select")
+        {
+            select -r $items[0];
+            return;
+        }
+        else if ($confirm == " Create Driver ")
+        {
+            shapesDriver_createWeightDriver("", 0, 0);
+            $ctrl += "." + $rampAttr;
+        }
+        else if ($confirm == " Select Driver ")
+        {
+            shapesDriver_updateShapeDriverSettings;
+            return;
+        }
+        else if ($confirm == " Delete Driver ")
+        {
+            shapesDriver_deleteWeightDriver "" 0;
+            $gShapes_rampPlug = "";
+        }
+        else if ($confirm == " Edit Influences ")
+        {
+            shapesUI_toggleWeightsServerUpdateButton $index 1;
+        }
+        else if ($confirm == " Open Editor ")
+        {
+            brEditWeightsController($type);
+            evalDeferred("brWeightsControllerGetData " + $type);
+        }
+    }
+
+    // indicate the ramp on the target
+    int $ids[] = shapesData_getShapeIds(0, {$shape});
+    shapesList_refreshTargetList;
+}
+
+
+global proc shapesWeights_createWeightsController( string $shape, int $index, string $radioGrp1, string $radioGrp2, string $nodeOptionLayout )
+{
+    //
+    // initiates the creation of a ramp weights or weights server node
+    // based on the user selection
+    //
+    global string $gShapes_rampPlug;
+
+    string $controls[] = `columnLayout -q -ca $nodeOptionLayout`;
+    string $node = `optionMenu -q -v $controls[0]`;
+
+    string $type = "rampWeights";
+    if (`radioButtonGrp -q -sl $radioGrp1` == 2)
+    {
+        $type = "weightsServer";
+
+        if (`radioButtonGrp -q -sl $radioGrp2` == 2)
+        {
+            deleteUI SHAPESWeightsControllerWin;
+
+            // if multiple target shapes are selected
+            // these have weights present re-create the influence map
+            string $sel[] = `treeView -q -si shpUI_targetTree`;
+            int $weights = 1;
+            if (size($sel) > 1)
+            {
+                for ($s in $sel)
+                {
+                    $weights = shapesData_hasWeights(shapesData_getShapeIndex($s));
+                    if (!$weights)
+                        break;
+                }
+
+                if ($weights)
+                    shapesWeights_performCreateInfluenceMap;
+                else
+                    br_displayMessage -warning "All selected targets need to have weights to create the influence map";
+                return;
+            }
+
+            // select the target if not already selected
+            treeView -e -si $shape 1 shpUI_targetTree;
+            shapesMain_buildTargetSlider;
+
+            shapesUI_buildInfluenceMapUI;
+            return;
+        }
+    }
+
+    shapesWeights_performCreateWeightsController($type, $shape, $index, $node);
+    $gShapes_rampPlug = "";
+
+    deleteUI SHAPESWeightsControllerWin;
+
+    // indicate the ramp on the target
+    int $ids[] = shapesData_getShapeIds(0, {$shape});
+    shapesList_refreshTargetList;
+}
+
+
+global proc string shapesWeights_performCreateWeightsController( string $type, string $shape, int $index, string $node )
+{
+    //
+    // creates a ramp weights or weights server node
+    //
+    global string $gShapes_bsNode;
+
+    if ($node != "New")
+    {
+        int $id = brWeightsControllerConnectDeformer($node, $gShapes_bsNode, $index);
+        shapesWeights_updateControllerWeights($node, $id, $gShapes_bsNode, $index);
+    }
+    else
+        $node = shapesWeights_performCreateRampWeights($type, $gShapes_bsNode, $index, $shape);
+
+    return $node;
+}
+
+
+proc int getPlugIndex( string $plug )
+{
+    int $targetId = -1;
+    string $items[] = stringToStringArray($plug, ".");
+    $targetId = `match "[0-9]+" $items[size($items) - 2]`;
+    return $targetId;
+}
+
+
+global proc shapesWeights_deleteWeightsController( string $node, string $type, string $shape, int $index, int $all )
+{
+    //
+    // deletes the weights controller or removes the connection
+    // if the controller is shared between targets
+    //
+    global string $gShapes_rampPlug;
+
+    string $conn[] = `listConnections -s 0 -d 1 -c 1 -p 1 ($node + ".weightList")`;
+
+    if (size($conn) > 2)
+    {
+        for ($i = 0; $i < size($conn); $i += 2)
+        {
+            if (`gmatch $conn[$i + 1] ("*inputTargetGroup\\[" + $index + "\\]*")`)
+            {
+                disconnectAttr $conn[$i] $conn[$i + 1];
+                int $listIndex = getPlugIndex($conn[$i]);
+                if ($listIndex != -1)
+                {
+                    removeMultiInstance -break 1 ($node + ".weightList[" + $listIndex + "]");
+
+                    // If the matrix list also has incoming connections at the
+                    // current index because of a connected placement transform
+                    // disconnect this as well and also remove the list index.
+                    string $matrixConn[] = `listConnections -plugs 1
+                                                            -connections 1
+                                                            ($node + ".matrixList[" + $listIndex + "]")`;
+                    if (size($matrixConn))
+                    {
+                        disconnectAttr $matrixConn[1] $matrixConn[0];
+                        removeMultiInstance -break 1 ($node + ".matrixList[" + $listIndex + "]");
+                    }
+                }
+
+                break;
+            }
+        }
+
+        if ($all)
+            shapesWeights_removeShapeWeights 0 {$shape};
+    }
+    else
+    {
+        select -r $node;
+        brWeightsControllerDeleteNode($type, $all);
+    }
+    $gShapes_rampPlug = "";
+}
+
+
+global proc shapesWeights_renameWeightsController( string $name )
+{
+    //
+    // rename the weights controller
+    //
+    global string $gShapes_bsNode;
+
+    int $ids[] = shapesData_getShapeIds(1, {$name});
+    string $conn[] = `listConnections -s 1 -d 0 ($gShapes_bsNode + ".it[0].itg[" + $ids[0] + "].tw")`;
+    if (size($conn))
+    {
+        string $ext = "RW";
+        if (`nodeType $conn[0]` == "weightsServer")
+            $ext = "WS";
+        rename $conn[0] ($gShapes_bsNode + "_" + $name + "_" + $ext);
+    }
+}
+
+
+global proc string shapesWeights_getWeightsControllerIndexFromDestination( string $bsNode, int $index )
+{
+    //
+    // Return the index of the weights controller output based on the
+    // given blend shape node and index.
+    //
+    int $controllerId = -1;
+
+    if ($index == -1)
+        return $controllerId;
+
+    string $plug = `connectionInfo -sourceFromDestination ($bsNode + ".it[0].itg[" + $index + "].targetWeights")`;
+    if (size($plug))
+        $controllerId = getPlugIndex($plug);
+    return $controllerId;
+}
+
+
+global proc shapesWeights_updateControllerComponents( string $deformer, int $id )
+{
+    string $node = shapesWeights_getWeightsController($id);
+    if (!size($node))
+        return;
+
+    int $index = shapesWeights_getWeightsControllerIndexFromDestination($deformer, $id);
+    brWeightsControllerTransferComponents($node, $index, $deformer, $id);
+}
+
+
+global proc string shapesWeights_getWeightsController( int $index )
+{
+    //
+    // check if the given channel weights are
+    // controlled by a ramp weights or weights server node
+    //
+    global string $gShapes_bsNode;
+
+    string $node = "";
+
+    if ($index == -1)
+        return $node;
+
+    string $plug = `connectionInfo -sourceFromDestination ($gShapes_bsNode + ".it[0].itg[" + $index + "].targetWeights")`;
+    if (size($plug))
+    {
+        string $items[] = stringToStringArray($plug, ".");
+        if (size($items))
+            $node = $items[0];
+    }
+    return $node;
+}
+
+
+global proc string[] shapesWeights_disconnectWeightsController( string $node, string $shape )
+{
+    //
+    // disconnects the ramp weights or weights server from the blend shape target channel,
+    // resets the weights, but keeps the ramp weights node;
+    // returns the plug connections
+    //
+    if ($node == "")
+        return {};
+
+    string $return[];
+    string $conn[] = `listConnections -s 0 -d 1 -p 1 -c 1 ($node + ".weightList")`;
+    for ($i = 0; $i < size($conn); $i += 2)
+    {
+        string $items[] = stringToStringArray($conn[$i + 1], ".");
+        $items = stringToStringArray($items[2], "[");
+        $items = stringToStringArray($items[1], "]");
+        int $index = $items[0];
+        if (shapesData_getShapeIndex($shape) == $index)
+        {
+            disconnectAttr $conn[$i] $conn[$i + 1];
+            $return[0] = $conn[$i];
+            $return[1] = $conn[$i + 1];
+            break;
+        }
+    }
+    shapesWeights_removeShapeWeights 0 {$shape};
+    return $return;
+}
+
+
+global proc int shapesWeights_weightsServerGetInfluences( string $node, string $nodeList[] )
+{
+    //
+    // returns true if the given weights server node has influence connections
+    //
+    $nodeList = `listConnections -s 1 -d 0 ($node + ".influence")`;
+    return size($nodeList);
+}
+
+
+global proc int shapesWeights_weightsServerGetTexture( string $node )
+{
+    //
+    // returns true if the given weights server node has a texture connection
+    //
+    string $map[] = `listConnections -s 1 -d 0 ($node + ".texture")`;
+    return size($map);
+}
+
+
+global proc int shapesWeights_weightsServerGetTransfer( string $node )
+{
+    //
+    // returns true if the given weights server node has a texture connection
+    //
+    int $value = `getAttr ($node + ".useTransfer")`;
+    return $value;
+}
+
+
+global proc shapesWeights_listServerInfluences( string $server )
+{
+    //
+    // selects the influences for the weights server
+    // in the weight driver list
+    //
+    evalDeferred("treeView -e -cs shpUI_driverTree");
+
+    string $infList[];
+    shapesWeights_weightsServerGetInfluences $server $infList;
+    for ($inf in $infList)
+    {
+        if (!`treeView -q -iex $inf shpUI_driverTree`)
+            shapesList_storeCustomDriver $inf 0;
+    }
+
+    for ($inf in $infList)
+        evalDeferred("treeView -e -si " + $inf + " 1 shpUI_driverTree");
+}
+
+
+global proc shapesWeights_editServerInfluences( string $server )
+{
+    //
+    // adds or removes influences for the weights server
+    //
+    int $clear = 0;
+    string $nodeItems[] = `treeView -q -si shpUI_driverTree`;
+    if (size($nodeItems))
+    {
+        for ($node in $nodeItems)
+        {
+            if (shapesList_isDriverGroup($node))
+                br_displayMessage -error "No influence node selected";
+        }
+    }
+    else
+        $clear = 1;
+
+    brWeightsServerConnectInfluence($server, "", $nodeItems, $clear);
+
+    shapesUI_toggleWeightsServerUpdateButton -1 0;
+
+    shapesList_refreshTargetList;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// influence maps
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesWeights_performCreateInfluenceMap()
+{
+    //
+    // duplicate the current shape and create the setup
+    //
+    global string $gShapes_bsNode;
+
+    int $nIds[] = shapesData_getShapeIds(1, {});
+    int $ids[] = shapesData_getShapeIds(0, {});
+
+    if (!size($ids))
+        return;
+
+    string $influences[];
+    int $indices[];
+
+    string $listName = shapesData_getListNameByIndex($ids[0]);
+    //
+    // create a new group and duplicate the shape
+    //
+    if (size($ids) == 1)
+    {
+        string $groupName = shapesUI_getInfluenceMapGroupName();
+        string $group = shapesUI_addShapeHelperAttribute(1, $groupName, 5);
+
+        string $strings[] = shapesUI_getInfluenceMapStrings();
+
+        for ($i = 0; $i < size($strings); $i ++)
+        {
+            string $shape = shapesWeights_createInfluenceName($strings[$i], $listName);
+            string $newName[] = shapesAction_newChannelName($gShapes_bsNode, $shape);
+            if ($newName[1] != "")
+                $shape = $newName[1];
+
+            shapesAction_duplicateSelectedChannel $shape;
+            shapesList_setNewParent($shape, $group);
+            shapesList_listBlendShapeTargets 0;
+
+            $influences[size($influences)] = $shape;
+            $indices[size($indices)] = shapesData_getShapeIndex($shape);
+        }
+    }
+    //
+    // create a new setup and connect the selected shapes
+    //
+    else
+    {
+        for ($i = 0; $i < size($nIds); $i ++)
+        {
+            string $shape = shapesData_getListNameByIndex($ids[$i]);
+            $influences[size($influences)] = $shape;
+            $indices[size($indices)] = shapesData_getShapeIndex($shape);
+        }
+
+        // clear the name to tell the creation process
+        // that the setup needs to be re-created
+        $listName = "";
+    }
+
+    shapesWeights_createInfluenceMapSetup $listName $influences $indices;
+
+    if (`window -ex SHAPESInfluenceMapSettingsWin`)
+        deleteUI SHAPESInfluenceMapSettingsWin;
+
+    shapesList_listBlendShapeTargets 0;
+}
+
+
+global proc shapesWeights_createInfluenceMapSetup( string $name, string $joints[], int $mapIds[] )
+{
+    //
+    // create the joints and skin cluster
+    // for the influence setup
+    //
+    global string $gShapes_bsNode;
+
+    // when re-creating the setup there is no single shape name given
+    // which can be used to name the groups;
+    // instead get the parent of one shape and extract the group name
+    int $rebuild = 0;
+    if ($name == "")
+    {
+        string $parent = `treeView -q -ip $joints[0] shpUI_targetTree`;
+        string $items[] = stringToStringArray($parent, "_influenceMap");
+        $name = $items[0];
+        $rebuild = 1;
+    }
+
+    string $skin = shapesAction_duplicateOrginalMesh("");
+    $skin = `rename $skin ($name + "_mapSkin_geo")`;
+    sets -e -fe initialShadingGroup $skin;
+    setAttr ($skin + ".v") 1;
+    string $grp = `createNode transform -n ($name + "_mapSkin_grp")`;
+    select -cl;
+
+    float $bbox[] = `xform -q -bb $skin`;
+    string $axis = shapesMirror_getAxisString();
+    float $min = $bbox[0];
+    float $max = $bbox[3];
+    float $vPos = $bbox[1] + ($bbox[4] - $bbox[1]) / 2.0;
+    float $hPos = $bbox[2] + ($bbox[5] - $bbox[2]) / 2.0;
+    if ($axis == "y")
+    {
+        $min = $bbox[1];
+        $max = $bbox[4];
+        $vPos = $bbox[0] + ($bbox[3] - $bbox[0]) / 2.0;
+    }
+    else if ($axis == "z")
+    {
+        $min = $bbox[2];
+        $max = $bbox[5];
+        $vPos = $bbox[1] + ($bbox[4] - $bbox[1]) / 2.0;
+    }
+
+    string $cmd = "skinCluster -tsb -n " + $name + "_skinCluster " + $skin;
+    for ($i = 0; $i < size($joints); $i ++)
+    {
+        float $pos = $min + ($i * ($max + abs($min)) / (size($joints) - 1));
+        string $joint = `joint -p $pos $vPos $hPos -n ($joints[$i] + "_mapJoint")`;
+        select -cl;
+        parent $joint $grp;
+        $cmd += " " + $joint;
+    }
+
+    string $skinCluster[] = `eval $cmd`;
+
+    if ($rebuild)
+    {
+        setAttr ($skinCluster[0] + ".normalizeWeights") 0;
+        for ($i = 0; $i < size($mapIds); $i ++)
+            br_blendShapeEditWeights    -export
+                                        -index $mapIds[$i]
+                                        -skinCluster $skinCluster[0]
+                                        -skinMesh $skin
+                                        -influenceIndex $i
+                                        $gShapes_bsNode;
+        setAttr ($skinCluster[0] + ".normalizeWeights") 1;
+    }
+
+    string $node = `createNode weightsServer -n ($name + "_influenceMap_WS")`;
+    setAttr ($node + ".useTransfer") 1;
+    connectAttr -f ($skinCluster[0] + ".outputGeometry[0]") ($node + ".inputTransfer");
+    int $tid = 1;
+    for ($i = 0; $i < size($joints); $i ++)
+    {
+        connectAttr -f ($node + ".ot[" + $i + "].tw") ($gShapes_bsNode + ".it[0].itg[" + $mapIds[$i] + "].tw");
+        $tid ++;
+    }
+}
+
+
+global proc string shapesWeights_createInfluenceName( string $itemStrings, string $shape )
+{
+    //
+    // create the influence name for the joints
+    //
+    string $strings[] = stringToStringArray($itemStrings, ",");
+    string $name = $strings[0];
+
+    // replace the placeholder with the proper name
+    string $placeholder[] = {"<shape>"};
+    string $replacement[] = {$shape};
+    for ($i = 0; $i < size($placeholder); $i ++)
+        $name = substituteAllString($name, $placeholder[$i], $replacement[$i]);
+
+    if ($strings[1] != "")
+    {
+        if (!startsWith($strings[1], "_"))
+            $name = $strings[1] + $name;
+        else
+            $name = $name + $strings[1];
+    }
+
+    return $name;
+}
+
+
+global proc shapesWeights_deleteInfluenceMapSetup( string $node )
+{
+    //
+    // deletes the weights controller and removes
+    // the influence map setup
+    //
+    string $conn[] = `listConnections -s 0 -d 1 -c 1 -p 1 ($node + ".outputTransfer")`;
+
+    // remove any output connections before deleting the node
+    // to keep the weights on the blend shape node
+    if (size($conn) > 2)
+    {
+        for ($i = 0; $i < size($conn); $i += 2)
+            disconnectAttr $conn[$i] $conn[$i + 1];
+    }
+
+    $conn = `listConnections -s 1 -d 0 ($node + ".inputTransfer")`;
+    string $infl[] = `skinCluster -q -inf $conn[0]`;
+    string $group[] = `listRelatives -p $infl[0]`;
+
+    string $mesh;
+    string $hist[] = `listHistory $conn[0]`;
+    for ($h in $hist)
+    {
+        if (`nodeType $h` == "mesh")
+        {
+            string $trans[] = `listRelatives -p $h`;
+            $mesh = $trans[0];
+            break;
+        }
+    }
+
+    delete $node;
+    delete $mesh;
+    delete $group;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// updating legacy nodes
+// ------------------------------------------------------------------------------------------------
+
+proc string getWeightsControllerDeformerPlug( string $node, int $index )
+{
+    string $conn[] = `listConnections -source 0
+                                      -destination 1
+                                      -plugs 1
+                                      ($node + ".weightList[" + $index + "].weights")`;
+    if (!size($conn))
+        return "";
+    return $conn[0];
+}
+
+
+proc string getWeightsControllerDeformer( string $node, int $index )
+{
+    string $plug = getWeightsControllerDeformerPlug($node, $index);
+    if (!size($plug))
+        return "";
+    string $items[] = stringToStringArray($plug, ".");
+    return $items[0];
+}
+
+
+proc int getPlugIndex( string $plug )
+{
+    int $targetId = -1;
+    string $items[] = stringToStringArray($plug, ".");
+    $targetId = `match "[0-9]+" $items[size($items) - 2]`;
+    return $targetId;
+}
+
+
+proc int hasInputComponents( string $node, int $index )
+{
+    string $comp[] = `getAttr ($node + ".inputComponentsList[" + $index + "].inputComponents")`;
+    if (size($comp))
+        return 1;
+    return 0;
+}
+
+
+proc int hasInputGeometry( string $node, int $index, string $deformer )
+{
+    string $plug = brWeightsControllerGetGeometryPlug($index, $deformer);
+    string $input = `connectionInfo -sourceFromDestination ($node + "." + $plug)`;
+    if (size($input))
+        return 1;
+    return 0;
+}
+
+
+proc string[] updateWeightsController( int $checkOnly )
+{
+    string $nodeTypes[] = {"rampWeights", "weightsServer"};
+
+    string $toUpdate[];
+    for ($nodeType in $nodeTypes)
+    {
+        string $nodes[] = `ls -type $nodeType`;
+        for ($node in $nodes)
+        {
+            int $ids[] = `getAttr -mi ($node + ".weightList")`;
+            for ($id in $ids)
+            {
+                int $update = 0;
+                string $deformer = getWeightsControllerDeformer($node, $id);
+                if (size($deformer) && !hasInputComponents($node, $id))
+                {
+                    $toUpdate[size($toUpdate)] = $node;
+                    $update = 1;
+                }
+                if (size($deformer) && !hasInputGeometry($node, $id, $deformer))
+                {
+                    $toUpdate[size($toUpdate)] = $node;
+                    $update = 1;
+                }
+
+                if ($update && !$checkOnly)
+                {
+                    string $deformerPlug = getWeightsControllerDeformerPlug($node, $id);
+                    if (size($deformerPlug))
+                    {
+                        int $index = getPlugIndex($deformerPlug);
+                        shapesWeights_updateControllerWeights($node, $id, $deformer, $index);
+                    }
+                }
+            }
+        }
+    }
+
+    $toUpdate = stringArrayRemoveDuplicates($toUpdate);
+    return $toUpdate;
+}
+
+
+global proc shapesWeights_updateWeightsController()
+{
+    if (size(updateWeightsController(1)))
+    {
+        string $msg = "The scene contains one or more ramp weights and/or weights server nodes ";
+        $msg += "which need to get updated to the current plug-in version.\nIt's possible that ";
+        $msg += "after the update the results can be slightly different.\nPlease review the ";
+        $msg += "nodes after udating.\nCheck the script editor for affected nodes.\n";
+        if (!shapesCommon_confirmWindow($msg, "OK"))
+            return;
+        string $nodes[] = updateWeightsController(0);
+        print "// Updated weights controller nodes:\n";
+        print ("// " + stringArrayToString($nodes, ", ") + "\n");
+    }
+}
+
+
+global proc string shapesWeights_performCreateRampWeights( string $type, string $deformer, int $id, string $name )
+{
+    string $node = brWeightsControllerCreateNode($deformer, $name, $type);
+    int $index = brWeightsControllerConnectDeformer($node, $deformer, $id);
+    shapesWeights_updateControllerWeights($node, $index, $deformer, $id);
+    return $node;
+}
+
+
+global proc shapesWeights_updateControllerWeights( string $node, int $index, string $deformer, int $id )
+{
+    brWeightsControllerConnectGeometry($node, $index, $deformer, $id);
+    brWeightsControllerTransferComponents($node, $index, $deformer, $id);
+}
+
+
+global proc SHAPES_weights(){}

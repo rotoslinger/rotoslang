@@ -1,20 +1,6 @@
 import maya.api.OpenMaya as om2
 from maya import cmds
 
-# def get_dag_path(node_name):
-#     """
-#     Returns the MDagPath for the given node.
-    
-#     Args:
-#         node_name (str): Name of the node.
-    
-#     Returns:
-#         MDagPath: The DAG path of the node.
-#     """
-#     selection_list = om2.MSelectionList()
-#     selection_list.add(node_name)
-#     return selection_list.getDagPath(0)
-
 def get_dag_path(node_name):
     """
     Returns the MDagPath for the given node, ensuring that the object exists.

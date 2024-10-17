@@ -1,0 +1,424 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc int shapesJob_deleteScriptJob( string $var, string $event )
+{
+    //
+    // deletes the given script job
+    //
+    if (`optionVar -ex $var`)
+    {
+        int $job = `optionVar -q $var`;
+        if (`scriptJob -ex $job`)
+        {
+            if (shapesJob_verifyNewSceneScriptJob($event))
+                scriptJob -kill $job -force;
+        }
+        optionVar -rm $var;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+
+global proc shapesJob_initializeUndoScriptJob( int $new )
+{
+    //
+    // create the script job to refresh the target list
+    //
+    string $var = "SHAPESUndoScriptJob";
+
+    shapesJob_deleteScriptJob($var, "Undo");
+
+    if ($new)
+    {
+        string $parentControl = "SHAPESWorkspaceControl";
+        int $job = `scriptJob -compressUndo 1 -parent $parentControl -event "Undo" shapesJob_refreshFromUndo`;
+        optionVar -iv $var $job;
+    }
+}
+
+
+global proc shapesJob_refreshFromUndo()
+{
+    //
+    // refreshes the target list or blend shape menu
+    // in case of an undo event
+    //
+    global int $gShapes_comboProcess;
+    global int $gShapes_drivenSetProcess;
+    global int $gShapes_paintWeightsProcess;
+    global int $gShapes_sculptProcess;
+    global int $gShapes_splitProcess;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+
+    string $undoItem = `undoInfo -q -un`;
+    string $redoItem = `undoInfo -q -rn`;
+
+    if (shapesUI_workspaceControlExists() &&
+        (startsWith($undoItem, "shapes") || startsWith($redoItem, "shapes")))
+    {
+        // make sure not any processes and related ui relationships are interrupted
+        if (    $gShapes_sculptProcess ||
+                $gShapes_splitProcess ||
+                $gShapes_comboProcess ||
+                $gShapes_paintWeightsProcess ||
+                $gShapes_drivenSetProcess)
+            return;
+
+        refresh;
+
+        // turn off the undo queue because refreshing the list
+        // adds to the queue and makes redo impossible
+        int $state = `undoInfo -q -st`;
+        if (`optionVar -q SHAPESModifyUndoState`)
+            undoInfo -swf 0;
+
+        if (`objExists $gShapes_skinMesh`)
+            shapesMain_listBlendShapeNodes $gShapes_skinMesh 0;
+        else
+        {
+            $gShapes_skinMesh = "";
+            $gShapes_selectedTarget = "";
+            if (`optionVar -q SHAPESModifyUndoState`)
+                undoInfo -swf $state;
+            return;
+        }
+
+        $gShapes_selectedTarget = "";
+        shapesMain_buildTargetSlider;
+
+        if (`optionVar -q SHAPESModifyUndoState`)
+            undoInfo -swf $state;
+    }
+}
+
+
+global proc shapesJob_initializeDisplayValueScriptJob( int $create )
+{
+    //
+    // create the script job for indicating active channels
+    //
+    // called either through the live update check box
+    // or when loading a new mesh
+    // when loading a new mesh the previous script job must be killed
+    // we do this first before checking if there is a blend shape node
+    // because when loading a new mesh the blend shape var is still empty
+    global int $gShapes_updateValueState;
+    global string $gShapes_bsNode;
+
+    string $var = "SHAPESDisplayValueScriptJob";
+    string $varNode = "SHAPESDisplayValueNode";
+
+    int $result = shapesJob_deleteScriptJob($var, "attributeChange");
+    if ($result)
+        optionVar -rm $varNode;
+
+    if ($gShapes_bsNode == "None" || $gShapes_bsNode == "")
+    {
+        shapesUI_resetLiveFilterCheckBox;
+        return;
+    }
+
+    if ($create)
+    {
+        // get the connected plug the current blend shape node sends the mesh to
+        string $plug[] = `listConnections -p 1 ($gShapes_bsNode + ".outputGeometry[0]")`;
+        string $nodeName[] = stringToStringArray($plug[0], ".");
+        int $job = `scriptJob -attributeChange $plug[0] shapesJob_updateDisplayValue`;
+
+        optionVar -iv $var $job;
+        optionVar -sv $varNode $nodeName[0];
+
+        $gShapes_updateValueState = 1;
+        shapesUI_filterListByValue 0.001;
+    }
+    else
+    {
+        shapesUI_resetLiveFilterCheckBox;
+        shapesUI_clearSearch "target";
+        shapesUI_filterList 0;
+    }
+}
+
+
+global proc shapesJob_updateDisplayValue()
+{
+    global int $gShapes_updateValueState;
+
+    //
+    // update the indication of active channels
+    //
+    if ($gShapes_updateValueState == 1)
+        shapesUI_filterListByValue 0.001;
+}
+
+
+global proc shapesJob_initializeUIScriptJob( int $new )
+{
+    //
+    // create the script job to re-initialize when a new scene is openend
+    //
+    string $var = "SHAPESInitializeScriptJob";
+    if (`optionVar -ex $var`)
+    {
+        string $jobs = `optionVar -q $var`;
+        string $idsList[] = stringToStringArray($jobs, ",");
+        int $newSceneID = $idsList[0];
+        int $openSceneID = $idsList[1];
+        if (`scriptJob -ex $newSceneID`)
+        {
+            if (shapesJob_verifyNewSceneScriptJob("NewSceneOpened"))
+                scriptJob -kill $newSceneID -force;
+        }
+        if (`scriptJob -ex $openSceneID`)
+        {
+            if (shapesJob_verifyNewSceneScriptJob("SceneOpened"))
+                scriptJob -kill $openSceneID -force;
+        }
+
+        optionVar -rm $var;
+    }
+
+    if ($new)
+    {
+        int $jobNumNew = `scriptJob -event "NewSceneOpened" shapesJob_clearWithNewScene`;
+        int $jobNumOpen = `scriptJob -event "SceneOpened" shapesJob_clearWithNewScene`;
+        string $jobString = $jobNumNew + "," + $jobNumOpen;
+        optionVar -sv $var $jobString;
+    }
+}
+
+
+global proc int shapesJob_verifyNewSceneScriptJob( string $event )
+{
+    //
+    // checks if the script job for clearing the UI actually exists
+    // or if the stored script job id collides with another script job
+    //
+    string $jobs[] = `scriptJob -lj`;
+    for ($j in $jobs)
+    {
+        if (`gmatch $j ("*" + $event + "*")` && `gmatch $j ("*shapesJob_*")`)
+            return 1;
+    }
+    return 0;
+}
+
+
+global proc shapesJob_clearWithNewScene()
+{
+    //
+    // removes the mesh name and updates the ui with a new scene
+    //
+    // first disable the filtering and remove the script job for the live update
+    // to avoid any errors because of ties to the node names
+    global string $gShapes_currentChannelSlider;
+    global string $gShapes_currentSdkAttr;
+    global string $gShapes_previousTarget;
+    global string $gShapes_rampPlug;
+    global string $gShapes_selectedDriver;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+    global string $gShapes_bsNodeList[];
+    global string $gShapes_sdkAttrList[];
+    global string $gShapes_targetTrackList[];
+
+    SHAPES_vars;
+
+    if (shapesUI_workspaceControlExists())
+    {
+        button -e -ann "" shpUI_meshNameButton;
+        shapesMain_getMeshSelection 1;
+
+        shapesUI_clearSearch "target";
+        shapesUI_clearSearch "driver";
+        textField -e -tx "" shpUI_driverNodeField;
+        shapesUI_filterList 0;
+        shapesUI_resetLiveFilterCheckBox;
+
+        menuItem -e -en 0 shpUI_tweakTransferMenuItem;
+        shapesRegion_clearRegionData "";
+        shapesUI_toggleDrivenSetUI 0;
+        symbolCheckBox -e -v 0 shpUI_shotFixCheck;
+        shapesUI_toggleShotFixUI 0;
+        shapesUI_resetTypeFilter();
+
+        shapesWeights_updateWeightsController();
+    }
+
+    shapesJob_initializeDisplayValueScriptJob 0;
+
+    optionVar -rm SHAPESSplitBlendSlider;
+    optionVar -rm SHAPESSplitCenterSlider;
+}
+
+
+global proc shapesJob_createScriptJob( string $attr, int $new )
+{
+    //
+    // create the script job for the corrective base slider
+    //
+    string $var = "SHAPESScriptJob";
+
+    shapesJob_deleteScriptJob($var, "attributeChange");
+
+    if ($new)
+    {
+        int $job = `scriptJob -attributeChange $attr ("shapesJob_compareInbetweenValues " + $attr)`;
+        optionVar -iv $var $job;
+    }
+}
+
+
+global proc shapesJob_compareInbetweenValues( string $attr )
+{
+    //
+    // enable the inbetween tweak mode button
+    // if the base channel matches the inbetween value
+    //
+    global string $gShapes_inbetweenSlider;
+    global string $gShapes_tweak[];
+
+    string $items[] = shapesMain_getChannelSliderList();
+
+    if (!size($items) || $items[0] == "")
+        return;
+
+    // make sure the attribute exists to avoid any errors
+    if (catchQuiet(`getAttr $attr`))
+        return;
+
+    float $attrVal = `getAttr $attr`;
+    float $value = shapesCommon_roundFloat($attrVal, 3);
+    string $label = `floatSliderButtonGrp -q -l $items[0]`;
+
+    if ($gShapes_inbetweenSlider != "")
+        floatSliderButtonGrp -e -v $value $gShapes_inbetweenSlider;
+
+    if ($value >= 1)
+    {
+        if ($label == "Helper" || $label == "Driven Set")
+        {
+            floatSliderButtonGrp -e -bc ("shapesJob_sliderButtonCommand " + $attr + " 1") $items[0];
+            return;
+        }
+        if (!size($gShapes_tweak))
+        {
+            floatSliderButtonGrp -e -bl "Edit" -bc ("shapesSculpt_initSculptMode " + $items[0]) $items[0];
+        }
+        else
+        {
+            string $tweakString = stringArrayToString($gShapes_tweak, "\" \"");
+            floatSliderButtonGrp -e -bl "Exit" -bc ("shapesSculpt_exitSculptMode \"" + $tweakString + "\"") $items[0];
+        }
+        for ($i = 1; $i < size($items); $i ++)
+        {
+            float $corrValue = shapesCommon_roundFloat(`floatSliderButtonGrp -q -v $items[$i]`, 3);
+            floatSliderButtonGrp -e -bl "Set" -bc ("shapesJob_sliderButtonCommand " + $attr + " " + $corrValue) $items[$i];
+        }
+    }
+    else if ($label != "Driven Set")
+    {
+        floatSliderButtonGrp -e -bl "Set" -bc ("shapesJob_sliderButtonCommand " + $attr + " 1") $items[0];
+        // compare with the inbetween values
+        for ($i = 1; $i < size($items); $i ++)
+        {
+            float $corrValue = shapesCommon_roundFloat(`floatSliderButtonGrp -q -v $items[$i]`, 3);
+            if ($value == $corrValue)
+            {
+                if (!size($gShapes_tweak))
+                {
+                    floatSliderButtonGrp -e -bl "Edit" -bc ("shapesSculpt_initSculptMode " + $items[$i]) $items[$i];
+                }
+                else
+                {
+                    string $tweakString = stringArrayToString($gShapes_tweak, "\" \"");
+                    floatSliderButtonGrp -e -bl "Exit" -bc ("shapesSculpt_exitSculptMode " + $tweakString + "\"") $items[$i];
+                }
+            }
+            else
+            {
+                floatSliderButtonGrp -e -bl "Set" -bc ("shapesJob_sliderButtonCommand " + $attr + " " + $corrValue) $items[$i];
+            }
+        }
+    }
+}
+
+
+global proc shapesJob_sliderButtonCommand( string $attr, float $value )
+{
+    //
+    // sets the slider and target channel to the defined value
+    //
+    global int $gShapes_channelsActive;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    if (!$gShapes_channelsActive && $attr != $gShapes_bsNode + "." + $gShapes_selectedTarget)
+    {
+        br_displayMessage -warning "Edit Mode is currently active";
+        return;
+    }
+
+    shapesSculpt_jumpToTweakFrame $value;
+    int $isRbf = shapesDriver_restoreControllerPose();
+
+    // non-rbf driven channels need to have their driver disconnected
+    // in order to set the channel value;
+    // this is not necessary for rbf driven channels since the control pose
+    // is recalled which then drives the target channel
+    if (!$isRbf)
+    {
+        string $plug[] = `listConnections -s 1 -d 0 -p 1 $attr`;
+        if (size($plug))
+        {
+            string $node[] = stringToStringArray($plug[0], ".");
+            string $connectedType = `nodeType $node[0]`;
+            if (!`gmatch $connectedType "*animCurve*"`)
+                shapesDriver_attachDetachDriver 0 1 0;
+        }
+        setAttr $attr $value;
+    }
+    shapesMain_matchSelectedTargetValues;
+}
+
+
+global proc SHAPES_jobs(){}

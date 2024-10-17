@@ -1,0 +1,466 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc shapesAnimation_keyWeight( float $mode )
+{
+    //
+    // keyframe actions for setting weight values
+    //
+    global string $gShapes_bsNode;
+
+    string $items[] = `treeView -q -si shpUI_targetTree`;
+    if (!size($items))
+        return;
+
+    float $time = `currentTime -q`;
+
+    for ($shape in $items)
+    {
+        string $name = $gShapes_bsNode + "." + $shape;
+        int $pad = `intFieldGrp -q -v1 shpUI_keyPaddingField`;
+
+        // key zero or full
+        if ($mode == 0 || $mode == 1 || $mode == 0.5)
+        {
+            if ($mode != 0.5)
+                setAttr $name $mode;
+            else
+                $mode = `getAttr $name`;
+            setKeyframe -v $mode $name;
+        }
+        // key range
+        else if ($mode == 2)
+        {
+            setAttr $name 1;
+            setKeyframe -v 1 $name;
+            setKeyframe -v 0 -t ($time - $pad) $name;
+            setKeyframe -v 0 -t ($time + $pad) $name;
+        }
+        // delete current key
+        else if ($mode == -1)
+        {
+            selectKey -k -t $time $name;
+            catchQuiet(`cutKey -an "keys" -cl`);
+        }
+        // delete range
+        else if ($mode == -2)
+        {
+            selectKey -k -t $time $name;
+            float $keys[] = `keyframe -q $name`;
+            if (size($keys))
+            {
+                int $keyId = shapesArray_floatArrayFind($time, 0, $keys);
+                if ($keyId - 1 >= 0)
+                {
+                    float $nearestValue[] = `keyframe -t $keys[$keyId - 1] -q -vc $name`;
+                    if ($keyId - 1 >= 0)
+                    {
+                        if ($nearestValue[0] == 0)
+                            selectKey -add -k -t $keys[$keyId - 1] $name;
+                    }
+                    if ($keyId + 1 < size($keys))
+                    {
+                        if ($nearestValue[0] == 0)
+                            selectKey -add -k -t $keys[$keyId + 1] $name;
+                    }
+                    cutKey -an "keys" -cl;
+                    setAttr $name 0;
+                }
+            }
+        }
+        // delete all keys
+        else if ($mode == -3)
+        {
+            float $keys[] = `keyframe -q $name`;
+            if (size($keys))
+            {
+                selectKey -k -t ("" + $keys[0] + ":" + $keys[size($keys) - 1] + "") $name;
+                cutKey -an "keys" -cl;
+                setAttr $name 0;
+            }
+        }
+
+        shapesList_refreshTargetItem {$shape};
+    }
+
+    shapesUI_selectNode "animation" $items "" "";
+}
+
+
+global proc string shapesAnimation_shotFixNewName()
+{
+    //
+    // returns a new target shape name
+    // based on the current frame and the prefix
+    //
+    global string $gShapes_bsNode;
+
+    int $frame = `currentTime -q`;
+    string $prefix = `textFieldGrp -q -tx shpUI_shotPrefixField`;
+    if ($prefix == "")
+        $prefix = "shotFix";
+    string $name = $prefix + "_frame_" + $frame;
+
+    string $nodeName[] = shapesAction_newChannelName($gShapes_bsNode, $name);
+    if ($nodeName[1] != "")
+    {
+        string $suf = substitute($name, $nodeName[1], "");
+        $name += "_" + $suf;
+    }
+    else
+        $name = $nodeName[0];
+
+    return $name;
+}
+
+
+global proc shapesAnimation_shotFixGetPrefix()
+{
+    //
+    // reads the prefix from the selected target
+    //
+    string $items[] = `treeView -q -si shpUI_targetTree`;
+    if (!size($items))
+        return;
+
+    string $prefix[];
+    string $parts[] = stringToStringArray($items[0], "_");
+    for ($p in $parts)
+    {
+        if ($p != "frame")
+            $prefix[size($prefix)] = $p;
+        else
+        {
+            textFieldGrp -e -tx (stringArrayToString($prefix, "_")) shpUI_shotPrefixField;
+            return;
+        }
+    }
+}
+
+
+global proc shapesAnimation_jumpToShotFixFrame( string $shape )
+{
+    //
+    // move the time to the frame where the given target shape
+    // is keyed with it's maximum value
+    //
+    float $frame = shapesAnimation_shotFixGetShapeFrame($shape, 1);
+    if ($frame != -1)
+        currentTime $frame;
+}
+
+
+global proc shapesAnimation_jumpToNextShape( int $next )
+{
+    //
+    // selects the previous or next target shape in the list
+    // based on the keyframe order
+    //
+    string $shape = shapesAnimation_shotFixGetNextShape($next);
+    if ($shape == "")
+        return;
+
+    treeView -e -cs shpUI_targetTree;
+    refresh;
+    treeView -e -si $shape 1 shpUI_targetTree;
+    shapesAnimation_jumpToShotFixFrame $shape;
+    shapesUI_selectNode "animation" {$shape} "" "";
+}
+
+
+global proc float shapesAnimation_shotFixGetShapeFrame( string $shape, int $index )
+{
+    //
+    // return either the first keyframe where the given shape
+    // is keyed with a value of 1 or it's last keyframe;
+    // $index is the index of the keyframe:
+    // 0 = start; 1 = active; 2 = end
+    //
+    global string $gShapes_bsNode;
+
+    if ($gShapes_bsNode == "None" || $gShapes_bsNode == "" || $shape == "")
+        return -1;
+
+    string $curves[] = `listConnections -s 1 -d 0 -p 1 -scn 1 -type "animCurve" ($gShapes_bsNode + "." + $shape)`;
+    if (!size($curves))
+        return -1;
+    string $items[] = stringToStringArray($curves[0], ".");
+    string $curve = $items[0];
+
+    int $indexList[] = `getAttr -mi ($curve + ".ktv")`;
+    int $activeIndex = -1;
+
+    // go through the indices and find the first key with a value of 1;
+    // store the index to find the previous or following keyframe
+    for ($i in $indexList)
+    {
+        float $values[] = `getAttr ($curve + ".ktv[" + $i + "]")`;
+        if ($values[1] >= 1)
+        {
+            // in case there are multiple active keys find the one which matches the shape name
+            string $items[] = stringToStringArray($shape, "_");
+            if ($values[0] == $items[size($items) - 1])
+            {
+                if ($index == 1)
+                    return $values[0];
+                else
+                    $activeIndex = $i;
+            }
+        }
+    }
+
+    if ($activeIndex == -1)
+        return $activeIndex;
+
+    if ($index == 0)
+    {
+        // get the previous key, which should be at 0;
+        // if it's not 0 then go through the key indices and find the first 0 key
+        if ($activeIndex > 0)
+        {
+            float $values[] = `getAttr ($curve + ".ktv[" + $indexList[$activeIndex - 1] + "]")`;
+            if ($values[1] == 0)
+                return $values[0];
+            else
+            {
+                for ($i = 0; $i < size($indexList); $i ++)
+                {
+                    float $values[] = `getAttr ($curve + ".ktv[" + $indexList[$i] + "]")`;
+                    if ($values[1] == 0)
+                        return $values[0];
+                }
+            }
+        }
+    }
+    else
+    {
+        // get the next key, which should be at 0;
+        // if it's not 0 then go through the key indices and find the last 0 key
+        if ($activeIndex < size($indexList) - 1)
+        {
+            float $values[] = `getAttr ($curve + ".ktv[" + $indexList[$activeIndex + 1] + "]")`;
+            if ($values[1] == 0)
+                return $values[0];
+            else
+            {
+
+                float $maxVal = -1;
+                for ($i = size($indexList) - 1; $i >= 0; $i --)
+                {
+                    float $values[] = `getAttr ($curve + ".ktv[" + $indexList[$i] + "]")`;
+                    if ($values[1] == 0 && $maxVal == -1)
+                        return $values[0];
+                    else
+                        $maxVal = $values[0];
+                }
+            }
+        }
+    }
+
+    return -1;
+}
+
+
+global proc string shapesAnimation_shotFixGetNextShape( int $next )
+{
+    //
+    // returns the name of the previous or next shape
+    // based on the current time
+    //
+    global string $gShapes_bsNode;
+
+    if ($gShapes_bsNode == "None" || $gShapes_bsNode == "")
+        return "";
+
+    string $prefix = `textFieldGrp -q -tx shpUI_shotPrefixField`;
+    string $targets[] = `listAttr -m -st "w*" $gShapes_bsNode`;
+    string $shapes[];
+    for ($t = 0; $t < size($targets); $t ++)
+    {
+        if (`gmatch $targets[$t] ($prefix + "*")`)
+            $shapes[size($shapes)] = $targets[$t];
+    }
+
+    float $currentFrame = `currentTime -q`;
+    float $lastFrame = -1;
+    if ($next == 1)
+        $lastFrame = 99999999;
+    string $prevShape = "";
+
+    for ($s in $shapes)
+    {
+        float $frame = shapesAnimation_shotFixGetShapeFrame($s, 1);
+        if ($frame != -1)
+        {
+            if (($next == -1 && $frame > $lastFrame && $frame < $currentFrame) ||
+                ($next == 1 && $frame < $lastFrame && $frame > $currentFrame))
+            {
+                $lastFrame = $frame;
+                $prevShape = $s;
+            }
+        }
+    }
+    return $prevShape;
+}
+
+
+global proc shapesAnimation_shotFixResetChannels()
+{
+    //
+    // resets all target channels of the blend shape node
+    //
+    global string $gShapes_bsNode;
+    global int $gShapes_shotFixReset;
+
+    if ($gShapes_bsNode == "None" || $gShapes_bsNode == "")
+        return;
+
+    int $state = `autoKeyframe -q -st`;
+    autoKeyframe -st 0;
+    string $targets[] = `listAttr -m -st "w*" $gShapes_bsNode`;
+    for ($t in $targets)
+        setAttr ($gShapes_bsNode + "." + $t) 0;
+    autoKeyframe -st $state;
+    $gShapes_shotFixReset = 1;
+}
+
+
+global proc shapesAnimation_shotFixSetKey( int $setKey )
+{
+    //
+    // sets a keyframe for the previous shape
+    // and the current shape, so that one
+    // blends over to the other
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    string $prevShape = shapesAnimation_shotFixGetNextShape(-1);
+    string $nextShape = shapesAnimation_shotFixGetNextShape(1);
+
+    float $prevActiveFrame = shapesAnimation_shotFixGetShapeFrame($prevShape, 1);
+    float $prevLastFrame = shapesAnimation_shotFixGetShapeFrame($prevShape, 2);
+    float $nextFirstFrame = shapesAnimation_shotFixGetShapeFrame($nextShape, 0);
+    float $nextActiveFrame = shapesAnimation_shotFixGetShapeFrame($nextShape, 1);
+
+    // get the possible off frame from the previous shape;
+    // previous shapes are usually active but if manually keyed to inactive
+    // the new shape should be handled as a first shape without blending
+    float $current = `currentTime -q`;
+
+    if ($setKey)
+    {
+        int $start = `intFieldGrp -q -v1 shpUI_keyPaddingField`;
+        //
+        // set two keyframes when:
+        // - no shapes have been keyed yet
+        // - the current shape is last
+        //
+        if (($prevShape == "" && $nextShape == "") || ($prevLastFrame != -1 && $nextShape == ""))
+        {
+            setKeyframe -v 0 -t ($current - $start) ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+            setKeyframe -v 1 -t $current ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+        }
+        //
+        // keyframe a shape before the first shape
+        //
+        else if ($prevShape == "" && $nextShape != "")
+        {
+            if ($nextActiveFrame == -1)
+                return;
+
+            setKeyframe -v 0 -t ($current - $start) ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+            setKeyframe -v 1 ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+            setKeyframe -v 0 -t $nextActiveFrame ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+
+            // check if the first key of the following shape overlaps the current shape;
+            // if true, move the key and also blend the new shape to 0
+            //if ($nextFirstFrame < $current)
+            {
+                keyframe -e -a -o over -tc $current -t $nextFirstFrame ($gShapes_bsNode + "." + $nextShape);
+                float $nextFrame = shapesAnimation_shotFixGetShapeFrame($nextShape, 1);
+                setKeyframe -v 0 -t $nextFrame ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+            }
+        }
+        //
+        // insert a shape between two shapes
+        //
+        else
+        {
+            if ($prevActiveFrame == -1)
+                return;
+
+            // first blend the shape in from the active key of the previous shape
+            // to the current frame
+            setKeyframe -v 0 -t $prevActiveFrame ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+            setKeyframe -v 1 ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+
+            // in case the previous shape has it's last keyframe after the current time
+            // (i.e. another target should get inserted) the last keyframe needs to get moved
+            if ($prevLastFrame > $current)
+                keyframe -e -a -o over -tc $current -t $prevLastFrame ($gShapes_bsNode + "." + $prevShape);
+            else
+                setKeyframe -v 0 ($gShapes_bsNode + "." + $prevShape);
+
+            // check if the is a shape already following (in case of inserting a target)
+            if ($nextShape != "")
+            {
+                // check if the first key of the following shape overlaps the current shape;
+                // if true, move the key and also blend the new shape to 0
+                // or
+                // when inserting and the next keyframe is far enough apart
+                // set the new shape to 0 at the next keyframe
+                keyframe -e -a -o over -tc $current -t $nextFirstFrame ($gShapes_bsNode + "." + $nextShape);
+                float $nextFrame = shapesAnimation_shotFixGetShapeFrame($nextShape, 1);
+                setKeyframe -v 0 -t $nextFrame ($gShapes_bsNode + "." + $gShapes_selectedTarget);
+            }
+        }
+    }
+
+    shapesList_refreshTargetItem {$gShapes_selectedTarget};
+
+    shapesUI_selectNode "animation" {$gShapes_selectedTarget} "" "";
+
+    iconTextCheckBox -e -v 0 shpUI_shotFixRestCheck;
+    shapesUI_toggleShotFixUI 1;
+
+    currentTime ($current + 1);
+    currentTime $current;
+}
+
+
+global proc SHAPES_animation(){}

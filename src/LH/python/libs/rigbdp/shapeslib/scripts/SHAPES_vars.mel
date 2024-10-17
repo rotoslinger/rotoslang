@@ -1,0 +1,195 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc SHAPES_vars()
+{
+    global string $gShapes_version;                         $gShapes_version = "5.11.0 (231102)";
+    global string $gShapes_versionShort;                    $gShapes_versionShort = "5.11.0";
+    global string $gShapes_weightDriverRequiredVersion;     $gShapes_weightDriverRequiredVersion = "4.0";
+    global string $gShapes_creator;                         $gShapes_creator = "Ingo Clemens";
+    global string $gShapes_copyright;                       $gShapes_copyright = "brave rabbit 2014-2023";
+    global string $gShapes_homeUrl;                         $gShapes_homeUrl = "https://www.braverabbit.com/shapes";
+    global string $gShapes_learningUrl;                     $gShapes_learningUrl = "https://www.braverabbit.com/shapes/video-documentation/";
+
+
+    global int $gShapes_applyTarget;                        $gShapes_applyTarget = 1;
+    global int $gShapes_centerMirrorState;                  $gShapes_centerMirrorState = 0;
+    global int $gShapes_channelsActive;                     $gShapes_channelsActive = 1;
+    global int $gShapes_clearSliderFrame;                   $gShapes_clearSliderFrame = 1;
+    global int $gShapes_comboProcess;                       $gShapes_comboProcess = 0;
+    global int $gShapes_compareSliderDrag;                  $gShapes_compareSliderDrag = 0;
+    global int $gShapes_createSequence;                     $gShapes_createSequence = 0;
+    global int $gShapes_currentRegion;                      $gShapes_currentRegion = -1;
+    global int $gShapes_customExport;                       $gShapes_customExport = 0;
+    global int $gShapes_drivenKeyId;                        $gShapes_drivenKeyId = 0;
+    global int $gShapes_drivenSetProcess;                   $gShapes_drivenSetProcess = 0;
+    global int $gShapes_driverListIsFiltered;               $gShapes_driverListIsFiltered = 0;
+    global int $gShapes_exportProcess;                      $gShapes_exportProcess = 0;
+    global int $gShapes_fbxExport;                          $gShapes_fbxExport = 0;
+    global int $gShapes_hasBaseWeights;                     $gShapes_hasBaseWeights = 0;
+    global int $gShapes_index;                              $gShapes_index = -1;
+    global int $gShapes_isFirstBs;                          $gShapes_isFirstBs = 0;
+    global int $gShapes_isSkin;                             $gShapes_isSkin = 0;
+    global int $gShapes_isWrapped;                          $gShapes_isWrapped = 0;
+    global int $gShapes_lastRegion;                         $gShapes_lastRegion = -1;
+    global int $gShapes_managedColorPots;                   $gShapes_managedColorPots = 0;
+    global int $gShapes_mirrorRbfPosesProcess;              $gShapes_mirrorRbfPosesProcess = 0;
+    global int $gShapes_namespaceExists;                    $gShapes_namespaceExists = 0;
+    global int $gShapes_newDrivenSet;                       $gShapes_newDrivenSet = 0;
+    global int $gShapes_newMeshLoaded;                      $gShapes_newMeshLoaded = 0;
+    global int $gShapes_paintWeightsProcess;                $gShapes_paintWeightsProcess = 0;
+    global int $gShapes_isReferenced;                       $gShapes_isReferenced = 0;
+    global int $gShapes_rebuiltSetup;                       $gShapes_rebuiltSetup = 0;
+    global int $gShapes_regionProcess;                      $gShapes_regionProcess = 0;
+    global int $gShapes_replaceMode;                        $gShapes_replaceMode = 0;
+    global int $gShapes_sculptProcess;                      $gShapes_sculptProcess = 0;
+    global int $gShapes_sequenceProcess;                    $gShapes_sequenceProcess = 0;
+    global int $gShapes_showFullColorMap;                   $gShapes_showFullColorMap = 0;
+    global int $gShapes_skipRbfPose;                        $gShapes_skipRbfPose = 0;
+    global int $gShapes_splitProcess;                       $gShapes_splitProcess = 0;
+    global int $gShapes_targetIndex;                        $gShapes_targetIndex = 0;
+    global int $gShapes_tweakWithCombo;                     $gShapes_tweakWithCombo = 0;
+    global int $gShapes_unlinkSlider;                       $gShapes_unlinkSlider = 0;
+    global int $gShapes_updateValueState;                   $gShapes_updateValueState = 0;
+    global int $gShapes_userComparePref;                    $gShapes_userComparePref = 0;
+
+
+    global int $gShapes_transferIndexList[];                $gShapes_transferIndexList = {};
+    global int $gShapes_weightsDataIndices[];               $gShapes_weightsDataIndices = {};
+
+
+    global float $gShapes_sequenceMax;                      $gShapes_sequenceMax = 1;
+    global float $gShapes_channelValue;                     $gShapes_channelValue = 0;
+    global float $gShapes_compareSliderValue;               $gShapes_compareSliderValue = 0;
+
+
+    global float $gShapes_compareTimeRange[];               $gShapes_compareTimeRange = {};
+    global float $gShapes_driverCol[];                      $gShapes_driverCol = {0.15, 0.5, 0.0};
+    global float $gShapes_targetCol[];                      $gShapes_targetCol = {0.6, 0.15, 0.15};
+    global float $gShapes_weightsDataValues[];              $gShapes_weightsDataValues = {};
+
+
+    global string $gShapes_bsNode;                          $gShapes_bsNode = "None";
+    global string $gShapes_comboEditTarget;                 $gShapes_comboEditTarget = "";
+    global string $gShapes_compareTarget;                   $gShapes_compareTarget = "";
+    global string $gShapes_currentChannelSlider;            $gShapes_currentChannelSlider = "";
+    global string $gShapes_currentComboTarget;              $gShapes_currentComboTarget = "";
+    global string $gShapes_currentEditSet;                  $gShapes_currentEditSet = "";
+    global string $gShapes_currentSdkAttr;                  $gShapes_currentSdkAttr = "";
+    global string $gShapes_currentSearchList;               $gShapes_currentSearchList = "";
+    global string $gShapes_currentSequenceTarget;           $gShapes_currentSequenceTarget = "";
+    global string $gShapes_drivenNodeAttr;                  $gShapes_drivenNodeAttr = "SHAPESTransferDrivenNode";
+    global string $gShapes_driverListFilterType;            $gShapes_driverListFilterType = "";
+    global string $gShapes_driverNodeType;                  $gShapes_driverNodeType = "";
+    global string $gShapes_duplicateSetAttributeString;     $gShapes_duplicateSetAttributeString = "";
+    global string $gShapes_exportMirrorSetupSequenceData;   $gShapes_exportMirrorSetupSequenceData = "";
+    global string $gShapes_groupSetAttrName;                $gShapes_groupSetAttrName = "SHAPESDrivenSetGroup";
+    global string $gShapes_inbetweenItem;                   $gShapes_inbetweenItem = "";
+    global string $gShapes_inbetweenSlider;                 $gShapes_inbetweenSlider = "";
+    global string $gShapes_lastAnimCurveUL;                 $gShapes_lastAnimCurveUL = "";
+    global string $gShapes_lastAnimCurveUA;                 $gShapes_lastAnimCurveUA = "";
+    global string $gShapes_lastAnimCurveUU;                 $gShapes_lastAnimCurveUU = "";
+    global string $gShapes_masterNodeAttr;                  $gShapes_masterNodeAttr = "SHAPESTransferMasterNode";
+    global string $gShapes_mirrorDriver;                    $gShapes_mirrorDriver = "";
+    global string $gShapes_name;                            $gShapes_name = "newCorrective";
+    global string $gShapes_previousNodeName;                $gShapes_previousNodeName = "";
+    global string $gShapes_previousTarget;                  $gShapes_previousTarget = "";
+    global string $gShapes_rampPlug;                        $gShapes_rampPlug = "";
+    global string $gShapes_rbfGroupParentItem;              $gShapes_rbfGroupParentItem = "";
+    global string $gShapes_rbfParent;                       $gShapes_rbfParent = "";
+    global string $gShapes_regionBS;                        $gShapes_regionBS = "";
+    global string $gShapes_regionExtractParent;             $gShapes_regionExtractParent = "";
+    global string $gShapes_regionTarget;                    $gShapes_regionTarget = "";
+    global string $gShapes_restoreAnimationCompareString;   $gShapes_restoreAnimationCompareString = "";
+    global string $gShapes_sculptButtonLabel;               $gShapes_sculptButtonLabel = "Create New";
+    global string $gShapes_sculptSkin;                      $gShapes_sculptSkin = "";
+    global string $gShapes_selectedDriver;                  $gShapes_selectedDriver = "";
+    global string $gShapes_selectedTarget;                  $gShapes_selectedTarget = "";
+    global string $gShapes_setAttrName;                     $gShapes_setAttrName = "SHAPESDrivenSet";
+    global string $gShapes_sideIdentifier;                  $gShapes_sideIdentifier = "";
+    global string $gShapes_skinMesh;                        $gShapes_skinMesh = "";
+    global string $gShapes_skinClusterName;                 $gShapes_skinClusterName = "";
+    global string $gShapes_splitOriginal;                   $gShapes_splitOriginal = "";
+    global string $gShapes_undoInfo;                        $gShapes_undoInfo = "This action cannot be undone.";
+    global string $gShapes_weightsData;                     $gShapes_weightsData = "";
+
+
+    global string $gShapes_bsNodeList[];                    $gShapes_bsNodeList = {};
+    global string $gShapes_camAttrs[];                      $gShapes_camAttrs = {};
+    global string $gShapes_channelPlug[];                   $gShapes_channelPlug = {};
+    global string $gShapes_comboEditDrivers[];              $gShapes_comboEditDrivers = {};
+    global string $gShapes_compareComboSlider[];            $gShapes_compareComboSlider = {};
+    global string $gShapes_comparePlug[];                   $gShapes_comparePlug = {};
+    global string $gShapes_currentEditRemoveList[];         $gShapes_currentEditRemoveList = {};
+    global string $gShapes_customOriginal[];                $gShapes_customOriginal = {};
+    global string $gShapes_driverItems[];                   $gShapes_driverItems = {};
+    global string $gShapes_drivenSetData[];                 $gShapes_drivenSetData = {};
+    global string $gShapes_driverPlug[];                    $gShapes_driverPlug = {};
+    global string $gShapes_deletedShadingNodes[];           $gShapes_deletedShadingNodes = {};
+    global string $gShapes_exportConnection[];              $gShapes_exportConnection = {};
+    global string $gShapes_left[];
+        $gShapes_left = {"left_", "_left", "Left_", "_Left", "lt_", "_lt", "Lt_", "_Lt", "lft_", "_lft", "Lft_", "_Lft", "Lf_", "_Lf", "lf_", "_lf", "l_", "_l", "L_", "_L"};
+    global string $gShapes_lockedDrivenSetAttrs[];          $gShapes_lockedDrivenSetAttrs = {};
+    global string $gShapes_orderBelowList[];                $gShapes_orderBelowList = {};
+    global string $gShapes_orderedBsList[];                 $gShapes_orderedBsList = {};
+    global string $gShapes_orderedDriverList[];             $gShapes_orderedDriverList = {};
+    global string $gShapes_orderedTargetList[];             $gShapes_orderedTargetList = {};
+    global string $gShapes_poseInfluenceSlider[];           $gShapes_poseInfluenceSlider = {};
+    global string $gShapes_preCompareSelection[];           $gShapes_preCompareSelection = {};
+    global string $gShapes_sdkAttrList[];                   $gShapes_sdkAttrList = {};
+    global string $gShapes_splitShapeIdentifier[];          $gShapes_splitShapeIdentifier = {"L_", "R_"};
+    global string $gShapes_targetTrackList[];               $gShapes_targetTrackList = {};
+    global string $gShapes_rebuildConnection[];             $gShapes_rebuildConnection = {};
+    global string $gShapes_rgbLabel[];
+        $gShapes_rgbLabel = {"0.64 0.192 0.192", "0.64 0.316 0.192", "0.64 0.64 0.192", "0.416 0.64 0.192", "0.192 0.64 0.192", "0.192 0.64 0.416", "0.192 0.64 0.64", "0.192 0.416 0.64", "0.192 0.192 0.64", "0.416 0.192 0.64", "0.64 0.192 0.64", "0.64 0.192 0.416"};
+    global string $gShapes_regionLabels[];
+        $gShapes_regionLabels = {"brows", "eyes", "ears", "jaw", "lips", "mouth", "nose"};
+    global string $gShapes_right[];
+        $gShapes_right = {"right_", "_right", "Right_", "_Right", "rt_", "_rt", "Rt_", "_Rt", "rgt_", "_rgt", "Rgt_", "_Rgt", "Rg_", "_Rg", "rg_", "_rg", "r_", "_r", "R_", "_R"};
+    global string $gShapes_sculptBlendMeshes[];             $gShapes_sculptBlendMeshes = {};
+    global string $gShapes_sculptBlendPlug[];               $gShapes_sculptBlendPlug = {};
+    global string $gShapes_sculptMesh[];                    $gShapes_sculptMesh = {};
+    global string $gShapes_skinVisibility[];                $gShapes_skinVisibility = {};
+    global string $gShapes_splitData[];                     $gShapes_splitData = {};
+    global string $gShapes_targetAssociations[];            $gShapes_targetAssociations = {};
+    global string $gShapes_tweak[];                         $gShapes_tweak = {};
+    global string $gShapes_userLabels[];
+        $gShapes_userLabels = {"Animated", "Label2", "Corrective", "RBF Poses", "Helper Attribute", "Label6", "Group", "Shape Combo", "Driven Set", "Driver Combo", "Shape Fix", "Label12"};
+
+    if (!`optionVar -ex "SHAPESDefaultMayaSculptTool"`)
+        optionVar -sv "SHAPESDefaultMayaSculptTool" "SetMeshGrabTool";
+}

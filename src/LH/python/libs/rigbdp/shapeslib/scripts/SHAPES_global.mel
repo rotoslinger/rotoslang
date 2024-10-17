@@ -1,0 +1,503 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc int shapesGlobal_getVersion()
+{
+    //
+    // get the version as return it as an int
+    //
+    global string $gShapes_versionShort;
+
+    string $digits[] = stringToStringArray($gShapes_versionShort, ".");
+    string $values[];
+    for ($i = 0; $i < size($digits); $i ++)
+    {
+        int $value = $digits[$i];
+        if ($value < 10)
+            $values[$i] = "0" + $value;
+        else
+            $values[$i] = $value;
+    }
+
+    string $versionString = stringArrayToString($values, "");
+    return $versionString;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// initializing
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesGlobal_loadPlugin()
+{
+    //
+    // load the SHAPES tools
+    //
+    global string $gShapes_weightDriverRequiredVersion;
+
+    // in case the create render node window exists close it;
+    // this is necessary because loading any plugin causes
+    // createRenderNodeLoadPluginCallback() to be triggered
+    // which can lead to errors with other plugins (i.e. vray)
+    if (`window -exists createRenderNodeWindow`)
+        deleteUI createRenderNodeWindow;
+
+    if (!`pluginInfo -q -l SHAPESTools`)
+        loadPlugin SHAPESTools;
+    if (!`pluginInfo -q -l SHAPESBrush`)
+        loadPlugin SHAPESBrush;
+    if (!`pluginInfo -q -l rampWeights`)
+        loadPlugin rampWeights;
+    if (!`pluginInfo -q -l weightDriver`)
+        loadPlugin weightDriver;
+    if (!`pluginInfo -q -l weightsServer`)
+        loadPlugin weightsServer;
+
+    if (!`pluginInfo -q -l poseInterpolator`)
+        loadPlugin poseInterpolator;
+
+    string $currentVersion = `pluginInfo -q -v weightDriver`;
+    string $currentItems[] = stringToStringArray($currentVersion, ".");
+    string $requiredItems[] = stringToStringArray($gShapes_weightDriverRequiredVersion, ".");
+    if (size($currentItems) == 2) $currentItems[size($currentItems)] = "0";
+    if (size($requiredItems) == 2) $requiredItems[size($requiredItems)] = "0";
+    int $mismatch = 0;
+    for ($i = 0; $i < size($currentItems); $i ++)
+    {
+        int $currentValue = $currentItems[$i];
+        int $requiredValue = $requiredItems[$i];
+        if ($currentValue < $requiredValue)
+            $mismatch = 1;
+    }
+
+    if ($mismatch)
+        br_displayMessage -error ("The weightDriver plug-in doesn't match the current version. Version " + $currentVersion + " is installed but " + $gShapes_weightDriverRequiredVersion + " is needed.");
+}
+
+
+global proc int[] shapesGlobal_getSculptApp()
+{
+    //
+    // check if mudbox or zBrush are present and set the flags
+    //
+    // create the list for existing applications
+    // order: mudbox, zbrush
+    int $app[] = {0, 0};
+
+    // first initialize the file menu if it hasn't been opened before
+    // if not initialized the file menu doesn't contain any items yet
+    buildFileMenu;
+    global string $gMainFileMenu;
+    string $fileMenuItems[] = `menu -q -ia $gMainFileMenu`;
+    if (stringArrayContains("FileMenuSendToMudbox", $fileMenuItems))
+        $app[0] = 1;
+    // check for zbrush
+    string $path = shapesGlobal_getZBrushPath();
+    if ($path != "")
+        if (`filetest -d $path`)
+            $app[1] = 1;
+
+    return $app;
+}
+
+
+global proc string shapesGlobal_getZBrushPath()
+{
+    //
+    // get the zBrush path according to the platform
+    //
+    string $path = "";
+    string $os = `about -os`;
+    if ($os == "mac")
+        $path = "/Users/Shared/Pixologic/";
+    else if ($os == "nt" || $os == "win64")
+        $path = "C:/Users/Public/Pixologic/";
+    return $path;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// preferences
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesGlobal_setOptionVars( int $reset )
+{
+    //
+    // defines the default values for the environment variables
+    //
+    if ($reset || !`optionVar -ex SHAPESSkipLoadMeshDialog`)
+        optionVar -iv SHAPESSkipLoadMeshDialog 0;
+
+    if ($reset || !`optionVar -ex SHAPESShowUIButtons`)
+        optionVar -iv SHAPESShowUIButtons 1;
+
+    if ($reset || !`optionVar -ex SHAPESShowUIDrivenSet`)
+        optionVar -iv SHAPESShowUIDrivenSet 0;
+
+    if ($reset || !`optionVar -ex SHAPESShowUIWeights`)
+        optionVar -iv SHAPESShowUIWeights 0;
+
+    if ($reset || !`optionVar -ex SHAPESShowUIRegion`)
+        optionVar -iv SHAPESShowUIRegion 0;
+
+    if ($reset || !`optionVar -ex SHAPESShowUIAnimation`)
+        optionVar -iv SHAPESShowUIAnimation 0;
+
+    if ($reset || !`optionVar -ex SHAPESShowUIDriver`)
+        optionVar -iv SHAPESShowUIDriver 1;
+
+    if ($reset || !`optionVar -ex SHAPESAutoEnableSculpt`)
+        optionVar -iv SHAPESAutoEnableSculpt 1;
+
+    if ($reset || !`optionVar -ex SHAPESBrushDefaultType`)
+        optionVar -iv SHAPESBrushDefaultType 0;
+
+    if ($reset || !`optionVar -ex SHAPESUseMayaSculptTool`)
+        optionVar -iv SHAPESUseMayaSculptTool 0;
+
+    if ($reset || !`optionVar -ex SHAPESMayaSculptTool`)
+        optionVar -iv SHAPESMayaSculptTool 4;
+
+    if ($reset || !`optionVar -ex SHAPESEnableHUD`)
+        optionVar -iv SHAPESEnableHUD 1;
+
+    if ($reset || !`optionVar -ex SHAPESShowSculptFrame`)
+        optionVar -iv SHAPESShowSculptFrame 1;
+
+    if ($reset || !`optionVar -ex SHAPESUseDefaultMaterial`)
+        optionVar -iv SHAPESUseDefaultMaterial 1;
+
+    if ($reset || !`optionVar -ex SHAPESSculptIsolation`)
+        optionVar -iv SHAPESSculptIsolation 1;
+
+    if ($reset || !`optionVar -ex SHAPESConnectToDeformation`)
+        optionVar -iv SHAPESConnectToDeformation 0;
+
+    if ($reset || !`optionVar -ex SHAPESIgnoreBrushHistoryWarning`)
+        optionVar -iv SHAPESIgnoreBrushHistoryWarning 0;
+
+    if ($reset || !`optionVar -ex SHAPESEnterEditUndoClear`)
+        optionVar -iv SHAPESEnterEditUndoClear 0;
+
+    if ($reset || !`optionVar -ex SHAPESBlendToOriginal`)
+        optionVar -iv SHAPESBlendToOriginal 1;
+
+    if ($reset || !`optionVar -ex SHAPESEnableSculptCompare`)
+        optionVar -iv SHAPESEnableSculptCompare 0;
+
+    if ($reset || !`optionVar -ex SHAPESSculptCompareLinearKeys`)
+        optionVar -iv SHAPESSculptCompareLinearKeys 0;
+
+    if ($reset || !`optionVar -ex SHAPESJumpToEditPose`)
+        optionVar -iv SHAPESJumpToEditPose 1;
+
+    if ($reset || !`optionVar -ex SHAPESCompareDraggerToolStep`)
+        optionVar -fv SHAPESCompareDraggerToolStep 0.1;
+
+    if ($reset || !`optionVar -ex SHAPESBlendToPreDeformation`)
+        optionVar -iv SHAPESBlendToPreDeformation 0;
+
+    if ($reset || !`optionVar -ex SHAPESTweakAutoMirrorOption`)
+        optionVar -iv SHAPESTweakAutoMirrorOption 0;
+
+    if ($reset || !`optionVar -ex SHAPESExportMode`)
+        optionVar -iv SHAPESExportMode 0;
+
+    if ($reset || !`optionVar -ex SHAPESAutoApplyCorrectiveShape`)
+        optionVar -iv SHAPESAutoApplyCorrectiveShape 0;
+
+    if ($reset || !`optionVar -ex SHAPESBehaviorMirror`)
+        optionVar -iv SHAPESBehaviorMirror 1;
+
+    if ($reset || !`optionVar -ex SHAPESFullMirror`)
+        optionVar -iv SHAPESFullMirror 1;
+
+    if ($reset || !`optionVar -ex SHAPESMirrorDirection`)
+        optionVar -iv SHAPESMirrorDirection 1;
+
+    if ($reset || !`optionVar -ex SHAPESMirrorAxis`)
+        optionVar -iv SHAPESMirrorAxis 1;
+
+    if ($reset || !`optionVar -ex SHAPESMirrorToleranceValue`)
+        optionVar -fv SHAPESMirrorToleranceValue 0.01;
+
+    if ($reset || !`optionVar -ex SHAPESSymmetryAutoTolerance`)
+        optionVar -iv SHAPESSymmetryAutoTolerance 0;
+
+    if ($reset || !`optionVar -ex SHAPESSymmetry`)
+        optionVar -iv SHAPESSymmetry 1;
+
+    if ($reset || !`optionVar -ex SHAPESSymmetryEnabled`)
+        optionVar -iv SHAPESSymmetryEnabled 1;
+
+    if ($reset || !`optionVar -ex SHAPESSymmetryVerbosity`)
+        optionVar -iv SHAPESSymmetryVerbosity 0;
+
+    if ($reset || !`optionVar -ex SHAPESAutoListJoints`)
+        optionVar -iv SHAPESAutoListJoints 0;
+
+    if ($reset || !`optionVar -ex SHAPESShowMeshRelatedJoints`)
+        optionVar -iv SHAPESShowMeshRelatedJoints 0;
+
+    if ($reset || !`optionVar -ex SHAPESConfirmDeleteTarget`)
+        optionVar -iv SHAPESConfirmDeleteTarget 1;
+
+    if ($reset || !`optionVar -ex SHAPESBaseWeightsWarning`)
+        optionVar -iv SHAPESBaseWeightsWarning 2;
+
+    if ($reset || !`optionVar -ex SHAPESUseWeightsPaintReplaceMode`)
+        optionVar -iv SHAPESUseWeightsPaintReplaceMode 0;
+
+    if ($reset || !`optionVar -ex SHAPESAutoAddShapeDriver`)
+        optionVar -iv SHAPESAutoAddShapeDriver 0;
+
+    if ($reset || !`optionVar -ex SHAPESIgnoreZeroChannels`)
+        optionVar -iv SHAPESIgnoreZeroChannels 0;
+
+    if ($reset || !`optionVar -ex SHAPESDefaultPoseMode`)
+        optionVar -iv SHAPESDefaultPoseMode 0;
+
+    if ($reset || !`optionVar -ex SHAPESPoseModeFromSelected`)
+        optionVar -iv SHAPESPoseModeFromSelected 1;
+
+    if ($reset || !`optionVar -ex SHAPESHideSetMemberRenameMessage`)
+        optionVar -iv SHAPESHideSetMemberRenameMessage 0;
+
+    if ($reset || !`optionVar -ex SHAPESLockNonDrivenSetAttributes`)
+        optionVar -iv SHAPESLockNonDrivenSetAttributes 0;
+
+    if ($reset || !`optionVar -ex SHAPESDistributePartialRegionWeights`)
+        optionVar -iv SHAPESDistributePartialRegionWeights 1;
+
+    if ($reset || !`optionVar -ex SHAPESColorDisplayPartialWeights`)
+        optionVar -iv SHAPESColorDisplayPartialWeights 1;
+
+    if ($reset || !`optionVar -ex SHAPESModifyUndoState`)
+        optionVar -iv SHAPESModifyUndoState 1;
+
+    if ($reset || !`optionVar -ex SHAPESHidePaintWeightsToolSettings`)
+        optionVar -iv SHAPESHidePaintWeightsToolSettings 1;
+
+    if ($reset || !`optionVar -ex SHAPESUseCustomNodeDataExportPath`)
+        optionVar -iv SHAPESUseCustomNodeDataExportPath 0;
+
+    if ($reset || !`optionVar -ex SHAPESCustomNodeDataExportPath`)
+        optionVar -sv SHAPESCustomNodeDataExportPath "";
+
+    if ($reset || !`optionVar -ex SHAPESFileType`)
+        optionVar -iv SHAPESFileType 0;
+
+    if ($reset || !`optionVar -ex SHAPESUseCustomDataPath`)
+        optionVar -iv SHAPESUseCustomDataPath 0;
+
+    if ($reset || !`optionVar -ex SHAPESCustomDataPath`)
+        optionVar -sv SHAPESCustomDataPath "";
+
+    if ($reset || !`optionVar -ex SHAPESPreferencesSelectedTab`)
+        optionVar -iv SHAPESPreferencesSelectedTab 1;
+
+    if ($reset || !`optionVar -ex SHAPESCurrentDockPosition`)
+        optionVar -sv SHAPESCurrentDockPosition "right";
+
+    if ($reset || !`optionVar -ex SHAPESCurrentDockFloat`)
+        optionVar -iv SHAPESCurrentDockFloat 0;
+
+    if ($reset || !`optionVar -ex SHAPESTargetTreeSize`)
+        optionVar -iv SHAPESTargetTreeSize 100;
+
+    if ($reset || !`optionVar -ex SHAPESKeepSelectedMesh`)
+        optionVar -iv SHAPESKeepSelectedMesh 0;
+
+    if ($reset || !`optionVar -ex SHAPESKeepMeshConnection`)
+        optionVar -iv SHAPESKeepMeshConnection 0;
+
+    if ($reset || !`optionVar -ex SHAPESConvertInbetweensInterpolation`)
+        optionVar -iv SHAPESConvertInbetweensInterpolation 0;
+
+    if ($reset || !`optionVar -ex SHAPESDrivenSetFolderCollapseState`)
+        optionVar -iv SHAPESDrivenSetFolderCollapseState 1;
+
+    if ($reset || !`optionVar -ex SHAPESWeightsFolderCollapseState`)
+        optionVar -iv SHAPESWeightsFolderCollapseState 1;
+
+    if ($reset || !`optionVar -ex SHAPESRegionFolderCollapseState`)
+        optionVar -iv SHAPESRegionFolderCollapseState 1;
+
+    if ($reset || !`optionVar -ex SHAPESAnimationFolderCollapseState`)
+        optionVar -iv SHAPESAnimationFolderCollapseState 1;
+
+    if ($reset || !`optionVar -ex SHAPESShapeDriverListCollapseState`)
+        optionVar -iv SHAPESShapeDriverListCollapseState 1;
+
+    if ($reset || !`optionVar -ex SHAPESShapeDriverCollapseState`)
+        optionVar -iv SHAPESShapeDriverCollapseState 1;
+
+    if ($reset || !`optionVar -ex SHAPESSortJointList`)
+        optionVar -iv SHAPESSortJointList 0;
+
+    if ($reset || !`optionVar -ex SHAPESDriverTreeSize`)
+        optionVar -iv SHAPESDriverTreeSize 100;
+
+    if ($reset || !`optionVar -ex SHAPESWeightTreeSize`)
+        optionVar -iv SHAPESWeightTreeSize 60;
+
+    if ($reset || !`optionVar -ex SHAPESRegionTreeSize`)
+        optionVar -iv SHAPESRegionTreeSize 60;
+
+    if ($reset || !`optionVar -ex SHAPESReverseTargetListOrder`)
+        optionVar -iv SHAPESReverseTargetListOrder 0;
+
+    if ($reset || !`optionVar -ex SHAPESCaseSensitiveSearch`)
+        optionVar -iv SHAPESCaseSensitiveSearch 0;
+
+    if ($reset || !`optionVar -ex SHAPESSplitBlendSlider`)
+        optionVar -fv SHAPESSplitBlendSlider 0.0;
+
+    if ($reset || !`optionVar -ex SHAPESSplitCenterSlider`)
+        optionVar -fv SHAPESSplitCenterSlider 0.0;
+
+    if ($reset || !`optionVar -ex SHAPESDrivenSetKeyedColor`)
+        optionVar -sv SHAPESDrivenSetKeyedColor "1.0,0.25,0.25";
+
+    if ($reset || !`optionVar -ex SHAPESDrivenSetInvertedColor`)
+        optionVar -sv SHAPESDrivenSetInvertedColor "0.2,0.667,1.0";
+
+    if ($reset || !`optionVar -ex SHAPESWeightsControllerType`)
+        optionVar -iv SHAPESWeightsControllerType 1;
+
+    if ($reset || !`optionVar -ex SHAPESWeightsServerType`)
+        optionVar -iv SHAPESWeightsServerType 0;
+
+    if ($reset || !`optionVar -ex SHAPESShowFilterRow`)
+        optionVar -iv SHAPESShowFilterRow 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterActiveChannel`)
+        optionVar -iv SHAPESFilterActiveChannel 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterMaxChannel`)
+        optionVar -iv SHAPESFilterMaxChannel 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterConnection`)
+        optionVar -iv SHAPESFilterConnection 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterSdk`)
+        optionVar -iv SHAPESFilterSdk 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterWeightDriver`)
+        optionVar -iv SHAPESFilterWeightDriver 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterRBF`)
+        optionVar -iv SHAPESFilterRBF 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterPoseInterpolator`)
+        optionVar -iv SHAPESFilterPoseInterpolator 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterCombo`)
+        optionVar -iv SHAPESFilterCombo 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterComboMembers`)
+        optionVar -iv SHAPESFilterComboMembers 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterShapeWeights`)
+        optionVar -iv SHAPESFilterShapeWeights 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterRampWeights`)
+        optionVar -iv SHAPESFilterRampWeights 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterWeightsServer`)
+        optionVar -iv SHAPESFilterWeightsServer 0;
+
+    if ($reset || !`optionVar -ex SHAPESFilterDrivenSet`)
+        optionVar -iv SHAPESFilterDrivenSet 0;
+
+    if ($reset || !`optionVar -ex SHAPESExportSmoothed`)
+        optionVar -iv SHAPESExportSmoothed 0;
+
+    if ($reset || !`optionVar -ex SHAPESExportSubdivisions`)
+        optionVar -iv SHAPESExportSubdivisions 0;
+
+    shapesGlobal_setTransferOptionVars $reset;
+}
+
+
+global proc shapesGlobal_setTransferOptionVars( int $reset )
+{
+    //
+    // defines the default values for export and transfer
+    //
+    if ($reset || !`optionVar -ex SHAPESExportOptions`)
+        optionVar -sv SHAPESExportOptions "1,1,1";
+
+    if ($reset || !`optionVar -ex SHAPESTransferOptions`)
+        optionVar -sv SHAPESTransferOptions "1,1,1,1,_previous,1,1";
+}
+
+
+global proc shapesGlobal_resetEnvDefaults()
+{
+    //
+    // reset all environment variables
+    //
+    string $msg = "Reset all SHAPES preferences?";
+    if (!shapesCommon_confirmWindow($msg, "OK"))
+        return;
+
+    string $vars[] = `optionVar -l`;
+    int $count = 0;
+    for ($v in $vars)
+    {
+        if (`gmatch $v "SHAPES*"`)
+        {
+            optionVar -rm $v;
+            $count ++;
+        }
+    }
+
+    br_displayMessage -info ("Cleared " + $count + " preference items.");
+
+    shapesGlobal_setOptionVars 1;
+
+    // reload the ui
+    if (`control -ex SHAPESPrefsWin`)
+    {
+        evalDeferred("deleteUI SHAPESPrefsWin");
+        evalDeferred("SHAPES");
+    }
+}
+
+
+global proc SHAPES_global(){}

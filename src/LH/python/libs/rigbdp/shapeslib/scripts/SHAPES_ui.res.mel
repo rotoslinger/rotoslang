@@ -1,0 +1,100 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+displayString -r -v "Auto enables the sculpting brush when entering Edit mode" m_SHAPES_ui.kAutoEnableSculpt;
+displayString -r -v "Defines the default brush when the SHAPES brush is activated" m_SHAPES_ui.kBrushDefaultType;
+displayString -r -v "Activates the Maya sculpt tool instead of the SHAPES brush when Auto Enable Brush is selected" m_SHAPES_ui.kUseMayaSculptTool;
+displayString -r -v "Defines the default tool when the Maya sculpt tool is activated" m_SHAPES_ui.kMayaSculptTool;
+displayString -r -v "Displays Heads Up Display buttons in the viewport to exit or cancel the Edit mode" m_SHAPES_ui.kEnableHUD;
+displayString -r -v "Displays a green mask for the current camera while in Edit mode" m_SHAPES_ui.kShowSculptFrame;
+displayString -r -v "Assigns the Maya default material to the sculpting mesh in Edit mode" m_SHAPES_ui.kUseDefaultMaterial;
+displayString -r -v "Isolates the sculpting mesh during Edit mode" m_SHAPES_ui.kSculptIsolation;
+displayString -r -v "Connects the sculpting mesh during Edit mode to the deformed mesh. Ignored when using Maya sculpt tools." m_SHAPES_ui.kConnectToDeformation;
+displayString -r -v "Entering Edit mode clears the undo queue" m_SHAPES_ui.kEnterEditUndoClear;
+displayString -r -v "Ignores the warning message when using the SHAPES freeze brush which adds nodes to the history of the sculpt mesh" m_SHAPES_ui.kIgnoreBrushHistoryWarning;
+displayString -r -v "Enables the ability to compare the current sculpt result with the initial mesh state before entering Edit mode. Sculpt compare is best used with Range Of Motion animations" m_SHAPES_ui.kEnableSculptCompare;
+displayString -r -v "Converts all keyframes to linear keys when using sculpt compare in Edit mode. The original animation is restored after existing Edit mode. Please use with caution." m_SHAPES_ui.kSculptCompareLinearKeys;
+displayString -r -v "Automatically jumps to the animation frame where the blend shape target has been created" m_SHAPES_ui.kJumpToEditPose;
+displayString -r -v "Use the undeformed original mesh as the blend mesh for the SHAPES brush" m_SHAPES_ui.kBlendToPreDeformation;
+displayString -r -v "Automatically applies the edited blend shape target to the mirrored sibling if it exists" m_SHAPES_ui.kTweakAutoMirrorOption;
+displayString -r -v "Automatically adds the imported sculpt result to the blend shape node when send back from Mudbox or ZBrush" m_SHAPES_ui.kAutoApplyCorrectiveShape;
+displayString -r -v "Mirrors drivers with behaviour rather than with mirrored values" m_SHAPES_ui.kBehaviorMirror;
+displayString -r -v "Mirrors the complete shape respecting all points across the line of symmetry. If turned off only points on one side of the model are respected" m_SHAPES_ui.kFullMirror;
+displayString -r -v "Defines if the model is mirrored along the positive to the negative axis (on) or from negative to positive (off)" m_SHAPES_ui.kMirrorDirection;
+displayString -r -v "Lists related joints of the selected mesh as possible shape drivers when loading the mesh" m_SHAPES_ui.kAutoListJoints;
+displayString -r -v "Displays related joints of the selected mesh with a different icon" m_SHAPES_ui.kShowMeshRelatedJoints;
+displayString -r -v "Displays a confirm dialog when deleting a blend shape target" m_SHAPES_ui.kConfirmDeleteTarget;
+displayString -r -v "Automatically adds a shape driver after leaving Edit mode for a new shape based on the current shape driver settings" m_SHAPES_ui.kAutoAddShapeDriver;
+displayString -r -v "Only lists attributes for a set driven key shape driver which are not zero" m_SHAPES_ui.kIgnoreZeroChannels;
+displayString -r -v "Default mode when creating a new solver or solver pose" m_SHAPES_ui.kDefaultPoseMode;
+displayString -r -v "Match the mode from the selected target when creating a new solver pose" m_SHAPES_ui.kPoseModeFromSelected;
+displayString -r -v "Suppresses the info window that driven set members may not be renamed after creating the driven set" m_SHAPES_ui.kHideSetMemberRenameMessage;
+displayString -r -v "Locks all attributes for all members of a driven set which don't belong to the set when a driven set is selected. The attributes get unlocked when the selection changes. Caution: Attributes may stay locked if not used as suggested" m_SHAPES_ui.kLockNonDrivenSetAttributes;
+displayString -r -v "Distributes remaining weights after a paint operation, such as smooth, to other influencing regions. This reduces the amount of unassigned weights after defining regions." m_SHAPES_ui.kDistributePartial;
+displayString -r -v "Displays the partial weights as a color ramp." m_SHAPES_ui.kColorDisplayPartialWeights;
+displayString -r -v "The prefix or suffix for the newly created target shapes. A trailing underscore identifies as a prefix. A leading underscore identifies as a suffix." m_SHAPES_ui.kSplitShapeIdentifier;
+displayString -r -v "Hides the info dialog about mesh and symmetry options when loading a mesh." m_SHAPES_ui.kSkipLoadMeshDialog;
+displayString -r -v "Hides the Maya tool settings window when painting weight maps to reduce interference with the current SHAPES selection (recommended)." m_SHAPES_ui.kHidePaintWeightsToolSettings;
+displayString -r -v "Modifies the undo queue state during undo to allow for redo but can cause the undo queue to turn itself off. Turn off to keep the undo state but redo won't be possible." m_SHAPES_ui.kModifyUndoState;
+displayString -r -v "Default file type for weight maps and region map files." m_SHAPES_ui.kFileType;
+displayString -r -v "Defines how often the blend shape node is checked for base weights." m_SHAPES_ui.kBaseWeightsWarning;
+displayString -r -v "Activates the replace mode for the paint weights tool." m_SHAPES_ui.kUseWeightsPaintReplaceMode;
+displayString -r -v "User defined path for storing weight maps, region maps, export and transfer." m_SHAPES_ui.kUseCustomDataPath;
+displayString -r -v "Subdivide the extracted target meshes before export." m_SHAPES_ui.kExportSmooothed;
+displayString -r -v "Number of subdivisions for the extracted target shapes." m_SHAPES_ui.kExportSubdivisions;
+
+displayString -r -v "Select all set members" m_SHAPES_ui.kSelectAllMembers;
+displayString -r -v "Add one or more keyable attributes to be included in the Driven Set" m_SHAPES_ui.kAddSetAttribute;
+displayString -r -v "Remove one or more attributes from the Driven Set. Pre-existing animation curves will be deleted" m_SHAPES_ui.kRemoveSetAttribute;
+displayString -r -v "Toggles if selected attributes should be inverted when the Driven Set is mirrored. Relevant attributes are displayed in blue" m_SHAPES_ui.kMirrorInvertedAttribute;
+displayString -r -v "Close the window and discard any changes" m_SHAPES_ui.kCloseSetWindow;
+displayString -r -v "Apply the changes and close the window" m_SHAPES_ui.kSetApply;
+displayString -r -v "Define the curve infinity when creating a new Driven Set or toggles the infinity when editing a Driven Set" m_SHAPES_ui.kSetInfinity;
+
+displayString -r -v "Copies the symmetry mapping from one mesh to another. The current mesh is the source, the selected mesh in the scene is the target for the transfer." m_SHAPES_ui.kTransferSymmetryMap;
+
+displayString -r -v "SHAPES supports single- and multi-shell meshes with topological symmetry.\nThere are two methods for loading a mesh:" m_SHAPES_ui.kLoadGuide1;
+displayString -r -v "Load the mesh in object mode when the mesh is already symmetrical\nor when the symmetry components should be found automatically.\n" m_SHAPES_ui.kLoadGuideMesh1;
+displayString -r -v "The search automation requires a single edge to be centered at the\nline of symmetry for each shell crossing the symmetry axis.\n" m_SHAPES_ui.kLoadGuideMesh2;
+displayString -r -v "Floating shell pairs only need a single vertex to be symmetrical.\n\n" m_SHAPES_ui.kLoadGuideMesh3;
+displayString -r -v "Mesh selection is also used when the mesh has been loaded and\nedited before." m_SHAPES_ui.kLoadGuideMesh4;
+displayString -r -v "Load the mesh with a selected edge at the line of symmetry for each\nsymmetric shell when the center line is not clearly centered.\n\n" m_SHAPES_ui.kLoadGuideEdge1;
+displayString -r -v "Selecting symmetry edges helps the search automation, especially\nwith meshes which feature fine detail close to the line of symmetry." m_SHAPES_ui.kLoadGuideEdge2;
+displayString -r -v "After loading the mesh the symmetry icon displays the symmetry status." m_SHAPES_ui.kLoadGuide2;
+displayString -r -v "The default state indicates full topological symmetry support for mirroring." m_SHAPES_ui.kLoadGuideState1;
+displayString -r -v "The red icon indicates partial symmetry support.\nOne or more symmetry components could not be located and related shells\nare not affected by mirroring." m_SHAPES_ui.kLoadGuideState2;
+displayString -r -v "The grey icon displays that symmetry mapping failed for the entire mesh\nand mirroring is not available." m_SHAPES_ui.kLoadGuideState3;

@@ -1,0 +1,1086 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------------------------
+// mirror target
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesMirror_batchMirrorTarget( int $copy, int $flip )
+{
+    //
+    // processes all targets in the selected group
+    //
+    global string $gShapes_undoInfo;
+
+    string $msg = "Proceed with all targets in the selected group?\n\n" + $gShapes_undoInfo;
+    if (!shapesCommon_confirmWindow($msg, "OK"))
+        return;
+
+    // get the contents of the group
+    string $targetList[] = shapesList_getTargetListSelection(2);
+    for ($shape in $targetList)
+    {
+        treeView -e -cs shpUI_targetTree;
+        treeView -e -si $shape 1 shpUI_targetTree;
+        string $slider = shapesMain_buildTargetSlider();
+        shapesMirror_mirrorTarget $slider $copy $flip;
+    }
+}
+
+
+global proc shapesMirror_mirrorRbfPoses()
+{
+    //
+    // processes all targets of the current rbf solver
+    //
+    global int $gShapes_clearSliderFrame;
+    global int $gShapes_index;
+    global int $gShapes_mirrorRbfPosesProcess;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_previousTarget;
+    global string $gShapes_rbfParent;
+    global string $gShapes_selectedTarget;
+
+    string $solver = shapesUI_getSelectedNodeOption();
+    string $solverSibling = shapesMirror_swapAllSideLabels($solver);
+    if (`objExists $solverSibling`)
+    {
+        string $msg = "The mirrored RBF solver " + $solverSibling + " already exists.";
+        $msg += " Please check the side identifier and naming conventions.";
+        br_displayMessage -error $msg;
+    }
+
+    // store the parent of the source driver
+    // to compare with the parent of the mirrored driver;
+    // in case both are the same the parent matrix of the rbf solver
+    // doesn't need to be processed (mirrored at the symmetry axis)
+    $gShapes_rbfParent = `textField -q -tx shpUI_parentField`;
+
+    int $result[] = shapesDriver_performMirrorDriverSettings();
+    if ($result[0] == -1)
+        return;
+
+    $gShapes_mirrorRbfPosesProcess = 1;
+    $gShapes_previousTarget = $gShapes_selectedTarget;
+
+    int $pi = 0;
+    if (shapesDriver_getRbfNodeType($solver) == "poseInterpolator")
+        $pi = 1;
+
+    $gShapes_clearSliderFrame = 0;
+
+    string $mirrorSolver = shapesDriver_mirrorRbfNode();
+    string $solverGroup = shapesDriver_getRbfGroupString($mirrorSolver);
+
+    string $conn[] = `listConnections -s 0 -d 1 -c 1 -p 1 ($solver + ".output")`;
+    int $ids[];
+    string $targetList[];
+    for ($i = 0; $i < size($conn); $i += 2)
+    {
+        string $items[] = stringToStringArray($conn[$i], ".");
+        int $index = `match "[0-9]+" $items[size($items) - 1]`;
+        $ids[size($ids)] = $index;
+        $items = stringToStringArray($conn[$i + 1], ".");
+        $targetList[size($targetList)] = $items[1];
+    }
+
+    string $mirroredList[];
+    for ($i = 0; $i < size($targetList); $i ++)
+    {
+        // set the current target for the process
+        $gShapes_selectedTarget = $targetList[$i];
+        $gShapes_targetIndex = shapesData_getShapeIndex($targetList[$i]);
+        $gShapes_index = shapesData_getListIndex($targetList[$i]);
+        $mirroredList[size($mirroredList)] = shapesMirror_performMirrorTarget($targetList[$i], 6000, 1, -1);
+    }
+
+    // check if the source and result shapes match in number;
+    // if not there must be an error
+    if (size($targetList) != size($mirroredList))
+    {
+        $gShapes_mirrorRbfPosesProcess = 0;
+        br_displayMessage -error "The number of mirrored shapes does not match the number of shapes driven by the RBF solver";
+    }
+
+    if ($pi)
+    {
+        if (`optionVar -q SHAPESBehaviorMirror`)
+            shapesPI_mirrorPosesWithBehavior($solver, $mirrorSolver);
+        else
+        {
+            shapesPI_mirrorPosesWithNoBehavior($solver, $mirrorSolver, $mirroredList);
+            // get a new index list, because if targets have been deleted
+            // the index list might not be continuous;
+            // mirroring the pose interpolator results in a continuous index list,
+            // which then needs to be used for connecting the target shapes
+            $ids = `getAttr -mi ($mirrorSolver + ".pose")`;
+            // remove the neutral poses ids
+            shapesArray_intArrayRemoveAtIndex(0, $ids);
+            shapesArray_intArrayRemoveAtIndex(0, $ids);
+            shapesArray_intArrayRemoveAtIndex(0, $ids);
+
+            // fix the order of the rbf attributes just in case;
+            // start with id 3 because of the neutral poses
+            shapesDriver_reorderPoseAttributes $mirrorSolver 3;
+        }
+    }
+
+    for ($i = 0; $i < size($ids); $i ++)
+        connectAttr -f ($mirrorSolver + ".output[" + $ids[$i] + "]") ($gShapes_bsNode + "." + $mirroredList[$i]);
+
+    // refresh the target list to account for the new shapes
+    // and store the current order to be able to parent the shapes
+    // to the solver group
+    shapesList_listBlendShapeTargets 1;
+    shapesList_storeCurrentOrder;
+    // reverse the list to have the targets appear in the right order
+    // due to how the parenting works
+    for ($i = size($mirroredList) - 1; $i >= 0; $i --)
+        shapesList_setNewParent $mirroredList[$i] $solverGroup;
+
+    $gShapes_mirrorRbfPosesProcess = 0;
+
+    shapesList_listBlendShapeTargets 1;
+    $gShapes_index = shapesData_getListIndex($gShapes_previousTarget);
+
+    // re-select the previous target
+    treeView -e -cs shpUI_targetTree;
+    treeView -e -si $gShapes_previousTarget 1 shpUI_targetTree;
+
+    $gShapes_clearSliderFrame = 1;
+}
+
+
+global proc shapesMirror_mirrorSingleRbfTarget( string $slider, int $copy, int $flip )
+{
+    //
+    // intermediate procedure to mirror a target shape
+    // which is driven by a rbf solver but without mirroring
+    // the driver, nor all other pose shapes
+    //
+    global int $gShapes_clearSliderFrame;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    string $driverPlug[];
+    string $queryPlug = $gShapes_bsNode + "." + $gShapes_selectedTarget;
+    string $plug[] = `listConnections -s 1 -d 0 -p 1 $queryPlug`;
+    if (size($plug))
+    {
+        $driverPlug = {$plug[0], $queryPlug};
+        catchQuiet(`disconnectAttr $plug[0] $queryPlug`);
+    }
+
+    shapesMirror_mirrorTarget($slider, $copy, $flip);
+
+    if (size($driverPlug))
+        catchQuiet(`connectAttr $driverPlug[0] $driverPlug[1]`);
+
+    $gShapes_clearSliderFrame = 0;
+    shapesList_listBlendShapeTargets 1;
+    $gShapes_clearSliderFrame = 1;
+}
+
+
+global proc shapesMirror_mirrorTarget( string $slider, int $copy, int $flip )
+{
+    //
+    // mirror the target and all existing inbetweens
+    // create a copy for the other side if needed
+    // 0: mirror
+    // 1: copy to opposite
+    // 2: apply to opposite
+    //
+    global int $gShapes_createSequence;
+    global int $gShapes_index;
+    global int $gShapes_targetIndex;
+    global string $gShapes_selectedTarget;
+
+    string $targetList[];
+    int $valueList[];
+
+    string $sequencer = shapesDriver_getShapeSequencer($gShapes_selectedTarget, {});
+    string $tgts[] = shapesDriver_getShapeSequenceItems($gShapes_selectedTarget, "targets");
+    if ($sequencer != "" && !size($tgts))
+        $sequencer = "";
+
+    if ($sequencer == "" || (size($tgts) && $tgts[size($tgts) - 1] != $gShapes_selectedTarget))
+    {
+        int $value;
+        // get the value of the given slider
+        string $label = `floatSliderButtonGrp -q -l $slider`;
+        if ($label == "Base")
+            $value = 6000;
+        else
+        {
+            // get the value from the slider label because the number of the
+            // in-between can be used to get the value from the list
+            int $valueList[] = shapesData_getTargetValues($gShapes_targetIndex);
+            string $labelItems[] = stringToStringArray($label, " ");
+            int $vId = $labelItems[1];
+            $value = $valueList[$vId];
+        }
+
+        $targetList[size($targetList)] = $gShapes_selectedTarget;
+        $valueList[size($valueList)] = $value;
+    }
+    else if ((size($tgts) && $tgts[size($tgts) - 1] == $gShapes_selectedTarget))
+    {
+        $targetList = $tgts;
+        for ($t in $targetList)
+            $valueList[size($valueList)] = 6000;
+    }
+
+    $gShapes_createSequence = 0;
+
+    for ($i = 0; $i < size($targetList); $i ++)
+    {
+        // set the current target for the process
+        $gShapes_selectedTarget = $targetList[$i];
+        $gShapes_targetIndex = shapesData_getShapeIndex($targetList[$i]);
+        $gShapes_index = shapesData_getListIndex($targetList[$i]);
+
+        // update the driver list and ui to show the driver settings
+        shapesDriver_setCurrentShapeDriver($gShapes_selectedTarget);
+
+        // in case of a sequence
+        // if the last shape is processed set the flag
+        // to also create the sequence because the other targets already exist
+        if ($sequencer != "" && $i == size($targetList) - 1)
+            $gShapes_createSequence = 1;
+
+        shapesMirror_performMirrorTarget($targetList[$i], $valueList[$i], $copy, $flip);
+    }
+}
+
+
+global proc string shapesMirror_performMirrorTarget( string $shape, float $value, int $copy, int $flip )
+{
+    //
+    // mirror the target and all existing inbetweens
+    // create a copy for the other side if needed
+    // 0: mirror
+    // 1: copy to opposite
+    // 2: apply to opposite
+    //
+    global int $gShapes_centerMirrorState;
+    global int $gShapes_index;
+    global int $gShapes_mirrorRbfPosesProcess;
+    global int $gShapes_targetIndex;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+
+    // for full and half mirrors get the setting from the menu
+    if ($flip == -1)
+        $flip = `optionVar -q SHAPESFullMirror`;
+
+    int $center = 0;
+
+    if (!$gShapes_mirrorRbfPosesProcess)
+    {
+        $center = shapesMirror_mirrorDriverSettings();
+        if ($gShapes_centerMirrorState == -1)
+        {
+            $gShapes_centerMirrorState = 0;
+            return "";
+        }
+    }
+
+    string $opposite = shapesMirror_swapSideLabel($gShapes_selectedTarget);
+
+    // define the index for setting the point values
+    int $index = shapesCommon_findEmptyMultiIndex($gShapes_bsNode + ".weight");
+    if (!$copy)
+        $index = $gShapes_targetIndex;
+
+    // if the target should be copied to the other side
+    // check if the destination target and inbetween exists
+    if ($copy == 2)
+    {
+        if ($opposite == $gShapes_selectedTarget)
+            br_displayMessage -error ($gShapes_selectedTarget + " has no side (left/right) identifier");
+
+        if (`attributeQuery -n $gShapes_bsNode -ex $opposite`)
+        {
+            string $names[] = shapesData_getShapeList();
+            if (stringArrayContains($opposite, $names))
+            {
+                $index = shapesData_getShapeIndex($opposite);
+                int $valInt = $value;
+                int $valList[] = shapesData_getTargetValues($index);
+                if (!shapesArray_intArrayContains($valInt, $valList))
+                    br_displayMessage -error "No sibling for the selected value found for the other side";
+            }
+        }
+        else
+            br_displayMessage -error ($gShapes_selectedTarget + " has no target sibling for the other side");
+    }
+
+    int $targetIds[];
+    if ($copy == 0 || $copy == 2)
+        $targetIds[size($targetIds)] = $value;
+    else
+    {
+        // get the target and all inbetweens
+        $targetIds = shapesData_getTargetValues($gShapes_targetIndex);
+    }
+
+    // define axis multiplier
+    string $axis = shapesMirror_getAxisString();
+
+    int $dir = `optionVar -q SHAPESMirrorDirection`;
+    string $target = "";
+    string $resultTarget = "";
+    int $inbetweenBool;
+    float $tolerance = `optionVar -q SHAPESMirrorToleranceValue`;
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+
+    // check if the mirror mode is order based and the shape has order mapping stored;
+    // if the mapping data doesn't exist but the order based mirroring is enabled
+    // the mirror mode needs to be set back to position based mirroring
+    if (`optionVar -q SHAPESSymmetry` && !shapesMirror_hasOrderMapping(shapesMain_getShapeNode()))
+        shapesUI_setSymmetryStatus 0;
+
+    string $orderBasedFlag = "";
+    if (`optionVar -q SHAPESSymmetry`)
+        $orderBasedFlag = "-ob \"" + shapesMain_getShapeNode() + "\" ";
+
+    // store the symmetry setting
+    // must be disabled to correctly mirror the shapes
+    optionVar -iv SHAPESSymmetricModelingState `symmetricModelling -q -s`;
+    symmetricModelling -e -s 0;
+
+    // initialize the progress bar
+    global string $gMainProgressBar;
+    progressBar -e -bp -ii 0 -max (size($targetIds)) $gMainProgressBar;
+
+    for ($id in $targetIds)
+    {
+        progressBar -e -st ("Mirroring Shape ... (index " + $id + ")") $gMainProgressBar;
+
+        string $tempName = "";
+        if ($copy == 1)
+        {
+            $target = shapesMirror_swapSideLabel($gShapes_selectedTarget);
+
+            // if an object with the same name as the target to mirror
+            // exists in the scene the process will be interrupted with an error;
+            // therefore the existing object needs to be temporarily renamed
+            if (`objExists $target`)
+                $tempName = `rename $target ($target + "_temp")`;
+
+            string $attrList[] = shapesAction_newChannelName($gShapes_bsNode, $target);
+            if ($attrList[1] != "")
+                $target = $attrList[1];
+        }
+
+        string $cmd = "br_blendShapeMirrorTarget ";
+        $cmd += $orderBasedFlag;
+        $cmd += "-axis \"" + $axis + "\" ";
+        $cmd += "-direction " + $dir + " ";
+        $cmd += "-flip " + $flip + " ";
+        $cmd += "-sourceIndex " + $gShapes_targetIndex + " ";
+        $cmd += "-inbetween " + $inbetweenBool + " ";
+        $cmd += "-targetIndex " + $index + " ";
+        $cmd += "-mesh \"" + $gShapes_skinMesh + "\" ";
+        $cmd += "-originalMesh \"" + $intermediate + "\" ";
+        $cmd += "-type " + $copy + " ";
+        $cmd += "-targetItem " + $id + " ";
+        $cmd += "-targetName \"" + $target + "\" ";
+        $cmd += "-tolerance " + $tolerance + " ";
+        $cmd += $gShapes_bsNode + ";";
+
+        int $mirrorResult = `eval $cmd`;
+
+        if ($copy == 1)
+            $inbetweenBool = 1;
+
+        // delete the custom intermediate if the blend shape node is not the first
+        shapesMain_deleteIntermediates "";
+
+        if ($tempName != "")
+            rename $tempName $target;
+
+        // interrupt if the returned reversed point list does not match the original point list length
+        if (!$mirrorResult)
+        {
+            progressBar -e -ep $gMainProgressBar;
+
+            // restore the symmetry setting
+            symmetricModelling -e -s `optionVar -q SHAPESSymmetricModelingState`;
+
+            return "";
+        }
+
+        progressBar -e -s 1 $gMainProgressBar;
+
+        if ($id == 6000)
+            $resultTarget = $target;
+    }
+
+    if ($copy == 0)
+    {
+        shapesWeights_mirrorShapeWeights($gShapes_bsNode, {$gShapes_targetIndex}, $gShapes_skinMesh, $flip);
+    }
+    else if ($copy == 1)
+    {
+        int $channelIndex = shapesData_getShapeIndex($resultTarget);
+        shapesData_addDataItem("shape", $channelIndex, $resultTarget, -1);
+
+        // Copy and mirror the weights if present.
+        if (shapesData_hasWeights(shapesData_getShapeIndex($gShapes_selectedTarget)))
+        {
+            shapesWeights_copyShapeWeights;
+            shapesWeights_pasteShapeWeights($gShapes_bsNode, $channelIndex);
+            shapesWeights_mirrorShapeWeights($gShapes_bsNode, {$channelIndex}, $gShapes_skinMesh, $flip);
+        }
+
+        if (!$gShapes_mirrorRbfPosesProcess)
+            shapesMirror_completeRelationships $resultTarget $center;
+    }
+
+    progressBar -e -ep $gMainProgressBar;
+
+    // restore the symmetry setting
+    symmetricModelling -e -s `optionVar -q SHAPESSymmetricModelingState`;
+
+    return $resultTarget;
+}
+
+
+global proc int shapesMirror_mirrorDriverSettings()
+{
+    //
+    // mirrors the shape driver settings
+    // and returns a center bool based on the settings
+    //
+    global int $gShapes_centerMirrorState;
+
+    int $center = 0;
+    // set the mirrored driver settings
+    if (shapesUI_shapeDriverOption() != 1)
+    {
+        int $result[] = shapesDriver_performMirrorDriverSettings();
+        if ($result[0] == -1)
+        {
+            shapesList_refreshTargetList;
+            $gShapes_centerMirrorState = -1;
+            br_displayMessage -error "Unable to find the mirror node for the shape driver";
+        }
+        else
+            $center = $result[1];
+    }
+    return $center;
+}
+
+
+global proc shapesMirror_completeRelationships( string $target, int $center )
+{
+    //
+    // complete the mirror process by creating related shape drivers,
+    // sequences and combos
+    //
+    global int $gShapes_clearSliderFrame;
+    global int $gShapes_createSequence;
+    global int $gShapes_index;
+    global string $gShapes_bsNode;
+    global string $gShapes_previousTarget;
+    global string $gShapes_selectedTarget;
+
+    // selecting the new target and rebuilding the ui is not possible
+    // because rebuilding the ui also deletes the popup menu which is used
+    // to call the mirroring and this leads to a crash
+    // as a workaround the re-building of the slider frame is bypassed
+    // which is not needed anyway for the mirror process as this doesn't change
+    // the slider frame content
+    // the variable is used in buildTargetSlider
+    $gShapes_clearSliderFrame = 0;
+
+    $gShapes_previousTarget = $gShapes_selectedTarget;
+    // add the weight driver
+    string $driverList[] = shapesDriver_getConnectedWeightDriver($gShapes_selectedTarget);
+    if (size($driverList))
+    {
+        string $sequencer = shapesDriver_getShapeSequencer($gShapes_selectedTarget, {});
+        string $tgts[] = shapesDriver_getShapeSequenceItems($gShapes_selectedTarget, "targets");
+        if ($sequencer != "" && !size($tgts))
+            $sequencer = "";
+
+        if ($sequencer == "" || (size($tgts) && $tgts[size($tgts) - 1] == $gShapes_selectedTarget))
+        {
+            string $driverName = shapesDriver_createWeightDriver($target, 1, $center);
+            if ($driverName != "")
+            {
+                string $cmd = shapesDriver_setGetWeightDriverBlendCurve(0, $driverName, 1);
+                eval $cmd;
+            }
+        }
+
+        if ($gShapes_createSequence)
+        {
+            string $queryPlug = shapesMain_getQueryPlug(shapesMirror_swapSideLabel($gShapes_selectedTarget));
+            string $plug[] = `listConnections -s 1 -d 0 -p 1 -sh 1 $queryPlug`;
+            if (size($plug))
+            {
+                string $targetList[];
+                for ($t in $tgts)
+                    $targetList[size($targetList)] = shapesMirror_swapSideLabel($t);
+                float $values[] = shapesArray_stringArrayToFloatArray(shapesDriver_getShapeSequenceItems($gShapes_selectedTarget, "values"));
+                string $tan[] = shapesDriver_getShapeSequenceItems($gShapes_selectedTarget, "tangents");
+                shapesDriver_performCreateSequence $plug[0] $values $targetList $tan[0] 1 0 {} 0;
+            }
+            else
+                br_displayMessage -error ("Unable to create the sequence because " + $gShapes_bsNode + "." + $target + " seems to have missing connections");
+        }
+    }
+    shapesCombo_mirrorCombo $target;
+
+    shapesList_autoOrderNewTarget $target $gShapes_previousTarget 1;
+    shapesList_listBlendShapeTargets 1;
+    $gShapes_index = shapesData_getListIndex($gShapes_previousTarget);
+
+    // re-select the previous target
+    treeView -e -cs shpUI_targetTree;
+    treeView -e -si $gShapes_previousTarget 1 shpUI_targetTree;
+
+    $gShapes_clearSliderFrame = 1;
+}
+
+
+global proc string shapesMirror_getAxisString()
+{
+    //
+    // build the axis string from the mirror setting
+    //
+    string $axis = "";
+    int $dirVal = `optionVar -q SHAPESMirrorAxis`;
+
+    // make sure the setting is a 1-based value
+    // due to the changes to the preferences in version 3.0_b020
+    if ($dirVal == 0)
+        $dirVal = 1;
+
+    if ($dirVal == 1)
+        $axis = "x";
+    else if ($dirVal == 2)
+        $axis = "y";
+    else if ($dirVal == 3)
+        $axis = "z";
+    return $axis;
+}
+
+
+global proc string shapesMirror_swapAllSideLabels( string $name )
+{
+    //
+    // replace the side identifier with the opposite side
+    // including the possible blend shape node name
+    // and attribute names
+    //
+    global string $gShapes_bsNode;
+
+    string $refPath = "";
+    if (`gmatch $name "*:*"`)
+    {
+        $refPath = shapesCommon_getReferencePath($name) + ":";
+        $name = shapesCommon_removeReferencePath($name);
+    }
+
+    string $items[] = stringToStringArray($name, ".");
+    for ($i = 0; $i < size($items); $i ++)
+    {
+        string $n = $items[$i];
+        if ($n != $gShapes_bsNode && `gmatch $n ($gShapes_bsNode + "*")`)
+        {
+            // in case of the weight driver or pose interpolator
+            // strip and store the suffix
+            string $suffix = "";
+            if (endsWith($n, "_WD") || endsWith($n, "_PI"))
+            {
+                $suffix = `substring $n (size($n) - 2) (size($n))`;
+                $n = substitute($suffix, $n, "");
+            }
+            $n = substitute($gShapes_bsNode + "_", $n, "");
+            $n = shapesMirror_swapSideLabel($n);
+            string $bsName = shapesMirror_swapSideLabel($gShapes_bsNode);
+            $n = $bsName + "_" + $n + $suffix;
+        }
+        else
+            $n = shapesMirror_swapSideLabel($n);
+
+        $items[$i] = $n;
+    }
+    $name = stringArrayToString($items, ".");
+
+    $name = $refPath + $name;
+
+    return $name;
+}
+
+
+global proc string shapesMirror_swapSideLabel( string $name )
+{
+    //
+    // replace the side identifier with the opposite side
+    //
+    global string $gShapes_sideIdentifier;
+
+    $gShapes_sideIdentifier = "";
+
+    string $refPath = "";
+    if (`gmatch $name "*:*"`)
+    {
+        $refPath = shapesCommon_getReferencePath($name) + ":";
+        $name = shapesCommon_removeReferencePath($name);
+    }
+
+    int $found = -1;
+
+    // first check the full name identifiers
+    string $left[] = {"_Left", "Left_", "_left", "left_"};
+    string $right[] = {"_Right", "Right_", "_right", "right_"};
+    for ($i = 0; $i < size($left); $i ++)
+    {
+        if (`gmatch $name ("*" + $left[$i] + "*")`)
+        {
+            $name = substitute($left[$i], $name, $right[$i]);
+            $gShapes_sideIdentifier = $right[$i];
+            $found = $i;
+        }
+        else if (`gmatch $name ("*" + $right[$i] + "*")`)
+        {
+            $name = substitute($right[$i], $name, $left[$i]);
+            $gShapes_sideIdentifier = $left[$i];
+            $found = $i;
+        }
+    }
+    if ($found != -1)
+        return ($refPath + $name);
+
+    $left = {};
+    $right = {};
+    shapesUI_getUserIdentifierList($left, $right);
+    shapesUI_checkIdentifierPrefs;
+    for ($i = 0; $i < size($left); $i ++)
+    {
+        // embedded identifier
+        if (startsWith($left[$i], "_"))
+        {
+            string $l = $left[$i] + "_";
+            string $r = $right[$i] + "_";
+            if (`gmatch $name ("*" + $l + "*")` && $found == -1)
+            {
+                string $replaced = substitute($l, $name, "%");
+                string $items[] = stringToStringArray($replaced, "%");
+                if (size($items) == 2)
+                {
+                    $name = $items[0] + $r + $items[1];
+                    $found = $i;
+                    $gShapes_sideIdentifier = "_R";
+                }
+            }
+            else if (`gmatch $name ("*" + $r + "*")` && $found == -1)
+            {
+                string $replaced = substitute($r, $name, "%");
+                string $items[] = stringToStringArray($replaced, "%");
+                if (size($items) == 2)
+                {
+                    $name = $items[0] + $l + $items[1];
+                    $found = $i;
+                    $gShapes_sideIdentifier = "_L";
+                }
+            }
+        }
+        else
+        {
+            if (startsWith($name, $left[$i]) && $found == -1)
+            {
+                $name = `substring $name (size($left[$i]) + 1) (size($name))`;
+                $name = $right[$i] + $name;
+                $found = $i;
+                $gShapes_sideIdentifier = $right[$i];
+            }
+            else if (startsWith($name, $right[$i]) && $found == -1)
+            {
+                $name = `substring $name (size($right[$i]) + 1) (size($name))`;
+                $name = $left[$i] + $name;
+                $found = $i;
+                $gShapes_sideIdentifier = $left[$i];
+            }
+        }
+    }
+    if ($found == -1)
+    {
+        for ($i = 0; $i < size($left); $i ++)
+        {
+            if (endsWith($name, $left[$i]) && $found == -1)
+            {
+                $name = `substring $name 1 (size($name) - size($left[$i]))`;
+                $name += $right[$i];
+                $found = $i;
+                $gShapes_sideIdentifier = $right[$i];
+            }
+            else if (endsWith($name, $right[$i]) && $found == -1)
+            {
+                $name = `substring $name 1 (size($name) - size($right[$i]))`;
+                $name += $left[$i];
+                $found = $i;
+                $gShapes_sideIdentifier = $left[$i];
+            }
+        }
+    }
+
+    $name = $refPath + $name;
+
+    return $name;
+}
+
+
+global proc string[] shapesMirror_getSideIdentifier( string $name )
+{
+    //
+    // get the source and target side identifiers
+    //
+    global string $gShapes_sideIdentifier;
+
+    shapesMirror_swapSideLabel $name;
+
+    string $left[];
+    string $right[];
+    shapesUI_getUserIdentifierList($left, $right);
+    shapesUI_checkIdentifierPrefs;
+
+    int $index = shapesArray_stringArrayFind($gShapes_sideIdentifier, 0, $right);
+    if ($index != -1)
+        return {$left[$index], $right[$index]};
+
+    return {};
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// vertex order mapping and symmetry check
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesMirror_orderMapping( string $mesh )
+{
+    //
+    // perform the symmetry check when toggling the symmetry button or loading the mesh
+    //
+
+    // safety
+    if ($mesh == "")
+        return;
+
+    int $hasMapping = shapesMirror_hasOrderMapping($mesh);
+    if ($hasMapping || !`optionVar -q SHAPESSymmetryEnabled`)
+    {
+        // if symmetry is globally disabled the status argument can be anything
+        // since the override ignores it anyway
+        shapesUI_setSymmetryStatus 1;
+        return;
+    }
+
+    // create the order mapping
+    int $result = shapesMirror_performOrderMapping($mesh);
+
+    // --------------------------------------------------
+    // order mapping can return three results:
+    // 1 :  mapping was successful for all shells
+    // 0 :  mapping was successful for some shells
+    //      some vertices are not mapped
+    // -1 : mapping failed
+    // --------------------------------------------------
+
+    // -------------------------
+    // order mapping sucessful
+    // or partially successful
+    // -------------------------
+    if ($result != -1)
+        shapesUI_setSymmetryStatus 1;
+    // -------------------------
+    // order mapping failed
+    // -------------------------
+    else
+        shapesUI_setSymmetryStatus 0;
+}
+
+
+global proc int shapesMirror_performOrderMapping( string $mesh )
+{
+    //
+    // generates a vertex order mapping
+    // returns if the mapping was successful
+    //
+    string $axis = shapesMirror_getAxisString();
+    // Use the tolerance value from the preferences.
+    // When auto tolerance is on the tolerance is set to 0.
+    // Usually the value from the preferences is too high and 0.0001 is
+    // more practical but with the introduction of auto tolerance it
+    // seems to be safe to use the preference setting as a fallback.
+    float $tolerance = `optionVar -q SHAPESMirrorToleranceValue`; // 0.0001
+    if (`optionVar -q SHAPESSymmetryAutoTolerance`)
+        $tolerance = 0.0;
+    int $verbose = `optionVar -q SHAPESSymmetryVerbosity`;
+
+    //float $start = `timerX`;
+    if (!$verbose)
+    {
+        int $result = `br_polyMapVertexOrder -axis $axis -tolerance $tolerance`;
+        float $end = `timerX`;
+        //print ("// Symmetry mapping performed in " + ($end - $start) + " seconds.");
+        return $result;
+    }
+    else
+    {
+        if (catch(`br_polyMapVertexOrder -axis $axis -tolerance $tolerance -verbose $verbose`))
+            return 0;
+    }
+
+    return 1;
+}
+
+
+global proc shapesMirror_removeOrderMapping( int $dialog )
+{
+    //
+    // deletes the symmetry mapping
+    //
+    string $confirm = "OK";
+    if ($dialog)
+    {
+        string $msg = "Delete symmetry mapping?";
+        $confirm = `confirmDialog -t "SHAPES" -m $msg -b "OK" -b "Cancel" -db "Cancel" -cb "Cancel" -ds "Cancel"`;
+    }
+
+    if ($confirm == "OK")
+    {
+        $mesh = shapesMain_getShapeNode();
+        if (`attributeQuery -ex -n $mesh "brVertexOrderMap"`)
+            deleteAttr ($mesh + ".brVertexOrderMap");
+        shapesUI_setSymmetryStatus 0;
+    }
+}
+
+
+global proc shapesMirror_createOrderMapping()
+{
+    //
+    // creates a new symmetry mapping
+    //
+    string $msg = "Create new symmetry mapping?";
+    string $confirm = `confirmDialog -t "SHAPES" -m $msg -b "OK" -b "Cancel" -db "Cancel" -cb "Cancel" -ds "Cancel"`;
+
+    if ($confirm == "OK")
+    {
+        shapesMirror_removeOrderMapping 0;
+
+        shapesMirror_orderMapping(shapesMain_getShapeNode());
+        shapesUI_setSymmetryImage 1;
+    }
+}
+
+
+global proc int shapesMirror_copyOrderMapping()
+{
+    //
+    // transfers the symmetry map from one mesh to another
+    //
+    string $source = shapesMain_getShapeNode();
+
+    string $sel[] = `ls -sl -tr`;
+    if (!size($sel))
+        return 0;
+    string $shapes[] = `listRelatives -s -ni -f $sel[0]`;
+    if (!size($sel))
+    {
+        br_displayMessage -error "A mesh object needs to be selected as the target.";
+        return 0;
+    }
+    string $target = $shapes[0];
+
+    int $count1[] = `polyEvaluate -v $source`;
+    int $count2[] = `polyEvaluate -v $target`;
+
+    if ($count1[0] != $count2[0])
+    {
+        br_displayMessage -error "The number of vertices needs to match for both meshes.";
+        return 0;
+    }
+
+    return (`br_polyMapVertexOrder -copyTo $target $source`);
+}
+
+
+global proc int shapesMirror_getOrderMappingStatus()
+{
+    //
+    // get the status of the order mapping
+    // returns
+    // 1 :  full order mapping
+    // 0 :  partial order mapping
+    // -1:  no order mapping
+    //
+    global string $gShapes_skinMesh;
+
+    if ($gShapes_skinMesh == "")
+        return -1;
+
+    string $mesh = shapesMain_getShapeNode();
+
+    int $verts[] = `polyEvaluate -v $mesh`;
+    int $result = shapesMirror_checkOrderMapping($mesh);
+
+    // no unmapped vertices
+    if ($result == 0)
+        return 1;
+    // all vertices are unmapped
+    else if ($result == $verts[0])
+        return -1;
+    // mapping doesn't exist or doesn't match mesh points
+    else if ($result == -1)
+        return -2;
+
+    // partial mapping is available
+    return 0;
+}
+
+
+global proc int shapesMirror_hasOrderMapping( string $mesh )
+{
+    //
+    // returns true if the given mesh has a stored and valid order mapping
+    //
+    int $result = shapesMirror_checkOrderMapping($mesh);
+    if ($result < 0)
+        return 0;
+    return 1;
+}
+
+
+global proc int shapesMirror_checkOrderMapping( string $mesh )
+{
+    //
+    // checks if the order mapping contains -1 entries
+    // returns number of -1 entries;
+    // return -1 if the attribute doesn't exist, is empty
+    // or has the wrong number of indices than mesh points
+    //
+    return (`br_polyMapVertexOrder -check $mesh`);
+}
+
+
+global proc shapesMirror_makeSymmetrical()
+{
+    //
+    // makes the mesh symmetrical
+    //
+    global string $gShapes_skinMesh;
+
+    string $msg = "Make mesh symmetrical?";
+    string $confirm = `confirmDialog -t "SHAPES" -m $msg -b "OK" -b "Cancel" -db "Cancel" -cb "Cancel" -ds "Cancel"`;
+
+    if ($confirm == "Cancel")
+        return;
+
+    // check the mapping attribute
+    if (!shapesMirror_hasOrderMapping($gShapes_skinMesh))
+        br_displayMessage -error "Unable to apply symmetry because the mesh doesn't have valid vertex mapping";
+
+    string $axis = shapesMirror_getAxisString();
+    int $dirValue = `optionVar -q SHAPESMirrorDirection`;
+
+    string $mesh = shapesMain_getShapeNode();
+    string $original = shapesMain_getIntermediateShape($gShapes_skinMesh);
+
+    br_polySymmetry -axis $axis -direction $dirValue -applyOrderMap $mesh $original;
+}
+
+
+global proc shapesMirror_symmetrizeEditMesh()
+{
+    //
+    // Make the currently edited mesh symmetrical based on the order
+    // mapping.
+    //
+    global string $gShapes_skinMesh;
+    global string $gShapes_sculptMesh[];
+
+    string $sel[] = `ls -selection`;
+
+    // Duplicate the currently deformed mesh as it has been duplicated
+    // before to get the mesh for editing.
+    string $baseMesh[] = shapesAction_duplicateDeformedMesh($gShapes_skinMesh, 0);
+
+    string $editCopy[] = `duplicate $gShapes_sculptMesh[0]`;
+
+    // Create the temporary blend shape node and activate the shape
+    // which represents the current edit mesh.
+    string $tempBS[] = `blendShape $editCopy[0] $baseMesh[1]`;
+    blendShape -edit -weight 0 1 $tempBS[0];
+    // Delete the edit mesh duplicate to store the deltas on the blend
+    // shape node.
+    delete $editCopy;
+
+    // Mirror the target shape and copy the mirrored deltas as mesh
+    // tweaks to the edit mesh. This makes it possible that the edit
+    // mesh can be still connected to the deformed mesh while keeping
+    // the current shape. Otherwise the mirrored shape would be lost
+    // when re-connecting it to the deformed mesh as the new edit mesh.
+    string $axis = shapesMirror_getAxisString();
+    int $dir = `optionVar -q SHAPESMirrorDirection`;
+    string $orderMesh = shapesMain_getShapeNode();
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+
+    br_blendShapeMirrorTarget -orderBased $orderMesh
+                              -axis $axis
+                              -direction $dir
+                              -sourceIndex 0
+                              -mesh $orderMesh
+                              -originalMesh $intermediate
+                              -tweakMesh $gShapes_sculptMesh[1]
+                              $tempBS[0];
+
+    delete $baseMesh;
+
+    select -replace $sel;
+}
+
+
+global proc SHAPES_mirror(){}

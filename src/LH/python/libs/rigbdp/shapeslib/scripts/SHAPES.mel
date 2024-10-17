@@ -1,0 +1,125 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc shapesLoadScripts()
+{
+    SHAPES_vars;
+    SHAPES_actions;
+    SHAPES_array;
+    SHAPES_animation;
+    SHAPES_combo;
+    SHAPES_common;
+    SHAPES_data;
+    SHAPES_driver;
+    SHAPES_global;
+    SHAPES_jobs;
+    SHAPES_list;
+    SHAPES_main;
+    SHAPES_mirror;
+    SHAPES_regions;
+    SHAPES_sculpt;
+    SHAPES_set;
+    SHAPES_ui;
+    SHAPES_utilities;
+    SHAPES_weights;
+
+    SHAPES_poseInterpolator;
+    SHAPES_uiWorkspaceControl;
+}
+
+
+global proc shapesSourceScripts()
+{
+    source SHAPES_vars.mel;
+    source SHAPES_actions.mel;
+    source SHAPES_animation.mel;
+    source SHAPES_array.mel;
+    source SHAPES_combo.mel;
+    source SHAPES_common.mel;
+    source SHAPES_data.mel;
+    source SHAPES_driver.mel;
+    source SHAPES_getHotkey.mel;
+    source SHAPES_global.mel;
+    source SHAPES_jobs.mel;
+    source SHAPES_list.mel;
+    source SHAPES_main.mel;
+    source SHAPES_mirror.mel;
+    source SHAPES_regions.mel;
+    source SHAPES_sculpt.mel;
+    source SHAPES_set.mel;
+    source SHAPES_ui.res.mel;
+    source SHAPES_ui.mel;
+    source SHAPES_utilities.mel;
+    source SHAPES_weights.mel;
+
+    source SHAPES_poseInterpolator;
+    source SHAPES_uiWorkspaceControl;
+}
+
+
+global proc SHAPES()
+{
+    global string $gShapes_version;
+
+    // initialize
+    if (`gmatch $gShapes_version "beta*"`)
+        shapesSourceScripts;
+
+    shapesLoadScripts;
+    shapesGlobal_loadPlugin;
+
+    // source dagMenuProc which contains the necessary
+    // doMenuComponentSelection but which is not sourced when
+    // the menu hasn't been invoked yet
+    source dagMenuProc;
+
+    // start the script jobs to re-build the UI when the scene changes
+    shapesJob_initializeUIScriptJob 1;
+
+    // make sure all optionVars exist
+    shapesGlobal_setOptionVars 0;
+
+    shapesUI_createWorkspaceControl();
+    // force the name without the version
+    // in case the workspace json file still has an older label stored
+    workspaceControl -e -l "SHAPES" SHAPESWorkspaceControl;
+
+    shapesJob_initializeUndoScriptJob 1;
+
+    // Check for any legacy nodes in the current scene.
+    shapesWeights_updateWeightsController();
+}

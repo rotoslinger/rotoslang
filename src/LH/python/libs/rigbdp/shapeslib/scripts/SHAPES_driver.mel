@@ -1,0 +1,4464 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------------------------
+// button actions for shape drivers and combos
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesDriver_initButtonAction( int $btn, string $shape, int $state )
+{
+    //
+    // call the action for the button and request confirmation if needed
+    // {"buttons": [{"node": "blendShape1_smile", "ann": "", "type": "animation"}, {"node": "", "ann": "", "type": ""}], "target": "smile"}
+    // incoming arguments:
+    // button index, targetName, state
+    //
+    global int $gShapes_comboProcess;
+    global int $gShapes_sequenceProcess;
+    global string $gShapes_rampPlug;
+    global string $gShapes_orderedTargetList[];
+
+    $gShapes_rampPlug = "";
+
+    // show the options for editing the rampWeights node
+    if ($btn == 2)
+    {
+        // if the selected item is not a helper attribute
+        // select the target shape and show the weights ui
+        if (!shapesData_isHelper($shape))
+        {
+            int $index = shapesData_getShapeIndex($shape);
+            shapesWeights_editWeightsController $shape $index (shapesData_getWeightsControllerConnection($index));
+        }
+        return;
+    }
+
+    if (!`optionVar -q SHAPESShowUIDriver`)
+        return;
+
+    // bail if the process of creating a combo is currently active
+    if ($gShapes_comboProcess || $gShapes_sequenceProcess)
+    {
+        string $infoMsg = "creating a combo";
+        if ($gShapes_sequenceProcess)
+            $infoMsg = "editing the driver sequence";
+        br_displayMessage -warning ("The target buttons are inactive while " + $infoMsg + " is in progress. Select the target shape from the list");
+        return;
+    }
+
+    // get the id of the button
+    int $idList = shapesData_getListIndex($shape);
+
+    // just for safety reasons if the list gets corrupted
+    if ($idList == -1)
+        br_displayMessage -error "Unable to find selected target";
+
+    // define the select action if the driver buttons are not sdk or shape driver
+    // or if the combo button has a combo attached
+    string $node;
+    string $type;
+    string $ann;
+    if ($btn == 0)
+    {
+        string $input[] = shapesMain_getTargetInput(shapesMain_getQueryPlug($shape));
+        $node = $input[0];
+        $type = $input[1];
+        $ann = shapesList_getButtonAnnotation({$input[0]}, {$input[1]}, 1);
+        if (shapesData_getNonShapeType($shape) != "group" && $ann == "Select")
+            $ann = "";
+    }
+    else
+    {
+        string $resultNodes[];
+        string $resultTypes[];
+        shapesMain_getTargetOutput(shapesMain_getQueryPlug($shape), $resultNodes, $resultTypes);
+        $node = $resultNodes[0];
+        $type = $resultTypes[1];
+        $ann = shapesList_getButtonAnnotation($resultNodes, $resultTypes, 0);
+        if (shapesData_getNonShapeType($shape) != "group" && $ann == "Select")
+            $ann = "";
+    }
+
+    if (($btn == 0 && $type != "sdk" && $type != "sdks" && $type != "wd" && $type != "rbf" && $type != "combo" && $type != "pi" && $type != "") || ($ann == "Select"))
+    {
+        shapesUI_selectNode("button", {$node}, $shape, "");
+        return;
+    }
+
+    string $msg;
+    int $create;
+    int $driver;
+
+    // create mode
+    // if the shape driver button has no input or the combo button no output
+    // or if the target is not controlled by a combo
+    if (($btn == 0 && $type == "") || ($btn == 1 && ($type == "" || $type == "combo")))
+    {
+        $msg = "Create ";
+        $create = 1;
+    }
+    else
+        $msg = "Delete ";
+
+    string $buttonList[] = {"OK", "Cancel"};
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    if ($btn == 0)
+    {
+        if ($type == "combo")
+        {
+            if ($create)
+                $msg += "Combo?";
+            else
+            {
+                $msg = "Process Combo";
+                $buttonList = {"Edit", "Delete", "Cancel"};
+            }
+        }
+        else
+        {
+            if ($create)
+            {
+                if ($driverType != 5 && $driverType != 6)
+                    $msg += "Shape Driver?";
+                else
+                {
+                    if ($driverType == 5)
+                        $msg += "RBF ";
+                    $msg += "Pose?";
+                }
+            }
+            else
+            {
+                $msg = "Process Shape Driver";
+                $buttonList = {"Delete", " Edit Sequence ", "Cancel"};
+                if ($type == "rbf" || $type == "pi")
+                    $buttonList = {"Delete Pose", "Cancel"};
+            }
+            $driver = 1;
+        }
+    }
+    else
+    {
+        if (size($gShapes_orderedTargetList) && $gShapes_orderedTargetList[size($gShapes_orderedTargetList) - 1] == $shape)
+        {
+            if (shapesDriver_getShapeSequencer($shape, {}) != "")
+                br_displayMessage -error "Unable to create a combo with a shape which is driven by a sequence";
+        }
+        $msg += "Combo?";
+    }
+
+    string $cmd = "confirmDialog -t \"SHAPES\" -m \"" + $msg + "\" -b \"" + stringArrayToString($buttonList, "\" -b \"") + "\" -db \"Cancel\" -cb \"Cancel\" -ds \"Cancel\"";
+    string $confirm = `eval $cmd`;
+    if ($confirm == "Cancel")
+        return;
+
+    if ($create)
+    {
+        if ($driver)
+            shapesDriver_createWeightDriver $shape 0 0;
+        else
+            shapesCombo_createCombo;
+    }
+    else
+    {
+        if ($driver)
+        {
+            if ($confirm == "Delete")
+                shapesDriver_deleteWeightDriver $shape 0;
+            else if ($confirm == "Delete Pose")
+                shapesDriver_removeRbfPose $shape;
+            else if ($confirm == " Edit Sequence ")
+            {
+                $gShapes_sequenceProcess = 1;
+                shapesDriver_editDriverSequence $shape;
+            }
+        }
+        else
+        {
+            if ($confirm == "Delete")
+                shapesCombo_removeCombo $shape 0;
+            else
+            {
+                $gShapes_comboProcess = 1;
+                shapesCombo_editComboItems $shape;
+            }
+        }
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// shape driver
+// ------------------------------------------------------------------------------------------------
+
+proc setSdkOptions( string $node, string $attr )
+{
+    //
+    // Get the set driven key properties and populate the data.
+    //
+
+    // get values from the sdk curve
+    float $valuePair[] = shapesDriver_getSdkValues($node);
+    if (!size($valuePair))
+        return;
+
+    shapesDriver_setSdkAttributes $attr $valuePair[0] $valuePair[2];
+
+    // get the tangents
+    string $tangents[] = `keyTangent -q -itt $node`;
+    if (size($tangents) == 2)
+    {
+        int $interpolation = 1;
+        if ($tangents[0] == "spline" && $tangents[1] == "flat")
+        {
+            $interpolation = 2;
+            // in case of a negative value range
+            // the interpolation types slow/fast need to be switched
+            if ($valuePair[0] > $valuePair[2])
+                $interpolation = 3;
+        }
+        else if ($tangents[0] == "flat" && $tangents[1] == "spline")
+        {
+            $interpolation = 3;
+            // in case of a negative value range
+            // the interpolation types slow/fast need to be switched
+            if ($valuePair[0] > $valuePair[2])
+                $interpolation = 2;
+        }
+        else if ($tangents[0] == "flat" && $tangents[1] == "flat")
+            $interpolation = 4;
+        optionMenuGrp -edit -select $interpolation shpUI_interpolateOption;
+    }
+    else
+        br_displayMessage -warning ($node + " has insufficient keyframe information");
+
+    // get the infinity
+    int $preInf = `getAttr ($node + ".preInfinity")`;
+    int $postInf = `getAttr ($node + ".postInfinity")`;
+    if ($preInf == 0 && $postInf == 0)
+        optionMenuGrp -edit -select 1 shpUI_infinityOption;
+    else if ($preInf >= 1 && $postInf == 0)
+        optionMenuGrp -edit -select 2 shpUI_infinityOption;
+    else if ($preInf == 0 && $postInf >= 1)
+        optionMenuGrp -edit -select 3 shpUI_infinityOption;
+    else if ($preInf >= 1 && $postInf >= 1)
+        optionMenuGrp -edit -select 4 shpUI_infinityOption;
+}
+
+
+proc setVectorAngleOptions( string $driver )
+{
+    //
+    // Get the settings from the given weight driver node and populate
+    // the data.
+    //
+    int $useAngle = `getAttr ($driver + ".useRotate")`;
+    checkBoxGrp -edit -value1 $useAngle shpUI_useAngleCheck;
+
+    float $angle = `getAttr ($driver + ".angle")`;
+    int $dir = `getAttr ($driver + ".direction")`;
+    int $invert = `getAttr ($driver + ".invert")`;
+    if ($invert == 1)
+        $angle *= -1;
+    floatFieldGrp -edit -value1 $angle shpUI_rangeField;
+
+    int $useTwist = `getAttr ($driver + ".twist")`;
+    checkBoxGrp -edit -value1 $useTwist shpUI_useTwistCheck;
+
+    float $centerAngleVal = `getAttr ($driver + ".centerAngle")`;
+    floatFieldGrp -edit -value1 $centerAngleVal shpUI_centerField;
+    optionMenuGrp -edit -select ($dir + 1) shpUI_axisOption;
+
+    int $interpolation = `getAttr ($driver + ".interpolation")` + 1;
+    optionMenuGrp -edit -select $interpolation shpUI_interpolateOption;
+
+    float $twistVal = `getAttr ($driver + ".twistAngle")`;
+    floatFieldGrp -edit -value1 $twistVal shpUI_twistAngleField;
+
+    int $useTranslate = `getAttr ($driver + ".useTranslate")`;
+    checkBoxGrp -edit -value1 $useTranslate shpUI_useDistanceCheck;
+
+    int $grow = `getAttr ($driver + ".grow")`;
+    checkBoxGrp -edit -value1 $grow shpUI_useIncreaseCheck;
+
+    float $minVal = `getAttr ($driver + ".translateMin")`;
+    floatFieldGrp -edit -value1 $minVal shpUI_distanceMinField;
+
+    float $maxVal = `getAttr ($driver + ".translateMax")`;
+    floatFieldGrp -edit -value1 $maxVal shpUI_distanceMaxField;
+
+    shapesUI_toggleDriverTranslateOptions;
+}
+
+
+proc setRbfDefaultController()
+{
+    //
+    // Auto-fill the controller field if it's still empty in case of a
+    // new driver.
+    //
+    string $nodeList[] = shapesUI_getDriverNodeNames();
+    int $controlled = shapesDriver_isControlled($nodeList);
+    string $txt = `textField -q -tx shpUI_controlField`;
+    if ($controlled == 0 &&
+        ((size($nodeList) == 1 && $txt == "") ||
+        (size($nodeList) > 1 && !`gmatch $txt "*,*"`)))
+        textField -edit -text (stringArrayToString($nodeList, ",")) shpUI_controlField;
+}
+
+
+proc string[] setRbfOptions( string $target, string $driver )
+{
+    //
+    // Set the shape driver options of a RBF solver or pose
+    // interpolator node for the selected target shape.
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedDriver;
+
+    int $driverIds[];
+    string $driverItems[] = shapesDriver_getWeightDriverDriver($driver, $driverIds);
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    // If a rbf node exists with the name of the selected node select
+    // it from the option menu.
+    string $items[] = `optionMenu -query -itemListShort shpUI_solverNodeOption`;
+    for ($i = 0; $i < size($items); $i ++)
+    {
+        string $label = `menuItem -query -label $items[$i]`;
+        string $solver = shapesDriver_getRbfSolverFromListSelection();
+        $solver = substitute($gShapes_bsNode + "_", $solver, "");
+        if ($label == shapesCommon_removeReferencePath($solver))
+        {
+            optionMenu -edit -select ($i + 1) shpUI_solverNodeOption;
+            textField -edit -text (shapesDriver_getRbfControllerAsString()) shpUI_controlField;
+            break;
+        }
+    }
+
+    setRbfDefaultController();
+
+    // Explicitely setting the selected driver here is only necessary
+    // because the node option toggle depends in it in regards of
+    // clearing the parent node field.
+    $gShapes_selectedDriver = shapesDriver_getDriverParent($driver);
+    shapesUI_solverNodeOptionToggle;
+
+    //
+    // Pose index
+    //
+
+    int $index = -1;
+    if (shapesData_getNonShapeType($target) != "group")
+    {
+        string $queryPlug = shapesMain_getQueryPlug($target);
+        string $conn[] = `listConnections -s 1 -d 0 -p 1 $queryPlug`;
+        string $items[] = stringToStringArray($conn[0], ".");
+        $index = `match "[0-9]+" $items[1]`;
+    }
+    // In case the rbf group is selected simply get the first poseMode
+    // index which usually should be 0 due to the rest pose.
+    else
+    {
+        if ($driverType == 5)
+        {
+            int $indexList[] = `getAttr -multiIndices ($driver + ".driverList[" + $driverIds[0] + "].pose")`;
+            if (size($indexList))
+                $index = $indexList[0];
+        }
+        else
+            $index = 0;
+    }
+
+    if ($index != -1)
+    {
+        string $poseAttr = shapesDriver_getPoseAttribute($driver);
+        text -e -l ("ID: " + $index) shpUI_rbfIdText;
+        if ($driverType == 5 || ($driverType == 6 && $index > 0))
+        {
+            string $modeAttr = "driverList[" + $driverIds[0] + "]." + $poseAttr + "[" + $index + "].poseMode";
+            if ($driverType == 6)
+                $modeAttr = "pose[" + $index + "].poseType";
+            int $poseMode = `getAttr ($driver + "." + $modeAttr)` + 1;
+            optionMenuGrp -edit -select $poseMode -enable 1 shpUI_poseModeOption;
+        }
+        else
+        {
+            optionMenuGrp -edit -select 1 -enable 0 shpUI_poseModeOption;
+        }
+
+        // In case of a pose interpolator which has not been created
+        // through SHAPES the parent field is empty and all editing
+        // should be disabled.
+        if (`textField -query -text shpUI_parentField` == "")
+        {
+            optionMenu -edit -select 1 shpUI_solverNodeOption;
+            shapesUI_solverNodeOptionToggle;
+        }
+    }
+
+    shapesUI_togglePoseInfluenceItem 1;
+
+    return $driverItems;
+}
+
+
+global proc shapesDriver_setCurrentShapeDriver( string $target )
+{
+    //
+    // Get the shape driver for the selected target shape and set it
+    // as the shape driver node in the driver UI.
+    // Update the available shape driver controls to match the driver
+    // type.
+    //
+    global string $gShapes_mirrorDriver;
+    global string $gShapes_orderedDriverList[];
+
+    // Getting the connected shape driver.
+    // It also sets the driver type option automatically.
+    string $nodes[] = shapesDriver_getConnectedWeightDriver($target);
+    // Add or remove the driver settings to show only the ones matching
+    // the driver type.
+    shapesUI_switchDriverUI;
+    shapesUI_togglePoseInfluenceItem 0;
+
+    //------------------------------------------------------------------
+    // Ramp weights driver
+    //------------------------------------------------------------------
+
+    // If the shape is currently not driven it might be controlled by a
+    // weights controller node. In this case add the option menu for the
+    // controlling attribute.
+    if (!size($nodes))
+    {
+        shapesUI_addRampWeightsDrivenAttributeOption;
+        return;
+    }
+
+    //------------------------------------------------------------------
+    // Standard drivers
+    //------------------------------------------------------------------
+
+    int $driverType = shapesUI_shapeDriverOption();
+    string $driver;
+    string $driverItems[];
+    string $attr;
+
+    //
+    // Direct connection
+    //
+    if ($driverType == 2)
+    {
+        $driverItems[0] = $nodes[0];
+        string $queryPlug = shapesMain_getQueryPlug($target);
+        string $conn[] = `listConnections -source 1 -destination 0 -plugs 1 $queryPlug`;
+        string $plugItems[] = stringToStringArray($conn[0], ".");
+        $attr = $plugItems[1];
+
+        shapesDriver_updateAttributeMenu($driverItems[0], $attr);
+
+        shapesDriver_setSdkAttributes $attr 0 0;
+    }
+
+    //
+    // Set driven key
+    //
+    else if ($driverType == 3)
+    {
+        string $plug[] = `listConnections -plugs 1 -skipConversionNodes 1 ($nodes[0] + ".input")`;
+        string $plugItems[] = stringToStringArray($plug[0], ".");
+        $driverItems[0] = $plugItems[0];
+        $attr = $plugItems[1];
+
+        shapesDriver_updateAttributeMenu($driverItems[0], $attr);
+
+        setSdkOptions($nodes[0], $attr);
+    }
+
+    //
+    // Weight driver & Pose interpolator
+    //
+    else if ($driverType >= 4 && $driverType <= 6)
+    {
+        $driver = shapesCommon_getShapeNode($nodes[0]);
+        string $driverTrans[] = `listRelatives -parent $driver`;
+
+        $driverItems = `listRelatives -parent $driverTrans[0]`;
+        textField -edit -text $driverItems[0] shpUI_parentField;
+
+        int $type = shapesDriver_getWeightDriverType($driver);
+        if (!$type)
+        {
+            $driverItems = `listRelatives -p $nodes[1]`;
+            setVectorAngleOptions($driver);
+        }
+        else
+        {
+            $driverItems = setRbfOptions($target, $driver);
+        }
+    }
+
+    shapesUI_setDriverNodeName(stringArrayToString($driverItems, ","));
+    $gShapes_orderedDriverList = $driverItems;
+
+    // Add the driver to the list of drivers if it's not already
+    // included.
+    for ($driver in $driverItems)
+        shapesList_storeCustomDriver $driver 0;
+
+    $gShapes_mirrorDriver = $nodes[0];
+}
+
+
+global proc shapesDriver_shapeDriverSelectionChanged()
+{
+    //
+    // Update the driver settings whenever the shape driver selection
+    // changes. The update can be initiated though:
+    // - Selecting a different driver in the list.
+    // - Adding a new driver node from the scene.
+    //
+    global string $gShapes_selectedTarget;
+    global string $gShapes_sdkAttrList[];
+    global string $gShapes_skinMesh;
+
+    string $nodeList[] = shapesUI_getDriverNodeNames();
+
+    if (!size($nodeList) || $gShapes_skinMesh == "")
+    {
+        shapesUI_setDriverTypeOption(1);
+        $gShapes_sdkAttrList = {};
+        return;
+    }
+    $node = $nodeList[0];
+
+    // If the current node is not compatible with set driven key set
+    // the option menu accordingly.
+    if (`nodeType $node` != "joint" && `nodeType $node` != "transform")
+    {
+        if (`shapesUI_shapeDriverOption` != 1)
+            shapesUI_setDriverTypeOption(3);
+    }
+
+    int $driverType = shapesUI_shapeDriverOption();
+    shapesUI_switchDriverUI;
+
+    // Select the 'New' option for the solver node.
+    optionMenu -e -sl 1 shpUI_solverNodeOption;
+    if ($driverType == 5 || $driverType == 6)
+        shapesUI_solverNodeOptionToggle;
+
+    // Discontinue if there is no parent node for the weight driver
+    // node.
+    if ($driverType >= 4 && $driverType <= 6 && shapesDriver_getDriverParent($node) == "")
+        return;
+
+    // Get the settings of the current driver.
+    shapesDriver_updateShapeDriverSettings;
+}
+
+
+global proc shapesDriver_updateShapeDriverSettings()
+{
+    //
+    // get all relevant information from the weight driver and fill the ui
+    //
+    global int $gShapes_index;
+    global int $gShapes_targetIndex;
+
+    // Get the list of driver names.
+    string $nodeList[] = shapesUI_getDriverNodeNames();
+    // Make sure there is at least one driver node name.
+    if (!size($nodeList))
+        return;
+    string $node = $nodeList[0];
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    //
+    //  direction connection and set driven key
+    //
+    if ($driverType == 2 || $driverType == 3)
+    {
+        shapesDriver_updateAttributeMenu($node, "");
+    }
+    //
+    // vector angle
+    //
+    if ($driverType == 4)
+    {
+        string $parent = shapesDriver_getDriverParent($node);
+        textField -edit -text $parent shpUI_parentField;
+
+        // Guess the axis setting based on the selection.
+        float $dirValues[];
+        shapesDriver_getPrimaryAxis($node, 1, $dirValues);
+        // Get the joint rotation and set the range slider.
+        shapesDriver_getMaxAngle($node, $dirValues[1]);
+
+        floatFieldGrp -edit -value1 10 shpUI_distanceMaxField;
+    }
+    else if ($driverType == 5 || $driverType == 6)
+    {
+        string $parent = shapesDriver_getDriverParent($node);
+        textField -edit -text $parent shpUI_parentField;
+        setRbfDefaultController();
+    }
+
+    if ($gShapes_index != -1)
+    {
+        string $rampPlug = shapesData_getWeightsControllerConnection($gShapes_targetIndex);
+        string $rampNode[] = stringToStringArray($rampPlug, ".");
+        if ($rampPlug != "" && `gmatch $rampPlug "*.*"` && `optionMenu -q -ex shpUI_rampAttrOption`)
+        {
+            optionMenu -edit -value $rampNode[1] shpUI_rampAttrOption;
+        }
+    }
+}
+
+
+global proc string shapesDriver_getDriverParent( string $node )
+{
+    //
+    // Return the parent node of the given joint.
+    //
+    string $parent[] = `listRelatives -parent $node`;
+    if (size($parent))
+        return $parent[0];
+    return "";
+}
+
+
+global proc string shapesDriver_getPrimaryAxis( string $node, int $setOption, float $values[] )
+{
+    //
+    // find the primary axis
+    // returns the offset node;
+    // fills the array with the axis id, the direction (1 or -1)
+    // and the offset translation
+    //
+
+    // go through the children
+    // find a child that is offset to the selected joint
+    // the translation offset should tell about the axis orientation
+    string $offsetNode = shapesDriver_getJointTranslation($node);
+    float $pos[];
+    if ($offsetNode != "")
+        $pos = `getAttr ($offsetNode + ".t")`;
+    else
+    {
+        $pos = `getAttr($node + ".t")`;
+        $offsetNode = $node;
+    }
+
+    float $axis = 1;
+    float $dir = 1;
+    float $offset = 0;
+    if ((abs($pos[0]) > abs($pos[1])) && (abs($pos[0]) > abs($pos[2])))
+    {
+        $axis = 1;
+        if ($pos[0] < 0)
+            $dir = -1;
+        $offset = $pos[0];
+    }
+    else if (abs($pos[1]) > abs($pos[2]))
+    {
+        $axis = 2;
+        if ($pos[1] < 0)
+            $dir = -1;
+        $offset = $pos[1];
+    }
+    else
+    {
+        $axis = 3;
+        if ($pos[2] < 0)
+            $dir = -1;
+        $offset = $pos[2];
+    }
+
+    // account for the case where the node has no child
+    // and all position values are equal
+    if ((abs($pos[0]) == abs($pos[1])) && (abs($pos[0]) == abs($pos[2])))
+        $axis = 1;
+
+    if ($setOption)
+        optionMenuGrp -e -sl $axis shpUI_axisOption;
+
+    $values[0] = $axis - 1;
+    $values[1] = $dir;
+    $values[2] = $offset;
+
+    return $offsetNode;
+}
+
+
+global proc shapesDriver_getMaxAngle( string $node, int $dir )
+{
+    //
+    // find the axis with the greatest angle
+    //
+    float $value;
+    float $rot[] = `getAttr ($node + ".r")`;
+    if ((abs($rot[0]) > abs($rot[1])) && (abs($rot[0]) > abs($rot[2])))
+        $value = $rot[0];
+    else if (abs($rot[1]) > abs($rot[2]))
+        $value = $rot[1];
+    else
+        $value = $rot[2];
+
+    // make sure the axis orientation is reflected in the range value for the weight driver
+    // the rotation value is made absolut and then multiplied by the direction,
+    // which was defined when getting the primary axis
+    $value = abs($value) * $dir;
+    if ($value == 0)
+        $value = 45;
+
+    floatFieldGrp -e -v1 $value shpUI_rangeField;
+}
+
+
+global proc string shapesDriver_getJointTranslation( string $node )
+{
+    //
+    // for finding the primary axis for a joint when setting up the weight driver
+    // goes recoursively through the children to find a joint with a translation value
+    // this is necessary for particular rig joints which are in place on top of each other
+    // returns the name of the joint with the offset
+    //
+    string $rel[] = `listRelatives -c -type "transform" $node`;
+    int $endOfChain;
+    string $result;
+    while ($endOfChain == 0)
+    {
+        if (size($rel))
+        {
+            for ($r in $rel)
+            {
+                float $pos[] = `getAttr ($r + ".t")`;
+                float $posSum = floor(($pos[0] + $pos[1] + $pos[2]) * 1000) / 1000;
+                if (abs($posSum) > 0.1)
+                {
+                    return $r;
+                }
+                $result = shapesDriver_getJointTranslation($r);
+            }
+            $endOfChain = 1;
+        }
+        else
+            $endOfChain = 1;
+    }
+    if ($result == "")
+        return $node;
+
+    return $result;
+}
+
+
+global proc string shapesDriver_createWeightDriver( string $target, int $mirror, int $center )
+{
+    //
+    // create the weight driver node and make connections
+    //
+    global int $gShapes_index;
+    global int $gShapes_namespaceExists;
+    global string $gShapes_bsNode;
+    global string $gShapes_mirrorDriver;
+    global string $gShapes_rampPlug;
+    global string $gShapes_selectedTarget;
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    string $queryPlug;
+    if ($gShapes_rampPlug == "")
+        $queryPlug = shapesMain_getQueryPlug($target);
+    else
+    {
+        // discontinue if the rbf solver option is selected when creating
+        // a driver for the ramp weights node
+        if ($driverType == 5 || $driverType == 6)
+        {
+            string $solverType = "weight driver RBF mode";
+            if ($driverType == 6)
+                $solverType = "Pose Interpolator";
+            br_displayMessage -error ("The " + $solverType + " is currently not supported for driving the ramp weights node");
+            return "";
+        }
+        $queryPlug = $gShapes_rampPlug;
+    }
+
+    // discontinue if an error occured getting the blend shape node and attribute
+    if ($queryPlug == "")
+        return "";
+
+    // discontinue if the target is already connected
+    string $connections[] = `listConnections -s 1 -d 0 $queryPlug`;
+    if (size($connections))
+        br_displayMessage -error ($queryPlug + " is already connected");
+
+    // discontinue if no weight driver should be created
+    if ($driverType == 1)
+        return "";
+
+    string $nodeItem[] = shapesUI_getDriverNodeNames();
+    if (!size($nodeItem) || shapesList_isDriverGroup($nodeItem[0]))
+        br_displayMessage -error "No driving node selected";
+    string $node = $nodeItem[0];
+
+    string $driverName;
+
+    //------------------
+    // direct connection
+    //------------------
+    if ($driverType == 2)
+    {
+        string $attr = `optionMenu -q -v shpUI_sdkAttrOption`;
+        connectAttr ($node + "." + $attr) $queryPlug;
+    }
+    //-----------------
+    // set driven key
+    //-----------------
+    else if ($driverType == 3)
+    {
+        string $attr = `optionMenu -q -v shpUI_sdkAttrOption`;
+        float $range[] = `floatFieldGrp -q -v shpUI_sdkRangeField`;
+        int $interpolationVal = `optionMenuGrp -q -sl shpUI_interpolateOption` - 1;
+
+        string $tangent[] = {"spline", "spline"};
+        if ($interpolationVal == 1)
+            $tangent = {"spline", "flat"};
+        if ($interpolationVal == 2)
+            $tangent = {"flat", "spline"};
+        if ($interpolationVal == 3 || $interpolationVal == 4)
+            $tangent = {"flat", "flat"};
+
+        setDrivenKeyframe -dv $range[0] -v 0 -itt $tangent[0] -ott $tangent[0] -cd ($node + "." + $attr) $queryPlug;
+        setDrivenKeyframe -dv $range[1] -v 1 -itt $tangent[1] -ott $tangent[1] -cd ($node + "." + $attr) $queryPlug;
+
+        // set the infinity
+        int $infValue = `optionMenuGrp -q -sl shpUI_infinityOption`;
+
+        $node = $gShapes_bsNode;
+        $attr = $target;
+        if (shapesData_isDrivenSet($target))
+        {
+            $node = $target;
+            $attr = "value";
+        }
+        else if ($gShapes_rampPlug != "")
+        {
+            string $plugItems[] = stringToStringArray($gShapes_rampPlug, ".");
+            $node = $plugItems[0];
+            $attr = $plugItems[1];
+        }
+        if ($gShapes_namespaceExists)
+            $node = shapesMain_shortenNodePath($node, 0);
+        shapesDriver_setCurveInfinity ($node + "_" + $attr) $infValue;
+
+        // add the message attribute
+        addAttr -at "message" -ln "SHAPES_sdk" ($node + "_" + $attr);
+
+        // rename in case of the driver for the rampWeights node
+        if ($gShapes_rampPlug != "")
+        {
+            string $newName = shapesDriver_addSuffix($node + "_" + $attr, "WD");
+            $driverName = `rename ($node + "_" + $attr) $newName`;
+            select -cl;
+            return $driverName;
+        }
+    }
+    //-----------------
+    // weight driver
+    //-----------------
+    else if ($driverType == 4)
+    {
+        string $parent = `textField -q -tx shpUI_parentField`;
+        if ($parent == "")
+            br_displayMessage -error "No parent node defined for the driving joint";
+
+        // get the direction
+        string $dir[] = {"x", "y", "z"};
+        int $mult = 1;
+        float $angle = `floatFieldGrp -q -v1 shpUI_rangeField`;
+        int $invert;
+        if ($angle < 0 && $mirror != 1)
+        {
+            $invert = 1;
+            $mult = -1;
+        }
+        int $axisVal = `optionMenuGrp -q -sl shpUI_axisOption` - 1;
+
+        // create the weight driver
+        string $driverShape = `createNode weightDriver`;
+        string $driver[] = `listRelatives -p $driverShape`;
+        setAttr -l 1 ($driver[0] + ".v");
+
+        // create the locator to act as the driver
+        string $loc[] = `spaceLocator`;
+        parent $loc[0] $node;
+
+        // position the nodes
+        delete(`pointConstraint $node $driver[0]`);
+        delete(`orientConstraint $node $driver[0]`);
+        delete(`pointConstraint $node $loc[0]`);
+        parent $driver[0] $parent;
+
+        // correctly rotate the weight driver if in mirror mode
+        if ($mirror == 1)
+        {
+            select -cl;
+            string $joint1 = `joint`;
+            delete(`pointConstraint $gShapes_mirrorDriver $joint1`);
+            delete(`orientConstraint $gShapes_mirrorDriver $joint1`);
+            select -cl;
+            string $joint2 = `joint`;
+            parent $joint1 $joint2;
+            string $joint3[] = `mirrorJoint -myz -mb`;
+            delete(`orientConstraint $joint3[0] $driver[0]`);
+            delete $joint2;
+            if (!`optionVar -q SHAPESBehaviorMirror`)
+                $invert = 1 - $invert;
+        }
+
+        if ($center == 1)
+            $invert = 1 - $invert;
+
+        // get the center angle field just here because it only present with the weight driver
+        int $useAngle = `checkBoxGrp -q -v1 shpUI_useAngleCheck`;
+        float $centerAngleVal = `floatFieldGrp -q -v1 shpUI_centerField`;
+        float $twistVal = `floatFieldGrp -q -v1 shpUI_twistAngleField`;
+        int $useTwist = `checkBoxGrp -q -v1 shpUI_useTwistCheck`;
+        int $useTranslate = `checkBoxGrp -q -v1 shpUI_useDistanceCheck`;
+        int $grow = `checkBoxGrp -q -v1 shpUI_useIncreaseCheck`;
+        float $minVal = `floatFieldGrp -q -v1 shpUI_distanceMinField`;
+        float $maxVal = `floatFieldGrp -q -v1 shpUI_distanceMaxField`;
+        int $interpolationVal = `optionMenuGrp -q -sl shpUI_interpolateOption` - 1;
+
+        int $translateMult = 1;
+        if (!$useAngle && $useTranslate)
+            $translateMult = 0;
+
+        // position the locator along the driver axis
+        setAttr ($loc[0] + ".t" + $dir[$axisVal]) (10 * $mult * $translateMult);
+        delete(`orientConstraint $node $loc[0]`);
+        setAttr ($loc[0] + ".v") 0;
+
+        // set the weight driver attributes
+        setAttr ($driverShape + ".useRotate") $useAngle;
+        setAttr ($driverShape + ".direction") $axisVal;
+        setAttr ($driverShape + ".invert") $invert;
+        setAttr ($driverShape + ".angle") (abs($angle));
+        setAttr ($driverShape + ".centerAngle") $centerAngleVal;
+        setAttr ($driverShape + ".interpolation") $interpolationVal;
+        setAttr ($driverShape + ".twistAngle") $twistVal;
+        setAttr ($driverShape + ".twist") $useTwist;
+        setAttr ($driverShape + ".useTranslate") $useTranslate;
+        setAttr ($driverShape + ".grow") $grow;
+        setAttr ($driverShape + ".translateMin") $minVal;
+        setAttr ($driverShape + ".translateMax") $maxVal;
+
+        string $attr[] = {"tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz", "v"};
+        int $skip = 0;
+        if ($useTranslate)
+            $skip = 3;
+        for ($a = $skip; $a < size($attr); $a ++)
+            setAttr -l 1 -k 0 ($loc[0] + "." + $attr[$a]);
+
+        // add the message attribute
+        addAttr -at "message" -ln "SHAPES_wd" $driverShape;
+
+        // make the connections
+        connectAttr ($driver[0] + ".worldMatrix[0]") ($driverShape + ".readerMatrix");
+        connectAttr ($loc[0] + ".worldMatrix[0]") ($driverShape + ".driverMatrix");
+        connectAttr ($driverShape + ".outWeight") $queryPlug;
+
+        // deactive/active the driver to force an update
+        setAttr ($driverShape + ".nodeState") 1;
+        refresh;
+        setAttr ($driverShape + ".nodeState") 0;
+        refresh;
+
+        if ($gShapes_rampPlug != "")
+        {
+            string $plugItems[] = stringToStringArray($gShapes_rampPlug, ".");
+            string $name = $plugItems[0] + "_" + $plugItems[1];
+            $driverName = shapesDriver_addSuffix($name, "WD");
+            rename $loc[0] ($name + "_loc");
+            rename $driver[0] $driverName;
+            select -cl;
+            return $driverName;
+        }
+    }
+    //-----------------
+    // rbf
+    //-----------------
+    else if ($driverType == 5 || $driverType == 6)
+    {
+        string $solver = shapesUI_getSelectedNodeOption();
+
+        shapesDriver_createRbfPose $solver $target;
+
+        $gShapes_selectedTarget = $target;
+        shapesList_listBlendShapeTargets 0;
+
+        return "";
+    }
+
+    // rename the weight driver
+    $driverName = shapesDriver_renameWeightDriver($target, "");
+
+    // only return the driver name if it's a weight driver
+    if ($driverType < 4)
+        $driverName = "";
+
+    if ($mirror == 0)
+    {
+        $gShapes_selectedTarget = $target;
+        shapesList_refreshTargetItem {$target};
+    }
+
+    select -cl;
+
+    return $driverName;
+}
+
+
+global proc string shapesDriver_createRbfNode()
+{
+    //
+    // create the rbf node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_orderedDriverList[];
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    // discontinue if no weight driver should be created
+    if ($driverType == 1)
+        return "";
+
+    string $nodeItem[] = $gShapes_orderedDriverList;
+    if (!size($nodeItem) || shapesList_isDriverGroup($nodeItem[0]))
+        br_displayMessage -error "No driving node selected";
+
+    string $parent = `textField -q -tx shpUI_parentField`;
+    if ($parent == "")
+        br_displayMessage -error "No parent node defined for the driving joint";
+
+    string $control = `textField -q -tx shpUI_controlField`;
+    string $ctrls[] = stringToStringArray($control, ",");
+    if (shapesDriver_isControlled($nodeItem) && $control == "")
+    {
+        string $msg = "No control node defined. RBF poses cannot be assumed without a control node.";
+        confirmDialog -t "SHAPES" -m $msg -b "Cancel";
+        return "";
+    }
+    else if ($control == "")
+    {
+        if ($driverType == 5)
+            $ctrls = $nodeItem;
+        else
+            $ctrls[0] = $nodeItem[0];
+    }
+
+    // create the weight driver
+    string $driverShape;
+    if ($driverType == 5)
+    {
+        $driverShape = `createNode weightDriver`;
+    }
+    else
+    {
+        $driverShape = shapesPI_createPoseInterpolatorNode();
+        shapesPI_addRbfAttributes $driverShape 1;
+    }
+
+    string $driver[] = `listRelatives -p $driverShape`;
+    setAttr -l 1 ($driver[0] + ".v");
+
+    // position the nodes
+    delete(`pointConstraint $nodeItem[0] $driver[0]`);
+    parent $driver[0] $parent;
+
+    // $dirValues = {axisId, direction, offset}
+    float $dirValues[];
+    string $offsetNode = shapesDriver_getPrimaryAxis($nodeItem[0], 0, $dirValues);
+
+    if ($driverType == 5)
+    {
+        // to set the display scale based on the
+        // translation value from the next joint
+        float $size = abs($dirValues[2]) * 0.6;
+        if ($size > 0)
+            setAttr ($driverShape + ".iconSize") $size;
+
+        // set the weight driver attributes
+        setAttr ($driverShape + ".type") 1;
+        setAttr ($driverShape + ".twistAxis") $dirValues[0];
+        for ($i = 0; $i < size($nodeItem); $i ++)
+            setAttr ($driverShape + ".driverList[" + $i + "].pose[0].poseMode") `optionVar -q SHAPESDefaultPoseMode`;
+        if ($dirValues[1] == -1)
+            setAttr ($driverShape + ".opposite") 1;
+    }
+    else
+    {
+        int $ids[] = `getAttr -mi ($driverShape + ".driver")`;
+        for ($id in $ids)
+            setAttr ($driverShape + ".driver[" + $id + "].driverTwistAxis") $dirValues[0];
+    }
+
+    // add the message attributes
+    addAttr -at "message" -ln "SHAPES_wd" $driverShape;
+    shapesCommon_addMessageAttribute($driverShape, "solverGroupMessage", 0);
+    shapesCommon_addStringAttribute($driverShape, "solverGroup");
+    connectAttr -f -na ($driverShape + ".solverGroupMessage") ($gShapes_bsNode + ".SHAPESSolver");
+
+    string $poseAttr = shapesDriver_getPoseAttribute($driverShape);
+
+    // make the connections
+    for ($i = 0; $i < size($nodeItem); $i ++)
+    {
+        connectAttr ($nodeItem[$i] + ".worldMatrix[0]") ($driverShape + ".driverList[" + $i + "].driverInput");
+
+        shapesDriver_setMatrixAttribute $nodeItem[$i] $driverShape ("driverList[" + $i + "]." + $poseAttr + "[0].poseMatrix");
+        shapesDriver_setMatrixAttribute $nodeItem[$i] $driverShape ("driverList[" + $i + "]." + $poseAttr + "[0].poseParentMatrix");
+
+        if (size($ctrls))
+        {
+            connectAttr -f ($ctrls[$i] + ".message") ($driverShape + ".driverList[" + $i + "].controlNode");
+            shapesDriver_setRbfControllerPose($ctrls[$i], $driverShape, $i, 0);
+
+            if ($driverType == 6)
+                shapesPI_connectCustomControl($driverShape, $ctrls[$i]);
+        }
+    }
+
+    // do the renaming directly because naming the rbf solver is different
+    // from the regular weight driver since it's not tied to the shape name
+    // but the driving node
+    string $name = $gShapes_bsNode + "_" + shapesCommon_removeReferencePath($nodeItem[0]);
+    string $driverName = shapesDriver_addSuffix($name, shapesDriver_getDriverNameExtension());
+    $driverName = `rename $driver[0] $driverName`;
+
+    // create a group for the solver
+    string $groupName = shapesUI_addShapeHelperAttribute(1, $driverName, 3);
+    setAttr (shapesCommon_getShapeNode($driverName) + ".solverGroup") -type "string" $groupName;
+
+    return $driverName;
+}
+
+
+global proc string shapesDriver_mirrorRbfNode()
+{
+    //
+    // mirror the rbf node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_rbfGroupParentItem;
+    global string $gShapes_rbfParent;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_orderedDriverList[];
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    // discontinue if no weight driver should be created
+    if ($driverType == 1)
+        return "";
+
+    string $nodeItem[] = $gShapes_orderedDriverList;
+    if (!size($nodeItem) || shapesList_isDriverGroup($nodeItem[0]))
+        br_displayMessage -error "No driving node selected";
+
+    string $parent = `textField -q -tx shpUI_parentField`;
+    if ($parent == "")
+        br_displayMessage -error "No parent node defined for the driving joint";
+
+    string $control = `textField -q -tx shpUI_controlField`;
+    string $ctrls[] = stringToStringArray($control, ",");
+    if (shapesDriver_isControlled($nodeItem) && $control == "")
+    {
+        string $msg = "No control node defined. RBF poses cannot be assumed without a control node.";
+        confirmDialog -t "SHAPES" -m $msg -b "Cancel";
+        return "";
+    }
+    else if ($control == "")
+    {
+        if ($driverType == 5)
+            $ctrls = $nodeItem;
+        else
+            $ctrls[0] = $nodeItem[0];
+    }
+
+    // create the weight driver by duplicating the original
+    string $solver = shapesUI_getSelectedNodeOption();
+    string $driver[] = `duplicate $solver`;
+    // rename the solver
+    $driver[0] = `rename $driver[0] ($gShapes_bsNode + "_" + shapesCommon_removeReferencePath($nodeItem[0]) + "_" + shapesDriver_getDriverNameExtension())`;
+    string $driverShape = shapesCommon_getShapeNode($driver[0]);
+
+    // position the nodes
+    delete(`pointConstraint $nodeItem[0] $driver[0]`);
+    catchQuiet(`parent $driver[0] $parent`);
+
+    string $poseAttr = shapesDriver_getPoseAttribute($driverShape);
+
+    // make the connections
+    for ($i = 0; $i < size($nodeItem); $i ++)
+    {
+        connectAttr ($nodeItem[$i] + ".worldMatrix[0]") ($driverShape + ".driverList[" + $i + "].driverInput");
+
+        shapesDriver_setMatrixAttribute $nodeItem[$i] $driverShape ("driverList[" + $i + "]." + $poseAttr + "[0].poseMatrix");
+        shapesDriver_setMatrixAttribute $nodeItem[$i] $driverShape ("driverList[" + $i + "]." + $poseAttr + "[0].poseParentMatrix");
+
+        if (size($ctrls))
+        {
+            connectAttr -f ($ctrls[$i] + ".message") ($driverShape + ".driverList[" + $i + "].controlNode");
+
+            if (shapesUI_shapeDriverOption() == 6)
+                shapesPI_mirrorConnectDriver $nodeItem[$i] $driverShape;
+        }
+    }
+
+    int $isJoint = 0;
+    if (`nodeType $nodeItem[0]` == "joint")
+        $isJoint = 1;
+
+    if (shapesUI_shapeDriverOption() == 5 && $isJoint)
+    {
+        int $state = `getAttr ($driverShape + ".opposite")`;
+        setAttr ($driverShape + ".opposite") (1 - $state);
+    }
+
+    // also process the parent matrix when mirroring the poses
+    // if the parent for both silbing drivers is different
+    int $processParentMatrix = 0;
+    if ($gShapes_rbfParent != $parent)
+        $processParentMatrix = 1;
+    $gShapes_rbfParent = "";
+
+    shapesDriver_mirrorRbfPoses $driverShape $isJoint $processParentMatrix;
+    shapesDriver_mirrorRbfControlPoses $driverShape;
+
+    shapesDriver_updateEvaluation $driverShape;
+
+    // get the group parent in the target list
+    // so when the new rbf group gets created it's not parented underneath
+    // the source rbf group but underneath a common parent;
+    // for this the parent item gets stored in a global variable which acts as
+    // an override for shapesList_autoOrderNewTarget
+    string $rbfGroup = shapesDriver_getRbfGroupString($solver);
+    if ($rbfGroup == "")
+        $gShapes_rbfGroupParentItem = "none";
+    else
+    {
+        $gShapes_rbfGroupParentItem = `treeView -q -ip $rbfGroup shpUI_targetTree`;
+        if ($gShapes_rbfGroupParentItem == "")
+            $gShapes_rbfGroupParentItem = "none";
+    }
+
+    // create a group for the solver
+    string $groupName = shapesUI_addShapeHelperAttribute(1, $driver[0], 3);
+    setAttr (shapesCommon_getShapeNode($driver[0]) + ".solverGroup") -type "string" $groupName;
+
+    return $driver[0];
+}
+
+
+global proc shapesDriver_mirrorRbfPoses( string $driver, int $isJoint, int $processParentMatrix )
+{
+    //
+    // mirror the rbf poses
+    //
+    int $driverIds[] = shapesDriver_getRbfDriverIndices($driver);
+    int $isDefault = shapesDriver_isDefaultMatrix($driver + ".driverList[" + $driverIds[0] + "].poseParentMatrix");
+
+    string $poseAttr = shapesDriver_getPoseAttribute($driver);
+    string $axis = shapesMirror_getAxisString();
+
+    for ($driverId in $driverIds)
+    {
+        int $poseIds[] = `getAttr -mi ($driver + ".driverList[" + $driverId + "]." + $poseAttr)`;
+        int $mIds[] = shapesDriver_mirrorRbfGetMatrixIds($axis, $isJoint);
+
+        for ($id in $poseIds)
+        {
+            if ($id != 0)
+            {
+                float $pm[] = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr  + "[" + $id + "].poseMatrix")`;
+                float $ppm[] = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].poseParentMatrix")`;
+
+                for ($mId in $mIds)
+                {
+                    $pm[$mId] *= -1;
+                    if ($processParentMatrix)
+                        $ppm[$mId] *= -1;
+                }
+
+                setAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].poseMatrix") -type "matrix" $pm[0] $pm[1] $pm[2] $pm[3] $pm[4] $pm[5] $pm[6] $pm[7] $pm[8] $pm[9] $pm[10] $pm[11] $pm[12] $pm[13] $pm[14] $pm[15];
+                if ($driverId != 0 || !$isDefault)
+                    setAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].poseParentMatrix") -type "matrix" $ppm[0] $ppm[1] $ppm[2] $ppm[3] $ppm[4] $ppm[5] $ppm[6] $ppm[7] $ppm[8] $ppm[9] $ppm[10] $ppm[11] $ppm[12] $ppm[13] $ppm[14] $ppm[15];
+            }
+        }
+    }
+}
+
+
+global proc int[] shapesDriver_mirrorRbfGetMatrixIds( string $axis, int $isJoint )
+{
+    //
+    // return the matrix ids which should be mirrored
+    // depending on the axis and node type
+    //
+    int $mIds[];
+    if ($axis == "x")
+    {
+        if (!$isJoint || !`optionVar -q SHAPESBehaviorMirror`)
+            $mIds = {12};
+        else
+            $mIds = {1, 2, 5, 6, 9, 10, 12};
+    }
+    else if ($axis == "y")
+    {
+        if (!$isJoint || !`optionVar -q SHAPESBehaviorMirror`)
+            $mIds = {13};
+        else
+            $mIds = {0, 2, 4, 6, 8, 10, 13};
+    }
+    else if ($axis == "z")
+    {
+        if (!$isJoint || !`optionVar -q SHAPESBehaviorMirror`)
+            $mIds = {14};
+        else
+            $mIds = {0, 1, 4, 5, 8, 9, 14};
+    }
+    return $mIds;
+}
+
+
+global proc shapesDriver_mirrorRbfControlPoses( string $driver )
+{
+    //
+    // mirror the rbf control poses
+    //
+    string $poseAttr = shapesDriver_getPoseAttribute($driver);
+    int $driverIds[] = shapesDriver_getRbfDriverIndices($driver);
+    for ($driverId in $driverIds)
+    {
+        int $poseIds[] = `getAttr -mi ($driver + ".driverList[" + $driverId + "]." + $poseAttr)`;
+        string $axis = shapesMirror_getAxisString();
+
+        for ($id in $poseIds)
+        {
+            if ($id != 0)
+            {
+                string $attrList[] = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].cpa")`;
+                float $valueList[] = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].cpv")`;
+
+                shapesDriver_mirrorRbfControlPoseValues $attrList $valueList $axis;
+
+                eval("setAttr " + $driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].cpv -type \"doubleArray\" " + size($valueList) + " " + shapesArray_floatArrayToString($valueList, " "));
+            }
+        }
+    }
+}
+
+
+global proc shapesDriver_mirrorRbfControlPoseValues( string $attrList[], float $valueList[], string $axis )
+{
+    //
+    // mirror the rbf control pose values
+    //
+    for ($i = 0; $i < size($attrList); $i ++)
+    {
+        if ($attrList[$i] == "translateX" && $axis == "x")
+            $valueList[$i] *= -1;
+        else if ($attrList[$i] == "translateY" && $axis == "y")
+            $valueList[$i] *= -1;
+        else if ($attrList[$i] == "translateZ" && $axis == "z")
+            $valueList[$i] *= -1;
+    }
+}
+
+
+global proc shapesDriver_reorderPoseAttributes( string $driver, int $startId )
+{
+    //
+    // reorder the rbf attributes in case the index list is not continuous;
+    // the startId is important when working with the pose interpolator
+    //
+    $driver = shapesCommon_getShapeNode($driver);
+    string $poseAttr = shapesDriver_getPoseAttribute($driver);
+
+    int $driverIds[] = shapesDriver_getRbfDriverIndices($driver);
+    for ($driverId in $driverIds)
+    {
+        int $poseIds[] = `getAttr -mi ($driver + ".driverList[" + $driverId + "]." + $poseAttr)`;
+        int $reorder = 0;
+        for ($i = 0; $i < size($poseIds); $i ++)
+        {
+            if ($i != $poseIds[$i])
+            {
+                $reorder = 1;
+                break;
+            }
+        }
+
+        if (!$reorder)
+            return;
+
+        int $newId = $startId;
+        for ($id in $poseIds)
+        {
+            if ($id != 0)
+            {
+                float $pm[] = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].poseMatrix")`;
+                string $attrs[] = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].cpa")`;
+                float $values[] = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].cpv")`;
+                int $order = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].cpro")`;
+                int $mode = `getAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "].poseMode")`;
+
+                removeMultiInstance -b 1 ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $id + "]");
+
+                catchQuiet(`removeMultiInstance -b 1 ($driver + ".poseDrawVector[" + $id + "]")`);
+
+                setAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $newId + "].poseMatrix") -type "matrix" $pm[0] $pm[1] $pm[2] $pm[3] $pm[4] $pm[5] $pm[6] $pm[7] $pm[8] $pm[9] $pm[10] $pm[11] $pm[12] $pm[13] $pm[14] $pm[15];
+                eval("setAttr " + $driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $newId + "].cpa -type \"stringArray\" " + size($attrs) + " " + stringArrayToString($attrs, " "));
+                eval("setAttr " + $driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $newId + "].cpv -type \"doubleArray\" " + size($values) + " " + shapesArray_floatArrayToString($values, " "));
+                setAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $newId + "].cpro") $order;
+                setAttr ($driver + ".driverList[" + $driverId + "]." + $poseAttr + "[" + $newId + "].poseMode") $mode;
+
+                $newId ++;
+            }
+        }
+    }
+}
+
+
+global proc shapesDriver_deleteWeightDriver( string $target, int $isNode )
+{
+    //
+    // delete the weight driver from the selected target
+    //
+    global string $gShapes_rampPlug;
+
+    if ($target == "" && $gShapes_rampPlug == "")
+        return;
+
+    string $refreshList[];
+    if (!$isNode)
+    {
+        $refreshList = shapesDriver_performDeleteWeightDriver($target);
+        shapesUI_switchDriverUI;
+    }
+    else
+    {
+        shapesDriver_deleteSolver($target, 1);
+    }
+    if (size($refreshList))
+        shapesList_refreshTargetItem $refreshList;
+}
+
+
+global proc string[] shapesDriver_performDeleteWeightDriver( string $target )
+{
+    //
+    // execute the weight driver removal
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_rampPlug;
+    global string $gShapes_driverPlug[];
+
+    string $refreshList[] = {$target};
+
+    // in case the given item is a rbf solver group it can be handled differently;
+    // this is also necessary in order to prevent a crash on windows which occurs
+    // when the blend shape setup gets deleted and a new scene is opened;
+    // (a similar related crash occurs when the solver group gets deleted with the
+    // button from the channel slider)
+    // it's still unclear why this happens but it might be related to the way
+    // the RBF weightDriver gets disconnected/removed from the scene
+    // *)preventing weightDriverRBF crash on windows
+    if (shapesDriver_isRbfSolverGroup($target))
+    {
+        string $solver = shapesDriver_getRbfSolverFromGroup($target);
+        if (shapesDriver_getRbfNodeType(shapesCommon_getShapeNode($solver)) == "weightDriver")
+            setAttr ($solver + ".active") 0;
+        delete $solver;
+        return $refreshList;
+    }
+
+    string $nodes[] = shapesDriver_getConnectedWeightDriver($target);
+    if (size($nodes))
+    {
+        // shapesDriver_getConnectedWeightDriver returns:
+        // - in case of RBF/PI: the driving joint;
+        // - in case of vector angle reader: the driver locator;
+        // in case of the RBF/PI the joint needs to be discarded or it will get deleted
+        int $type = shapesDriver_getWeightDriverType($nodes[0]);
+
+        if ($nodes[1] != "" && ($nodes[1] == "sdk" || $nodes[1] == "animCurve" || $type))
+            stringArrayRemoveAtIndex(1, $nodes);
+        if ($nodes[1] == "generic")
+        {
+            clear $nodes;
+        }
+        if (size($nodes) && $nodes[0] != $gShapes_bsNode)
+        {
+            string $sequencer;
+            string $tgts[];
+            string $curves[];
+
+            if ($gShapes_rampPlug == "")
+            {
+                $sequencer = shapesDriver_getShapeSequencer($target, {});
+                $tgts = shapesDriver_getShapeSequenceItems($target, "targets");
+                $curves = shapesDriver_getShapeSequenceItems($target, "curves");
+            }
+
+            delete $nodes;
+
+            if ($sequencer != "")
+            {
+                delete $curves;
+                // just try to remove the network node
+                // but it should have been deleted by deleting the sdk curves
+                if (`objExists $sequencer`)
+                    delete $sequencer;
+                $refreshList = $tgts;
+            }
+        }
+        clear $gShapes_driverPlug;
+    }
+    return $refreshList;
+}
+
+
+global proc string shapesDriver_renameWeightDriver( string $target, string $prevBsName )
+{
+    //
+    // rename the weight driver and the connected nodes according to the driving target
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_driverNodeType;
+    global string $gShapes_mirrorDriver;
+
+    string $name = $gShapes_bsNode + "_" + $target;
+    string $driverName;
+
+    string $nodes[] = shapesDriver_getConnectedWeightDriver($target);
+    if (!size($nodes))
+        ;
+    else if ($nodes[0] != $gShapes_bsNode)
+    {
+        // in case of an rbf solver the target name can be ignored
+        int $type = shapesDriver_getWeightDriverType($nodes[0]);
+        if ($type)
+        {
+            $name = substitute($prevBsName, $nodes[0], $gShapes_bsNode);
+            $name = substitute(("_" + shapesDriver_getDriverNameExtensionFromName($name)), $name, "");
+        }
+
+        if ($gShapes_driverNodeType == "weightDriver" || $gShapes_driverNodeType == "animCurve")
+        {
+            $driverName = shapesDriver_addSuffix($name, "WD");
+            if ($gShapes_driverNodeType == "weightDriver" && !$type)
+                rename $nodes[1] ($name + "_loc");
+        }
+        else if ($gShapes_driverNodeType == "poseInterpolator")
+            $driverName = $name + "_PI";
+
+        if ($nodes[1] == "animCurve")
+        {
+            shapesCombo_renameComboMultiplier $target;
+            return "";
+        }
+        else if ($gShapes_driverNodeType == "generic")
+            return "";
+        rename $nodes[0] $driverName;
+        $gShapes_mirrorDriver = $driverName;
+
+        // rename the sequencer node
+        string $sequencer = shapesDriver_getShapeSequencer($target, {});
+        if ($sequencer != "")
+            rename $sequencer ("SHAPES_" + $target + "_sequence_net");
+    }
+
+    shapesCombo_renameComboMultiplier $target;
+
+    return $driverName;
+}
+
+
+global proc string shapesDriver_addSuffix( string $name, string $ext)
+{
+    //
+    // Add the given extension to the name if it doesn't exist.
+    //
+    string $items[] = stringToStringArray($name, "_");
+    if (`tolower $items[size($items) - 1]` != `tolower $ext`)
+        return $name + "_" + $ext;
+    else
+    {
+        $items[size($items) - 1] = $ext;
+        return stringArrayToString($items, "_");
+    }
+}
+
+
+global proc string[] shapesDriver_getConnectedWeightDriver( string $target )
+{
+    //
+    // find the connected weight driver and the locator node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_driverNodeType;
+    global string $gShapes_rampPlug;
+
+    if ($target == "" && $gShapes_rampPlug == "")
+        return {};
+
+    $gShapes_driverNodeType = "";
+
+    string $queryPlug;
+    string $sequencer;
+    if ($gShapes_rampPlug == "")
+    {
+        $queryPlug = shapesMain_getQueryPlug($target);
+
+        // usually the source plug to query connections from is the blend shape target channel
+        // but in case of a driver sequence the source plug must be on the network node
+        // which is the first entry in the combo list
+        $sequencer = shapesDriver_getShapeSequencer($target, {});
+        if ($sequencer != "")
+            $queryPlug = $sequencer + ".driverValue";
+    }
+    else
+        $queryPlug = $gShapes_rampPlug;
+
+    // check for a rbf group
+    if (shapesData_getNonShapeType($target) == "group")
+    {
+        string $rbf = shapesDriver_getRbfSolverFromListSelection();
+        if (`objExists $rbf`)
+        {
+            string $rbfShape = shapesCommon_getShapeNode($rbf);
+            $gShapes_driverNodeType = `nodeType $rbfShape`;
+            int $type;
+            if ($gShapes_driverNodeType == "weightDriver")
+                $type = shapesDriver_getWeightDriverType($rbf);
+            else
+            {
+                $type = 2;
+                shapesPI_performRbfAttributeCheck($rbf);
+            }
+            optionMenu -e -sl (4 + $type) shpUI_shapeDriverOption;
+
+            return {$rbf};
+        }
+    }
+
+    // check if the target is controlled by a combo multiplier
+    string $input[] = shapesMain_getTargetInput($queryPlug);
+
+    string $plug[];
+    string $multNode;
+    if ($input[1] == "combo")
+    {
+        $multNode = $input[0];
+        $plug = `listConnections -type "weightDriver" ($multNode + "." + shapesCombo_secondPlugName($multNode))`;
+    }
+    else
+    {
+        string $nodeConn[] = `listConnections -sh 1 -s 1 -d 0 $queryPlug`;
+        if (size($nodeConn))
+        {
+            if (`nodeType $nodeConn[0]` == "weightDriver" || `nodeType $nodeConn[0]` == "poseInterpolator")
+                $plug[0] = $nodeConn[0];
+        }
+    }
+
+    if (!size($plug))
+    {
+        if ($input[1] == "combo")
+        {
+            if (shapesCombo_verifyShapeBasedCombo($multNode))
+            {
+                $gShapes_driverNodeType = "blendShape";
+                optionMenu -e -sl 1 shpUI_shapeDriverOption;
+                return {$gShapes_bsNode, ""};
+            }
+            $plug = `listConnections -type "animCurve" ($multNode + "." + shapesCombo_secondPlugName($multNode))`;
+        }
+        else if ($input[1] == "connection")
+        {
+            $gShapes_driverNodeType = "generic";
+            optionMenu -e -sl 2 shpUI_shapeDriverOption;
+            return {$input[0], "generic"};
+        }
+        else
+            $plug = `listConnections -s 1 -d 0 -type "animCurve" $queryPlug`;
+
+        if (!size($plug))
+        {
+            optionMenu -e -sl 1 shpUI_shapeDriverOption;
+            return {};
+        }
+        else
+        {
+            if (size(`listConnections -scn 1 ($plug[0] + ".input")`))
+            {
+                $gShapes_driverNodeType = "animCurve";
+                optionMenu -e -sl 3 shpUI_shapeDriverOption;
+            }
+            else
+            {
+                optionMenu -e -sl 1 shpUI_shapeDriverOption;
+                return {};
+            }
+        }
+    }
+    else
+    {
+        $gShapes_driverNodeType = shapesDriver_getRbfNodeType($plug[0]);
+        int $type = shapesDriver_getWeightDriverType($plug[0]);
+        if ($gShapes_driverNodeType == "poseInterpolator")
+        {
+            $type = 2;
+            shapesPI_performRbfAttributeCheck($plug[0]);
+        }
+        optionMenu -e -sl (4 + $type) shpUI_shapeDriverOption;
+    }
+
+    string $driver = $plug[0];
+
+    if ($gShapes_driverNodeType == "animCurve")
+    {
+        string $curveType = shapesMain_verifyShapeDriverNode($driver, "sdk", "animCurve");
+        if ($curveType == "animCurve")
+            optionMenu -e -sl 1 shpUI_shapeDriverOption;
+        return {$driver, $curveType};
+    }
+
+    if (`nodeType $driver` != "transform")
+    {
+        string $driverTransform[] = `listRelatives -p $driver`;
+        $driver = $driverTransform[0];
+    }
+    int $driverIds[];
+    string $loc[] = shapesDriver_getWeightDriverDriver($driver, $driverIds);
+    return {$driver, $loc[0]};
+}
+
+
+global proc string[] shapesDriver_getWeightDriverDriver( string $driver, int $ids[] )
+{
+    //
+    // return the drivers for the given weight driver node
+    //
+    string $nodes[];
+
+    int $type = shapesDriver_getWeightDriverType($driver);
+    if (!$type)
+    {
+        string $loc[] = `listConnections -p 1 ($driver + ".driverMatrix")`;
+        $loc = stringToStringArray($loc[0], ".");
+        $nodes[0] = $loc[0];
+    }
+    else
+    {
+        $ids = shapesDriver_getRbfDriverIndices($driver);
+        for ($id in $ids)
+        {
+            string $tmp[] = `listConnections -p 1 ($driver + ".driverList[" + $id + "].driverInput")`;
+            $tmp = stringToStringArray($tmp[0], ".");
+            $nodes[size($nodes)] = $tmp[0];
+        }
+    }
+
+    return $nodes;
+}
+
+
+global proc string shapesDriver_getRbfSolverFromListSelection()
+{
+    //
+    // returns the rbf solver based on the selected group
+    // or target shape
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    if ($gShapes_selectedTarget == "")
+        return "";
+
+    string $rbfNode;
+    string $group = shapesData_getNonShapeType($gShapes_selectedTarget);
+    if ($group == "group")
+    {
+        $rbfNode = shapesDriver_getRbfSolverFromGroup($gShapes_selectedTarget);
+    }
+    else
+    {
+        string $plug = shapesMain_getQueryPlug($gShapes_selectedTarget);
+        string $input[] = shapesMain_getTargetInput($plug);
+        if ($input[1] == "rbf" || $input[1] == "pi")
+            $rbfNode = shapesCommon_getTransformNode($input[0]);
+    }
+
+    return $rbfNode;
+}
+
+
+global proc int[] shapesDriver_performMirrorDriverSettings()
+{
+    //
+    // mirror joint names and settings for creating a mirrored driver
+    //
+    global int $gShapes_exportProcess;
+    global string $gShapes_currentSdkAttr;
+    global string $gShapes_orderedDriverList[];
+    global string $gShapes_sdkAttrList[];
+
+    string $node[] = $gShapes_orderedDriverList;
+
+    if (!size($node) || shapesList_isDriverGroup($node[0]))
+    {
+        br_displayMessage -info ("There is no driver node selected in the driver list.");
+        return {-1};
+    }
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    // store the original node name
+    // if the node contains a side label the axis will be inverted, but
+    // if the node is a center node the axis will remain the same in
+    // case of the weight driver
+    string $sourceNode = $node[0];
+
+    float $sourceRotList[];
+    float $sourceAngle;
+    float $srcValues[];
+    float $sourceStartAngle;
+    string $attr;
+    int $solverItem;
+    string $rbfController;
+    if ($driverType == 2)
+    {
+        $attr = $gShapes_currentSdkAttr;
+    }
+    // store the source range value before the mirrored node gets selected
+    // this is for comparison to check if the mirrored side is posed
+    else if ($driverType == 3)
+    {
+        $sourceStartAngle = `floatFieldGrp -q -v1 shpUI_sdkRangeField`;
+        $sourceAngle = `floatFieldGrp -q -v2 shpUI_sdkRangeField`;
+        // store the source settings
+        $srcValues = shapesDriver_getSetShapeDriverOptions("sdk", 1, {});
+        $attr = $gShapes_currentSdkAttr;
+    }
+    else if ($driverType == 4)
+    {
+        $sourceRotList = `getAttr ($sourceNode + ".rotate")`;
+        $sourceAngle = `floatFieldGrp -q -v1 shpUI_rangeField`;
+        // store the source settings
+        $srcValues = shapesDriver_getSetShapeDriverOptions("weightDriver", 1, {});
+        shapesDriver_setGetWeightDriverBlendCurve 1 "" 0;
+    }
+    else if ($driverType == 5 || $driverType == 6)
+    {
+        // get the current solver selection to be able to recall this selection
+        // since the node will get duplicated for the mirror process
+        $solverItem = `optionMenu -q -sl shpUI_solverNodeOption`;
+
+        // Store the original controller name because when switching the
+        // driver settings the rbf controller node will be set to the
+        // default and any custom assignment will be lost.
+        // The field content gets restored after swapping the side
+        // identifier.
+        $rbfController = `textField -q -tx shpUI_controlField`;
+    }
+
+    // clear the search field
+    shapesUI_clearSearch "driver";
+
+    for ($i = 0; $i < size($node); $i ++)
+    {
+        $node[$i] = shapesMirror_swapSideLabel($node[$i]);
+
+        if (`treeView -q -iex $node[$i] shpUI_driverTree`)
+            ;
+        else
+        {
+            // try to find the node in the scene and add it to the list if needed
+            if (`objExists $node[$i]`)
+                shapesList_storeCustomDriver $node[$i] 0;
+            else
+            {
+                br_displayMessage -info ($node[$i] + " does not exist in the scene.");
+                return {-1};
+            }
+        }
+    }
+
+    shapesUI_setDriverNodeName($node[0]);
+    $gShapes_orderedDriverList = $node;
+    // Update the driver section due to changing the side identifier of
+    // the driver name.
+    shapesDriver_shapeDriverSelectionChanged();
+
+    // restore the driver selection which might have changed after storing the new custom driver
+    optionMenu -e -sl $driverType shpUI_shapeDriverOption;
+    if (($driverType == 5 || $driverType == 6) && $solverItem != "")
+        optionMenu -e -sl $solverItem shpUI_solverNodeOption;
+
+    int $invert = -1;
+    int $center;
+    if ($driverType == 3)
+    {
+        // for the set driven key:
+        // the axis value needs to be inverted if the joint is at the center
+        // if the joint is on the opposite side, the value doesn't need to be inverted
+        if (`nodeType $node[0]` == "joint")
+        {
+            if ($node[0] != $sourceNode)
+            {
+                if (`optionVar -q SHAPESBehaviorMirror`)
+                    $invert = 1;
+            }
+            else
+                $center = 1;
+        }
+        else if ($node[0] == $sourceNode)
+        {
+            $invert = 1;
+            $center = 1;
+        }
+        else
+        {
+            if (!`optionVar -q SHAPESBehaviorMirror`)
+                $invert = 1;
+        }
+    }
+    else if ($driverType == 4 || $driverType == 5 || $driverType == 6)
+    {
+        // the parent name has been already updated due to selecting the mirrored driver
+        // now we need to check if the node exists
+        string $parent = `textField -q -tx shpUI_parentField`;
+        if (`objExists $parent`)
+            ;
+        else
+        {
+            br_displayMessage -info ("The parent node for " + $node[0] + " does not exist in the scene.");
+            return {-1};
+        }
+
+        // for the weight driver:
+        // if the driver node is at the center the axis value doesn't need to be inverted
+        // only invert the value if it's the opposite node, because then the axis will
+        // be inverted too
+        if ($node[0] == $sourceNode)
+        {
+            $invert = 1;
+            $center = 1;
+        }
+
+        if ($driverType == 5 || $driverType == 6)
+        {
+            string $ctrls[] = stringToStringArray($rbfController, ",");
+            string $swapped[];
+            for ($ctrl in $ctrls)
+            {
+                $ctrl = shapesMirror_swapSideLabel($ctrl);
+                if (`objExists $ctrl`)
+                    $swapped[size($swapped)] = $ctrl;
+                else
+                {
+                    br_displayMessage -info ("The controller node " + $ctrl + " does not exist in the scene.");
+                    return {-1};
+                }
+            }
+            textField -e -tx (stringArrayToString($swapped, ",")) shpUI_controlField;
+        }
+    }
+
+    int $posed;
+    float $targetRotList[];
+    float $sourceRot[];
+    float $targetRot[];
+    if ($driverType == 2)
+    {
+        // No matter if the driving node is centered or not the driving
+        // attribute can have a side identifier or not.
+        // If a side identifier is present check if the attribute exists
+        // and if not, create it. If an identifier is missing the
+        // attribute will drive both shapes.
+        string $destAttr = shapesMirror_swapSideLabel($attr);
+        // If the mirrored attribute doesn't exist create it.
+        if (!`attributeQuery -node $node[0] -exists $destAttr`)
+        {
+            string $attrType = `attributeQuery -node $node[0] -attributeType $attr`;
+            addAttr -longName $destAttr -attributeType $attrType $node[0];
+            setAttr -keyable 1 ($node[0] + "." + $destAttr);
+            $gShapes_sdkAttrList = shapesDriver_getSdkAttributesAndValues($node[0], "");
+            shapesDriver_refreshAttributeMenu;
+            optionMenu -edit -value $destAttr shpUI_sdkAttrOption;
+        }
+        $posed = 1;
+    }
+    if ($driverType == 3)
+    {
+        // switch to the same attribute of the driver as before
+        // it might have changed due to selecting the opposite driver
+        if (catch(`eval ("optionMenu -e -v " + $attr + " shpUI_sdkAttrOption")`))
+            br_displayMessage -error "The driving attribute cannot be found on the target side";
+        // it's not necessary to check for a posed model when working with sdk
+        $posed = 1;
+    }
+    else if ($driverType == 4)
+    {
+        $targetRotList = `getAttr ($node[0] + ".rotate")`;
+        for ($i = 0; $i < 3; $i ++)
+        {
+            $sourceRot[$i] = shapesCommon_roundFloat($sourceRotList[$i], 3);
+            $targetRot[$i] = shapesCommon_roundFloat($targetRotList[$i], 3);
+        }
+        if ($sourceRot[0] == $targetRot[0] && $sourceRot[1] == $targetRot[1] && $sourceRot[2] == $targetRot[2])
+            $posed = 1;
+        else if (!`optionVar -q SHAPESBehaviorMirror`)
+        {
+            for ($i = 0; $i < 3; $i ++)
+            {
+                $sourceRot[$i] = shapesCommon_roundFloat(abs($sourceRot[$i]), 2);
+                $targetRot[$i] = shapesCommon_roundFloat(abs($targetRot[$i]), 2);
+            }
+            if ($sourceRot[0] == $targetRot[0] && $sourceRot[1] == $targetRot[1] && $sourceRot[2] == $targetRot[2])
+                $posed = 1;
+        }
+    }
+    else if ($driverType == 5 || $driverType == 6)
+    {
+        // if the mirrored solver already exists
+        // simple shape mirroring can be assumed
+        // and checking the rest pose is not necessary
+        if (`objExists (shapesMirror_swapAllSideLabels(shapesUI_getSelectedNodeOption()))`)
+            $posed = 1;
+        else
+            $posed = shapesDriver_checkRestPose();
+    }
+
+    if (!$posed && !$gShapes_exportProcess)
+    {
+        string $msg = "The model is not posed.\n\nTo mirror a shape with a shape driver the target side needs to be posed to match the pose of the source side.";
+        if ($driverType == 5)
+            $msg = "The model is not in its rest pose.";
+        confirmDialog   -t "SHAPES"
+                        -m $msg
+                        -b "OK"
+                        -db "OK"
+                        -cb "OK"
+                        -ds "OK";
+        return {-1};
+    }
+
+    if ($driverType == 3)
+    {
+        shapesDriver_getSetShapeDriverOptions "sdk" 0 $srcValues;
+        floatFieldGrp -e -v1 ($sourceStartAngle * $invert) shpUI_sdkRangeField;
+        floatFieldGrp -e -v2 ($sourceAngle * $invert) shpUI_sdkRangeField;
+    }
+    else if ($driverType == 4)
+    {
+        shapesDriver_getSetShapeDriverOptions "weightDriver" 0 $srcValues;
+        floatFieldGrp -e -v1 ($sourceAngle * $invert) shpUI_rangeField;
+    }
+
+    return {1, $center};
+}
+
+
+global proc float[] shapesDriver_getSetShapeDriverOptions( string $type, int $read, float $values[] )
+{
+    //
+    // reads or sets the options and values for the shape driver
+    //
+    if ($read)
+    {
+        if ($type == "weightDriver")
+        {
+            float $axisVal = `optionMenuGrp -q -sl shpUI_axisOption`;
+            float $angle = `floatFieldGrp -q -v1 shpUI_rangeField`;
+            float $twistVal = `floatFieldGrp -q -v1 shpUI_twistAngleField`;
+            float $interpolate = `optionMenuGrp -q -sl shpUI_interpolateOption`;
+            float $centerAngleVal = `floatFieldGrp -q -v1 shpUI_centerField`;
+            float $useTwist = `checkBoxGrp -q -v1 shpUI_useTwistCheck`;
+            int $useAngle = `checkBoxGrp -q -v1 shpUI_useAngleCheck`;
+            int $useTranslate = `checkBoxGrp -q -v1 shpUI_useDistanceCheck`;
+            int $grow = `checkBoxGrp -q -v1 shpUI_useIncreaseCheck`;
+            float $minVal = `floatFieldGrp -q -v1 shpUI_distanceMinField`;
+            float $maxVal = `floatFieldGrp -q -v1 shpUI_distanceMaxField`;
+            $values = {$axisVal, $angle, $twistVal, $interpolate, $centerAngleVal, $useTwist, $useAngle, $useTranslate, $grow, $minVal, $maxVal};
+        }
+        else
+        {
+            float $attr = `optionMenu -q -sl shpUI_sdkAttrOption`;
+            float $range[] = `floatFieldGrp -q -v shpUI_sdkRangeField`;
+            float $interpolate = `optionMenuGrp -q -sl shpUI_interpolateOption`;
+            float $infValue = `optionMenuGrp -q -sl shpUI_infinityOption`;
+            $values = {$attr, $range[0], $range[1], $interpolate, $infValue};
+        }
+    }
+    else
+    {
+        if ($type == "weightDriver")
+        {
+            optionMenuGrp -e -sl $values[0] shpUI_axisOption;
+            floatFieldGrp -e -v1 $values[1] shpUI_rangeField;
+            floatFieldGrp -e -v1 $values[2] shpUI_twistAngleField;
+            optionMenuGrp -e -sl $values[3] shpUI_interpolateOption;
+            floatFieldGrp -e -v1 $values[4] shpUI_centerField;
+            checkBoxGrp -e -v1 $values[5] shpUI_useTwistCheck;
+            checkBoxGrp -e -v1 $values[6] shpUI_useAngleCheck;
+            checkBoxGrp -e -v1 $values[7] shpUI_useDistanceCheck;
+            checkBoxGrp -e -v1 $values[8] shpUI_useIncreaseCheck;
+            floatFieldGrp -e -v1 $values[9] shpUI_distanceMinField;
+            floatFieldGrp -e -v1 $values[10] shpUI_distanceMaxField;
+        }
+        else
+        {
+            optionMenu -e -sl $values[0] shpUI_sdkAttrOption;
+            floatFieldGrp -e -v1 $values[1] -v2 $values[2] shpUI_sdkRangeField;
+            optionMenuGrp -e -sl $values[3] shpUI_interpolateOption;
+            optionMenuGrp -e -sl $values[4] shpUI_infinityOption;
+        }
+    }
+    return $values;
+}
+
+
+global proc string shapesDriver_setGetWeightDriverBlendCurve( int $read, string $driver, int $remove )
+{
+    //
+    // get/set the weight driver blend curve when mirroring or exporting;
+    // in read mode the node is not given but queried here if not exporting;
+    // in write mode (export/transfer) the node is given
+    //
+    global float $gShapes_blendCurveValues[];
+    global string $gShapes_selectedTarget;
+
+    string $attrString;
+
+    if ($read)
+    {
+        if ($driver == "")
+        {
+            if ($gShapes_selectedTarget == "")
+                return "";
+
+            string $queryPlug = shapesMain_getQueryPlug($gShapes_selectedTarget);
+
+            string $input[] = shapesMain_getTargetInput($queryPlug);
+            if (!size($input))
+                return "";
+
+            $driver = $input[0];
+        }
+
+        // When mirroring with a sequence the target input can be the sequence node which
+        // doesn't have the blend curve attribute. In this case return.
+        if (!`attributeQuery -ex -n $driver "blendCurve"`)
+            return $attrString;
+
+        float $values[];
+        int $indices[] = `getAttr -mi ($driver + ".blendCurve")`;
+        for ($id in $indices)
+        {
+            $values[size($values)] = `getAttr ($driver + ".blendCurve[" + $id + "].blendCurve_Position")`;
+            $values[size($values)] = `getAttr ($driver + ".blendCurve[" + $id + "].blendCurve_FloatValue")`;
+            $values[size($values)] = `getAttr ($driver + ".blendCurve[" + $id + "].blendCurve_Interp")`;
+        }
+
+        $gShapes_blendCurveValues = $values;
+    }
+    else
+    {
+        // don't remove the existing curve when only exporting the setup without rebuilding
+        if ($remove)
+        {
+            int $indices[] = `getAttr -mi ($driver + ".blendCurve")`;
+            for ($i = 0; $i < size($indices); $i ++)
+            {
+                if ($indices[$i] != 0)
+                    removeMultiInstance -b 1 ($driver + ".blendCurve[" +  $indices[$i] + "]");
+            }
+        }
+
+        int $id = 0;
+        for ($i = 0; $i < size($gShapes_blendCurveValues); $i += 3)
+        {
+            $attrString += "setAttr " + $driver + ".blendCurve[" + $id + "].blendCurve_Position " + $gShapes_blendCurveValues[$i] + ";\n";
+            $attrString += "setAttr " + $driver + ".blendCurve[" + $id + "].blendCurve_FloatValue " + $gShapes_blendCurveValues[$i + 1] + ";\n";
+            $attrString += "setAttr " + $driver + ".blendCurve[" + $id + "].blendCurve_Interp " + $gShapes_blendCurveValues[$i + 2] + ";\n";
+            $id ++;
+        }
+    }
+    return $attrString;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// rbf solver
+// ------------------------------------------------------------------------------------------------
+
+global proc int shapesDriver_restPoseIsSet()
+{
+    //
+    // check if the rest pose has been set
+    //
+    string $solver = shapesUI_getSelectedNodeOption();
+    string $poseAttr = shapesDriver_getPoseAttribute($solver);
+
+    int $ids[] = shapesDriver_getRbfDriverIndices($solver);
+    float $mat[] = `getAttr ($solver + ".driverList[" + $ids[0] + "]." + $poseAttr + "[0].poseParentMatrix")`;
+    float $sum = 0;
+    for ($m in $mat)
+        $sum += $m;
+
+    int $result = 0;
+
+    if ($sum > 0.0)
+        $result = 1;
+
+    return $result;
+}
+
+
+global proc shapesDriver_setRestPose()
+{
+    //
+    // set the rest pose for the current weight driver node
+    //
+    string $driver = shapesUI_getSelectedNodeOption();
+    string $poseAttr = shapesDriver_getPoseAttribute($driver);
+    int $ids[];
+    string $nodes[] = shapesDriver_getWeightDriverDriver($driver, $ids);
+
+    for ($i = 0; $i < size($ids); $i ++)
+    {
+        shapesDriver_setMatrixAttribute $nodes[$i] $driver ("driverList[" + $ids[$i] + "]." + $poseAttr + "[0].poseMatrix");
+        shapesDriver_setMatrixAttribute $nodes[$i] $driver ("driverList[" + $ids[$i] + "]." + $poseAttr + "[0].poseParentMatrix");
+    }
+
+    if (shapesUI_shapeDriverOption() == 6)
+        shapesPI_addNeutralPoses $driver;
+
+    shapesDriver_updateEvaluation $driver;
+
+    shapesUI_toggleRestPoseButton;
+}
+
+
+global proc shapesDriver_setMatrixAttribute( string $node, string $driver, string $attr )
+{
+    string $sourceAttr = "worldMatrix";
+    if (`gmatch $attr "*Parent*"`)
+        $sourceAttr = "parentMatrix";
+
+    connectAttr -f ($node + "." + $sourceAttr + "[0]") ($driver + "." + $attr);
+    refresh;
+    disconnectAttr ($node + "." + $sourceAttr + "[0]") ($driver + "." + $attr);
+}
+
+
+global proc shapesDriver_resetRestPose()
+{
+    //
+    // reset the rest pose for the current weight driver node
+    //
+    string $driver = shapesUI_getSelectedNodeOption();
+    string $poseAttr = shapesDriver_getPoseAttribute($driver);
+    int $ids[] = shapesDriver_getRbfDriverIndices($driver);
+
+    for ($i = 0; $i < size($ids); $i ++)
+    {
+        setAttr ($driver + ".driverList[" + $ids[$i] + "]." + $poseAttr + "[0].poseMatrix") -type "matrix" 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
+        setAttr ($driver + ".driverList[" + $ids[$i] + "]." + $poseAttr + "[0].poseParentMatrix") -type "matrix" 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
+    }
+
+    if (shapesUI_shapeDriverOption() == 6)
+        shapesPI_deleteNeutralPose $driver;
+
+    shapesDriver_updateEvaluation $driver;
+
+    // activate the set rest pose button
+    shapesUI_toggleRestPoseButton;
+}
+
+
+global proc int shapesDriver_checkRestPose()
+{
+    //
+    // check if the current pose is the rest pose
+    //
+    string $driver = shapesUI_getSelectedNodeOption();
+    string $poseAttr = shapesDriver_getPoseAttribute($driver);
+    int $ids[] = shapesDriver_getRbfDriverIndices($driver);
+    float $poseMat[] = `getAttr ($driver + ".driverList[" + $ids[0] + "]." + $poseAttr + "[0].poseMatrix")`;
+    float $driverMat[] = `getAttr ($driver + ".driverList[" + $ids[0] + "].driverInput")`;
+    int $unmatched = 0;
+    for ($i = 0; $i < size($poseMat); $i ++)
+    {
+        if (!equivalentTol($poseMat[$i], $driverMat[$i], 0.000001))
+            $unmatched ++;
+    }
+    if ($unmatched)
+        return 0;
+
+    return 1;
+}
+
+
+global proc int shapesDriver_isDefaultMatrix( string $attr )
+{
+    //
+    // check if the current matrix is a default matrix
+    // (translation gets ignored)
+    //
+    float $mat[] = `getAttr $attr`;
+    float $compareMat[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    int $unmatched = 0;
+    for ($i = 0; $i < 12; $i ++)
+    {
+        if ($mat[$i] != $compareMat[$i])
+            $unmatched ++;
+    }
+    if ($unmatched)
+        return 0;
+
+    return 1;
+}
+
+
+global proc shapesDriver_updateEvaluation( string $driver )
+{
+    //
+    // forces the solver to update the evaluation after
+    // adding or editing poses
+    //
+    string $shape = shapesCommon_getShapeNode($driver);
+    if (`nodeType $shape` == "weightDriver")
+    {
+        setAttr ($driver + ".evaluate") 0;
+        setAttr ($driver + ".evaluate") 1;
+    }
+}
+
+
+global proc shapesDriver_createNewSolver()
+{
+    //
+    // creates a new weight driver node as an rbf solver
+    //
+    shapesDriver_createRbfNode;
+    shapesUI_refreshSolverMenu;
+    shapesDriver_shapeDriverSelectionChanged;
+}
+
+
+global proc string[] shapesDriver_deleteSolver( string $driver, int $dialog )
+{
+    //
+    // deletes the rbf solver
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+
+    if ($dialog)
+    {
+        int $driverType = shapesUI_shapeDriverOption();
+
+        string $msg = "Delete RBF solver?";
+        if ($driverType == 6)
+            $msg = "Delete Pose Interpolator?";
+        if (!shapesCommon_confirmWindow($msg, "Delete"))
+            return {};
+    }
+
+    string $refreshList[];
+
+    string $conn[] = `listConnections -s 0 -d 1 -p 1 -c 1 ($driver + ".output")`;
+    for ($c = 0; $c < size($conn); $c += 2)
+    {
+        disconnectAttr $conn[$c] $conn[$c + 1];
+        setAttr $conn[$c + 1] 0;
+        string $items[] = stringToStringArray($conn[$c + 1], ".");
+        // add the connected blend shape target to the update list
+        if ($items[0] == $gShapes_bsNode)
+            $refreshList[size($refreshList)] = $items[1];
+        // add the connected driven set to the update list
+        else
+            $refreshList[size($refreshList)] = $items[0];
+    }
+
+    string $transform[] = `listRelatives -p $driver`;
+
+    string $group = shapesDriver_getRbfGroupString($transform[0]);
+    if (stringArrayContains($group, shapesData_getTargetList()))
+    {
+        shapesAction_performRemoveBlendShapeTarget -1 (shapesData_getListIndex($group)) 0 1;
+        $gShapes_selectedTarget = "";
+    }
+
+    catchQuiet(`delete $transform[0]`);
+
+    shapesList_listBlendShapeTargets 0;
+    shapesUI_switchDriverUI;
+
+    return $refreshList;
+}
+
+
+global proc int shapesDriver_getWeightDriverType( string $driver )
+{
+    //
+    // returns of the given node is set to
+    // vector angle (0) or rbf (1)
+    //
+    if ($driver == "")
+        return 0;
+
+    string $shape = shapesCommon_getShapeNode($driver);
+
+    if ($shape == "")
+        return 0;
+
+    if (`nodeType $shape` == "weightDriver")
+        return (`getAttr ($driver + ".type")`);
+    else if (`nodeType $shape` == "poseInterpolator")
+        return 1;
+    return 0;
+}
+
+
+global proc string shapesDriver_getRbfNodeType( string $driver )
+{
+    //
+    // returns of the given node is of type weight driver or pose interpolator
+    //
+    string $shape = shapesCommon_getShapeNode($driver);
+    return `nodeType $shape`;
+}
+
+
+global proc int[] shapesDriver_getRbfDriverIndices( string $driver )
+{
+    //
+    // return only used ids of the rbf solver
+    //
+    if (!`objExists $driver`)
+        return {};
+
+    int $allIds[] = `getAttr -mi ($driver + ".driverList")`;
+    int $ids[];
+    for ($id in $allIds)
+    {
+        string $conn[] = `listConnections -s 1 -d 0 ($driver + ".driverList[" + $id + "].driverInput")`;
+        if (size($conn))
+            $ids[size($ids)] = $id;
+    }
+    return $ids;
+}
+
+
+global proc shapesDriver_createRbfPose( string $solver, string $target )
+{
+    //
+    // adds a new pose to the rbf solver
+    //
+
+    // first get the group name of the driver;
+    // if this is the first pose the group will be empty and the group name
+    // can be constructed from the blend shape node and solver name;
+    // for any additional pose the group name can be resolved by tracking connections;
+    // if for the first pose this query would happen be after setting up the pose
+    // the connection would be already there but the parent of the target in the list
+    // wouldn't be the solver group, which is important for getting the group name;
+    // the solution is to query the group before setting up the connections
+    string $group = shapesDriver_getRbfGroupString($solver);
+
+    if ($group == "")
+    {
+        br_displayMessage -warning "Unable to get the RBF group name.";
+        if ($solver == "")
+            br_displayMessage -warning "The weightDriver node name needs to be specified.";
+        return;
+    }
+
+    int $driverIds[];
+    string $nodes[] = shapesDriver_getWeightDriverDriver($solver, $driverIds);
+    string $poseAttr = shapesDriver_getPoseAttribute($solver);
+
+    int $id;
+    if (shapesDriver_getRbfNodeType($solver) == "weightDriver")
+        $id = shapesCommon_findEmptyMultiIndex($solver + ".driverList[" + $driverIds[0] + "]." + $poseAttr);
+    else
+        $id = shapesPI_addPose($solver, $target);
+
+    for ($i = 0; $i < size($nodes); $i ++)
+    {
+        shapesDriver_setMatrixAttribute $nodes[$i] $solver ("driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseMatrix");
+        shapesDriver_setMatrixAttribute $nodes[$i] $solver ("driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseParentMatrix");
+
+        int $poseMode = `optionVar -q SHAPESDefaultPoseMode`;
+        if (`optionVar -q SHAPESPoseModeFromSelected`)
+            $poseMode = `optionMenuGrp -q -sl shpUI_poseModeOption` - 1;
+        setAttr ($solver + ".driverList[" + $driverIds[$i] + "]." + $poseAttr + "[" + $id + "].poseMode") $poseMode;
+        if (shapesDriver_getRbfNodeType($solver) == "poseInterpolator")
+            setAttr ($solver + ".pose[" + $id + "].poseType") $poseMode;
+    }
+
+    // store the controller pose
+    string $ctrlNode[] = shapesDriver_getRbfController();
+    if (size($ctrlNode))
+    {
+        for ($i = 0; $i < size($driverIds); $i ++)
+            shapesDriver_setRbfControllerPose($ctrlNode[$i], $solver, $driverIds[$i], $id);
+    }
+
+    string $queryPlug = shapesMain_getQueryPlug($target);
+    connectAttr ($solver + ".output[" + $id + "]") $queryPlug;
+
+    shapesDriver_updateEvaluation $solver;
+
+    // parent the shape to the rbf group if it exists and
+    // if it's not already part of the group
+    string $itemParent;
+    if (`treeView -q -iex $target shpUI_targetTree`)
+        $itemParent = `treeView -q -ip $target shpUI_targetTree`;
+    if (stringArrayContains($group, shapesData_getTargetList()) && $itemParent != $group)
+        shapesList_setNewParent($target, $group);
+}
+
+
+global proc shapesDriver_removeRbfPose( string $target )
+{
+    //
+    // removes the current pose from the rbf solver
+    //
+    global string $gShapes_selectedTarget;
+
+    $gShapes_selectedTarget = $target;
+    string $solver = shapesDriver_getRbfSolverFromListSelection();
+
+    string $queryPlug = shapesMain_getQueryPlug($target);
+    string $conn[] = `listConnections -s 1 -d 0 -p 1 -c 1 $queryPlug`;
+    string $driver[] = stringToStringArray($conn[1], ".");
+    int $index = `match "[0-9]+" $driver[1]`;
+    int $driverIds[] = shapesDriver_getRbfDriverIndices($driver[0]);
+    string $poseAttr = shapesDriver_getPoseAttribute($driver[0]);
+
+    disconnectAttr $conn[1] $conn[0];
+    for ($id in $driverIds)
+        removeMultiInstance -b 1 ($driver[0] + ".driverList[" + $id + "]." + $poseAttr + "[" + $index + "]");
+    if (`nodeType $driver[0]` == "weightDriver")
+        removeMultiInstance -b 1 ($driver[0] + ".poseDrawVector[" + $index + "]");
+    setAttr $conn[0] 0;
+
+    if (`nodeType $driver[0]` == "poseInterpolator")
+        shapesPI_deletePose $driver[0] $target;
+
+    shapesDriver_updateEvaluation $driver[0];
+
+    //$gShapes_selectedTarget = $target;
+    shapesList_refreshTargetItem {$target};
+}
+
+
+global proc int shapesDriver_rbfHasPoses( string $solver )
+{
+    //
+    // returns true if the solver has output connections
+    //
+
+    if ($solver == "")
+        return -1;
+
+    string $conn[] = `listConnections -s 0 -d 1 -p 1 ($solver + ".output")`;
+    if (size($conn))
+        return 1;
+    else
+        return 0;
+}
+
+
+global proc string shapesDriver_getRbfGroupString( string $driver )
+{
+    //
+    // return the rbf group name based on the given weightDriver node
+    //
+    string $group = "";
+    string $solver = shapesCommon_getShapeNode($driver);
+    if ($solver == "")
+        return $group;
+
+    if (`attributeQuery -ex -n $solver "solverGroup"`)
+    {
+        $group = `getAttr ($solver + ".solverGroup")`;
+    }
+    else
+    {
+        // if there are no connections yet the group is named after the solver
+        return shapesDriver_createRbfGroupString($driver);
+    }
+
+    return $group;
+}
+
+
+global proc string shapesDriver_createRbfGroupString( string $driver )
+{
+    //
+    // create the rbf group name based on the given weightDriver node
+    //
+    global string $gShapes_bsNode;
+
+    // remove the blend shape name from the string
+    string $group = substitute($gShapes_bsNode + "_", $driver, "");
+    $group = substitute("_WD", $group, "_RBF");
+    return $group;
+}
+
+
+global proc string[] shapesDriver_getRbfController()
+{
+    //
+    // return the current rbf control node
+    //
+    string $driver = shapesUI_getSelectedNodeOption();
+    int $ids[] = shapesDriver_getRbfDriverIndices($driver);
+    string $controller[];
+    for ($id in $ids)
+    {
+        string $conn[] = `listConnections -s 1 -d 0 ($driver + ".driverList[" + $id + "].controlNode")`;
+        $controller[size($controller)] = $conn[0];
+    }
+    return $controller;
+}
+
+
+global proc string[] shapesDriver_getRbfSolvers( string $bsNode )
+{
+    //
+    // return the list of solvers connected to the blend shape node
+    //
+    return (`listConnections -s 1 -d 0 ($bsNode + ".SHAPESSolver")`);
+}
+
+
+global proc string shapesDriver_getRbfSolverFromGroup( string $group )
+{
+    //
+    // return the rbf solver which belongs to the given group
+    //
+    global string $gShapes_bsNode;
+
+    string $solver;
+    string $solvers[] = shapesDriver_getRbfSolvers($gShapes_bsNode);
+    for ($s in $solvers)
+    {
+        string $grp = `getAttr ($s + ".solverGroup")`;
+        if ($grp == $group)
+        {
+            $solver = $s;
+            break;
+        }
+    }
+    return $solver;
+}
+
+
+global proc shapesDriver_updateSolverGroupString( string $oldName, string $newName )
+{
+    //
+    // updates the solver group name on the rbf solver
+    // when the group gets renamed
+    //
+    string $solver = shapesDriver_getRbfSolverFromGroup($oldName);
+    setAttr ($solver + ".solverGroup") -type "string" $newName;
+}
+
+
+global proc int shapesDriver_isRbfSolverGroup( string $group )
+{
+    //
+    // return true if the given group is a solver group
+    //
+    if (shapesDriver_getRbfSolverFromGroup($group) == "")
+        return 0;
+    return 1;
+}
+
+
+global proc shapesDriver_updateExistingRbfGroups()
+{
+    //
+    // updates pre-existing rbf nodes and pose interpolators
+    // regarding their group assignements which allows for renaming
+    // of the solver groups whithout breaking any functionality
+    //
+    global string $gShapes_bsNode;
+
+    string $wd[] = `listConnections -s 1 -d 0 -type weightDriver $gShapes_bsNode`;
+    string $rbf[];
+    for ($driver in $wd)
+    {
+        if (shapesDriver_getWeightDriverType($driver))
+            $rbf[size($rbf)] = $driver;
+    }
+    string $pi[] = `listConnections -s 1 -d 0 -type poseInterpolator $gShapes_bsNode`;
+    string $solvers[] = stringArrayCatenate($rbf, $pi);
+    $solvers = stringArrayRemoveDuplicates($solvers);
+    for ($s in $solvers)
+    {
+        int $outs[] = `getAttr -mi ($s + ".output")`;
+        string $group[];
+        for ($o in $outs)
+        {
+            string $conn[] = `listConnections -s 0 -d 1 -p 1 ($s + ".output[" + $o + "]")`;
+            if (size($conn))
+            {
+                string $items[] = stringToStringArray($conn[0], ".");
+                if (`treeView -q -iex $items[1] shpUI_targetTree`)
+                    $group[size($group)] = `treeView -q -ip $items[1] shpUI_targetTree`;
+            }
+        }
+        $group = stringArrayRemoveDuplicates($group);
+        if (!size($group))
+            br_displayMessage -error ("The pose shapes for " + $s + " are not placed in any group. Group assignment failed.");
+        else if (size($group) > 1)
+            br_displayMessage -warning ("The pose shapes for " + $s + " are placed in more than one group. Assigning group " + $group[0] + " as the solver group.");
+
+        string $shape = shapesCommon_getShapeNode($s);
+        shapesCommon_addMessageAttribute($shape, "solverGroupMessage", 0);
+        shapesCommon_addStringAttribute($shape, "solverGroup");
+        connectAttr -f -na ($shape + ".solverGroupMessage") ($gShapes_bsNode + ".SHAPESSolver");
+        setAttr ($shape + ".solverGroup") -type "string" $group[0];
+
+        br_displayMessage -info ("Updated group assignments on " + $s + ".");
+    }
+}
+
+
+global proc string shapesDriver_getRbfControllerAsString()
+{
+    //
+    // return the control nodes as a comma separated string
+    //
+    return stringArrayToString(shapesDriver_getRbfController(), ",");
+}
+
+
+global proc shapesDriver_setRbfControllerPose( string $control, string $solver, int $driverIndex, int $index )
+{
+    //
+    // stores the current controller pose with the rbf pose
+    //
+    string $poseAttr = shapesDriver_getPoseAttribute($solver);
+
+    string $attrs[] = `listAttr -k -w -u -s $control`;
+    if (!size($attrs))
+    {
+        string $msg = "No keyable attributes found on the selected controller.\n\nAdd default translation and rotation attributes?";
+        if (!shapesCommon_confirmWindow($msg, "OK"))
+        {
+            br_displayMessage -warning "No controller pose set";
+            return;
+        }
+        $attrs = {"translateX", "translateY", "translateZ", "rotateX", "rotateY", "rotateZ"};
+    }
+    string $attrList[];
+    float $valueList[];
+    for ($attr in $attrs)
+    {
+        if (!`getAttr -l ($control + "." + $attr)`)
+        {
+            float $value = `getAttr ($control + "." + $attr)`;
+            $attrList[size($attrList)] = $attr;
+            $valueList[size($valueList)] = $value;
+        }
+    }
+
+    eval("setAttr " + $solver + ".driverList[" + $driverIndex + "]." + $poseAttr + "[" + $index + "].cpa -type \"stringArray\" " + size($attrList) + " " + stringArrayToString($attrList, " "));
+    eval("setAttr " + $solver + ".driverList[" + $driverIndex + "]." + $poseAttr + "[" + $index + "].cpv -type \"doubleArray\" " + size($valueList) + " " + shapesArray_floatArrayToString($valueList, " "));
+    setAttr ($solver + ".driverList[" + $driverIndex + "]." + $poseAttr + "[" + $index + "].cpro") `getAttr ($control + ".rotateOrder")`;
+}
+
+
+global proc int shapesDriver_restoreControllerPose()
+{
+    //
+    // tweak button callback for restoring the controller pose
+    // returns true if the driver is a rbf or pose interpolator node
+    //
+    global string $gShapes_selectedTarget;
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    if ($driverType != 5 && $driverType != 6)
+        return 0;
+
+    string $solver = shapesUI_getSelectedNodeOption();
+
+    string $queryPlug = shapesMain_getQueryPlug($gShapes_selectedTarget);
+    string $conn[] = `listConnections -s 1 -d 0 -p 1 $queryPlug`;
+    string $items[] = stringToStringArray($conn[0], ".");
+    int $index = `match "[0-9]+" $items[1]`;
+
+    string $control[] = shapesDriver_getRbfController();
+    int $ids[] = shapesDriver_getRbfDriverIndices($solver);
+    for ($i = 0; $i < size($control); $i ++)
+        shapesDriver_getRbfControllerPose $control[$i] $solver $ids[$i] $index;
+
+    return 1;
+}
+
+
+global proc shapesDriver_getRbfControllerPose( string $control, string $solver, int $driverIndex, int $index )
+{
+    //
+    // restores the controller pose for the rbf pose
+    //
+    string $poseAttr = shapesDriver_getPoseAttribute($solver);
+
+    string $attrList[] = `getAttr ($solver + ".driverList[" + $driverIndex + "]." + $poseAttr + "[" + $index + "].cpa")`;
+    float $valueList[] = `getAttr ($solver + ".driverList[" + $driverIndex + "]." + $poseAttr + "[" + $index + "].cpv")`;
+    int $srcOrder = `getAttr ($solver + ".driverList[" + $driverIndex + "]." + $poseAttr + "[" + $index + "].cpro")`;
+    int $destOrder = `getAttr ($control + ".rotateOrder")`;
+
+    float $rotVal[] = {0.0, 0.0, 0.0};
+    int $hasRotation = 0;
+    int $xId = -1;
+    int $yId = -1;
+    int $zId = -1;
+    for ($i = 0; $i < size($attrList); $i ++)
+    {
+        if ($attrList[$i] == "rotateX")
+        {
+            $rotVal[0] = $valueList[$i];
+            $hasRotation ++;
+            $xId = $i;
+        }
+        else if ($attrList[$i] == "rotateY")
+        {
+            $rotVal[1] = $valueList[$i];
+            $hasRotation ++;
+            $yId = $i;
+        }
+        else if ($attrList[$i] == "rotateZ")
+        {
+            $rotVal[2] = $valueList[$i];
+            $hasRotation ++;
+            $zId = $i;
+        }
+    }
+
+    if ($hasRotation == 3)
+    {
+        float $newRot[] = `br_reorderRotation   -inRotationX $rotVal[0]
+                                                -inRotationY $rotVal[1]
+                                                -inRotationZ $rotVal[2]
+                                                -inOrder $srcOrder
+                                                -outOrder $destOrder`;
+        if ($xId != -1)
+            $valueList[$xId] = $newRot[0];
+        if ($yId != -1)
+            $valueList[$yId] = $newRot[1];
+        if ($zId != -1)
+            $valueList[$zId] = $newRot[2];
+    }
+
+
+    for ($i = 0; $i < size($attrList); $i ++)
+    {
+        if (`attributeExists $attrList[$i] $control` && !`getAttr -l ($control + "." + $attrList[$i])`)
+            catchQuiet(`setAttr ($control + "." + $attrList[$i]) $valueList[$i]`);
+    }
+}
+
+
+global proc string shapesDriver_getDriverNameExtension()
+{
+    //
+    // get the extension for the node name based on the type of solver
+    //
+    int $driverType = shapesUI_shapeDriverOption();
+
+    string $ext = "WD";
+    if ($driverType == 6)
+        $ext = "PI";
+
+    return $ext;
+}
+
+
+global proc string shapesDriver_getDriverNameExtensionFromName( string $driver )
+{
+    //
+    // get the extension from the node name based on the type of solver
+    //
+    string $ext = "";
+    if (`gmatch $driver "*_WD*"`)
+        $ext = "WD";
+    else if (`gmatch $driver "*_PI*"`)
+        $ext = "PI";
+
+    return $ext;
+}
+
+
+global proc string shapesDriver_getPoseAttribute( string $driver )
+{
+    //
+    // get the pose attribute name based on the type of solver
+    //
+    string $attr = "pose";
+    if (shapesDriver_getRbfNodeType($driver) == "poseInterpolator")
+        $attr = "poseList";
+
+    return $attr;
+}
+
+
+global proc int shapesDriver_isControlled( string $nodes[] )
+{
+    //
+    // return, if the selected shape drivers are controlled
+    // by another node, like constraint or other connection
+    //
+    int $result = 0;
+
+    for ($node in $nodes)
+    {
+        string $conn[] = `listConnections -s 1 -d 0 -p 1 -c 1 -scn 1 $node`;
+        if (size($conn))
+        {
+            string $attrs[] = {"translate", "rotate"};
+            for ($i = 0; $i < size($conn); $i += 2)
+            {
+                string $items[] = stringToStringArray($conn[$i], ".");
+                string $driver[] = stringToStringArray($conn[$i + 1], ".");
+                string $type = `nodeType $driver[0]`;
+                if (!`gmatch $type "*animCurve*"` && `nodeType $driver[0]` != "character")
+                {
+                    for ($attr in $attrs)
+                    {
+                        if (`gmatch $items[1] ("*" + $attr + "*")` && !`gmatch $items[1] ("*rotateOrder*")`)
+                        {
+                            $result += 1;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ($result > 1)
+        $result = 1;
+
+    return $result;
+}
+
+
+global proc shapesDriver_validateWeightDriverRBFValues()
+{
+    //
+    // checks the pose matrices of the current RBF solver
+    // and reports matching poses in case the decomposition failed
+    //
+    string $sel[] = `ls -sl`;
+    if (!size($sel))
+        return;
+
+    string $shape = shapesCommon_getShapeNode($sel[0]);
+
+    if ($shape == "" || `nodeType $shape` != "weightDriver")
+        return;
+
+    string $info = "\nSolver : " + $shape + "\n";
+    for ($i = 0; $i < size($shape) + 9; $i ++)
+        $info += "-";
+    $info += "\n";
+
+    int $error = 0;
+
+    int $dIds[] = `getAttr -mi ($shape + ".dl")`;
+    for ($dId in $dIds)
+    {
+        if (size(`listConnections ($shape + ".dl[" + $dId + "].driverInput")`))
+        {
+            $info += "Driver " + $dId + ":\n";
+            int $pIds[] = `getAttr -mi ($shape + ".dl[" + $dId + "].pose")`;
+            float $sum[];
+            for ($i = 0; $i < size($pIds); $i ++)
+            {
+                float $mat[] = `getAttr ($shape + ".dl[" + $dId + "].p[" + $pIds[$i] + "].pmat")`;
+                string $matString;
+                for ($j = 0; $j < size($mat); $j ++)
+                {
+                    float $val = (floor($mat[$j] * 1000)) / 1000.0;
+                    $matString += $val + " ";
+                    $sum[$i] += $val;
+                }
+                $info += "\tPose " + $pIds[$i] + " : " + $matString + "\n";
+            }
+
+            for ($i = 0; $i < size($pIds); $i ++)
+            {
+                for ($j = 0; $j < size($pIds); $j ++)
+                {
+                    if (($i != $j) && $sum[$i] == $sum[$j])
+                    {
+                        $info += "\tPose " + $pIds[$i] + " matches pose " + $pIds[$j] + "\n";
+                        $error ++;
+                    }
+                }
+            }
+        }
+    }
+
+    print $info;
+
+    if ($error)
+        br_displayMessage -warning "The RBF solver has matching poses. See script editor for details.";
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// shape driver actions
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesDriver_selectDriver()
+{
+    //
+    // select the weight driver of the target
+    //
+    global string $gShapes_selectedTarget;
+
+    string $nodes[] = shapesDriver_getConnectedWeightDriver($gShapes_selectedTarget);
+    if (!size($nodes))
+        return;
+    select $nodes[0];
+}
+
+
+global proc shapesDriver_attachDetachDriver( int $mode, int $ignore, int $sliderDrag )
+{
+    //
+    // connect/disconnect the driving node to freely adjust the blendshape slider
+    //
+    global int $gShapes_unlinkSlider;
+    global int $gShapes_updateValueState;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_driverPlug[];
+
+    if ($ignore && !$gShapes_unlinkSlider)
+    {
+        $gShapes_unlinkSlider = 1;
+        if (!$mode)
+            br_displayMessage -info "The shape driver has been unlinked. Select the target item again to re-link.";
+    }
+    else if ($ignore && $gShapes_unlinkSlider)
+        $gShapes_unlinkSlider = 0;
+
+    // reset the status to force a re-connect if a new shape is selected to make sure
+    // that the connection returns to it's default
+    if ($mode && $ignore)
+        $gShapes_unlinkSlider = 0;
+
+    // disconnect
+    if (!$mode)
+    {
+        // Get the query plug.
+        // When a mesh gets loaded this method is called through
+        // main.getSelection. At this point $gShapes_index is not yet
+        // set and causes an error. Therefore it's necessary to check if
+        // there is actually an attribute to query.
+        string $plug = shapesMain_getQueryPlug($gShapes_selectedTarget);
+        if (!size($plug))
+            return;
+        string $queryPlugs[] = {$plug};
+
+        // Addition to make a slider drag with multiple channels work.
+        // Get the plugs for all selected channels.
+        string $items[] = `treeView -q -si shpUI_targetTree`;
+        if ($sliderDrag)
+        {
+            clear $queryPlugs;
+            for ($i = 0; $i < size($items); $i ++)
+                $queryPlugs[size($queryPlugs)] = shapesMain_getQueryPlug($items[$i]);
+        }
+
+        $gShapes_updateValueState = 0;
+        string $connections[];
+        for ($queryPlug in $queryPlugs)
+        {
+            string $plug[] = `listConnections -s 1 -d 0 -p 1 $queryPlug`;
+            if (size($plug))
+            {
+                string $type = `nodeType $plug[0]`;
+                // no need to disconnect if the driver is an animation curve
+                if (!`gmatch $type "animCurve*"`)
+                {
+                    $connections[size($connections)] = $plug[0];
+                    $connections[size($connections)] = $queryPlug;
+                    catchQuiet(`disconnectAttr $plug[0] $queryPlug`);
+                }
+            }
+        }
+        // Since this procedure gets called every time a drag event
+        // occurs check if connections have been collected and only then
+        // replace the global plug list.
+        if (size($connections))
+            $gShapes_driverPlug = $connections;
+    }
+    // connect
+    else
+    {
+        $gShapes_updateValueState = 1;
+        if (`iconTextCheckBox -q -v shpUI_filterLiveCheck`)
+            shapesJob_updateDisplayValue;
+        if (!$gShapes_unlinkSlider)
+        {
+            if (size($gShapes_driverPlug))
+            {
+                for ($i = 0; $i < size($gShapes_driverPlug); $i += 2)
+                {
+                    catchQuiet(`connectAttr $gShapes_driverPlug[$i] $gShapes_driverPlug[$i + 1]`);
+                }
+                clear $gShapes_driverPlug;
+            }
+        }
+    }
+    // update the other selected targets when the slider is dragged or has been changed
+    if ($sliderDrag)
+        shapesMain_matchSelectedTargetValues;
+}
+
+
+global proc shapesDriver_showHideWeightDriver( string $attr, int $state )
+{
+    //
+    // show/hide all weight drivers in the scene
+    //
+    string $wd[] = `ls -type weightDriver`;
+    for ($node in $wd)
+        setAttr ($node + "." + $attr) $state;
+}
+
+
+global proc shapesDriver_setShapeDriverAttribute( string $item, string $label )
+{
+    //
+    // sets the connected weightDriver attributes or sdk values based on the changed
+    // user settings in the shape driver attribute section
+    //
+    global int $gShapes_index;
+    global int $gShapes_targetIndex;
+    global string $gShapes_currentSdkAttr;
+    global string $gShapes_rampPlug;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_orderedTargetList[];
+
+    string $queryPlug;
+    string $driverItems[];
+    string $solverTargets[];
+    int $solverIds[];
+    string $poseAttr;
+
+    int $driverType = shapesUI_shapeDriverOption();
+
+    // in case of a rbf solver the node name doesn't need to be found from
+    // the driving target shape but can be read from the option menu
+    if (($driverType == 5 || $driverType == 6) &&
+        `optionMenu -q -sl shpUI_solverNodeOption` != 1)
+    {
+        $driverItems[0] = shapesCommon_getShapeNode(shapesUI_getSelectedNodeOption());
+        if ($driverType == 5)
+            $driverItems[1] = "wd";
+        else if ($driverType == 6)
+            $driverItems[1] = "pi";
+
+        if (size($gShapes_orderedTargetList) > 1)
+            $solverTargets = shapesList_getTargetListRbfSelection($solverIds);
+
+        $poseAttr = shapesDriver_getPoseAttribute($driverItems[0]);
+    }
+    // for all other shape drivers get the node via the target shape connections
+    else
+    {
+        if ($gShapes_selectedTarget == "" && $gShapes_rampPlug == "")
+            return;
+
+        if ($gShapes_rampPlug == "")
+            $queryPlug = shapesMain_getQueryPlug($gShapes_selectedTarget);
+        else
+            $queryPlug = $gShapes_rampPlug;
+
+        $driverItems = shapesMain_getTargetInput($queryPlug);
+        if (!size($driverItems))
+            return;
+    }
+
+    string $node = $driverItems[0];
+    string $type = $driverItems[1];
+
+    if ($type == "sdks")
+    {
+        string $conn[] = `listConnections -s 1 -d 0 -sh 1 ($node + ".driverValue")`;
+        if (`nodeType $conn[0]` == "weightDriver")
+            $type = "wd";
+        else if (`gmatch (nodeType($conn[0])) "*animCurve*"`)
+            $type = "sdk";
+        $node = $conn[0];
+    }
+
+    if ($type == "combo")
+        ;
+
+    if ($type == "connection")
+    {
+        string $conn[] = `listConnections -s 1 -d 0 -scn 1 -p 1 -c 1 $queryPlug`;
+        if (size($conn))
+        {
+            string $conversion[] = `listConnections -type "unitConversion" $queryPlug`;
+            string $driverItems[] = stringToStringArray($conn[1], ".");
+            connectAttr -f ($driverItems[0] + "." + $gShapes_currentSdkAttr) $conn[0];
+            // delete the previous conversion node if any
+            if (size($conversion))
+                delete $conversion;
+        }
+    }
+
+    if ($type == "wd" || $type == "pi")
+    {
+        int $invert;
+        float $value;
+        string $piAttr;
+        string $attrList[];
+        string $piAttrList[];
+        if (    $label == "direction" ||
+                $label == "interpolation" ||
+                $label == "poseMode" ||
+                $label == "twistAxis")
+        {
+            $value = `optionMenuGrp -q -sl $item` - 1;
+
+            if ($label == "poseMode")
+            {
+                if (!size($solverIds))
+                {
+                    string $items[] = stringToStringArray(`text -q -l shpUI_rbfIdText`, " ");
+                    if (size($items) > 1)
+                    {
+                        int $id = $items[1];
+                        $label = $poseAttr + "[" + $id + "]." + $label;
+                        $piAttr = "pose[" + $id + "].poseType";
+                    }
+                    else
+                        return;
+                }
+                else
+                {
+                    $label = $poseAttr + "[0].poseMode";
+                    for ($i = 0; $i < size($solverIds); $i ++)
+                    {
+                        $attrList[$i] = $poseAttr + "[" + $solverIds[$i] + "].poseMode";
+                        if ($solverIds[$i] != 0)
+                            $piAttrList[$i] = "pose[" + $solverIds[$i] + "].poseType";
+                    }
+                }
+            }
+            else if ($label == "twistAxis" && $type == "pi")
+            {
+                int $ids[] = `getAttr -mi ($node + ".driver")`;
+                for ($i = 0; $i < size($ids); $i ++)
+                    $piAttrList[$i] = "driver[" + $ids[$i] + "].driverTwistAxis";
+            }
+        }
+        else if (   $label == "angle" ||
+                    $label == "centerAngle" ||
+                    $label == "twistAngle" ||
+                    $label == "translateMin" ||
+                    $label == "translateMax")
+        {
+            float $vList[] = `floatFieldGrp -q -v $item`;
+            $value = $vList[0];
+            if ($label == "angle" && $value < 0)
+            {
+                $value = abs($value);
+                $invert = 1;
+            }
+        }
+        else if (   $label == "twist" ||
+                    $label == "useRotate" ||
+                    $label == "useTranslate" ||
+                    $label == "grow")
+            $value = `checkBoxGrp -q -v1 $item`;
+
+        if (`gmatch $label "*poseMode*"`)
+        {
+            int $ids[] = shapesDriver_getRbfDriverIndices($node);
+            for ($id in $ids)
+            {
+                if (!size($attrList))
+                    setAttr ($node + ".driverList[" + $id + "]." + $label) $value;
+                else
+                {
+                    for ($attr in $attrList)
+                        setAttr ($node + ".driverList[" + $id + "]." + $attr) $value;
+                }
+            }
+        }
+        else
+            setAttr ($node + "." + $label) $value;
+        if (`nodeType $node` == "poseInterpolator")
+        {
+            if ($piAttr != "")
+                setAttr ($node + "." + $piAttr) $value;
+            else if (size($piAttrList))
+            {
+                for ($attr in $piAttrList)
+                    setAttr ($node + "." + $attr) $value;
+            }
+        }
+
+        if ($label == "angle")
+            setAttr ($node + ".invert") $invert;
+    }
+    else if ($type == "sdk")
+    {
+        if ($label == "minMax")
+        {
+            float $values[] = `floatFieldGrp -q -v $item`;
+            // get the key time values from the sdk curve for comparison
+            // this is needed to set the correct keyframes
+            int $indexList[] = `getAttr -mi ($node + ".ktv")`;
+            float $timeValue1[] = `getAttr ($node + ".ktv[" + $indexList[0] + "]")`;
+            float $timeValue2[] = `getAttr ($node + ".ktv[" + $indexList[1] + "]")`;
+            // if the first listed keyframe is the one which defines the end state of the sdk (1)
+            // the value list needs to be reversed so that the max/end value comes first
+            if ($timeValue1[1] > 0)
+            {
+                float $temp[];
+                for ($i = size($values) - 1; $i >= 0; $i --)
+                    $temp[size($temp)] = $values[$i];
+                $values = $temp;
+            }
+            keyframe -a -o "over" -index 0 -fc $values[0] $node;
+            // if the new value for the first keyframe is greater than the value of the second
+            // the key listing gets reordered and the second keyframe to be edited will be listed first
+            int $keyId = 1;
+            if ($values[0] > $timeValue1[0] && $values[0] > $timeValue2[0])
+                $keyId = 0;
+            keyframe -a -o "over" -index $keyId -fc $values[1] $node;
+        }
+        else if ($label == "interpolation")
+        {
+            int $value = `optionMenuGrp -q -sl $item` - 1;
+            string $tangent[] = {"spline", "spline"};
+            if ($value == 1)
+                $tangent = {"spline", "flat"};
+            if ($value == 2)
+                $tangent = {"flat", "spline"};
+            if ($value == 3)
+                $tangent = {"flat", "flat"};
+            // if the max value is actually negative the keyframe for this pose
+            // is actually listed first and makes it necessary to reverse the tangent list
+            float $values[] = `floatFieldGrp -q -v shpUI_sdkRangeField`;
+            if ($values[1] < 0)
+            {
+                string $tan[];
+                for ($i = size($tangent) - 1; $i >= 0; $i --)
+                    $tan[size($tan)] = $tangent[$i];
+                $tangent = $tan;
+            }
+            keyTangent -index 0 -itt $tangent[0] -ott $tangent[0] $node;
+            keyTangent -index 1 -itt $tangent[1] -ott $tangent[1] $node;
+        }
+        else if ($label == "infinity")
+        {
+            int $value = `optionMenuGrp -q -sl $item`;
+            shapesDriver_setCurveInfinity $node $value;
+        }
+        else if ($label == "attribute")
+        {
+            string $connect[] = `listConnections -s 1 -d 0 -scn 1 -p 1 -c 1 $node`;
+            string $conversion[] = `listConnections -type "unitConversion" $node`;
+            string $connectItems1[] = stringToStringArray($connect[0], ".");
+            string $connectItems2[] = stringToStringArray($connect[1], ".");
+            connectAttr -f ($connectItems2[0] + "." + $gShapes_currentSdkAttr) ($node + "." + $connectItems1[1]);
+            // delete the previous conversion node if any
+            if (size($conversion))
+                delete $conversion;
+        }
+    }
+
+    if ($label == "ramp")
+    {
+        string $rampPlug = shapesData_getWeightsControllerConnection($gShapes_targetIndex);
+        string $rampNodeItems[] = stringToStringArray($rampPlug, ".");
+        if (`nodeType $rampNodeItems[0]` == "rampWeights" && size($rampNodeItems) > 1)
+        {
+            string $connect[] = `listConnections -s 1 -d 0 -scn 1 -p 1 -c 1 $rampPlug`;
+            if (size($connect))
+            {
+                string $conversion[] = `listConnections -type "unitConversion" $rampPlug`;
+                disconnectAttr $connect[1] $connect[0];
+                string $driven = $rampNodeItems[0] + "." + `optionMenu -q -v shpUI_rampAttrOption`;
+                connectAttr -f $connect[1] $driven;
+                // delete the previous conversion node if any
+                if (size($conversion))
+                    delete $conversion;
+            }
+        }
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// sdk attributes
+// ------------------------------------------------------------------------------------------------
+
+global proc float[] shapesDriver_getSdkValues( string $node )
+{
+    //
+    // return the sdk values for the given curve
+    //
+    // get the number of keys for the sdk curve
+    int $indexList[] = `getAttr -mi ($node + ".ktv")`;
+    if (size($indexList) > 2)
+    {
+        br_displayMessage -warning "Only two set driven keyframes are currently supported";
+        return {};
+    }
+    if (size($indexList) == 1)
+    {
+        br_displayMessage -warning "The set driven key curve has only one keyframe";
+        return {};
+    }
+    float $valuePair[];
+    for ($k in $indexList)
+    {
+        // get the time value pair for the current index
+        float $values[] = `getAttr ($node + ".ktv[" + $k + "]")`;
+        if (!size($valuePair))
+            $valuePair = $values;
+        else
+        {
+            if ($values[1] > $valuePair[1])
+            {
+                for ($v in $values)
+                    $valuePair[size($valuePair)] = $v;
+            }
+            else
+            {
+                for ($v = 0; $v < size($values); $v ++)
+                    shapesArray_floatArrayInsertAtIndex($v, $valuePair, $values[$v]);
+            }
+        }
+    }
+    return $valuePair;
+}
+
+
+global proc shapesDriver_updateAttributeMenu( string $node, string $includeAttr )
+{
+    //
+    // Get the keyable attributes from the given node and build the
+    // attribute option menu for the shape driver.
+    //
+    shapesDriver_getDriverAttributes($node, $includeAttr);
+    shapesDriver_refreshAttributeMenu;
+}
+
+
+global proc shapesDriver_refreshAttributeMenu()
+{
+    //
+    // build a new option menu with the given driver attributes
+    //
+    global string $gShapes_sdkAttrList[];
+
+    setParent shpUI_sdkForm;
+
+    if (`optionMenu -ex shpUI_sdkAttrOption`)
+        deleteUI shpUI_sdkAttrOption;
+
+    optionMenu -cc ("shapesDriver_sdkSetCurrentAttribute 1") shpUI_sdkAttrOption;
+
+    // if there are no attributes create the default list
+    if (!size($gShapes_sdkAttrList))
+        $gShapes_sdkAttrList = {"None", "0"};
+
+    // get all atrributes for sorting
+    string $attrList[];
+    for ($i = 0; $i < size($gShapes_sdkAttrList); $i += 2)
+        $attrList[size($attrList)] = $gShapes_sdkAttrList[$i];
+    $attrList = sort($attrList);
+
+    for ($attr in $attrList)
+        menuItem -l $attr -p shpUI_sdkAttrOption;
+
+    formLayout  -e
+
+                -af shpUI_sdkAttrOption "top" 0
+                -af shpUI_sdkAttrOption "bottom" 0
+                -af shpUI_sdkAttrOption "right" 33
+
+                -ac shpUI_sdkAttrOption "left" 23 "shpUI_sdkAttrLabel"
+
+                shpUI_sdkForm;
+
+    setParent ..;
+
+    shapesDriver_getAttributeWithMaxValue();
+}
+
+
+global proc string shapesDriver_getAttributeWithMaxValue()
+{
+    //
+    // Return the attribute with the highest value and set the range or
+    // the attribute from the menu which matches the current shape name.
+    //
+    global string $gShapes_currentSdkAttr;
+    global string $gShapes_sdkAttrList[];
+    global string $gShapes_selectedTarget;
+
+    int $maxValue;
+    float $attrValue;
+    string $maxAttr = "None";
+    string $attrSibling = "";
+    for ($i = 0; $i < size($gShapes_sdkAttrList); $i += 2)
+    {
+        string $attr = $gShapes_sdkAttrList[$i];
+        float $value = $gShapes_sdkAttrList[$i + 1];
+        // compare the values and store the attribute with the highest/lowest value
+        // this attribute gets selected in the option menu
+        if (abs($value) > $maxValue)
+        {
+            $maxValue = abs($value);
+            $maxAttr = $attr;
+            $attrValue = $value;
+        }
+        if ($attr == $gShapes_selectedTarget)
+        {
+            $attrSibling = $attr;
+            $attrValue = $value;
+            break;
+        }
+    }
+    if ($attrSibling != "")
+        $maxAttr = $attrSibling;
+
+    if ($gShapes_currentSdkAttr == "")
+        $gShapes_currentSdkAttr = $maxAttr;
+
+    if ($maxAttr != "None")
+        shapesDriver_setSdkAttributes $maxAttr 0.0 $attrValue;
+
+    return $maxAttr;
+}
+
+
+global proc shapesDriver_sdkSetCurrentAttribute( int $update )
+{
+    //
+    // store the currently selected sdk attribute until the driver changes
+    //
+    global string $gShapes_currentSdkAttr;
+    global string $gShapes_sdkAttrList[];
+
+    $gShapes_currentSdkAttr = `optionMenu -q -v shpUI_sdkAttrOption`;
+    // if the call does not come from selecting an attribute but rather from either
+    // reading the sdk curve values or setting the value previously the field needs no update
+    if ($update)
+    {
+        // There are no additional fields for a direct connection.
+        if (`control -exists shpUI_sdkRangeField`)
+        {
+            int $id = shapesArray_stringArrayFind($gShapes_currentSdkAttr, 0, $gShapes_sdkAttrList);
+            float $value = $gShapes_sdkAttrList[$id + 1];
+            floatFieldGrp -e -v2 $value shpUI_sdkRangeField;
+        }
+        shapesDriver_setShapeDriverAttribute "shpUI_sdkAttrOption" "attribute";
+    }
+}
+
+
+global proc shapesDriver_setSdkAttributes( string $attr, float $min, float $max )
+{
+    //
+    // set the sdk attributes
+    //
+    global string $gShapes_currentSdkAttr;
+
+    optionMenu -e -v $attr shpUI_sdkAttrOption;
+    $gShapes_currentSdkAttr = $attr;
+    // In case of a direct connection the range field doesn't exist.
+    if (`control -exists shpUI_sdkRangeField`)
+    {
+        floatFieldGrp -e -v1 $min -v2 $max shpUI_sdkRangeField;
+        shapesDriver_sdkSetCurrentAttribute 0;
+    }
+}
+
+
+global proc shapesDriver_getDriverAttributes( string $node, string $includeAttr )
+{
+    //
+    // Get the keyable attributes from the given node.
+    //
+    global string $gShapes_currentSdkAttr;
+    global string $gShapes_sdkAttrList[];
+
+    // Store all keyable attributes.
+    $gShapes_sdkAttrList = shapesDriver_getSdkAttributesAndValues($node, $includeAttr);
+    $gShapes_currentSdkAttr = "";
+}
+
+
+global proc string[] shapesDriver_getSdkAttributesAndValues( string $node, string $includeAttr )
+{
+    //
+    // read the keyable attributes from the channelbox
+    // and return them as a list
+    //
+    string $attrValues[];
+    string $attrs[] = `listAttr -k $node`;
+    string $attrsCB[] = `listAttr -cb $node`;
+    string $attrsUser[] = `listAttr -ud $node`;
+
+    if (`nodeType $node` == "blendShape")
+        $attrs = shapesData_getShapeListFromNode($node);
+
+    if (size($attrsCB))
+        $attrs = stringArrayCatenate($attrs, $attrsCB);
+    if (size($attrsUser))
+        $attrs = stringArrayCatenate($attrs, $attrsUser);
+
+    // Filter all group attributes, which are defined by their locked
+    // status.
+    if (`nodeType $node` == "blendShape")
+    {
+        string $temp[];
+        for ($a in $attrs)
+        {
+            if (!`getAttr -lock ($node + "." + $a)`)
+                $temp[size($temp)] = $a;
+        }
+        $attrs = $temp;
+    }
+
+    // Add the attribute which should be included in the list.
+    $attrs[size($attrs)] = $includeAttr;
+
+    string $skipAttrs[] = {"", "string", "float2", "float3", "double2", "double3", "long2", "long3", "short2", "short3", "message", "TdataCompound", "bool", "byte", "enum", "typed", "matrix", "attributeAlias"};
+
+    if (!size($attrs))
+    {
+        string $msg = "The selected driver has no keyable attributes to display.";
+        if (`nodeType $node` == "transform" || `nodeType $node` == "joint")
+        {
+            $msg += " Adding default transformation attributes.";
+            br_displayMessage -warning $msg;
+
+            $attrs = {"translateX", "translateY", "translateZ", "rotateX", "rotateY", "rotateZ", "scaleX", "scaleX", "scaleZ"};
+        }
+        else
+        {
+            $attrs = `listAttr $node`;
+        }
+    }
+
+    for ($a in $attrs)
+    {
+        // make sure no compound attributes get added
+        // i.e. weightList.weights from a bend node
+        if (size(stringToStringArray($a, ".")) == 1)
+        {
+            // make sure that no string or double/triple attribute is processed
+            string $attrType;
+            $attrType = `getAttr -type ($node + "." + $a)`;
+            if (!stringArrayContains($attrType, $skipAttrs))
+            {
+                float $value = `getAttr ($node + "." + $a)`;
+                if ($value == 0)
+                {
+                    if (!`optionVar -q SHAPESIgnoreZeroChannels`)
+                    {
+                        $attrValues[size($attrValues)] = $a;
+                        $attrValues[size($attrValues)] = $value;
+                    }
+                }
+                else
+                {
+                    $attrValues[size($attrValues)] = $a;
+                    $attrValues[size($attrValues)] = $value;
+                }
+            }
+        }
+    }
+
+    return $attrValues;
+}
+
+
+global proc shapesDriver_setCurveInfinity( string $node, float $value )
+{
+    //
+    // get the curve infinity values based on the selected option menu item
+    //
+    int $preInf;
+    int $postInf;
+    // pre infinity
+    if ($value == 2)
+        $preInf = 1;
+    // post infinity
+    if ($value == 3)
+        $postInf = 1;
+    // pre/post infinity
+    if ($value == 4)
+    {
+        $preInf = 1;
+        $postInf = 1;
+    }
+    setAttr ($node + ".preInfinity") $preInf;
+    setAttr ($node + ".postInfinity") $postInf;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// sequence editing
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesDriver_editDriverSequence( string $target )
+{
+    //
+    // initializes the editing of the driver sequence
+    // gets the current shape driver and existing sequence targets
+    // and populates the slider frame
+    //
+    global float $gShapes_sequenceMax;
+    global string $gShapes_currentSequenceTarget;
+
+    string $master[];
+    string $sequencer = shapesDriver_getShapeSequencer($target, $master);
+    if ($sequencer == "" && !size($master))
+        return;
+
+    // clear the target selection and the slider frame
+    treeView -e -cs shpUI_targetTree;
+    shapesMain_buildTargetSlider;
+
+    // disable the general ui and show the combo ui
+    shapesUI_showEditComboUI 1;
+    shapesCombo_editComboToggleUI 0;
+    frameLayout -e -l "Sequence" -cl 0 shpUI_sliderFrame;
+
+    $gShapes_currentSequenceTarget = $target;
+    $gShapes_sequenceMax = shapesDriver_getSequenceEndValue($master[0]);
+
+    string $tgts[] = shapesDriver_getShapeSequenceItems($target, "targets");
+    string $valueString[] = shapesDriver_getShapeSequenceItems($target, "values");
+    float $values[];
+    for ($vs in $valueString)
+        $values[size($values)] = $vs;
+    if (size($tgts))
+    {
+        shapesDriver_addSequenceSlider $tgts $values 0;
+        $gShapes_currentSequenceTarget = $tgts[size($tgts) - 1];
+    }
+    else
+        shapesDriver_addSequenceSlider {$target} {1} 0;
+
+    // set the curve option
+    string $tan[] = shapesDriver_getShapeSequenceItems($target, "tangents");
+    if (!size($tan))
+        $tan[0] = "1";
+    eval ("optionMenu -e -sl " + $tan[0] + " shpUI_sequenceCurveOption");
+}
+
+
+global proc shapesDriver_addRemoveSequenceItems( int $add )
+{
+    //
+    // add/remove the selected items in the list to the current channel sliders
+    //
+    string $selection[] = `treeView -q -si shpUI_targetTree`;
+    if (!size($selection))
+        return;
+
+    if ($add)
+    {
+        float $values[];
+        for ($s in $selection)
+            $values[size($values)] = 0.5;
+        shapesDriver_addSequenceSlider $selection $values 1;
+    }
+    else
+    {
+        string $sliderList[] = shapesDriver_getSequenceSlider();
+        for ($item in $selection)
+        {
+            string $layout = "";
+            string $target = "";
+            float $value = 0;
+
+            for ($slider in $sliderList)
+            {
+                string $items[] = stringToStringArray($slider, ",");
+                if ($items[1] == $item)
+                {
+                    $layout = $items[0];
+                    $target = $items[1];
+                    $value = $items[2];
+                }
+            }
+            if ($value == 1)
+                br_displayMessage -error "The sequence end shape cannot be removed";
+            else
+            {
+                if ($layout != "")
+                {
+                    deleteUI $layout;
+                    // reset the target color
+                    treeView -e -lbc $target -1 -1 -1 shpUI_targetTree;
+                }
+            }
+        }
+    }
+    treeView -e -cs shpUI_targetTree;
+}
+
+
+global proc shapesDriver_addSequenceSlider( string $targets[], float $values[], int $checkRelationship )
+{
+    //
+    // adds a new sequence slider for the selected target
+    //
+    global float $gShapes_sequenceMax;
+    global float $gShapes_driverCol[];
+    global float $gShapes_targetCol[];
+    global string $gShapes_currentSequenceTarget;
+
+    setParent shpUI_sliderFrame;
+
+    string $sliderList[] = shapesDriver_getSequenceSlider();
+
+    for ($i = 0; $i < size($targets); $i ++)
+    {
+        int $add = 1;
+        for ($slider in $sliderList)
+        {
+            string $items[] = stringToStringArray($slider, ",");
+            if ($items[1] == $targets[$i])
+                $add = 0;
+        }
+
+        if ($add)
+        {
+            // check if the target is part of the current sequence;
+            // if the target has been removed and then about to be added again
+            // it has the sdks type (because of the button icon) and can't be added again;
+            // the check needs to be performed so that a previously removed target can be added again
+            int $itemOfCurrent = 0;
+            string $tgts[] = shapesDriver_getShapeSequenceItems($targets[$i], "targets");
+            if (size($tgts) && $tgts[size($tgts) - 1] == $gShapes_currentSequenceTarget)
+                $itemOfCurrent = 1;
+
+            // check if the added target is not already part of a sequence;
+            // can be part of a sequence when checkRelationship is true,
+            // which is necessary for listing the targets when entering edit mode
+            string $input[] = shapesMain_getTargetInput(shapesMain_getQueryPlug($targets[$i]));
+            if ($input[1] != "sdks" || !$checkRelationship || $itemOfCurrent)
+            {
+                int $enable = 1;
+
+                // make sure that the main target is disabled
+                if ($values[$i] == 1)
+                    $enable = 0;
+
+                shapesUI_expandParentItem $targets[$i];
+
+                rowLayout -nc 3 -cat 1 "left" 0 -adj 3;
+
+                    text -l $targets[$i] -w 140 -al "left";
+                    string $valueField = `floatField -pre 3 -v (shapesCommon_roundFloat(($gShapes_sequenceMax * $values[$i]), 2)) -w 60 -en $enable`;
+                    string $slider = `floatSliderGrp    -l ""
+                                                        -f 1
+                                                        -v $values[$i]
+                                                        -en $enable
+                                                        -min 0
+                                                        -max 1
+                                                        -pre 3
+                                                        -cw3 0 50 40
+                                                        -co3 0 5 5
+                                                        -ct3 "left" "both" "right"`;
+
+                    floatField -e -cc ("shapesDriver_updateSequenceSlider " + $slider + " " + $valueField) $valueField;
+                    floatSliderGrp -e -cc ("shapesDriver_updateSequenceDriverValue " + $slider + " " + $valueField) $slider;
+
+                    setParent ..;
+
+                if ($enable)
+                    treeView -e -lbc $targets[$i] $gShapes_driverCol[0] $gShapes_driverCol[1] $gShapes_driverCol[2] shpUI_targetTree;
+                else
+                    treeView -e -lbc $targets[$i] $gShapes_targetCol[0] $gShapes_targetCol[1] $gShapes_targetCol[2] shpUI_targetTree;
+            }
+            else
+                br_displayMessage -warning ("Unable to add the target \"" + $targets[$i] + "\" because it is already part of another sequence");
+        }
+    }
+}
+
+
+global proc shapesDriver_orderSequence()
+{
+    //
+    // orders the sequence sliders
+    //
+    string $sliderList[] = shapesDriver_getSequenceSlider();
+
+    // sort the list by values
+    string $values[];
+    for ($slider in $sliderList)
+    {
+        string $items[] = stringToStringArray($slider, ",");
+        $values[size($values)] = $items[2];
+    }
+    $values = sort($values);
+
+    string $sorted[];
+    for ($v in $values)
+    {
+        for ($slider in $sliderList)
+        {
+            string $items[] = stringToStringArray($slider, ",");
+            if ($items[2] == $v)
+                $sorted[size($sorted)] = $slider;
+        }
+    }
+    $sliderList = $sorted;
+
+    // clear the slider frame
+    shapesMain_removeAllTargetSlider "shpUI_sliderFrame";
+    // and add new sliders from the modified list
+    for ($slider in $sliderList)
+    {
+        string $items[] = stringToStringArray($slider, ",");
+        float $value = $items[2];
+        shapesDriver_addSequenceSlider {$items[1]} {$value} 0;
+    }
+}
+
+
+global proc string[] shapesDriver_getSequenceSlider()
+{
+    //
+    // returns a comma separated list of all sliders for the driver sequence consisting of:
+    // - layout
+    // - target
+    // - value
+    //
+    string $sliderList[];
+    string $items[] = `frameLayout -q -ca shpUI_sliderFrame`;
+    for ($i in $items)
+    {
+        string $ctrls[] = `rowLayout -q -ca $i`;
+        string $layout = $i;
+        string $target = `text -q -l $ctrls[0]`;
+        string $value = `floatSliderGrp -q -v $ctrls[2]`;
+        $sliderList[size($sliderList)] = $layout + "," + $target + "," + $value;
+    }
+    return $sliderList;
+}
+
+
+global proc shapesDriver_updateSequenceDriverValue( string $slider, string $valueField )
+{
+    //
+    // update the real driver value in the slider label
+    //
+    global float $gShapes_sequenceMax;
+
+    float $value = `floatSliderGrp -q -v $slider`;
+    floatField -e -v (shapesCommon_roundFloat(($gShapes_sequenceMax * $value), 3)) $valueField;
+}
+
+
+global proc shapesDriver_updateSequenceSlider( string $slider, string $valueField )
+{
+    //
+    // update the real driver value in the slider label
+    //
+    global float $gShapes_sequenceMax;
+
+    float $value = `floatField -q -v $valueField`;
+    floatSliderGrp -e -v (shapesCommon_roundFloat(($value / $gShapes_sequenceMax), 3)) $slider;
+}
+
+
+global proc shapesDriver_updateSequence()
+{
+    //
+    // delete the previous shape sequence and create a new one
+    //
+    global string $gShapes_currentSequenceTarget;
+    global string $gShapes_selectedTarget;
+
+    shapesDriver_orderSequence;
+
+    // create a new sequence based on the current slider list
+    string $sliderList[] = shapesDriver_getSequenceSlider();
+
+    // delete the old sequence
+    string $plug = shapesDriver_removeSequence($gShapes_currentSequenceTarget);
+
+    // only continue if there is more than the end target in the list
+    if (size($sliderList) < 2)
+    {
+        shapesDriver_cancelEditSequence;
+        return;
+    }
+
+    float $values[];
+    string $targets[];
+    for ($slider in $sliderList)
+    {
+        string $items[] = stringToStringArray($slider, ",");
+        $values[size($values)] = $items[2];
+        $targets[size($targets)] = $items[1];
+    }
+
+    // check if all values are different
+    string $allValues[];
+    for ($v in $values)
+        $allValues[size($allValues)] = $v;
+    $allValues = stringArrayRemoveDuplicates($allValues);
+    if (size($allValues) != size($values))
+        br_displayMessage -error "All sequence values must be different";
+
+    int $type = `optionMenu -q -sl shpUI_sequenceCurveOption`;
+    shapesDriver_performCreateSequence $plug $values $targets $type 1 0 {} 0;
+
+    // update the target list
+    $gShapes_selectedTarget = $gShapes_currentSequenceTarget;
+    shapesList_refreshTargetItem $targets;
+
+    shapesDriver_cancelEditSequence;
+}
+
+
+global proc string shapesDriver_performCreateSequence( string $driverPlug, float $values[], string $targets[], int $type, int $execute, int $readSdk, string $curves[], int $mirror )
+{
+    //
+    // creates a sdk sequence setup driven by the given node
+    // and driving the given list of targets
+    // returns the creation string for exporting the setup
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_exportMirrorSetupSequenceData;
+    global string $gShapes_sideIdentifier;
+
+    string $driverPlugItems[] = stringToStringArray($driverPlug, ".");
+    string $driver = $driverPlugItems[0];
+
+    string $driverName = $driver;
+    string $driverPlugName = $driverPlug;
+
+    // make sure that the driver name matches the name of the sequence target
+    // if the names are not matching this can create errors when rebuilding the setup;
+    // only perform the renaming when creating the sequence and not during export
+    // because during export all sequence information has been already connected
+    // and changing the driver name would create errors
+    if ($execute && $driver != ($gShapes_bsNode + "_" + $targets[size($targets) - 1] + "_WD"))
+    {
+        $driverPlugItems[0] = shapesDriver_renameWeightDriver($targets[size($targets) - 1], "");
+        $driverPlug = stringArrayToString($driverPlugItems, ".");
+        $driver = $driverPlugItems[0];
+        if (`nodeType $driver` == "transform")
+            $driver = shapesCommon_getShapeNode($driver);
+
+        $driverName = $driver;
+        $driverPlugName = $driverPlug;
+    }
+
+    if (!$execute && $mirror)
+    {
+        $driverName = shapesMirror_swapSideLabel($driverName);
+        $driverPlugItems[0] = $driverName;
+        $driverPlugName = stringArrayToString($driverPlugItems, ".");
+        $gShapes_sideIdentifier = "";
+    }
+
+    string $netNode = "SHAPES_" + $targets[size($targets) - 1] + "_sequence_net";
+    string $attrName = "SHAPES_sdks";
+
+    if ($mirror)
+    {
+        // call the label swapping just to get the identifier
+        shapesMirror_swapSideLabel($gShapes_bsNode);
+        if (startsWith($gShapes_sideIdentifier, "_"))
+            $netNode = $netNode + $gShapes_sideIdentifier;
+        else if (endsWith($gShapes_sideIdentifier, "_"))
+            $netNode = $gShapes_sideIdentifier + $netNode;
+        $gShapes_sideIdentifier = "";
+    }
+
+    // store the number of values for the loop
+    // since it has to be modified to start with a 0 value
+    int $count = size($values);
+
+    // insert the 0 value at the beginning of the value list
+    shapesArray_floatArrayInsertAtIndex(0, $values, 0);
+
+    // create the sequence node and add the attributes
+    string $cmd;
+    $cmd += "createNode network -n " + $netNode + ";\n";
+    $cmd += "addAttr -ln \"driverValue\" -at double " + $netNode + ";\n";
+    $cmd += "addAttr -at message -ln " + $attrName + " " + $netNode + ";\n";
+    $cmd += "addAttr -dt \"string\" -ln \"SHAPES_sequenceTarget\" " + $netNode + ";\n";
+    $cmd += "setAttr \"" + $netNode + ".SHAPES_sequenceTarget\" -l 1 -type \"string\" sequenceOut" + ($count - 1) + ";\n";
+
+    string $tangents = "-itt auto -ott auto ";
+    if ($type == 2)
+        $tangents = "-itt linear -ott linear ";
+
+    string $angleWeightString;
+
+    for ($i = 0; $i < $count; $i ++)
+    {
+        // add the attribute for each target to be driven
+        string $outAttr = "sequenceOut" + $i;
+        $cmd += "addAttr -ln " + $outAttr + " -at double " + $netNode + ";\n";
+
+        // if a new sequence is created or an update should be performed
+        // create new sdk curves
+        // when the call comes from exporting the setup the existing
+        // sdk curves can be read instead
+        if (!$readSdk)
+        {
+            // set the alternating value which defines the on/off behaviour of the sdk
+            float $value = 0;
+
+            // create three keyframes for each target
+            for ($k = 0; $k < 3; $k ++)
+            {
+                int $set = 1;
+                // for the last target skip the generation of the last keyframe
+                // because it only needs to be turned on
+                if ($i == $count - 1 && $k == 2)
+                    $set = 0;
+
+                // create the sdk
+                if ($set)
+                {
+                    float $driverValue = $values[$i + $k];
+                    $cmd += "setDrivenKeyframe -dv " + $driverValue + " -v " + $value + " " + $tangents + "-cd " + ($netNode + ".driverValue") + " " + ($netNode + "." + $outAttr) + ";\n";
+                }
+                // toggle the value for the next curve
+                $value = 1 - $value;
+
+                if ($type == 3)
+                {
+                    if ($k == 1)
+                    {
+                        $angleWeightString += "keyTangent -e -wt 1 " + $netNode + "_" + $outAttr + ";\n";
+                        $angleWeightString += "keyTangent -e -in " + $k + " -ia 8 -iw 1.0 -oa 8 -ow 1.5 " + $netNode + "_" + $outAttr + ";\n";
+                    }
+                    else if ($k == 2 && $i == $count - 2)
+                    {
+                        $angleWeightString += "keyTangent -e -wt 1 " + $netNode + "_" + $outAttr + ";\n";
+                        $angleWeightString += "keyTangent -e -in " + $k + " -ia -12 -iw 0.8 -oa -12 -ow 0.8 " + $netNode + "_" + $outAttr + ";\n";
+                    }
+                }
+            }
+        }
+        else
+        {
+            // use $gShapes_exportMirrorSetupSequenceData to store the network node name
+            // during the read procedure;
+            // it's used during the mirrored export of the setup when the mirror flag
+            // for the sdkRead has to be off for the sequence but the sdk driver name needs to
+            // have the side identifier order to make the export work correctly
+            $gShapes_exportMirrorSetupSequenceData = $netNode;
+            $cmd += shapesUtil_readSdk($curves[$i], $netNode + "." + $outAttr, 0, 0);
+            $gShapes_exportMirrorSetupSequenceData = "";
+        }
+    }
+    // get the message attribute from the driver plug
+    string $attrList[] = `listAttr -m -ud $driver`;
+
+    // connect the driver with the sequencer
+    $cmd += "connectAttr -f " + $driverPlugName + " " + $netNode + ".driverValue;\n";
+    // connect the message attribute
+    if (size($attrList))
+        $cmd += "connectAttr -f " + $driverName + "." + $attrList[0] + " " + $netNode + "." + $attrName + ";\n";
+
+    // connect the sequencer with the targets
+    for ($i = 0; $i < $count; $i ++)
+    {
+        string $queryPlug = shapesMain_getQueryPlug($targets[$i]);
+        $cmd += "connectAttr -f " + $netNode + ".sequenceOut" + $i + " " + $queryPlug + ";\n";
+    }
+
+    $cmd += $angleWeightString;
+
+    if ($execute)
+        eval $cmd;
+
+    return $cmd;
+}
+
+
+global proc string shapesDriver_removeSequence( string $target )
+{
+    //
+    // deletes all previous sequence nodes
+    // and connects the source driver directly to the blend shape target
+    // returns the plug from the source driver
+    //
+    string $queryPlug = shapesMain_getQueryPlug($target);
+
+    // if there is no current sequence only return the driver plug
+    string $sequencer = shapesDriver_getShapeSequencer($target, {});
+    if ($sequencer == "")
+    {
+        string $conn[] = `listConnections -s 1 -d 0 -p 1 $queryPlug`;
+        return $conn[0];
+    }
+
+    // get the connection plug from the source driver to the sequencer node
+    string $conn[] = `listConnections -s 1 -d 0 -p 1 ($sequencer + ".driverValue")`;
+
+    // connect the source driver to the blend shape target
+    connectAttr -f $conn[0] $queryPlug;
+
+    // delete the sdk curves
+    delete (shapesDriver_getShapeSequenceItems($target, "curves"));
+
+    // try to remove the network node
+    // but it should have been deleted by deleting the sdk curves
+    catch(`eval("delete " + $sequencer)`);
+
+    shapesList_refreshTargetItem {$target};
+
+    return $conn[0];
+}
+
+
+global proc shapesDriver_cancelEditSequence()
+{
+    //
+    // exits the sequence edit mode without making modifications
+    //
+    global int $gShapes_sequenceProcess;
+    global string $gShapes_currentSequenceTarget;
+
+    // refresh the target list
+    shapesList_listBlendShapeTargets 0;
+    // clear the slider frame
+    shapesMain_removeAllTargetSlider "shpUI_sliderFrame";
+
+    shapesUI_showEditComboUI 0;
+    shapesCombo_editComboToggleUI 1;
+    frameLayout -e -l "Channels" shpUI_sliderFrame;
+    $gShapes_sequenceProcess = 0;
+    $gShapes_currentSequenceTarget = "";
+}
+
+
+global proc string shapesDriver_getShapeSequencer( string $target, string $nodeList[] )
+{
+    //
+    // returns the shape sequencer node
+    //
+    string $queryPlug = shapesMain_getQueryPlug($target);
+
+    // get the connected sdk driver node
+    // have to use the shape flag because querying the weight driver node
+    // without it returns the transform node instead of the shape node
+    // but only the shape node has the important message attribute
+    string $conn[] = `listConnections -s 1 -d 0 -sh 1 $queryPlug`;
+
+    // if a non-sequence shape is queried return None
+    // this is in conjunction to prevent the creation of a combo with a sequence
+    // and to check for a sequence during the export
+    if (!size($conn))
+        return "";
+
+    // get the sequence master node
+    // getComboMasterNode is utilized because it checks the connection
+    // between nodes via the message attribute
+    // the option needs to be False in order to make it work
+    $nodeList = shapesCombo_getComboMasterNode($conn[0], 0);
+    if (!size($nodeList))
+        return "";
+
+    // get the message attribute on the master node to find the possible network node
+    string $attrList[] = `listAttr -m -ud $nodeList[0]`;
+    if (!size($attrList))
+        return "";
+
+    // remove the [] from the multi attribute (in case of the driven node)
+    string $temp[] = stringToStringArray($attrList[0], "[");
+    string $msgAttr = $temp[0];
+    if (`gmatch $msgAttr "*_combo*"` || `gmatch $msgAttr "SHAPESData"`)
+        return "";
+
+    string $networkNode[] = `listConnections -s 0 -d 1 -type "network" ($nodeList[0] + "." + $msgAttr)`;
+    if (!size($networkNode))
+        return "";
+
+    return $networkNode[0];
+}
+
+
+global proc string[] shapesDriver_getShapeSequenceItems( string $target, string $type )
+{
+    //
+    // returns sequence curves, targets or values
+    //
+    string $sequencer = shapesDriver_getShapeSequencer($target, {});
+
+    if ($sequencer == "")
+        return {};
+
+    // get all sequence attributes on the network node
+    string $attrList[] = `listAttr -ud $sequencer`;
+    // remove the input attribute
+    $attrList = stringArrayRemove({"driverValue"}, $attrList);
+
+    string $targets[];
+    string $curves[];
+    string $values[];
+    string $tangents[] = {"1"};
+
+    // collect the sequence data
+    for ($a in $attrList)
+    {
+        if (!`gmatch $a "SHAPES_*"`)
+        {
+            // get the driven blend shape targets
+            string $conn[] = `listConnections -s 0 -d 1 -p 1 ($sequencer + "." + $a)`;
+            $targets[size($targets)] = shapesMain_getFilteredTargetFromPlug($conn[0]);
+
+            // get the curve values
+            $conn = `listConnections -s 1 -d 0 ($sequencer + "." + $a)`;
+            $curves[size($curves)] = $conn[0];
+            string $sdkString = shapesUtil_readSdk($conn[0], "", 0, 0);
+            string $temp[] = stringToStringArray($sdkString, "\n");
+            $temp = stringToStringArray($temp[2], "-");
+            $temp = stringToStringArray($temp[1], " ");
+            string $val = $temp[1];
+
+            // error just in case the sdkString has a wrong formatting
+            // and the value cannot be converted to float
+            if (catchQuiet(`eval("float $shapesFloatTest = " + $val)`))
+            {
+                br_displayMessage -warning ("Unable to read the sequence data for node " + $conn[0]);
+                $val = "0.5";
+            }
+
+            $values[size($values)] = $val;
+
+            // check for non-auto tangents
+            if ($tangents[0] == "1")
+            {
+                if (`gmatch $sdkString "*keyTangent*"`)
+                    $tangents[0] = "3";
+                else if (`gmatch $sdkString "*itt linear*"`)
+                    $tangents[0] = "2";
+            }
+        }
+    }
+
+    if ($type == "targets")
+        return $targets;
+    else if ($type == "curves")
+        return $curves;
+    else if ($type == "values")
+        return $values;
+    else if ($type == "tangents")
+        return $tangents;
+
+    return {};
+}
+
+
+global proc string shapesDriver_getSequenceEndShape( string $networkNode )
+{
+    //
+    // returns the shape which is placed at the end of the sequence
+    //
+    string $plug = `getAttr ($networkNode + ".SHAPES_sequenceTarget")`;
+    string $conn[] = `listConnections -s 0 -d 1 -p 1 ($networkNode + "." + $plug)`;
+    return shapesMain_getFilteredTargetFromPlug($conn[0]);
+}
+
+
+global proc float shapesDriver_getSequenceEndValue( string $node )
+{
+    //
+    // return the real maximum value from the shape driver
+    //
+    if (`nodeType $node` == "weightDriver")
+        return `getAttr ($node + ".angle")`;
+    else
+    {
+        float $values[] = shapesDriver_getSdkValues($node);
+        return $values[2];
+    }
+}
+
+
+global proc SHAPES_driver(){}

@@ -1,0 +1,1246 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------------------------
+// target ordering
+// ------------------------------------------------------------------------------------------------
+
+
+global proc shapesList_dragDropCallback( string $droppped[], string $prevParents[], int $prevIndices[], string $newParent, int $newIndices[], string $beforeItem, string $afterItem )
+{
+    //
+    // callback procedure for the tree view drag and drop command
+    //
+    shapesList_storeCurrentOrder;
+}
+
+
+global proc shapesList_storeCurrentOrder()
+{
+    //
+    // stores the current list order
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    if ($dataNode == "")
+        return;
+
+    string $listItems[] = shapesData_getTargetList();
+    string $parentItems[];
+    string $expandItems[];
+    for ($item in $listItems)
+    {
+        string $parent = `treeView -q -ip $item shpUI_targetTree`;
+        if ($parent == "")
+            $parent = "none";
+        $parentItems[size($parentItems)] = $parent;
+        $expandItems[size($expandItems)] = `treeView -q -iie $item shpUI_targetTree`;
+    }
+    setAttr ($dataNode + "." + "order") -type "string" (stringArrayToString($listItems, ","));
+    setAttr ($dataNode + "." + "parent") -type "string" (stringArrayToString($parentItems, ","));
+    setAttr ($dataNode + "." + "expand") -type "string" (stringArrayToString($expandItems, ","));
+}
+
+
+global proc shapesList_autoOrderNewTarget( string $target, string $previous, int $copyLabel )
+{
+    //
+    // automatically reorders the list that the new target is placed below the previously selected item
+    // also used to apply the "reorder below..." command
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_rbfGroupParentItem;
+    global string $gShapes_regionExtractParent;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    if ($gShapes_rbfGroupParentItem != "")
+    {
+        if ($gShapes_rbfGroupParentItem == "none")
+            $gShapes_rbfGroupParentItem = "";
+        $previous = $gShapes_rbfGroupParentItem;
+        $gShapes_rbfGroupParentItem = "";
+    }
+
+    string $listItems[] = shapesData_getTargetList();
+    string $parentItems[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+    string $expandItems[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+    int $id = shapesArray_stringArrayFind($previous, 0, $listItems);
+    string $parent = "none";
+    if ($id != -1)
+        $parent = $parentItems[$id];
+    else
+        $id = size($listItems);
+    if ($gShapes_regionExtractParent != "")
+        $parent = $gShapes_regionExtractParent;
+    stringArrayInsertAtIndex($id + 1, $listItems, $target);
+    stringArrayInsertAtIndex($id + 1, $parentItems, $parent);
+    stringArrayInsertAtIndex($id + 1, $expandItems, "1");
+
+    if ($copyLabel)
+    {
+        string $dataType = shapesData_getType($previous);
+        int $dataIndex = shapesData_getIndex($dataType, $previous);
+        int $labelId = shapesData_getInt($dataType, $dataIndex, "Label");
+        $dataType = shapesData_getType($target);
+        $dataIndex = shapesData_getIndex($dataType, $target);
+        shapesData_setInt($dataType, $dataIndex, "Label", $labelId);
+    }
+
+    setAttr ($dataNode + "." + "order") -type "string" (stringArrayToString($listItems, ","));
+    setAttr ($dataNode + "." + "parent") -type "string" (stringArrayToString($parentItems, ","));
+    setAttr ($dataNode + "." + "expand") -type "string" (stringArrayToString($expandItems, ","));
+}
+
+
+global proc string[] shapesList_getItemChildren( string $item )
+{
+    //
+    // return all immediate children of the list item
+    //
+    string $child[] = `treeView -q -ch $item shpUI_targetTree`;
+
+    // the list of children contains all children, even in subgroups
+    // but only the immediate children are of interest for setting the data;
+    string $items[];
+    for ($c in $child)
+    {
+        if (`treeView -q -ip $c shpUI_targetTree` == $item)
+            $items[size($items)] = $c;
+    }
+
+    return $items;
+}
+
+
+global proc shapesList_expandCollapseItem( string $item, int $expandState )
+{
+    //
+    // saves the expand/collapse state of the given item
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    int $id = shapesArray_stringArrayFind($item, 0, (shapesData_getTargetList()));
+    string $expandItems[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+    $expandItems[$id] = $expandState;
+    setAttr ($dataNode + "." + "expand") -type "string" (stringArrayToString($expandItems, ","));
+
+    if ($expandState)
+    {
+        string $updateList[] = shapesList_getItemChildren($item);
+        shapesList_refreshTargetItem $updateList;
+    }
+}
+
+
+global proc shapesList_setNewParent( string $shape, string $parent )
+{
+    //
+    // set a new parent for the given shapes
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    string $itemList[] = stringToStringArray(`getAttr ($dataNode + "." + "order")`, ",");
+    string $parentList[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+    string $expandList[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+
+    int $id = shapesArray_stringArrayFind($shape, 0, $itemList);
+    if ($id == -1)
+        return;
+
+    // remove the item from the previous list position
+    stringArrayRemoveAtIndex($id, $itemList);
+    stringArrayRemoveAtIndex($id, $parentList);
+    stringArrayRemoveAtIndex($id, $expandList);
+
+    // find the index of the parent or the last child of the parent
+    int $prevId = shapesArray_stringArrayFind($parent, 0, $itemList);
+    string $children[] = shapesList_getItemChildren($parent);
+    if (size($children))
+        $prevId = shapesArray_stringArrayFind($children[size($children) - 1], 0, $itemList);
+    if ($prevId == -1)
+        return;
+
+    stringArrayInsertAtIndex($prevId + 1, $itemList, $shape);
+    stringArrayInsertAtIndex($prevId + 1, $parentList, $parent);
+    stringArrayInsertAtIndex($prevId + 1, $expandList, "1");
+
+    setAttr ($dataNode + "." + "order") -type "string" (stringArrayToString($itemList, ","));
+    setAttr ($dataNode + "." + "parent") -type "string" (stringArrayToString($parentList, ","));
+    setAttr ($dataNode + "." + "expand") -type "string" (stringArrayToString($expandList, ","));
+}
+
+
+global proc shapesList_refreshTargetList()
+{
+    //
+    // update the target list without touching the slider frame
+    // to avoid a crash because the popup menu is currently open
+    //
+    global int $gShapes_clearSliderFrame;
+    global int $gShapes_index;
+
+    $gShapes_clearSliderFrame = 0;
+
+    // listing the blend shape targets clears the index variable
+    // this can lead to unexpected results when there is a method
+    // after that depending on it
+    // i.e. entering and exiting paint weights mode in succession
+    // adds the weights to the wrong shape/item ("w" appears on wrong item)
+    int $index = $gShapes_index;
+    shapesList_listBlendShapeTargets 0;
+    $gShapes_index = $index;
+
+    $gShapes_clearSliderFrame = 1;
+}
+
+
+global proc shapesList_listBlendShapeTargets( int $refreshData )
+{
+    //
+    // get the current blendshape selection and display all target channels
+    //
+    global int $gShapes_index;
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+    global string $gShapes_driverPlug[];
+    global string $gShapes_orderedTargetList[];
+    global string $gShapes_targetAssociations[];
+
+    clear $gShapes_targetAssociations;
+
+    // update the blend shape node index list in case a new mesh is loaded;
+    shapesData_updateBlendShapeDeformerIndexList;
+
+    // make sure the weight driver is reconnected to the target channel
+    shapesDriver_attachDetachDriver 1 1 0;
+
+    // delete the script job
+    shapesJob_createScriptJob "" 0;
+
+    treeView -e -ra shpUI_targetTree;
+    clear $gShapes_driverPlug;
+
+    clear $gShapes_orderedTargetList;
+    $gShapes_index = 0;
+
+    if ($gShapes_bsNode != "None" && $gShapes_bsNode != "")
+    {
+        string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+        string $listItems[];
+
+        if ($refreshData)
+            $listItems = shapesData_getBlendShapeTargets();
+        else
+            $listItems = stringToStringArray(`getAttr ($dataNode + "." + "order")`, ",");
+
+        string $parentList[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+        string $expandList[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+
+        shapesMain_getBlendShapeBaseWeights;
+
+        // Set a flag to only show the button icons when a group is
+        // expanded. This speeds up the listing process because not all
+        // relationships need to get queried.
+        int $showIcons = 1;
+        int $useFilter = `optionVar -query SHAPESShowFilterRow`;
+        string $lastGroup = "none";
+        for ($i = 0; $i < size($listItems); $i ++)
+        {
+            string $parent = $parentList[$i];
+            if ($parent == "none")
+                $parent = "";
+
+            if ($expandList[$i] == 0 && $parent == "")
+                $lastGroup = $listItems[$i];
+
+            // Only allow to skip the icons and hence the processing
+            // when the filters are disabled.
+            if (!$useFilter && $parent == $lastGroup)
+                $showIcons = 0;
+            else
+                $showIcons = 1;
+
+            $gShapes_targetAssociations[$i] = shapesList_addTargetItem($listItems[$i], $parent, $expandList[$i], $showIcons);
+        }
+
+        if (!size(shapesData_getTargetList()))
+            shapesList_emptyListDisableUI;
+        else
+        {
+            treeView -e -en 1 shpUI_targetTree;
+            shapesUI_buildTargetPopupMenu "";
+        }
+    }
+    else
+    {
+        shapesList_emptyListDisableUI;
+        treeView -e -en 0 shpUI_targetTree;
+    }
+
+    // filter the result by the search string
+    shapesUI_searchJointString "target";
+
+    if (!shapesUI_focusOnSelectedItem(0, "shpUI_targetTree", {$gShapes_selectedTarget}))
+        treeView -e -cs shpUI_targetTree;
+
+    // reverse the list order if necessary
+    treeView -e -rto (`optionVar -q SHAPESAllowTargetReorder`) shpUI_targetTree;
+}
+
+
+global proc shapesList_emptyListDisableUI()
+{
+    //
+    // disable specific ui elements when the target list is empty
+    //
+    global string $gShapes_currentChannelSlider;
+
+    treeView -e -ai "No shapes" "" -en 0 shpUI_targetTree;
+    frameLayout -e -cl 1 shpUI_sliderFrame;
+    optionMenu -e -sl 1 shpUI_shapeDriverOption;
+    shapesUI_buildTargetPopupMenu "clear";
+    shapesUI_toggleDrivenSetUI 0;
+    $gShapes_currentChannelSlider = "";
+}
+
+
+global proc string shapesList_addTargetItem( string $name, string $parent, int $expand, int $showIcons )
+{
+    //
+    // create a new target entry in the target tree view
+    //
+    global string $gShapes_rgbLabel[];
+
+    string $dataType = "shape";
+    int $dataIndex = shapesData_getShapeIndex($name);
+    if ($dataIndex == -1)
+    {
+        $dataType = shapesData_getNonShapeType($name);
+        $dataIndex = shapesData_getIndex($dataType, $name);
+        if ($dataType == "group")
+            $showIcons = 1;
+    }
+
+    // add the item if it doesn't exist yet
+    if (!`treeView -q -iex $name shpUI_targetTree`)
+    {
+        treeView -e -ai $name $parent shpUI_targetTree;
+        treeView -e -ei $name $expand shpUI_targetTree;
+    }
+
+    if (!$showIcons)
+        return ($name + ",,,,,,");
+
+    string $queryPlug = shapesMain_getQueryPlug($name);
+
+    // check if the combo has a secondary shape driver
+    // to correctly display the button image
+    int $hasSecondaryDriver = 0;
+    string $secondary = shapesCombo_getComboSecondaryDriver($queryPlug, "");
+    if ($secondary != "" && !`gmatch $secondary "None:*"`)
+        $hasSecondaryDriver = 1;
+
+    string $association[] = {$name};
+
+    for ($i = 0; $i < 3; $i ++)
+    {
+        // -----------------------------------------------------------
+        // get the button specific info
+        // -----------------------------------------------------------
+        string $image = "";
+        string $color = "0.396 0.396 0.396";
+        string $btnType = "";
+        string $buttonText = "";
+        string $ann = "";
+        string $annotation = "";
+        string $ext = "";
+        int $weights = 0;
+        string $wtsCtrl = "";
+
+        // ----------------
+        // driver button
+        // ----------------
+        if ($i == 0)
+        {
+            string $input[] = shapesMain_getTargetInput($queryPlug);
+            // Need to get the type before the annotation because it
+            // seems that getting the annotation mutates the array.
+            $association[size($association)] = $input[1];
+            if ($input[0] != "")
+                $annotation = shapesList_getButtonAnnotation({$input[0]}, {$input[1]}, 1);
+            $btnType = $input[1];
+            $ext = $input[2];
+            $association[size($association)] = substituteAllString($annotation, "Combo driver shapes:;-;", "");
+        }
+        // ----------------
+        // combo button
+        // ----------------
+        else if ($i == 1)
+        {
+            // check for any outputs
+            string $resultNodes[];
+            string $resultTypes[];
+            shapesMain_getTargetOutput($queryPlug, $resultNodes, $resultTypes);
+            if ($resultNodes[0] != "")
+                $annotation = shapesList_getButtonAnnotation($resultNodes, $resultTypes, 0);
+            $btnType = $resultTypes[0];
+
+            if ($dataIndex != -1)
+            {
+                int $labelId = shapesData_getInt($dataType, $dataIndex, "Label");
+                if ($labelId != -1)
+                    $color = $gShapes_rgbLabel[$labelId];
+            }
+            $association[size($association)] = $btnType;
+            $association[size($association)] = substituteAllString($annotation, "Combo target shape:;-;", "");
+        }
+        // ----------------
+        // weights button
+        // ----------------
+        else
+        {
+            if ($dataType == "shape")
+            {
+                $weights = shapesData_hasWeights($dataIndex);
+                $wtsCtrl = shapesData_getWeightsControllerConnection($dataIndex);
+            }
+            $association[size($association)] = $weights;
+            string $ctrl = shapesWeights_getWeightsController($dataIndex);
+            if (size($ctrl))
+                $ctrl = `nodeType $ctrl`;
+            $association[size($association)] = $ctrl;
+
+            if ($dataType != "shape")
+                $color = "0.29 0.29 0.29";
+        }
+
+        // -----------------------------------------------------------
+        // define button images and annotations
+        // and build the command
+        // -----------------------------------------------------------
+        if ($dataType != "group")
+        {
+            if ($btnType != "")
+            {
+                string $state = "";
+                if ($btnType == "combo")
+                {
+                    int $stateNum = 1 - $i;
+                    if ($i == 0)
+                        $stateNum += $hasSecondaryDriver;
+                    $state = $stateNum;
+                }
+
+                $image = "SHAPES_btn_" + $btnType + $state + $ext + ".png";
+
+                string $annotItems[] = shapesArray_stringToArrayAll($annotation, ";");
+                $ann = stringArrayToString($annotItems, "\n");
+
+                string $btnTypeList[] = {"sdk", "wd", "rbf", "sdks", "pi"};
+                if ($i == 0 && (stringArrayContains($btnType, $btnTypeList)))
+                    $ann = "Edit/Delete shape driver";
+            }
+            else
+            {
+                if ($i == 0)
+                    $ann = "Create shape driver";
+                else if ($i == 1)
+                {
+                    if ($btnType == "combo")
+                        $ann = "Delete combo";
+                    else
+                        $ann = "Create combo";
+                }
+                else
+                {
+                    $ann = "Create weights controller";
+                    if ($wtsCtrl != "")
+                    {
+                        string $type = "ramp";
+                        $image = "SHAPES_btn_weightsRamp.png";
+                        $ann = "Edit/Delete ramp weights";
+                        string $items[] = stringToStringArray($wtsCtrl, ".");
+                        if (`nodeType $items[0]` == "weightsServer")
+                        {
+                            $type = "server";
+                            $image = "SHAPES_btn_weightsServer.png";
+                            $ann = "Edit/Delete weights server";
+                            if (shapesWeights_weightsServerGetInfluences($items[0], {}))
+                                $image = "SHAPES_btn_weightsServerInfluence.png";
+                            else if (shapesWeights_weightsServerGetTexture($items[0]))
+                                $image = "SHAPES_btn_weightsServerTexture.png";
+                            else if (shapesWeights_weightsServerGetTransfer($items[0]))
+                                $image = "SHAPES_btn_skinJoint.png";
+                        }
+                        else if (size($items) != 1)
+                            $image = "SHAPES_btn_weightsRampDriven.png";
+                    }
+                    else if ($weights)
+                        $image = "SHAPES_btn_weights.png";
+                }
+            }
+        }
+
+        float $colorList[] = shapesArray_stringToFloatArray($color, " ");
+
+        treeView    -e
+                    -i $name ($i + 1) $image
+                    -btp $name ($i + 1) $ann
+                    -btc $name ($i + 1) $colorList[0] $colorList[1] $colorList[2]
+                    -pc ($i + 1) ("shapesDriver_initButtonAction " + $i)
+                    shpUI_targetTree;
+    }
+
+    return stringArrayToString($association, ",");
+}
+
+
+global proc shapesList_refreshTargetItem( string $shapes[] )
+{
+    //
+    // edit the existing in the target list
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_targetAssociations[];
+
+    // check for the node because upon a new scene it might not exist anymore
+    if (`objExists $gShapes_bsNode`)
+    {
+        string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+        string $itemList[] = stringToStringArray(`getAttr ($dataNode + "." + "order")`, ",");
+        string $parentList[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+        string $expandList[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+
+        for ($item in $shapes)
+        {
+            int $id = shapesArray_stringArrayFind($item, 0, $itemList);
+            if ($id != -1)
+                $gShapes_targetAssociations[$id] = shapesList_addTargetItem($item, $parentList[$id], $expandList[$id], 1);
+        }
+    }
+}
+
+
+global proc shapesList_refreshChildItems()
+{
+    //
+    // update all child items in the target list
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_targetAssociations[];
+
+    // check for the node because upon a new scene it might not exist anymore
+    if (`objExists $gShapes_bsNode`)
+    {
+        string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+        string $itemList[] = stringToStringArray(`getAttr ($dataNode + "." + "order")`, ",");
+        string $parentList[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+        string $expandList[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+
+        for ($i = 0; $i < size($parentList); $i ++)
+        {
+            if ($parentList[$i] != "")
+                $gShapes_targetAssociations[$i] = shapesList_addTargetItem($itemList[$i], $parentList[$i], $expandList[$i], 1);
+        }
+    }
+}
+
+
+global proc string shapesList_getButtonAnnotation( string $nodeList[], string $typeList[], int $input )
+{
+    //
+    // finds the combo connections for the button annotation
+    //
+    global string $gShapes_bsNode;
+
+    string $ann = "Select";
+
+    if ($typeList[0] != "combo")
+    {
+        string $typeItems[] = {"wd", "rbf", "pi", "sdk", "sdks", "connection"};
+        if (!stringArrayContains($typeList[0], $typeItems))
+            return $ann;
+        else
+            return "";
+    }
+
+    // -------------------------
+    // inputs
+    // -------------------------
+    if ($input)
+    {
+        string $masterNode[] = shapesCombo_getComboMasterNode($nodeList[0], 0);
+        // in case of the legacy combo the above query returns None
+        // because a message attribute exists but it is not connected
+        if (!size($masterNode))
+        {
+            string $conn[] = `listConnections -p 1 ($nodeList[0] + "." + shapesCombo_firstPlugName($nodeList[0]))`;
+            string $items[] = stringToStringArray($conn[0], ".");
+            string $driver1 = $items[1];
+            $conn = `listConnections -p 1 ($nodeList[0] + "." + shapesCombo_secondPlugName($nodeList[0]))`;
+            $items = stringToStringArray($conn[0], ".");
+            string $driver2;
+            // in case of a shape based combo the second connected node is the blend shape node
+            if (size($conn) && $items[0] == $gShapes_bsNode)
+                $driver2 = $items[1];
+            $ann = "Combo driver shape:;-;" + $driver1;
+            if ($driver2 != "")
+                $ann = "Combo driver shapes:;-;" + $driver1 + ";" + $driver2;
+        }
+        else
+        {
+            string $conn[] = `listConnections -p 1 ($nodeList[0] + "." + shapesCombo_outputPlugName($nodeList[0]))`;
+            string $target = shapesMain_getFilteredTargetFromPlug($conn[0]);
+            string $driverList[];
+            shapesCombo_getComboNodes($target, {}, $driverList, {}, {});
+            string $drivers[] = stringToStringArray($driverList[0], ",");
+            if (size($drivers) == 1)
+                $ann = "Combo driver shape:;-;" + $drivers[0];
+            else
+                $ann = "Combo driver shapes:;-;" + (stringArrayToString($drivers, ";"));
+        }
+    }
+    // -------------------------
+    // outputs
+    // -------------------------
+    else
+    {
+        if (size($nodeList) == 1)
+            $ann = "Combo target shape:;-;";
+        else
+            $ann = "Combo target shapes:;-;";
+        for ($i = 0; $i < size($nodeList); $i ++)
+        {
+            if ($nodeList[$i] != "")
+            {
+                string $masterNode[] = shapesCombo_getComboMasterNode($nodeList[$i], 1);
+                // in case of the legacy combo the above query returns None
+                // because a message attribute exists but it is not connected
+                string $conn[] = {};
+                if (!size($masterNode))
+                    $conn = `listConnections -p 1 ($nodeList[$i] + "." + shapesCombo_outputPlugName($nodeList[$i]))`;
+                else
+                    $conn = `listConnections -p 1 ($masterNode[0] + "." + shapesCombo_outputPlugName($masterNode[0]))`;
+                string $target = shapesMain_getFilteredTargetFromPlug($conn[0]);
+                $ann += $target;
+                if (size($nodeList) > 1 && $i < size($nodeList) - 1)
+                    $ann += ";";
+            }
+        }
+    }
+
+    return $ann;
+}
+
+
+global proc shapesList_createOrderedSelectionList( string $selection[], string $type )
+{
+    //
+    // creates a list of selected items in the target or driver tree view
+    // based on the selection order
+    //
+    global string $gShapes_orderedDriverList[];
+    global string $gShapes_orderedTargetList[];
+
+    string $list[];
+    if ($type == "target")
+        $list = $gShapes_orderedTargetList;
+    else
+        $list = $gShapes_orderedDriverList;
+
+    if (!size($selection))
+        clear $list;
+    else
+    {
+        if (size($selection) == 1)
+        {
+            clear $list;
+            $list[size($list)] = $selection[0];
+        }
+        else
+        {
+            string $tempList[];
+            string $compareList[];
+            string $removeList[];
+            int $addToList = 1;
+            if (size($selection) > size($list))
+            {
+                $tempList = $selection;
+                $compareList = $list;
+            }
+            else
+            {
+                $tempList = $list;
+                $compareList = $selection;
+                $addToList = 0;
+            }
+
+            for ($temp in $tempList)
+            {
+                if (!stringArrayContains($temp, $compareList))
+                    $removeList[size($removeList)] = $temp;
+            }
+
+            for ($item in $removeList)
+            {
+                if ($addToList)
+                    $list[size($list)] = $item;
+                else
+                    $list = stringArrayRemove({$item}, $list);
+            }
+        }
+    }
+
+    if ($type == "target")
+        $gShapes_orderedTargetList = $list;
+    else
+        $gShapes_orderedDriverList = $list;
+}
+
+
+global proc string[] shapesList_getTargetListSelection( int $mode )
+{
+    //
+    // returns a list of selected targets based on the given option
+    // mainly used to transfer the setup
+    // 1 : all targets (default mode and not used here)
+    // 2 : selected
+    // 3 : ignore selected
+    //
+    global string $gShapes_orderedTargetList[];
+
+    string $selectionAll[];
+    for ($t in $gShapes_orderedTargetList)
+    {
+        string $children[] = `treeView -q -ch $t shpUI_targetTree`;
+        for ($c in $children)
+            $selectionAll[size($selectionAll)] = $c;
+    }
+
+    $selectionAll = stringArrayRemoveDuplicates($selectionAll);
+
+    // remove all group and helper items
+    string $filtered[];
+    for ($target in shapesData_getTargetList())
+    {
+        int $exists = stringArrayContains($target, $selectionAll);
+        if ($mode == 2 && $exists && !shapesData_isHelper($target))
+            $filtered[size($filtered)] = $target;
+        else if ($mode == 3 && !$exists && !shapesData_isHelper($target))
+            $filtered[size($filtered)] = $target;
+    }
+
+    return $filtered;
+}
+
+
+global proc string[] shapesList_getTargetListRbfSelection( int $ids[] )
+{
+    //
+    // returns a list of selected targets
+    // which belong to the current solver node;
+    // the given ids list gets filled with the solver output ids
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_orderedTargetList[];
+
+    string $solver = shapesUI_getSelectedNodeOption();
+    string $solverShape = shapesCommon_getShapeNode($solver);
+    string $out[] = `listConnections -s 0 -d 1 -p 1 -c 1 ($solverShape + ".output")`;
+    string $targets[];
+    int $outIds[];
+    for ($i = 0; $i < size($out); $i += 2)
+    {
+        string $items[] = stringToStringArray($out[$i + 1], ".");
+        $targets[size($targets)] = $items[1];
+        $items = stringToStringArray($out[$i], ".");
+        $outIds[size($outIds)] = `match "[0-9]+" $items[1]`;
+    }
+
+    string $nodeName = substitute($gShapes_bsNode + "_", $solver, "");
+    $nodeName = substitute("_WD", $nodeName, "_RBF");
+
+    string $returnList[];
+
+    if (stringArrayContains($nodeName, $gShapes_orderedTargetList))
+    {
+        $returnList[size($returnList)] = $nodeName;
+        $ids[size($ids)] = 0;
+    }
+
+    for ($i = 0; $i < size($targets); $i ++)
+    {
+        if (stringArrayContains($targets[$i], $gShapes_orderedTargetList))
+        {
+            $returnList[size($returnList)] = $targets[$i];
+            $ids[size($ids)] = $outIds[$i];
+        }
+    }
+
+    return $returnList;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// handle custom drivers
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesList_storeCustomDriver( string $name, int $group )
+{
+    //
+    // stores a custom selected driver as a string attribute on the blendshape node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_selectedDriver;
+    global string $gShapes_skinMesh;
+    global string $gShapes_orderedDriverList[];
+
+    if ($gShapes_skinMesh == "")
+        return;
+
+    string $listSel[] = $gShapes_orderedDriverList;
+
+    string $sel[];
+    if (!$group)
+    {
+        if ($name == "")
+        {
+            $sel = `ls -sl`;
+            if (!size($sel))
+                return;
+        }
+        else
+            $sel = {$name};
+
+        $gShapes_selectedDriver = $sel[0];
+    }
+    else
+    {
+        if (size($listSel))
+            $gShapes_selectedDriver = $listSel[0];
+    }
+
+    // create a new blendshape node if none exists
+    if ($gShapes_bsNode == "None")
+        shapesAction_addBlendShapeNode 1;
+
+    string $items[] = shapesList_getCustomDriverList($gShapes_bsNode);
+    string $driverList[] = shapesData_getStringAttr("driver");
+
+    if ($group)
+    {
+        $name = "driverGroup";
+        string $newName;
+        int $cancel;
+        int $count = 1;
+        while (!$cancel)
+        {
+            $newName = $name + $count;
+            if (!stringArrayContains($newName, $items))
+                $cancel = 1;
+            $count ++;
+        }
+        $sel[0] = $newName;
+
+        string $groups[] = shapesList_getDriverGroupList();
+        if (!stringArrayContains($newName, $groups))
+            $groups[size($groups)] = $newName;
+
+        shapesData_setStringAttr("driverGroup", (stringArrayToString($groups, ",")));
+    }
+
+    // get the index of the currently selected item
+    int $selectIndex = size($items);
+    if (size($listSel))
+    {
+        int $index = shapesArray_stringArrayFind($listSel[0], 0, $items);
+        if ($index != -1)
+            $selectIndex = $index;
+    }
+
+    for ($i in $sel)
+    {
+        if (!stringArrayContains($i, $items))
+        {
+            // define the inserting index;
+            // if nothing is selected $selectIndex is the size of the list;
+            // if an item is selected the index needs to be incremented
+            int $next = 1;
+            if ($selectIndex == size($items))
+                $next = 0;
+            stringArrayInsertAtIndex($selectIndex + $next, $driverList, ($i + ":none:1"));
+            $selectIndex ++;
+        }
+    }
+    shapesData_setStringAttr("driver", (stringArrayToString($driverList, ",")));
+
+    shapesMain_listSkinClusterJoints;
+}
+
+
+global proc shapesList_removeCustomDriver()
+{
+    //
+    // removes the selected driver from the string attribute on the blendshape node
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_orderedDriverList[];
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    string $drivers[] = `treeView -q -si shpUI_driverTree`;
+
+    if (!size($drivers))
+    {
+        br_displayMessage -error "No driver selected to be removed";
+        return;
+    }
+
+    int $notCustom = 0;
+    int $notStored = 0;
+    for ($driver in $drivers)
+    {
+        if (`attributeQuery -n $dataNode -ex "driver"`)
+        {
+            string $items[] = shapesList_getCustomDriverList($gShapes_bsNode);
+            if (stringArrayContains($driver, $items))
+            {
+                string $driverList[] = shapesData_getStringAttr("driver");
+                int $index = shapesArray_stringArrayFind($driver, 0, $items);
+                stringArrayRemoveAtIndex($index, $driverList);
+                if (size($driverList))
+                    $driverString = stringArrayToString($driverList, ",");
+                // make sure that all parent references pointing to the removed item are deleted
+                $driverString = substituteAllString($driverString, $driver, "none");
+                shapesData_setStringAttr("driver", $driverString);
+
+                if (shapesList_isDriverGroup($driver))
+                {
+                    string $groups[] = shapesList_getDriverGroupList();
+                    string $groupString;
+                    $groups = stringArrayRemove({$driver}, $groups);
+                    if (size($items))
+                        $groupString = stringArrayToString($groups, ",");
+                    shapesData_setStringAttr("driverGroup", $groupString);
+                }
+
+                shapesMain_listSkinClusterJoints;
+                clear $gShapes_orderedDriverList;
+            }
+            else
+                $notCustom = 1;
+        }
+        else
+            $notStored = 1;
+    }
+
+    shapesUI_setDriverNodeName("");
+
+    if ($notCustom)
+        br_displayMessage -error "The selected driver is not a custom driver and cannot be removed";
+    if ($notStored)
+        br_displayMessage -error "No custom drivers are stored on the blend shape node";
+}
+
+
+global proc string[] shapesList_getCustomDriverList( string $bsNode )
+{
+    //
+    // reads the custom driver names on the blend shape node and returns a list
+    //
+    string $dataNode = shapesData_getDataNode($bsNode);
+    string $driverString = `getAttr ($dataNode + ".driver")`;
+    string $items[];
+    if ($driverString != "")
+    {
+        $items = stringToStringArray($driverString, ",");
+
+        // in case of the legacy driver list without grouping
+        // the string only contains comma separated drivers
+        if (!`gmatch $driverString "*:*"`)
+        {
+            string $drivers[];
+            for ($i in $items)
+            {
+                if (`objExists $i`)
+                    $drivers[size($drivers)] = $i;
+            }
+            $items = $drivers;
+        }
+        // in case of groups the list needs to get extracted
+        else
+        {
+            string $drivers[];
+            for ($i in $items)
+            {
+                string $driverName = shapesList_getCustomDriverName($i);
+                if ($driverName != "")
+                    $drivers[size($drivers)] = $driverName;
+            }
+            $items = $drivers;
+        }
+    }
+    return $items;
+}
+
+
+global proc string shapesList_getCustomDriverName( string $driverString )
+{
+    //
+    // extracts the custom driver name including the namespace
+    // from the given custom driver string
+    //
+    string $data[] = stringToStringArray($driverString, ":");
+    string $combine[];
+    for ($i = 0; $i < size($data); $i ++)
+    {
+        $combine[$i] = $data[$i];
+        string $name = stringArrayToString($combine, ":");
+        if (`objExists $name` || shapesList_isDriverGroup($name))
+            return $name;
+    }
+
+    return "";
+}
+
+
+global proc int shapesList_isDriverGroup( string $group )
+{
+    //
+    // returns true if the given name is a driver group item
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    int $result = 0;
+
+    if ($gShapes_bsNode == "None")
+        return $result;
+
+    if (!`attributeQuery -ex -n $dataNode "driverGroup"`)
+        return $result;
+
+    string $groups[] = shapesList_getDriverGroupList();
+    if (stringArrayContains($group, $groups))
+        $result = 1;
+    return $result;
+}
+
+
+global proc string[] shapesList_getDriverGroupList()
+{
+    //
+    // reads the driver group names on the blend shape data node and returns a list
+    //
+    global string $gShapes_bsNode;
+
+    string $groupList[] = shapesData_getStringAttr("driverGroup");
+    return $groupList;
+}
+
+
+global proc shapesList_renameDriverGroup()
+{
+    //
+    // rename the driver group
+    //
+    global string $gShapes_bsNode;
+
+    string $sel[] = `treeView -q -si shpUI_driverTree`;
+    string $oldName = $sel[0];
+
+    if (!shapesList_isDriverGroup($oldName))
+    {
+        br_displayMessage -warning "Only driver groups can be renamed";
+        shapesMain_listSkinClusterJoints;
+        return;
+    }
+
+    string $result = `promptDialog  -t ("Rename Group")
+                                    -tx $oldName -m "New Name:"
+                                    -b "OK"
+                                    -b "Cancel"
+                                    -db "OK"
+                                    -cb "Cancel"
+                                    -ds "Cancel"`;
+    if ($result == "OK")
+    {
+        string $newName = `promptDialog -q -tx`;
+        $newName = substituteAllString($newName, " ", "_");
+        $newName = substituteAllString($newName, "-", "_");
+
+        if ($newName != "" && $oldName != $newName)
+        {
+            string $groups[] = shapesList_getDriverGroupList();
+            if (stringArrayContains($newName, $groups))
+            {
+                br_displayMessage -warning "A driver group with the given name already exists";
+                return;
+            }
+
+            string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+            string $driverString = `getAttr ($dataNode + ".driver")`;
+            $driverString = substituteAllString($driverString, $oldName, $newName);
+            shapesData_setStringAttr("driver", $driverString);
+
+            string $groupString = `getAttr ($dataNode + ".driverGroup")`;
+            $groupString = substituteAllString($groupString, $oldName, $newName);
+            shapesData_setStringAttr("driverGroup", $groupString);
+
+            shapesMain_listSkinClusterJoints;
+        }
+    }
+}
+
+
+global proc shapesList_driverListDragHandle( string $items[], string $prevParents[], int $prevIndices[], string $newParent, int $newIndices[], string $beforeItem, string $nextItem )
+{
+    //
+    // intermediate procedure because the callback command expects arguments
+    //
+    shapesList_storeDriverList "" 0;
+}
+
+
+global proc shapesList_storeDriverList( string $item, int $state )
+{
+    //
+    // stores the driver list upon reparenting and item collapse
+    //
+    global string $gShapes_bsNode;
+
+    string $items[] = `treeView -q -ch "" shpUI_driverTree`;
+    string $list[];
+    for ($i in $items)
+    {
+        string $itemString = "";
+        string $parent = `treeView -q -ip $i shpUI_driverTree`;
+        int $expand = `treeView -q -iie $i shpUI_driverTree`;
+
+        if ($parent == "")
+            $parent = "none";
+
+        if ($i == $item)
+            $expand = $state;
+
+        $itemString = $i + ":" + $parent + ":" + $expand;
+        $list[size($list)] = $itemString;
+    }
+    shapesData_setStringAttr("driver", (stringArrayToString($list, ",")));
+}
+
+
+global proc shapesList_addDriverItem( string $name, int $enable, int $skinJoint, string $parent, int $expand )
+{
+    //
+    // create a new driver entry in the driver tree view
+    //
+    global string $gShapes_driverItems[];
+
+    string $btn;
+
+    if ($enable)
+    {
+        int $group = shapesList_isDriverGroup($name);
+
+        if (!`objExists $name` && !$group)
+            return;
+
+        if (!$group)
+        {
+            string $shape[] = `listRelatives -s -f $name`;
+            if (!size($shape) || `nodeType $name` == "joint")
+            {
+                if (`nodeType $name` == "joint")
+                {
+                    $btn = "joint";
+                    if ($skinJoint)
+                        $btn = "skinJoint";
+                }
+                else if (`nodeType $name` == "transform")
+                    $btn = "transform";
+                else
+                    $btn = "node";
+            }
+            else
+            {
+                if (`nodeType $shape[0]` == "locator")
+                    $btn = "locator";
+                else if (`nodeType $shape[0]` == "nurbsCurve")
+                    $btn = "curve";
+                else if (`nodeType $shape[0]` == "mesh")
+                    $btn = "mesh";
+                else if (`nodeType $shape[0]` == "nurbsSurface")
+                    $btn = "nurbs";
+                else
+                    $btn = "node";
+            }
+        }
+        else
+            $btn = "";
+    }
+
+    string $image;
+    if ($btn != "")
+        $image = "SHAPES_btn_" + $btn + ".png";
+
+    string $ann = "Filter by type: " + $btn;
+    if (!$enable || $btn == "")
+        $ann = "";
+
+    // store the driver type to be able to identify it later
+    $gShapes_driverItems[size($gShapes_driverItems)] = $name + "," + $btn;
+
+    treeView -e -ai $name $parent -en $enable shpUI_driverTree;
+    treeView -e -ei $name $expand shpUI_driverTree;
+    treeView -e -i $name 1 $image -btp $name 1 $ann -pc 1 shapesUI_filterDriverList shpUI_driverTree;
+}
+
+
+global proc SHAPES_list(){}

@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "src/LH/python/libs"
+		},
+		{
+			"path": "../../../../../Program Files/Autodesk/Maya2024/plug-ins/camd/scripts"
 		}
 	],
 	"settings": {

@@ -1,0 +1,1388 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------------------------
+// region maps
+// ------------------------------------------------------------------------------------------------
+
+global proc shapesRegion_storeRegionMap( int $new )
+{
+    //
+    // saves the region map to disk
+    //
+    string $name = `textFieldGrp -q -tx shpUI_regionNameField`;
+
+    if ($name == "")
+        br_displayMessage -error "No region map name defined";
+
+    string $node = "SHAPESRegionData";
+    if ($new)
+        shapesRegion_createDataNode;
+    else
+        lockNode -l 0 $node;
+
+    setAttr ($node + ".regionMap") -type "string" $name;
+    setAttr ($node + ".parentToShape") (`checkBox -q -v shpUI_regionParentCheck`);
+
+    string $dataList[];
+    string $labelString;
+
+    for ($i = 0; $i < 6; $i ++)
+    {
+        string $label = `textField -q -tx ("shpUI_regionLabel" + $i)`;
+        $label = substitute(" ", $label, "_");
+        int $splitCheck = `checkBox -q -v ("shpUI_regionSplitCheck" + $i)`;
+        string $splitMap = `textField -q -tx ("shpUI_regionSplitMapField" + $i)`;
+        float $width = `floatField -q -v ("shpUI_regionSplitWidth" + $i)`;
+        string $identifier = `textField -q -tx ("shpUI_regionIdentifier" + $i)`;
+
+        setAttr ($node + ".regionLabel[" + $i + "]") -type "string" $label;
+        setAttr ($node + ".regionSplit[" + $i + "]") (`checkBox -q -v ("shpUI_regionSplitCheck" + $i)`);
+        setAttr ($node + ".regionSplitMap[" + $i + "]") -type "string" (`textField -q -tx ("shpUI_regionSplitMapField" + $i)`);
+        setAttr ($node + ".regionBlend[" + $i + "]") (`floatField -q -v ("shpUI_regionSplitWidth" + $i)`);
+        setAttr ($node + ".regionIdentifier[" + $i + "]") -type "string" (`textField -q -tx ("shpUI_regionIdentifier" + $i)`);
+
+        $dataList[size($dataList)] = $label + "," + $splitCheck + "," + $width + "," + $identifier + "," + $splitMap;
+
+        // add all labels to the label string
+        // just to check if at least one label has been defined
+        $labelString += $label;
+    }
+
+    int $parentCheck = `checkBox -q -v shpUI_regionParentCheck`;
+    $dataList[size($dataList)] = $parentCheck;
+
+    if ($labelString == "")
+    {
+        br_displayMessage -error "At least one region label must be defined";
+        shapesRegion_deleteDataNode;
+    }
+
+    setAttr ($node + ".regions") -type "string" (stringArrayToString($dataList, ":"));
+    lockNode -l 1 $node;
+
+    deleteUI SHAPESRegionSettingsWin;
+
+    shapesRegion_updateColorButtons;
+
+    // show the name of the current map
+    textField -e -tx $name shpUI_currentRegionNameField;
+
+    // save the updated region labels to the file if it exists
+    if (!$new)
+        shapesRegion_exportRegionMap;
+}
+
+
+global proc shapesRegion_createDataNode()
+{
+    //
+    // creates a new region data node
+    //
+    global int $gShapes_regionProcess;
+    global string $gShapes_bsNode;
+    global string $gShapes_regionBS;
+    global string $gShapes_skinMesh;
+
+    // remove the data node if it exists
+    shapesRegion_deleteDataNode;
+
+    // create a new node and add the attributes
+    string $dataNode = `createNode network -n SHAPESRegionData`;
+
+    addAttr -ln "regionMap" -dt "string" $dataNode;
+    addAttr -ln "regions" -dt "string" $dataNode;
+    addAttr -ln "parentToShape" -at "bool" $dataNode;
+
+    addAttr -m -ln "regionLabel" -dt "string" $dataNode;
+    addAttr -m -ln "regionSplit" -at "bool" $dataNode;
+    addAttr -m -ln "regionSplitMap" -dt "string" $dataNode;
+    addAttr -m -ln "regionBlend" -at "double" $dataNode;
+    addAttr -m -ln "regionIdentifier" -dt "string" $dataNode;
+    addAttr -m -ln "regionLock" -at "bool" $dataNode;
+
+    for ($i = 0; $i < 6; $i ++)
+    {
+        addAttr -ln ("regionWeights" + $i) -dt doubleArray $dataNode;
+        addAttr -ln ("regionWeightsBuffer" + $i) -dt doubleArray $dataNode;
+    }
+
+    // add the message attribute to the blend shape node if it doesn't exist yet
+    shapesCommon_addMessageAttribute($gShapes_bsNode, "SHAPESRegion", 0);
+    shapesCommon_addMessageAttribute($dataNode, "SHAPESRegion", 0);
+    if (!$gShapes_regionProcess)
+        connectAttr -f ($gShapes_bsNode + ".SHAPESRegion") ($dataNode + ".SHAPESRegion");
+    else
+        connectAttr -f ($gShapes_regionBS + ".SHAPESRegion") ($dataNode + ".SHAPESRegion");
+
+    // fill the array with default values
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+    for ($i = 0; $i < 6; $i ++)
+        br_editRegionMap -clear -index $i -mesh $intermediate $dataNode;
+
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+}
+
+
+global proc shapesRegion_deleteDataNode()
+{
+    //
+    // deletes the region data node
+    //
+    string $node = "SHAPESRegionData";
+    if (`objExists $node`)
+    {
+        lockNode -l 0 $node;
+        delete $node;
+    }
+}
+
+
+global proc shapesRegion_copyToBuffer( string $node )
+{
+    //
+    // copy the regions to the buffer attribute
+    //
+    for ($i = 0; $i < 6; $i ++)
+    {
+        connectAttr -f ($node + ".regionWeights" + $i) ($node + ".regionWeightsBuffer" + $i);
+        disconnectAttr ($node + ".regionWeights" + $i) ($node + ".regionWeightsBuffer" + $i);
+    }
+}
+
+
+global proc shapesRegion_copyFromBuffer( string $node )
+{
+    //
+    // copy the regions from the buffer attribute
+    //
+    for ($i = 0; $i < 6; $i ++)
+    {
+        connectAttr -f ($node + ".regionWeightsBuffer" + $i) ($node + ".regionWeights" + $i);
+        disconnectAttr ($node + ".regionWeightsBuffer" + $i) ($node + ".regionWeights" + $i);
+    }
+}
+
+
+global proc shapesRegion_editRegionMap( int $new )
+{
+    //
+    // open the region label ui for creating a new map or for editing
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    if ($gShapes_skinMesh == "")
+        return;
+
+    if (!$new && `textField -q -tx shpUI_currentRegionNameField` == "")
+        return;
+
+    shapesUI_buildRegionLabelUI $new;
+
+    if (!$new)
+    {
+        textFieldGrp -e -ed 0 -tx (`getAttr SHAPESRegionData.regionMap`) shpUI_regionNameField;
+        if (`attributeQuery -ex -n SHAPESRegionData parentToShape`)
+        {
+            string $parentValueString = `getAttr SHAPESRegionData.parentToShape`;
+            int $parentValue = 0;
+            if ($parentValueString != "")
+                $parentValue = $parentValueString;
+            checkBox -e -v $parentValue shpUI_regionParentCheck;
+        }
+        else
+            addAttr -m -ln "parentToShape" -at "bool" SHAPESRegionData;
+
+        int $mapError;
+        for ($i = 0; $i < 6; $i ++)
+        {
+            textField -e -tx (`getAttr SHAPESRegionData.regionLabel[$i]`) ("shpUI_regionLabel" + $i);
+            checkBox -e -v (`getAttr SHAPESRegionData.regionSplit[$i]`) ("shpUI_regionSplitCheck" + $i);
+            floatField -e -v (`getAttr SHAPESRegionData.regionBlend[$i]`) ("shpUI_regionSplitWidth" + $i);
+            textField -e -tx (`getAttr SHAPESRegionData.regionIdentifier[$i]`) ("shpUI_regionIdentifier" + $i);
+            string $splitMap = `getAttr SHAPESRegionData.regionSplitMap[$i]`;
+            $splitMap = substitute("\\(", $splitMap, "");
+            $splitMap = substitute("\\)", $splitMap, "");
+            textField -e -tx $splitMap ("shpUI_regionSplitMapField" + $i);
+
+            // check if the split map is valid
+            if ($splitMap != "")
+            {
+                string $exportPath = shapesUtil_getExportPath("/weights/" + $gShapes_bsNode, 0);
+                if ($exportPath != "")
+                {
+                    if (!`filetest -e ($exportPath + "/" + $splitMap + "." + shapesWeights_getFileExtension("bsw"))`)
+                    {
+                        $mapError = 1;
+                        textField -e -tx ("(" + $splitMap + ")") -fn "obliqueLabelFont" ("shpUI_regionSplitMapField" + $i);
+                    }
+                }
+                else
+                    $mapError = 1;
+            }
+        }
+
+        if ($mapError)
+            confirmDialog -t "SHAPES" -m "One or more custom split maps cannot be found." -b "OK";
+    }
+}
+
+
+global proc shapesRegion_updateColorButtons()
+{
+    //
+    // enables/disables the color buttons
+    // based on the current region map
+    //
+
+    // show the paint layout and enable only the color buttons
+    // which have been assigned with a label
+    rowLayout -e -en 1 shpUI_colorButtonsLayout;
+    for ($i = 0; $i < 6; $i ++)
+    {
+        int $enable = 0;
+        string $label = `getAttr SHAPESRegionData.regionLabel[$i]`;
+        if ($label != "")
+            $enable = 1;
+        string $lock = shapesRegion_getLockStateString($i);
+        iconTextButton -e -en $enable -i ("SHAPES_regionColor" + ($i + 1) + $lock + ".png") -ann $label ("shpUI_regionColor" + $i);
+    }
+}
+
+
+global proc string shapesRegion_getLockStateString( int $id )
+{
+    //
+    // return a string based on the region lock state
+    //
+    string $state = `getAttr ("SHAPESRegionData.regionLock[" + $id + "]")`;
+    if ($state)
+        return "Lock";
+    return "";
+}
+
+
+global proc shapesRegion_clearRegionData( string $mapName )
+{
+    //
+    // resets the region variables
+    // when the current region map gets deleted
+    //
+    if (`textField -q -tx shpUI_currentRegionNameField` == $mapName || $mapName == "")
+    {
+        textField -e -tx "" shpUI_currentRegionNameField;
+        menuItem -e -en 0 shpUI_loadRegionBackupItem;
+        menuItem -e -en 0 shpUI_unloadRegionItem;
+        shapesRegion_deleteDataNode;
+        rowLayout -e -en 0 shpUI_colorButtonsLayout;
+        if ($mapName == "")
+            shapesUtil_buildImportMenu "shpUI_regionList";
+    }
+}
+
+
+global proc shapesRegion_exportRegionMap()
+{
+    //
+    // export the region map
+    //
+    global string $gShapes_bsNode;
+
+    string $exportPath = shapesUtil_getExportPath("/regions/" + $gShapes_bsNode, 1);
+    if ($exportPath == "")
+        return;
+
+    string $fileName = $exportPath + "/" + (`getAttr SHAPESRegionData.regionMap`) + "." + shapesWeights_getFileExtension("bsr");
+
+    br_editRegionMap -export -fileName $fileName SHAPESRegionData;
+
+    shapesUI_toggleRegionListMenuItems 0;
+    shapesUtil_buildImportMenu "shpUI_regionList";
+}
+
+
+global proc shapesRegion_loadRegionMap( int $backup )
+{
+    //
+    // loads the selected map in the list for editing
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    string $exportPath = shapesUtil_getExportPath("/regions/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return;
+
+    string $mapName[] = `textScrollList -q -si shpUI_regionList`;
+
+    if (!size($mapName))
+        return;
+
+    // delete any previous data
+    shapesRegion_createDataNode;
+
+    string $fileName = $exportPath + "/" + $mapName[0] + "." + shapesWeights_getFileExtension("bsr");
+    if ($backup)
+    {
+        if (shapesWeights_backupWeightMapExists("region"))
+            $fileName += "~";
+        else
+            return;
+    }
+
+    string $node = "SHAPESRegionData";
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+    int $result = `br_editRegionMap -import -fileName $fileName -mesh $intermediate $node`;
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+    if (!$result)
+    {
+        shapesRegion_clearRegionData "";
+        return;
+    }
+
+    setAttr ($node + ".regionMap") -type "string" $mapName[0];
+
+    string $dataString = `getAttr ($node + ".regions")`;
+    string $regionArray[] = stringToStringArray($dataString, ":");
+    for ($i = 0; $i < 6; $i ++)
+    {
+        string $data = substituteAllString($regionArray[$i], ",", "-,-");
+        string $items[] = stringToStringArray($data, ",");
+        for ($j = 0; $j < size($items); $j ++)
+        {
+            $items[$j] = substituteAllString($items[$j], "-", "");
+        }
+        setAttr ($node + ".regionLabel[" + $i + "]") -type "string" $items[0];
+        float $value;
+        if (tolower($items[1]) == "true")
+            $value = 1;
+        else if (tolower($items[1]) == "false")
+            $value = 0;
+        else
+            $value = $items[1];
+        setAttr ($node + ".regionSplit[" + $i + "]") $value;
+        $value = $items[2];
+        setAttr ($node + ".regionBlend[" + $i + "]") $value;
+
+        if (size($items) > 3)
+        {
+            setAttr ($node + ".regionIdentifier[" + $i + "]") -type "string" $items[3];
+            if (size($items) > 4)
+            {
+                setAttr ($node + ".regionSplitMap[" + $i + "]") -type "string" $items[4];
+                if (size($items) > 5)
+                {
+                    int $lock = $items[5];
+                    setAttr ($node + ".regionLock[" + $i + "]") $lock;
+                }
+            }
+        }
+    }
+
+    if (size($regionArray) == 7)
+    {
+        int $parentValue = $regionArray[6];
+        setAttr ($node + ".parentToShape") $parentValue;
+    }
+
+    // show the name of the current map
+    textField -e -tx $mapName[0] shpUI_currentRegionNameField;
+    menuItem -e -en 1 shpUI_unloadRegionItem;
+
+    shapesRegion_updateColorButtons;
+    shapesUI_enableRegionColorButtonMenu 0;
+}
+
+
+global proc shapesRegion_showFullColorMap( int $asColor )
+{
+    //
+    // displays a full color map for all regions
+    // or a visual representation of left over weights
+    //
+    global int $gShapes_currentRegion;
+    global int $gShapes_lastRegion;
+    global int $gShapes_showFullColorMap;
+
+    string $sel[] = `ls -sl -tr`;
+    if (!size($sel))
+        return;
+
+    string $shape[] = `listRelatives -s -ni $sel[0]`;
+    if (!size($shape))
+        br_displayMessage -error ($sel[0] + " has no shape node");
+    if (`nodeType $shape[0]` != "mesh")
+        br_displayMessage -error ($shape[0] + " is not a mesh object");
+
+    // get the current values and add them to the region map
+    // before resetting everything and displaying the full map
+    if (!$gShapes_showFullColorMap)
+    {
+        shapesRegion_storeLastRegionEdit;
+        $gShapes_showFullColorMap = 1;
+
+        // store the currently active region in order to be able to re-activate it
+        // when exiting the display of the full color map
+        // the current region needs to be set to -1 because if the user
+        // continues to paint regions after displaying the full colors
+        // the colors will get saved to the current region map
+        $gShapes_lastRegion = $gShapes_currentRegion;
+        $gShapes_currentRegion = -1;
+    }
+
+    PaintVertexColorTool;
+    string $artContext = `currentCtx -q`;
+
+    // create a new color set to display the colors
+    polyColorPerVertex $shape[0];
+
+    int $displayType = $asColor;
+    if ($asColor == 0 && `optionVar -q SHAPESColorDisplayPartialWeights`)
+        $displayType = 2;
+
+    br_editRegionMap -color $displayType -mesh $shape[0] SHAPESRegionData;
+
+    setToolTo selectSuperContext;
+
+    shapesRegion_toggleColorPaintButtons 0;
+
+    popupMenu -e -dai shpUI_assignPartialWeightsMenu;
+
+    // re-define the commands for the buttons so it's possible to
+    // switch between both modes but still have a toggle functionality
+    // for each button to exit the display
+    if ($asColor)
+    {
+        iconTextButton -e -c shapesRegion_exitFullColorMap shpUI_regionShowColors;
+        iconTextButton -e -c ("shapesRegion_showFullColorMap 0") shpUI_regionShowPartials;
+    }
+    else
+    {
+        iconTextButton -e -c ("shapesRegion_showFullColorMap 1") shpUI_regionShowColors;
+        iconTextButton -e -c shapesRegion_exitFullColorMap shpUI_regionShowPartials;
+
+        // add the assign partials context menu
+        menuItem -l "Auto Assign" -p shpUI_assignPartialWeightsMenu -c "shapesRegion_appendToRegion -1";
+        menuItem -d 1 -p shpUI_assignPartialWeightsMenu;
+        for ($i = 0; $i < 6; $i ++)
+        {
+            string $label = `getAttr SHAPESRegionData.regionLabel[$i]`;
+            if ($label != "")
+                menuItem -l $label -p shpUI_assignPartialWeightsMenu -c ("shapesRegion_appendToRegion " + $i);
+        }
+    }
+}
+
+
+global proc shapesRegion_exitFullColorMap()
+{
+    //
+    // exists the display of the full color map for all regions
+    // or a visual represenation of left over weights
+    //
+    global int $gShapes_lastRegion;
+    global int $gShapes_showFullColorMap;
+    global string $gShapes_regionTarget;
+
+    shapesRegion_toggleColorPaintButtons 1;
+    iconTextButton -e -c ("shapesRegion_showFullColorMap 1") shpUI_regionShowColors;
+    iconTextButton -e -c ("shapesRegion_showFullColorMap 0") shpUI_regionShowPartials;
+
+    popupMenu -e -dai shpUI_assignPartialWeightsMenu;
+
+    string $colorNodes[] = shapesRegion_getColorPerVertexNode($gShapes_regionTarget);
+    if (size($colorNodes))
+        delete $colorNodes;
+
+    if ($gShapes_lastRegion != -1)
+        shapesRegion_paintRegionColor $gShapes_lastRegion;
+
+    $gShapes_showFullColorMap = 0;
+}
+
+
+global proc shapesRegion_toggleColorPaintButtons( int $enable )
+{
+    //
+    // enable/disable other region functions when
+    // displaying the full color mode
+    //
+    iconTextButton -e -en $enable shpUI_paintRegionButton;
+    for ($i = 0; $i < 6; $i ++)
+        iconTextButton -e -en $enable ("shpUI_regionColor" + $i);
+
+    // enable only the buttons for the current regions
+    if ($enable)
+        shapesRegion_updateColorButtons;
+
+    formLayout -e -en $enable shpUI_regionLayout;
+}
+
+
+global proc string[] shapesRegion_getColorPerVertexNode( string $node )
+{
+    //
+    // returns a list of color per vertex nodes of the given node
+    //
+    string $nodes[];
+    string $hist[] = `listHistory -gl 1 -pdo 1 -lf 1 -f 0 -il 2 $node`;
+    for ($h in $hist)
+    {
+        $h = shapesCommon_removeNodePath($h);
+        if (`objExists $h` && `nodeType $h` == "polyColorPerVertex")
+            $nodes[size($nodes)] = $h;
+    }
+    return $nodes;
+}
+
+
+global proc shapesRegion_extractRegionMap( int $all )
+{
+    //
+    // performs a region map extraction
+    // based on the current list selection
+    //
+    string $targetList[] = `treeView -q -si shpUI_targetTree`;
+    for ($shape in $targetList)
+    {
+        if (!shapesData_isHelper($shape))
+        {
+            treeView -e -cs shpUI_targetTree;
+            treeView -e -si $shape 1 shpUI_targetTree;
+            string $slider = shapesMain_buildTargetSlider();
+            shapesRegion_performExtractRegionMap $all;
+        }
+    }
+}
+
+
+global proc shapesRegion_performExtractRegionMap( int $all )
+{
+    //
+    // creates/updates the target shapes from the current map
+    //
+    global int $gShapes_regionProcess;
+    global string $gShapes_bsNode;
+    global string $gShapes_regionExtractParent;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+
+    if ($gShapes_skinMesh == "")
+        return;
+
+    if ($gShapes_selectedTarget == "")
+        br_displayMessage -error "Select a target shape to extract the regions from";
+
+    if ($gShapes_regionProcess)
+        br_displayMessage -error "Exit paint region mode before extracting region maps";
+
+    string $left[];
+    string $right[];
+    shapesUI_getUserIdentifierList($left, $right);
+    shapesUI_checkIdentifierPrefs;
+
+    string $basedOnName = $gShapes_selectedTarget;
+
+    int $id = shapesData_getListIndex($gShapes_selectedTarget);
+
+    string $dataNode = "SHAPESRegionData";
+
+    // initialize the progress bar
+    global string $gMainProgressBar;
+    progressBar -e -bp -ii 0 -max 8 $gMainProgressBar;
+
+    progressBar -e -s 1 $gMainProgressBar;
+
+    string $original = shapesAction_duplicateOrginalMesh("original");
+    string $baseTarget[] = shapesAction_extractTarget("", -1, 0, 1);
+    if (!size($baseTarget))
+    {
+        progressBar -e -ep $gMainProgressBar;
+        return;
+    }
+
+    // create a temporary blendshape
+    string $tempBS[] = `blendShape $baseTarget[size($baseTarget) - 1] $original`;
+    // connect the blend shape node with the region data node so that
+    // the editing command can find the blend shape node
+    shapesCommon_addMessageAttribute($tempBS[0], "SHAPESRegion", 0);
+    connectAttr -f ($tempBS[0] + ".SHAPESRegion") ($dataNode + ".SHAPESRegion");
+
+    blendShape -e -w 0 1 $tempBS[0];
+    if (size($baseTarget) > 1)
+    {
+        for ($i = 0; $i < size($baseTarget) - 1; $i ++)
+        {
+            string $items[] = stringToStringArray($baseTarget[$i], "_");
+            int $ibValue = $items[size($items) - 1];
+            eval ("blendShape -e -ib -tc 1 -t " + $original + " 0 " + $baseTarget[$i] + " " + (($ibValue - 5000) / 1000.0) + " " + $tempBS[0]);
+        }
+    }
+
+    string $originalShape = shapesMain_getOriginalMesh($original, 1);
+
+    // store the current context
+    string $currentContext = `currentCtx -q`;
+
+    progressBar -e -st "Extracting regions ..." $gMainProgressBar;
+
+    string $regionShapes[];
+    string $regionValues[];
+    string $side;
+    string $sideLast;
+    int $index;
+    int $clearSplit;
+    string $parent[];
+
+    string $prefix[] = shapesUI_getSplitShapeIdentifier();
+
+    while ($index < 6)
+    {
+        string $label = `getAttr SHAPESRegionData.regionLabel[$index]`;
+        float $blend = `getAttr SHAPESRegionData.regionBlend[$index]`;
+        int $split = `getAttr SHAPESRegionData.regionSplit[$index]`;
+        string $identifier = `getAttr SHAPESRegionData.regionIdentifier[$index]`;
+        string $splitMap = `getAttr SHAPESRegionData.regionSplitMap[$index]`;
+
+        if ($label != "")
+        {
+            blendShape -e -w 0 1 $tempBS[0];
+
+            // clear all blend shape weights
+            br_blendShapeEditWeights -delete -index -1 $tempBS[0];
+
+            // clear the base weights from the previous split if used
+            if ($clearSplit)
+            {
+                br_blendShapeEditWeights -delete -index 0 $tempBS[0];
+                $clearSplit = 0;
+            }
+
+            br_editRegionMap -edit -index $index SHAPESRegionData;
+
+            // check if the shape should be splitted
+            if ($split)
+            {
+                int $invert = 1;
+                if ($side == "")
+                {
+                    // get the identifier for the side
+                    // if not given use the default L_
+                    if ($identifier != "")
+                        $side = $identifier;
+                    else
+                        $side = $prefix[0];
+                    $index --;
+                }
+                else
+                {
+                    // get the opposite identifier
+                    // if not given use the default R_
+                    // if given, get the position in the left identifier array
+                    // and use this index for the right array
+                    if ($identifier != "")
+                    {
+                        int $sideIndex = shapesArray_stringArrayFind($identifier, 0, $left);
+                        $side = $right[$sideIndex];
+                    }
+                    else
+                    {
+                        $side = $prefix[1];
+                    }
+                    $invert = -1;
+                    $sideLast = $side;
+                }
+
+                // check for a custom split map
+                if ($splitMap != "")
+                {
+                    string $exportPath = shapesUtil_getExportPath("/weights/" + $gShapes_bsNode, 0);
+                    if ($exportPath != "")
+                    {
+                        $splitMap = $exportPath + "/" + $splitMap + "." + shapesWeights_getFileExtension("bsw");
+
+                        br_blendShapeEditWeights -import -fileName $splitMap -index 0 $tempBS[0];
+
+                        if ($invert == -1)
+                            br_blendShapeEditWeights -invert -allValues -index 0 -originalMesh $originalShape $tempBS[0];
+                    }
+                }
+                // if there is no custom split map use the default splitting
+                else
+                    shapesAction_splitShape $tempBS[0] $originalShape $invert 1 $blend 0.0 0;
+
+                $clearSplit = 1;
+            }
+
+            int $values[] = `getAttr -mi ($tempBS[0] + ".it[0].itg[0].iti")`;
+            float $valuesReverse[] = {};
+            string $shapeList[] = {};
+
+            // define the parent if the placeholder is used
+            if (`getAttr SHAPESRegionData.parentToShape`)
+                $parent[size($parent)] = $gShapes_selectedTarget;
+
+            // replace the placeholder with the proper name
+            string $placeholder[] = {"<shape>"};
+            string $replacement[] = {$gShapes_selectedTarget};
+            for ($i = 0; $i < size($placeholder); $i ++)
+                $label = substituteAllString($label, $placeholder[$i], $replacement[$i]);
+
+            // in order to extract with inbetweens we need to save
+            // all inbetween shapes along with their values;
+            // since the values are in ascending order we need to inverse
+            // to have the main target listed first
+            for ($v = size($values) - 1; $v >= 0; $v --)
+            {
+                float $weight = ($values[$v] - 5000) / 1000.0;
+                // set the blend shape channel to the value of the inbetween
+                // so that it's duplicated properly
+                blendShape -e -w 0 $weight $tempBS[0];
+                $valuesReverse[size($valuesReverse)] = $weight;
+
+                string $result[] = `duplicate $original`;
+
+                string $inbetweenString = "";
+                if ($weight != 1.0)
+                    $inbetweenString = "_" + $values[$v];
+
+                if ($side != "")
+                {
+                    if (!startsWith($side, "_"))
+                        $result[0] = `rename $result[0] ($side + $label + $inbetweenString)`;
+                    else
+                        $result[0] = `rename $result[0] ($label + $side + $inbetweenString)`;
+                }
+                else
+                    $result[0] = `rename $result[0] ($label + $inbetweenString)`;
+                $shapeList[size($shapeList)] = $result[0];
+            }
+            $regionShapes[size($regionShapes)] = stringArrayToString($shapeList, ",");
+            $regionValues[size($regionValues)] = shapesArray_floatArrayToString($valuesReverse, ",");
+
+            if ($side == $sideLast)
+                $side = "";
+        }
+        $index ++;
+
+        progressBar -e -s 1 $gMainProgressBar;
+    }
+
+    // reconnect the current blend shape node with the region data node
+    connectAttr -f ($gShapes_bsNode + ".SHAPESRegion") ($dataNode + ".SHAPESRegion");
+
+    // reselect the previous tool
+    setToolTo $currentContext;
+
+    // delete the temporary shapes
+    delete $original $baseTarget;
+
+    progressBar -e -st "Applying extracted shapes ..." $gMainProgressBar;
+
+    // add the region targets to the blend shape node
+    string $items[] = shapesData_getTargetList();
+    // check if the region shape already exists as a target
+    for ($s = 0; $s < size($regionShapes); $s ++)
+    {
+        string $shapeList[] = stringToStringArray($regionShapes[$s], ",");
+        string $valueList[] = stringToStringArray($regionValues[$s], ",");
+        // the main target is first in the list
+        string $shape = $shapeList[0];
+
+        if (stringArrayContains($shape, $items))
+        {
+            // if the target name exists check if it's a helper attribute
+            if (shapesData_isHelper($shape))
+                br_displayMessage -error ("Unable to add the region target \"" + $shape + "\" because a helper/group attribute with the same name exists. Check the scene for remaining targets");
+            // replace the existing target with the new region target
+            $id = shapesData_getShapeIndex($shape);
+
+            for ($i = 0; $i < size($shapeList); $i ++)
+            {
+                float $value = $valueList[$i];
+                $value = ($value * 1000) + 5000;
+                shapesAction_replaceBlendShapeTarget $shapeList[$i] "" $value $id 1;
+            }
+        }
+        // if it doesn't exist yet add as a new target
+        else if ($all)
+        {
+            // set the parent for the new shapes
+            $gShapes_regionExtractParent = "";
+            if (`getAttr SHAPESRegionData.parentToShape`)
+                $gShapes_regionExtractParent = $parent[$s];
+
+            if (size($shapeList) == 1)
+                shapesAction_addBlendShapeTarget $gShapes_skinMesh $shape 1;
+            else
+            {
+                string $inbetweenFlag;
+                int $index = shapesCommon_findEmptyMultiIndex($gShapes_bsNode + ".weight");
+
+                for ($i = 0; $i < size($shapeList); $i ++)
+                {
+                    if ($i > 0)
+                        $inbetweenFlag = "-ib ";
+
+                    eval ("blendShape -e " + $inbetweenFlag + "-tc 1 -t " + $gShapes_skinMesh + " " + $index + " " + $shapeList[$i] + " " + $valueList[$i] + " " + $gShapes_bsNode);
+                }
+                shapesData_addDataItem("shape", $index, $shape, -1);
+                shapesList_autoOrderNewTarget $shape $gShapes_selectedTarget 0;
+                $gShapes_selectedTarget = $shape;
+                shapesList_listBlendShapeTargets 1;
+
+                delete $shapeList;
+            }
+
+            $gShapes_regionExtractParent = "";
+        }
+        else
+        {
+            delete $shapeList;
+        }
+    }
+
+    progressBar -e -s 1 $gMainProgressBar;
+
+    string $mapName = `textField -q -tx shpUI_currentRegionNameField`;
+    br_displayMessage -info ("Extracted " + size($regionShapes) + " shapes from region map \"" + $mapName + "\" based on the target \"" + $basedOnName + "\".");
+
+    progressBar -e -ep $gMainProgressBar;
+}
+
+
+global proc shapesRegion_exportRegionsToWeights()
+{
+    //
+    // exports the regions to weight maps
+    //
+    global string $gShapes_bsNode;
+    global string $gShapes_skinMesh;
+
+    if ($gShapes_skinMesh == "")
+        return;
+
+    string $exportPath = shapesUtil_getExportPath("/weights/" + $gShapes_bsNode, 1);
+    if ($exportPath == "")
+        return;
+
+    for ($i = 0; $i < 6; $i ++)
+    {
+        string $label = `getAttr SHAPESRegionData.regionLabel[$i]`;
+        if ($label != "")
+        {
+            string $fileName = $exportPath + "/" + $label + "." + shapesWeights_getFileExtension("bsw");
+            br_editRegionMap -export -fileName $fileName -index $i SHAPESRegionData;
+        }
+    }
+
+    shapesUI_toggleWeightsContextMenu 0;
+    shapesUtil_buildImportMenu "shpUI_shapeWeightsList";
+}
+
+
+global proc shapesRegion_enterPaintRegionMode( int $fromBuffer )
+{
+    //
+    // prepares the scene for painting the regions
+    //
+    global int $gShapes_regionProcess;
+    global int $gShapes_splitProcess;
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+    global string $gShapes_selectedTarget;
+    global string $gShapes_skinMesh;
+    global string $gShapes_orderedTargetList[];
+
+    if ($gShapes_skinMesh == "" || $gShapes_selectedTarget == "")
+        return;
+
+    // check if a helper or group attribute is selected
+    // in this case deselect to avoid any errors
+    if (size($gShapes_orderedTargetList))
+    {
+        if (shapesData_isHelper($gShapes_selectedTarget))
+            treeView -e -cs shpUI_targetTree;
+    }
+
+    string $view = shapesSculpt_getCurrentModelPanel();
+    if ($view == "")
+        br_displayMessage -error "No modeling panel is currently visible";
+
+    // create the blend shape for editing the regions
+    $gShapes_regionTarget = shapesAction_duplicateOrginalMesh("");
+    $gShapes_regionTarget = `rename $gShapes_regionTarget $gShapes_selectedTarget`;
+    // apply the default shader
+    sets -e -fe initialShadingGroup $gShapes_regionTarget;
+    string $tempBs[] = `blendShape (shapesMain_getShapeNode()) $gShapes_regionTarget`;
+
+    // connect the blend shape node with the region data node so that
+    // the editing command can find the blend shape node
+    shapesCommon_addMessageAttribute($tempBs[0], "SHAPESRegion", 0);
+    connectAttr -f ($tempBs[0] + ".SHAPESRegion") SHAPESRegionData.SHAPESRegion;
+
+    $gShapes_regionBS = $tempBs[0];
+    blendShape -e -w 0 1 $gShapes_regionBS;
+
+    // match the subdivision level of the region mesh to the skin mesh
+    setAttr ($gShapes_regionTarget + ".dsm") `getAttr ($gShapes_skinMesh + ".dsm")`;
+    setAttr ($gShapes_regionTarget + ".lev") `getAttr ($gShapes_skinMesh + ".lev")`;
+
+    // match the transformation values
+    eval ("xform -m " + shapesArray_floatArrayToString(`xform -q -m $gShapes_skinMesh`, " ") + " " + $gShapes_regionTarget);
+
+    // hide the skin mesh and show the region target mesh
+    shapesMain_setSkinVisibility 0;
+    setAttr ($gShapes_regionTarget + ".v") 1;
+
+    // isolate the mesh
+    select -r $gShapes_regionTarget;
+    if (`optionVar -q SHAPESSculptIsolation`)
+        enableIsolateSelect $view true;
+
+    if (!$fromBuffer)
+    {
+        // keep the previous data if the user cancels the paint operation
+        shapesRegion_copyToBuffer SHAPESRegionData;
+    }
+    else
+    {
+        // use the regions from the buffer
+        shapesRegion_copyFromBuffer SHAPESRegionData;
+    }
+
+    // enable the display colors button
+    iconTextButton -e -en 1 shpUI_regionShowColors;
+    iconTextButton -e -en 1 shpUI_regionShowPartials;
+
+    shapesRegion_paintRegionToggleUI 0 $view;
+    $gShapes_regionProcess = 1;
+    shapesUI_manageUIModeDependencies 2 1 0;
+}
+
+
+global proc shapesRegion_exitPaintRegionMode( string $view, int $cancel )
+{
+    //
+    // finish painting the region map
+    //
+    global int $gShapes_currentRegion;
+    global int $gShapes_regionProcess;
+    global string $gShapes_bsNode;
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+
+    // make sure the mesh is selected to be able to get the vertex colors
+    select -r $gShapes_regionTarget;
+
+    string $node = "SHAPESRegionData";
+    int $distribute = `optionVar -q SHAPESDistributePartialRegionWeights`;
+    br_editRegionMap -addToMap -index $gShapes_currentRegion -distributeWeight $distribute $node;
+
+    $gShapes_currentRegion = -1;
+
+    if (!$cancel)
+        shapesRegion_exportRegionMap;
+    else
+        shapesRegion_copyFromBuffer $node;
+
+    // reconnect the current blend shape node with the region data node
+    connectAttr -f ($gShapes_bsNode + ".SHAPESRegion") ($node + ".SHAPESRegion");
+
+    // delete the mesh and end the process
+    delete $gShapes_regionTarget;
+    $gShapes_regionTarget = "";
+    $gShapes_regionBS = "";
+    $gShapes_regionProcess = 0;
+
+    // enable all ui elements
+    shapesRegion_paintRegionToggleUI 1 "";
+    shapesUI_manageUIModeDependencies 2 1 1;
+    // clear any paint icons of the color buttons
+    shapesRegion_updateColorButtons;
+
+    // show the skin mesh
+    shapesMain_setSkinVisibility 1;
+
+    // exit the isolation
+    if (`optionVar -q SHAPESSculptIsolation` && $view != "")
+        enableIsolateSelect $view false;
+
+    setToolTo selectSuperContext;
+
+    iconTextButton -e -en 0 shpUI_regionShowColors;
+    iconTextButton -e -en 0 shpUI_regionShowPartials;
+}
+
+
+global proc shapesRegion_paintRegionToggleUI( int $enable, string $view )
+{
+    //
+    // disables/enables ui elements
+    // based on entering/exiting the paint region mode
+    //
+    global string $gShapes_regionBS;
+
+    // set the sculpt mode options enable state
+    shapesUI_manageUIModeDependencies 1 1 1;
+
+    rowLayout -e -en $enable shpUI_shapeWeightsLayout;
+
+    if (!$enable)
+    {
+        iconTextButton  -e
+                        -i "SHAPES_weightPaintActive.png"
+                        -c ("shapesRegion_exitPaintRegionMode " + $view + " 0")
+                        -ann "Exit paint regions mode (right-click to cancel)"
+                        shpUI_paintRegionButton;
+
+        // update the popup menu
+        string $editFlag = "";
+        if (`menuItem -ex shpUI_paintRegionCancelItem`)
+            $editFlag = "-e ";
+
+        eval("menuItem " + $editFlag + "-l \"Cancel\" -p \"shpUI_paintRegionPopup\" -c \"shapesRegion_exitPaintRegionMode " + $view + " 1;\" shpUI_paintRegionCancelItem");
+    }
+    else
+    {
+        iconTextButton  -e
+                        -i "SHAPES_weightPaint.png"
+                        -c "shapesRegion_enterPaintRegionMode 0"
+                        -ann "Paint regions for the selected shape"
+                        shpUI_paintRegionButton;
+
+        // update the popup menu
+        string $editFlag = "";
+        if (`menuItem -ex shpUI_paintRegionCancelItem`)
+            $editFlag = "-e ";
+
+        eval("menuItem " + $editFlag + "-l \"Paint From Buffer\" -p \"shpUI_paintRegionPopup\" -c \"shapesRegion_enterPaintRegionMode 1\" shpUI_paintRegionCancelItem");
+    }
+    // enable/disable the popup menu items for the color buttons
+    shapesUI_enableRegionColorButtonMenu (!$enable);
+}
+
+
+global proc shapesRegion_paintRegionColor( int $id )
+{
+    //
+    // initialize the paint tool and set the color to white
+    //
+    global int $gShapes_currentRegion;
+    global int $gShapes_regionProcess;
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+
+    if (!$gShapes_regionProcess)
+        return;
+
+    select -r $gShapes_regionTarget;
+
+    shapesWeights_activatePaintBlendShapeWeightsTool $gShapes_regionBS "" 0 1;
+
+    // after editing a previous region
+    // get the current values and add them to the region map
+    // before resetting everything and preparing for editing the given region
+    shapesRegion_storeLastRegionEdit;
+
+    // display the current map in the mesh
+    shapesRegion_initMeshPaint 0;
+    br_editRegionMap -edit -index $id SHAPESRegionData;
+
+    ArtPaintBlendShapeWeightsTool;
+    artAttrCtx -e -value 1 -selectedattroper "absolute" `currentCtx`;
+
+    $gShapes_currentRegion = $id;
+
+    shapesRegion_updateColorButtons;
+    string $lock = shapesRegion_getLockStateString($id);
+    iconTextButton -e -i ("SHAPES_regionColor" + ($id + 1) + $lock + "Paint.png") ("shpUI_regionColor" + $id);
+}
+
+
+global proc shapesRegion_storeLastRegionEdit()
+{
+    //
+    // get the current values and add them to the region map
+    //
+    global int $gShapes_currentRegion;
+    global string $gShapes_regionBS;
+
+    if ($gShapes_currentRegion != -1)
+    {
+        int $distribute = `optionVar -q SHAPESDistributePartialRegionWeights`;
+        br_editRegionMap -addToMap -index $gShapes_currentRegion -distributeWeight $distribute SHAPESRegionData;
+
+        shapesRegion_initMeshPaint 0;
+
+        // enable the display colors buttons
+        iconTextButton -e -en 1 shpUI_regionShowColors;
+        iconTextButton -e -en 1 shpUI_regionShowPartials;
+    }
+}
+
+
+global proc shapesRegion_initMeshPaint( float $value )
+{
+    //
+    // flood everything black to reset all vertices
+    // only with a new map
+    //
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+
+    string $shape = shapesCommon_getShapeNode($gShapes_regionTarget);
+    br_blendShapeEditWeights -flush $value -originalMesh $shape -index -1 $gShapes_regionBS;
+    ArtPaintBlendShapeWeightsTool;
+    artAttrCtx -e -value 1 -selectedattroper "absolute" `currentCtx`;
+}
+
+
+global proc shapesRegion_clearRegion( int $id )
+{
+    //
+    // sets all vertex colors to black
+    //
+    global int $gShapes_regionProcess;
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+    global string $gShapes_skinMesh;
+
+    if (shapesRegion_regionIsLocked($id))
+        return;
+
+    if (!$gShapes_regionProcess)
+        return;
+
+    select -r $gShapes_regionTarget;
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_skinMesh, 0);
+    br_editRegionMap -clear -index $id -mesh $intermediate SHAPESRegionData;
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+
+    shapesRegion_initMeshPaint 0;
+}
+
+
+global proc shapesRegion_lockRegion( int $id )
+{
+    //
+    // toggles the region's lock state
+    //
+    string $node = "SHAPESRegionData";
+
+    int $state = `getAttr ($node + ".regionLock[" + $id + "]")`;
+    setAttr ($node + ".regionLock[" + $id + "]") (1 - $state);
+
+    string $lock = shapesRegion_getLockStateString($id);
+    string $icon = `iconTextButton -q -i ("shpUI_regionColor" + $id)`;
+    string $paint = "";
+    if (`gmatch $icon "*Paint*"`)
+        $paint = "Paint";
+    iconTextButton -e -i ("SHAPES_regionColor" + ($id + 1) + $lock + $paint + ".png") ("shpUI_regionColor" + $id);
+
+    // edit the region settings
+    lockNode -l 0 $node;
+    string $data = `getAttr ($node + ".regions")`;
+    string $regions[] = stringToStringArray($data, ":");
+    for ($i = 0; $i < 6; $i ++)
+    {
+        // make sure that all items are written to the array
+        $regions[$i] = substituteAllString($regions[$i], ",", " , ");
+        string $list[] = stringToStringArray($regions[$i], ",");
+        $list[5] = `getAttr ($node + ".regionLock[" + $i + "]")`;
+        $regions[$i] = $list[0] + "," + $list[1] + "," + $list[2] + "," + $list[3] + "," + $list[4] + "," + $list[5];
+        $regions[$i] = substituteAllString($regions[$i], " ", "");
+    }
+    setAttr ($node + ".regions") -type "string" (stringArrayToString($regions, ":"));
+    lockNode -l 1 $node;
+}
+
+
+global proc int shapesRegion_regionIsLocked( int $id )
+{
+    //
+    // get the region's lock state
+    //
+    string $node = "SHAPESRegionData";
+    int $state = `getAttr ($node + ".regionLock[" + $id + "]")`;
+
+    if ($state)
+        br_displayMessage -warning "Region is locked";
+
+    return $state;
+}
+
+
+global proc shapesRegion_setFromSelectedWeightMap( int $id )
+{
+    //
+    // set the vertex color based on the selected weight map
+    //
+    global int $gShapes_regionProcess;
+    global string $gShapes_bsNode;
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+
+    if (shapesRegion_regionIsLocked($id))
+        return;
+
+    if (!$gShapes_regionProcess)
+        return;
+
+    select -r $gShapes_regionTarget;
+
+    string $exportPath = shapesUtil_getExportPath("/weights/" + $gShapes_bsNode, 0);
+    if ($exportPath == "")
+        return;
+
+    string $mapName[] = `textScrollList -q -si shpUI_shapeWeightsList`;
+    if (!size($mapName))
+        return;
+    string $fileName = $exportPath + "/" + $mapName[0] + "." + shapesWeights_getFileExtension("bsw");
+
+    int $return = `br_blendShapeEditWeights -import -fileName $fileName -index -1 $gShapes_regionBS`;
+    if ($return)
+        br_displayMessage -info ("Imported weight map \"" + $fileName + "\".");
+}
+
+
+global proc shapesRegion_appendToRegion( int $id )
+{
+    //
+    // append the unassigned weights to the given region
+    //
+    string $node = "SHAPESRegionData";
+    br_editRegionMap -append -i $id -mesh (shapesMain_getShapeNode()) $node;
+
+    // select the mesh in order to display the updated vertex colors
+    string $sel[] = `ls -sl -tr`;
+    if (!size($sel))
+    {
+        // in case the mesh is not selected get the component selection
+        // and derive the mesh from there
+        $sel = `ls -sl -fl`;
+        if (!size($sel))
+            return;
+        else
+        {
+            string $items[] = stringToStringArray($sel[0], ".");
+            select -r $items[0];
+        }
+    }
+
+    shapesRegion_showFullColorMap 0;
+}
+
+
+global proc shapesRegion_invertRegionWeights( int $id )
+{
+    //
+    // inverts the region map
+    //
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+
+    if (shapesRegion_regionIsLocked($id))
+        return;
+
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_regionTarget, 0);
+
+    br_blendShapeEditWeights -invert -allValues -index -1 -originalMesh $intermediate $gShapes_regionBS;
+
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+}
+
+
+global proc shapesRegion_mirrorRegionWeights( int $id )
+{
+    //
+    // mirrors the current region map
+    //
+    global string $gShapes_regionBS;
+    global string $gShapes_regionTarget;
+
+    if (shapesRegion_regionIsLocked($id))
+        return;
+
+    // change the tool to avoid any warnings
+    // duplicating the mesh with the paint tool active results in
+    // // Warning: Invalid UV map on mesh.
+    string $lastTool = `currentCtx`;
+    setToolTo selectSuperContext;
+
+    string $axis = shapesMirror_getAxisString();
+    int $dir = `optionVar -q SHAPESMirrorDirection`;
+
+    float $tolerance = `optionVar -q SHAPESMirrorToleranceValue`;
+
+    string $intermediate = shapesMain_getOriginalMesh($gShapes_regionTarget, 0);
+
+    // check if the mirror mode is order based and the shape has order mapping stored;
+    // if the mapping data doesn't exist but the order based mirroring is enabled
+    // the mirror mode needs to be set back to position based mirroring
+    if (`optionVar -q SHAPESSymmetry` && !shapesMirror_hasOrderMapping(shapesMain_getShapeNode()))
+        shapesUI_setSymmetryStatus 0;
+
+    string $orderBasedFlag = "";
+    if (`optionVar -q SHAPESSymmetry`)
+        $orderBasedFlag = "-ob \"" + shapesMain_getShapeNode() + "\" ";
+
+    string $cmd = "br_blendShapeEditWeights -mirror ";
+    $cmd += $orderBasedFlag;
+    $cmd += "-mirror ";
+    $cmd += "-index -1 ";
+    $cmd += "-originalMesh \"" + $intermediate + "\" ";
+    $cmd += "-axis \"" + $axis + "\" ";
+    $cmd += "-direction " + $dir + " ";
+    $cmd += "-tolerance " + $tolerance + " ";
+    $cmd += $gShapes_regionBS + ";";
+
+    int $result = `eval $cmd`;
+
+    // delete the custom intermediate if the blend shape node is not the first
+    shapesMain_deleteIntermediates "";
+
+    setToolTo $lastTool;
+}
+
+
+global proc SHAPES_regions(){}

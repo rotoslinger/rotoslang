@@ -1,0 +1,247 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+proc setOptionVars( int $forceFactorySettings )
+{
+    if ($forceFactorySettings || !`optionVar -ex br_polySymmetryAxis`)
+        optionVar -iv br_polySymmetryAxis 1;
+
+    if ($forceFactorySettings || !`optionVar -ex br_polySymmetryDirection`)
+        optionVar -iv br_polySymmetryDirection 1;
+
+    if ($forceFactorySettings || !`optionVar -ex br_polySymmetryTolerance`)
+        optionVar -fv br_polySymmetryTolerance 0.001;
+}
+
+
+global proc br_polySymmetrySetup( string $parent, int $forceFactorySettings )
+{
+    setOptionVars($forceFactorySettings);
+    setParent $parent;
+
+    radioButtonGrp -e -sl `optionVar -query br_polySymmetryAxis` polySymmetryAxis;
+    checkBoxGrp -e -v1 `optionVar -query br_polySymmetryDirection` polySymmetryDirection;
+    floatSliderGrp -e -v `optionVar -query br_polySymmetryTolerance` polySymmetryTolerance;
+}
+
+
+global proc br_polySymmetryCallback (string $parent, int $doIt)
+{
+    setParent $parent;
+
+    optionVar -iv br_polySymmetryAxis
+        `radioButtonGrp -q -sl polySymmetryAxis`;
+
+    optionVar -iv br_polySymmetryDirection
+        `checkBoxGrp -q -v1 polySymmetryDirection`;
+
+    optionVar -fv br_polySymmetryTolerance
+        `floatSliderGrp -q -v polySymmetryTolerance`;
+
+    if ($doIt)
+    {
+        br_performPolySymmetry 0;
+        string $tmpCmd = "br_performPolySymmetry 0 ";
+        addToRecentCommandQueue $tmpCmd "Check Symmetry";
+    }
+}
+
+
+global proc br_polySymmetryToggleDirectionLabel( int $val )
+{
+    string $label = "Direction (positive to negative)";
+    if (!$val)
+        $label = "Direction (negative to positive)";
+    checkBoxGrp -e -l1 $label polySymmetryDirection;
+}
+
+
+proc polySymmetryOptions()
+{
+    // global template variable for form spacing
+    global int $gOptionBoxTemplateFrameSpacing;
+
+    string $commandName = "br_polySymmetry";
+    string $callback = $commandName + "Callback";
+    string $setup = $commandName + "Setup";
+
+    setOptionVars 0;
+
+    // get the option box
+    string $layout = getOptionBox();
+    setParent $layout;
+
+    // pass the command to the option box
+    setOptionBoxCommandName($commandName);
+
+    // activate the option box template
+    setUITemplate -pushTemplate OptionBoxTemplate;
+
+    // create the content
+    waitCursor -state 1;
+
+    // form layout
+    string $parent = `formLayout polySymmetryOptions`;
+
+        // settings frame
+        string $settingsFrame =
+        `frameLayout -label "Settings"`;
+
+            columnLayout;
+
+                radioButtonGrp
+                    -numberOfRadioButtons 3
+                    -label "Symmetry Axis"
+                    -labelArray3 "X" "Y" "Z"
+                    -select 1
+                    -vertical
+                    polySymmetryAxis;
+
+                checkBoxGrp
+                    -label1 "Direction (positive to negative)"
+                    -value1 `optionVar -query br_polySymmetryDirection`
+                    polySymmetryDirection;
+
+                checkBoxGrp -e -cc ("br_polySymmetryToggleDirectionLabel #1") polySymmetryDirection;
+                br_polySymmetryToggleDirectionLabel (`optionVar -query br_polySymmetryDirection`);
+
+                floatSliderGrp
+                    -field true
+                    -minValue 0.00001
+                    -maxValue 1.0
+                    -value `optionVar -query br_polySymmetryTolerance`
+                    -fieldMinValue 0.00001
+                    -fieldMaxValue 10.0
+                    -label "Tolerance"
+                    polySymmetryTolerance;
+
+            setParent ..;
+
+        setParent $parent;
+
+    setParent ..;
+
+    // attach description/settings frames to form layout
+    formLayout -e
+        -af $settingsFrame "top" $gOptionBoxTemplateFrameSpacing
+        -af $settingsFrame "left" $gOptionBoxTemplateFrameSpacing
+        -af $settingsFrame "right" $gOptionBoxTemplateFrameSpacing
+        -an $settingsFrame "bottom"
+    $parent;
+
+    waitCursor -state 0;
+
+    // deactivate the template
+    setUITemplate -popTemplate;
+
+    // customize the buttons
+    string $applyBtn = getOptionBoxApplyBtn();
+    button -edit
+        -label "Apply"
+        -command ($callback + " " + $parent + " " + 1)
+        $applyBtn;
+
+    string $applyAndCloseBtn = getOptionBoxApplyAndCloseBtn();
+    button -edit
+        -label "Apply And Close"
+        $applyAndCloseBtn;
+
+    string $saveBtn = getOptionBoxSaveBtn();
+    button -edit
+        -command ($callback + " " + $parent + " " + 0 + " " + "; hideOptionBox")
+        $saveBtn;
+
+    string $resetBtn = getOptionBoxResetBtn();
+    button -edit
+        -command ($setup + " " + $parent + " " + 1)
+        $resetBtn;
+
+
+    // set the window title
+    setOptionBoxTitle("Check Symmetry Options");
+
+    // edit the help text
+    setOptionBoxHelpTag("CheckSymmetry");
+
+    // set the current values
+    eval (($setup + " " + $parent + " " + 0));
+
+    // show the option box
+    showOptionBox();
+}
+
+
+proc string assembleCmd()
+{
+    setOptionVars 0;
+
+    string $cmd = "br_polySymmetry ";
+    $cmd += " -axis ";
+    string $axis = "x";
+    if (`optionVar -q br_polySymmetryAxis` == 2)
+        $axis = "y";
+    else if (`optionVar -q br_polySymmetryAxis` == 3)
+        $axis = "z";
+    $cmd += $axis;
+    $cmd += " -direction ";
+    $cmd += `optionVar -q br_polySymmetryDirection`;
+    $cmd += " -tolerance ";
+    $cmd += `optionVar -q br_polySymmetryTolerance`;
+
+    return $cmd;
+}
+
+
+global proc string br_performPolySymmetry( int $option )
+{
+    string $cmd = "";
+
+    switch ($option)
+    {
+        case 0:
+            $cmd = `assembleCmd`;
+            eval $cmd;
+            break;
+        case 1:
+            polySymmetryOptions;
+            break;
+        case 2:
+            $cmd = `assembleCmd`;
+            break;
+    }
+    return $cmd;
+}

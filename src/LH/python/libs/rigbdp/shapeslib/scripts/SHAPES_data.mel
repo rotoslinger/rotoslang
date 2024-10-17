@@ -1,0 +1,1474 @@
+// ------------------------------------------------------------------------------------------------
+//
+// SHAPES
+//
+// blend shape editing tool for Maya
+//
+// required plugins:
+//   SHAPESTools
+//
+// Ingo Clemens
+// www.braverabbit.com
+//
+// copyright brave rabbit, Ingo Clemens 2014-2023
+//
+// ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+//
+// THE SOFTWARE PRODUCT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING, BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND
+// PERFORMANCE OF THE SOFTWARE PRODUCT IS WITH YOU.
+// NEITHER BRAVE RABBIT NOR ITS SUPPLIERS WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE
+// PRODUCT WILL MEET YOUR REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE PRODUCT WILL BE
+// UNINTERRUPTED OR ERROR-FREE. BRAVE RABBIT IS NOT OBLIGATED TO PROVIDE ANY UPDATES TO THE
+// SOFTWARE.
+// IN NO EVENT SHALL THE AUTHOR OF THIS SOFTWARE PRODUCT BE LIABLE FOR ANY SPECIAL, CONSEQUENTIAL,
+// INCIDENTAL, DIRECT OR INDIRECT DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+// LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, FOR PERSONAL INJURY, LOSS OF BUSINESS
+// INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THIS
+// PRODUCT, EVEN IF THE AUTHOR OF THIS SOFTWARE PRODUCT IS AWARE OF THE POSSIBILITY OF SUCH
+// DAMAGES AND KNOWN DEFECTS, ANY CLAIM BY A THIRD PARTY AND EVEN IF THE REMEDY FAILS OF ITS
+// ESSENTIAL PURPOSE.
+//
+// ------------------------------------------------------------------------------------------------
+
+
+global proc int shapesData_getShapeCount()
+{
+    //
+    // get the number of target channels
+    //
+    global string $gShapes_bsNode;
+
+    int $ids[] = `getAttr -mi ($gShapes_bsNode + ".weight")`;
+    return size($ids);
+}
+
+
+global proc int shapesData_getShapeIndex( string $shape )
+{
+    //
+    // get the weight index of the given target channel
+    //
+    global string $gShapes_bsNode;
+
+    int $result = -1;
+    string $list[] = `aliasAttr -q $gShapes_bsNode`;
+    for ($i = 0; $i < size($list); $i += 2)
+    {
+        if ($list[$i] == $shape)
+        {
+            $result = `match "[0-9]+" $list[$i + 1]`;
+            break;
+        }
+    }
+    return $result;
+}
+
+
+global proc int shapesData_getIndex( string $type, string $shape )
+{
+    //
+    // get the weight index of the given target channel
+    //
+    int $result = -1;
+    int $ids[] = shapesData_getDataIndices($type);
+    for ($id in $ids)
+    {
+        if (shapesData_getString($type, $id, "Target") == $shape)
+        {
+            $result = $id;
+            break;
+        }
+    }
+    return $result;
+}
+
+
+global proc int[] shapesData_getShapeIds( int $real, string $items[] )
+{
+    //
+    // get either the ids of the selected targets in the bsData array
+    // or the real indices of the targets on the blend shape node
+    // items[] allows to query a list of given target names
+    //
+    int $ids[];
+    if (!size($items))
+        $items = `treeView -q -si shpUI_targetTree`;
+    if (size($items))
+    {
+        for ($i = 0; $i < size($items); $i ++)
+        {
+            if (!$real)
+                $ids[size($ids)] = shapesData_getListIndex($items[$i]);
+            else
+                $ids[size($ids)] = shapesData_getShapeIndex($items[$i]);
+        }
+    }
+    return $ids;
+}
+
+
+global proc int shapesData_getListIndex( string $shape )
+{
+    //
+    // return the list index of the given target shape
+    //
+    string $list[] = shapesData_getTargetList();
+    int $id = shapesArray_stringArrayFind($shape, 0, $list);
+    return $id;
+}
+
+
+global proc int[] shapesData_getListIndices( string $shapes[] )
+{
+    //
+    // get the indices of the shapes in the list
+    //
+    int $ids[];
+    for ($shape in $shapes)
+        $ids[size($ids)] = shapesData_getListIndex($shape);
+    return $ids;
+}
+
+
+global proc string[] shapesData_getShapeList()
+{
+    //
+    // return the list of all target shape names
+    //
+    global string $gShapes_bsNode;
+
+    return shapesData_getShapeListFromNode($gShapes_bsNode);
+}
+
+
+global proc string[] shapesData_getShapeListFromNode( string $node)
+{
+    //
+    // Return the list of all target shape names for the given node.
+    //
+    string $shapes[] = `listAttr -m -st "w*" ($node + ".w")`;
+    return $shapes;
+}
+
+
+global proc string[] shapesData_getTargetList()
+{
+    //
+    // return the list of all items in the setup,
+    // which is basically the entire target list
+    //
+    string $list[] = `treeView -q -ch "" shpUI_targetTree`;
+    $list = stringArrayRemove({"No shapes"}, $list);
+    return $list;
+}
+
+
+global proc string[] shapesData_getAllAttrItems()
+{
+    //
+    // return the list of all attribute names
+    // relevant to the setup
+    //
+    string $aliasList[] = shapesData_getShapeList();
+    string $helperList[] = shapesData_getHelperList();
+    string $setList[] = shapesSet_getDrivenSets();
+    string $allListItems[] = stringArrayCatenate($aliasList, $helperList);
+    $allListItems = stringArrayCatenate($allListItems, $setList);
+    return $allListItems;
+}
+
+
+global proc shapesData_getCurrentShapeIdsAndNames( int $ids[], string $names[] )
+{
+    //
+    //  returns all current blend shape names with their respective indices
+    //
+    $names = shapesData_getShapeList();
+    for ($shape in $names)
+    {
+        int $id = shapesData_getShapeIndex($shape);
+        $ids[size($ids)] = $id;
+    }
+}
+
+
+global proc int[] shapesData_getTargetValues( int $index )
+{
+    //
+    // return a list of channel values for the target channel
+    // i.e. [6000, 5579, 5850]
+    //
+    global string $gShapes_bsNode;
+
+    if ($index == -1)
+        return {};
+
+    int $values[] = `getAttr -mi ($gShapes_bsNode + ".it[0].itg[" + $index + "].iti")`;
+    if (size($values) == 1)
+        return $values;
+    else
+    {
+        shapesArray_intArrayRemoveAtIndex(size($values) - 1, $values);
+        shapesArray_intArrayInsertAtIndex(0, $values, 6000);
+    }
+    return $values;
+}
+
+
+global proc int shapesData_hasWeights( int $index )
+{
+    //
+    // check if the given channel has blend shape weights
+    //
+    global string $gShapes_bsNode;
+
+    if ($index == -1)
+        return 0;
+
+    int $count = `getAttr -s ($gShapes_bsNode + ".it[0].itg[" + $index + "].targetWeights")`;
+    if ($count > 0)
+        return 1;
+    return 0;
+}
+
+
+global proc int shapesData_isHelper( string $channel )
+{
+    //
+    // check if the given channel is a helper
+    //
+    global string $gShapes_bsNode;
+
+    string $list[] = `listAttr -ud -k $gShapes_bsNode`;
+    return stringArrayContains($channel, $list);
+}
+
+
+global proc int shapesData_isDrivenSet( string $channel )
+{
+    //
+    // check if the given channel is a driven set
+    //
+    string $list[] = shapesSet_getDrivenSets();
+    return stringArrayContains($channel, $list);
+}
+
+
+global proc string[] shapesData_getHelperList()
+{
+    //
+    // return the list of all helper names
+    //
+    global string $gShapes_bsNode;
+
+    string $helper[] = `listAttr -ud -k $gShapes_bsNode`;
+    return $helper;
+}
+
+
+global proc string shapesData_getNameByIndex( int $index )
+{
+    //
+    // get the target name from the given weight index
+    //
+    global string $gShapes_bsNode;
+
+    string $result;
+    string $list[] = `aliasAttr -q $gShapes_bsNode`;
+    for ($i = 0; $i < size($list); $i += 2)
+    {
+        if (`match "[0-9]+" $list[$i + 1]` == $index)
+        {
+            $result = $list[$i];
+            break;
+        }
+    }
+    return $result;
+}
+
+
+global proc string shapesData_getListNameByIndex( int $index )
+{
+    //
+    // returns the item name of the target list at the given position
+    //
+    string $list[] = shapesData_getTargetList();
+    return $list[$index];
+}
+
+
+global proc string shapesData_getWeightsControllerConnection( int $index )
+{
+    //
+    // check if the given channel weights are
+    // controlled by a ramp weights or weights server node
+    //
+    global string $gShapes_bsNode;
+
+    if ($index == -1)
+        return "";
+
+    string $conn[] = `listConnections -s 1 -d 0 -type "rampWeights" ($gShapes_bsNode + ".it[0].itg[" + $index + "].targetWeights")`;
+    if (size($conn))
+    {
+        string $rampDriver[] = `listConnections -s 1 -d 0 -p 1 -c 1 -type "animCurve" $conn[0]`;
+        if (size($rampDriver))
+            return $rampDriver[0];
+        else
+        {
+            $rampDriver = `listConnections -s 1 -d 0 -p 1 -c 1 -type "weightDriver" $conn[0]`;
+            if (size($rampDriver))
+                return $rampDriver[0];
+            else
+                return $conn[0];
+        }
+    }
+    else
+    {
+        $conn = `listConnections -s 1 -d 0 -type "weightsServer" ($gShapes_bsNode + ".it[0].itg[" + $index + "].targetWeights")`;
+        if (size($conn))
+            return $conn[0];
+    }
+    return "";
+}
+
+
+global proc string shapesData_getType( string $item )
+{
+    //
+    // return the type of the given item
+    //
+    global string $gShapes_bsNode;
+
+    if (shapesData_getShapeIndex($item) != -1)
+        return "shape";
+    else
+        return shapesData_getNonShapeType($item);
+}
+
+
+global proc string shapesData_getNonShapeType( string $item )
+{
+    //
+    // return the type of the given item
+    //
+    global string $gShapes_bsNode;
+
+    if (shapesData_isHelper($item))
+    {
+        if (!`getAttr -l ($gShapes_bsNode + "." + $item)`)
+            return "helper";
+        else
+            return "group";
+    }
+    else if (shapesData_isDrivenSet($item))
+        return "drivenSet";
+
+    return "";
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// data node handling
+// ------------------------------------------------------------------------------------------------
+
+global proc int shapesData_getVersion( string $node )
+{
+    //
+    // return the version of the setup
+    //
+    string $attr = "SHAPESVersion";
+
+    if (`attributeQuery -ex -n $node $attr`)
+    {
+        int $version = `getAttr ($node + "." + $attr)`;
+        return $version;
+    }
+    return -1;
+}
+
+
+global proc string shapesData_createDataNode( string $bsNode )
+{
+    //
+    // create a new data node and connection
+    // for the given blend shape node
+    //
+    string $dataNode = $bsNode + "_data";
+    string $attr = "SHAPESData";
+
+    if (`attributeQuery -ex -n $bsNode $attr`)
+    {
+        // if the data connection attribute already exists
+        // check if it's connected; in this case discontinue
+        string $conn[] = `listConnections ($bsNode + "." + $attr)`;
+        if (size($conn))
+            return $conn[0];
+    }
+    else
+    {
+        // add the message attribute
+        shapesCommon_addMessageAttribute $bsNode $attr 0;
+    }
+
+    if (!`objExists $dataNode`)
+    {
+        // if the data node doesn't exist create it
+        $dataNode = `createNode network -n $dataNode`;
+        shapesCommon_addMessageAttribute $dataNode $attr 0;
+        connectAttr -f ($bsNode + "." + $attr) ($dataNode + "." + $attr);
+
+        shapesData_addVersionAttribute $dataNode;
+        shapesData_createDataAttributes $dataNode;
+    }
+
+    return $dataNode;
+}
+
+
+global proc shapesData_deleteDataNode( string $bsNode )
+{
+    //
+    // deletes the data node and the connecting
+    // message attribute on the blend shape node
+    //
+    string $dataNode = shapesData_getDataNode($bsNode);
+    if ($dataNode != "")
+        delete $dataNode;
+    catchQuiet(`deleteAttr ($bsNode + "." + "SHAPESData")`);
+}
+
+
+global proc shapesData_createDataAttributes( string $dataNode )
+{
+    //
+    // add the data attributes to the data node
+    //
+    string $types[] = {"shape", "helper", "group", "drivenSet"};
+
+    for ($t in $types)
+    {
+        addAttr -ln $t -m -at "compound" -nc 4 $dataNode;
+
+        addAttr -ln ($t + "Label") -at "long" -p $t $dataNode;
+        addAttr -ln ($t + "Range") -dt "floatArray" -p $t $dataNode;
+        addAttr -ln ($t + "Target") -dt "string" -p $t $dataNode;
+        addAttr -ln ($t + "TimeRange") -dt "floatArray" -p $t $dataNode;
+    }
+
+    shapesCommon_addStringAttribute($dataNode, "order");
+    shapesCommon_addStringAttribute($dataNode, "parent");
+    shapesCommon_addStringAttribute($dataNode, "expand");
+    shapesCommon_addStringAttribute($dataNode, "alias");
+    shapesCommon_addStringAttribute($dataNode, "driver");
+    shapesCommon_addStringAttribute($dataNode, "driverGroup");
+}
+
+
+global proc shapesData_addVersionAttribute( string $node )
+{
+    //
+    // add the version attribute to the given node
+    //
+    if (!`attributeQuery -ex -n $node "SHAPESVersion"`)
+    {
+        addAttr -longName "SHAPESVersion" -attributeType "long" $node;
+        setAttr -lock 1 ($node + ".SHAPESVersion") (shapesGlobal_getVersion());
+    }
+}
+
+
+global proc string shapesData_getDataNode( string $bsNode )
+{
+    //
+    // return the connected data node
+    //
+    global int $gShapes_isReferenced;
+    global string $gShapes_previousNodeName;
+
+    string $attr = "SHAPESData";
+    string $dataNode = "";
+
+    if ($bsNode == "None")
+        return $dataNode;
+
+    if (`attributeQuery -ex -n $bsNode $attr`)
+    {
+        string $conn[] = `listConnections ($bsNode + "." + $attr)`;
+        if (size($conn))
+        {
+            $dataNode = $conn[0];
+
+            // make sure that the data node is named correctly
+            // if the blend shape node is not referenced
+            if (!$gShapes_isReferenced && $dataNode != ($bsNode + "_data"))
+            {
+                // before renaming the data node use the current name to
+                // fix the naming of driver nodes;
+                // mostly it can be assumed that the names mismatch because
+                // the blend shape node has been renamed outside SHAPES and
+                // thus all drivers still carry the previous name;
+                // so it's possible to use the name of the data node to fix
+                // the driver names;
+                // this is not a 100% solution since the names can still
+                // be different for some other reason but it should cover
+                // most of these random cases
+                $gShapes_previousNodeName = substitute("_data", $dataNode, "");
+
+                $dataNode = `rename $dataNode ($bsNode + "_data")`;
+                br_displayMessage -warning ("The data node for " + $bsNode + " has been renamed to match the blend shape node's name");
+            }
+        }
+        else
+        {
+            if (`objExists ($bsNode + "_data")`)
+                connectAttr -f ($bsNode + "." + $attr) ($bsNode + "_data" + "." + $attr);
+            else
+            {
+                $dataNode = shapesData_createDataNode($bsNode);
+                br_displayMessage -warning ("The data node for the blend shape node " + $bsNode + " does not exist and a new one has been created");
+            }
+        }
+    }
+    else
+    {
+        $dataNode = shapesData_createDataNode($bsNode);
+    }
+
+    return $dataNode;
+}
+
+
+global proc shapesData_setInt( string $type, int $id, string $attr, int $value )
+{
+    //
+    // set an int attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    setAttr ($dataNode + "." + $type + "[" + $id + "]." + $type + $attr) $value;
+}
+
+
+global proc shapesData_setIntArray( string $type, int $id, string $attr, int $values[] )
+{
+    //
+    // set an int array attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    string $intStringList[];
+    for ($v in $values)
+        $intStringList[size($intStringList)] = $v;
+    string $intString = stringArrayToString($intStringList, " ");
+    eval("setAttr " + $dataNode + "." + $type + "[" + $id + "]." + $type + $attr + " -type \"Int32Array\" " + size($values) + " " + $intString);
+}
+
+
+global proc shapesData_setFloatArray( string $type, int $id, string $attr, float $values[] )
+{
+    //
+    // set a float array attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    string $floatStringList[];
+    for ($v in $values)
+        $floatStringList[size($floatStringList)] = $v;
+    string $floatString = stringArrayToString($floatStringList, " ");
+    eval("setAttr " + $dataNode + "." + $type + "[" + $id + "]." + $type + $attr + " -type \"floatArray\" " + size($values) + " " + $floatString);
+}
+
+
+global proc shapesData_setString( string $type, int $id, string $attr, string $value )
+{
+    //
+    // set a string attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    setAttr ($dataNode + "." + $type + "[" + $id + "]." + $type + $attr) -type "string" $value;
+}
+
+
+global proc shapesData_setStringAttr( string $attr, string $value )
+{
+    //
+    // set a string attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    setAttr ($dataNode + "." + $attr) -type "string" $value;
+}
+
+
+global proc shapesData_setStringArray( string $type, int $id, string $attr, string $values[] )
+{
+    //
+    // set a string array attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    string $stringList[];
+    for ($v in $values)
+        $stringList[size($stringList)] = $v;
+    string $itemString = stringArrayToString($stringList, " ");
+    eval("setAttr " + $dataNode + "." + $type + "[" + $id + "]." + $type + $attr + " -type \"stringArray\" " + size($values) + " " + $itemString);
+}
+
+
+global proc int shapesData_getInt( string $type, int $id, string $attr )
+{
+    //
+    // return the value of an int attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    int $result = `getAttr ($dataNode + "." + $type + "[" + $id + "]." + $type + $attr)`;
+    return $result;
+}
+
+
+global proc int[] shapesData_getIntArray( string $type, int $id, string $attr )
+{
+    //
+    // return the values of an int array attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    int $result[] = `getAttr ($dataNode + "." + $type + "[" + $id + "]." + $type + $attr)`;
+    return $result;
+}
+
+
+global proc float[] shapesData_getFloatArray( string $type, int $id, string $attr )
+{
+    //
+    // return the values of an int array attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    float $result[] = `getAttr ($dataNode + "." + $type + "[" + $id + "]." + $type + $attr)`;
+    return $result;
+}
+
+
+global proc string shapesData_getString( string $type, int $id, string $attr )
+{
+    //
+    // return the value of a string attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    string $result = `getAttr ($dataNode + "." + $type + "[" + $id + "]." + $type + $attr)`;
+    return $result;
+}
+
+
+global proc string[] shapesData_getStringAttr( string $attr )
+{
+    //
+    // return the value list of a string attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    string $data = `getAttr ($dataNode + "." + $attr)`;
+    string $result[] = stringToStringArray($data, ",");
+    return $result;
+}
+
+
+global proc string[] shapesData_getStringArray( string $type, int $id, string $attr )
+{
+    //
+    // return the values of a string array attribute
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    string $result[] = `getAttr ($dataNode + "." + $type + "[" + $id + "]." + $type + $attr)`;
+    return $result;
+}
+
+
+global proc shapesData_deleteItem( string $type, int $id )
+{
+    //
+    // remove a data entry from the data node
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    removeMultiInstance ($dataNode + "." + $type + "[" + $id + "]");
+}
+
+
+global proc int shapesData_getDataSize( string $type )
+{
+    //
+    // return the number of data elements on the data node
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    int $count = `getAttr -s ($dataNode + "." + $type)`;
+    return $count;
+}
+
+
+global proc int[] shapesData_getDataIndices( string $type )
+{
+    //
+    // return the number of data elements on the data node
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    int $ids[] = `getAttr -mi ($dataNode + "." + $type)`;
+    return $ids;
+}
+
+
+global proc shapesData_deleteAllDataIndices()
+{
+    //
+    // return the number of data elements on the data node
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    string $types[] = {"shape", "helper", "group", "drivenSet"};
+    for ($t in $types)
+    {
+        int $ids[] = shapesData_getDataIndices($t);
+        for ($id in $ids)
+            removeMultiInstance -b 1 ($dataNode + "." + $t + "[" + $id + "]");
+    }
+}
+
+
+global proc int shapesData_getEmptyTargetIndex( string $type )
+{
+    //
+    // returns a valid index for adding a helper
+    // finds orphan indices if helper have been deleted
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+    int $index = -1;
+    int $ids[] = shapesData_getDataIndices($type);
+    for ($i = 0; $i < size($ids); $i ++)
+    {
+        if ($i != $ids[$i] && $index == -1)
+        {
+            $index = $i;
+            break;
+        }
+    }
+    if ($index == -1)
+        $index = size($ids);
+    return $index;
+}
+
+
+global proc float[] shapesData_getItemRange( string $item )
+{
+    //
+    // return the range for the given list item as floats
+    //
+    global string $gShapes_bsNode;
+
+    string $dataType = shapesData_getType($item);
+    int $dataIndex = shapesData_getIndex($dataType, $item);
+
+    // The data type for storing the range changed from int to float
+    // with version 5.6.0. Because of setups built with earlier versions
+    // both types need to get covered.
+    float $range[];
+    if (shapesData_getRangeAttributeType(($gShapes_bsNode + "_data"), $dataIndex) == "Int32Array")
+    {
+        int $values[] = shapesData_getItemRangeInt($item, $dataType, $dataIndex);
+        for ($i = 0; $i < size($values); $i ++)
+            $range[$i] = $values[$i];
+    }
+    else
+        $range = shapesData_getItemRangeFloat($item, $dataType, $dataIndex);
+
+    return $range;
+}
+
+
+global proc int[] shapesData_getItemRangeInt( string $item, string $type, int $id )
+{
+    //
+    // return the range for the given list item as ints
+    //
+    int $valueRange[] = {0, 1};
+    int $dataRange[] = shapesData_getIntArray($type, $id, "Range");
+    if (size($dataRange) == 2)
+        $valueRange = $dataRange;
+    return $valueRange;
+}
+
+
+global proc float[] shapesData_getItemRangeFloat( string $item, string $type, int $id )
+{
+    //
+    // return the range for the given list item as floats
+    //
+    float $valueRange[] = {0, 1};
+    float $range[] = shapesData_getFloatArray($type, $id, "Range");
+    if (size($range) == 2)
+        $valueRange = $range;
+    return $valueRange;
+}
+
+
+global proc float[] shapesData_getItemTimeRange( string $item )
+{
+    //
+    // return the time range for the given list item
+    //
+    string $dataType = shapesData_getType($item);
+    int $dataIndex = shapesData_getIndex($dataType, $item);
+    float $range[] = shapesData_getFloatArray($dataType, $dataIndex, "TimeRange");
+    return $range;
+}
+
+
+global proc shapesData_addDataItem( string $type, int $index, string $name, int $label )
+{
+    //
+    // adds a new item to the data array
+    //
+    shapesData_setString($type, $index, "Target", $name);
+    shapesData_setInt($type, $index, "Label", $label);
+}
+
+
+global proc shapesData_removeListItem( string $item )
+{
+    //
+    // remove the item from the string lists
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    string $itemList[] = stringToStringArray(`getAttr ($dataNode + "." + "order")`, ",");
+    string $parentList[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+    string $expandList[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+
+    int $id = shapesArray_stringArrayFind($item, 0, $itemList);
+    stringArrayRemoveAtIndex($id, $itemList);
+    stringArrayRemoveAtIndex($id, $parentList);
+    stringArrayRemoveAtIndex($id, $expandList);
+
+    // remove all parent information on the data node
+    // which refer to any removed item
+    for ($i = 0; $i < size($parentList); $i ++)
+    {
+        if ($parentList[$i] == $item)
+            $parentList[$i] = "none";
+    }
+
+    setAttr ($dataNode + "." + "order") -type "string" (stringArrayToString($itemList, ","));
+    setAttr ($dataNode + "." + "parent") -type "string" (stringArrayToString($parentList, ","));
+    setAttr ($dataNode + "." + "expand") -type "string" (stringArrayToString($expandList, ","));
+}
+
+
+global proc int shapesData_hasLegacyData()
+{
+    //
+    // returns true if the current blend shape node
+    // contains the old data structure
+    //
+    global string $gShapes_bsNode;
+
+    string $attr = "SHAPESData";
+
+    int $old = 0;
+    if (!`attributeQuery -ex -n $gShapes_bsNode $attr` && `attributeQuery -ex -n $gShapes_bsNode "SHAPESShapes"`)
+        $old = 1;
+    return $old;
+}
+
+
+global proc shapesData_migrateData()
+{
+    //
+    // transfer the user data from the blend shap node
+    // to the data node
+    //
+    global string $gShapes_bsNode;
+
+    string $attr = "SHAPESData";
+
+    int $migrate = 0;
+    string $msg = "Do you want to update the blend shape node?\n\nUpdated node information will not be readable by previous versions of SHAPES.\n\nThis affects ordering, grouping and labels.\n\nBlend shape targets, weights, drivers and other important data are left unaltered.\n\n";
+    if (shapesCommon_confirmWindow($msg, "OK"))
+        $migrate = 1;
+
+    if ($migrate)
+    {
+        // add the default attributes in case of older setups
+        shapesData_addLibraryAttributes;
+
+        string $dataNode = shapesData_createDataNode($gShapes_bsNode);
+
+        // get the custom data from the blend shape node
+        string $items[] = stringToStringArray(`getAttr ($gShapes_bsNode + "." + "SHAPESShapes")`, ",");
+        string $parents[] = stringToStringArray(`getAttr ($gShapes_bsNode + "." + "SHAPESParents")`, ",");
+        string $labels[] = stringToStringArray(`getAttr ($gShapes_bsNode + "." + "SHAPESLabels")`, ",");
+        string $ranges[] = stringToStringArray(`getAttr ($gShapes_bsNode + "." + "SHAPESRanges")`, ",");
+        string $timeRanges[] = stringToStringArray(`getAttr ($gShapes_bsNode + "." + "SHAPESTimeRanges")`, ",");
+
+        // get the current targets and helpers
+        string $targets[] = shapesData_getShapeList();
+        string $helper[] = shapesData_getHelperList();
+        string $drivenSets[] = shapesSet_getDrivenSets();
+
+        string $parentList[];
+        string $expandList[];
+
+        // transfer the data
+        int $helperId = 0;
+        int $groupId = 0;
+        int $drivenSetId = 0;
+        for ($i = 0; $i < size($items); $i ++)
+        {
+            int $id = -1;
+            string $type;
+            if (stringArrayContains($items[$i], $targets))
+            {
+                $id = shapesData_getShapeIndex($items[$i]);
+                $type = "shape";
+            }
+            else if (stringArrayContains($items[$i], $helper))
+            {
+                if (!`getAttr -l ($gShapes_bsNode + "." + $items[$i])`)
+                {
+                    $id = $helperId;
+                    $helperId ++;
+                    $type = "helper";
+                }
+                else
+                {
+                    $id = $groupId;
+                    $groupId ++;
+                    $type = "group";
+                }
+            }
+            else if (stringArrayContains($items[$i], $drivenSets))
+            {
+                $id = $drivenSetId;
+                $drivenSetId ++;
+                $type = "drivenSet";
+            }
+
+            if ($id != -1)
+            {
+                shapesData_setString($type, $id, "Target", $items[$i]);
+
+                string $parentData[] = stringToStringArray($parents[$i], ":");
+                if (!size($parentData))
+                    $parentData = {"none", "1"};
+                else if (size($parentData) == 1)
+                    stringArrayInsertAtIndex(0, $parentData, "none");
+                $parentList[size($parentList)] = $parentData[0];
+                $expandList[size($expandList)] = $parentData[1];
+
+                int $labelData = -1;
+                if ($labels[$i] != "")
+                    $labelData = $labels[$i];
+                shapesData_setInt($type, $id, "Label", $labelData);
+
+                string $rangeData[] = stringToStringArray($ranges[$i], ":");
+                shapesData_setFloatArray($type, $id, "Range", (shapesArray_stringArrayToFloatArray($rangeData)));
+
+                if ($timeRanges[$i] != "-:-")
+                {
+                    float $timeRangeData[];
+                    string $parts[] = stringToStringArray($timeRanges[$i], ";");
+                    for ($p in $parts)
+                    {
+                        string $items[] = stringToStringArray($p, ":");
+                        for ($item in $items)
+                            $timeRangeData[size($timeRangeData)] = $item;
+                    }
+
+                    shapesData_setFloatArray($type, $id, "TimeRange", $timeRangeData);
+                }
+            }
+        }
+
+        // transfer all additional data
+        string $orderString = `getAttr ($gShapes_bsNode + "." + "SHAPESShapes")`;
+        setAttr ($dataNode + "." + "order") -type "string" $orderString;
+
+        setAttr ($dataNode + "." + "parent") -type "string" (stringArrayToString($parentList, ","));
+        setAttr ($dataNode + "." + "expand") -type "string" (stringArrayToString($expandList, ","));
+
+        string $storedAliasString = `getAttr ($gShapes_bsNode + "." + "SHAPESAliases")`;
+        setAttr ($dataNode + "." + "alias") -type "string" $storedAliasString;
+
+        string $driverString = `getAttr ($gShapes_bsNode + "." + "SHAPESDrivers")`;
+        setAttr ($dataNode + "." + "driver") -type "string" $driverString;
+
+        string $driverGroupString = `getAttr ($gShapes_bsNode + "." + "SHAPESDriverGroups")`;
+        setAttr ($dataNode + "." + "driverGroup") -type "string" $driverGroupString;
+
+        // delete the old attributes
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESShapes");
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESParents");
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESLabels");
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESRanges");
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESTimeRanges");
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESAliases");
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESDrivers");
+        deleteAttr ($gShapes_bsNode + "." + "SHAPESDriverGroups");
+    }
+}
+
+
+global proc shapesData_addLibraryAttributes()
+{
+    //
+    // adds a library attributes to the blendshape node
+    //
+    global string $gShapes_bsNode;
+
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESShapes");
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESParents");
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESLabels");
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESRanges");
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESTimeRanges");
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESAliases");
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESDrivers");
+    shapesCommon_addStringAttribute($gShapes_bsNode, "SHAPESDriverGroups");
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// collect blend shape data
+// ------------------------------------------------------------------------------------------------
+
+global proc string[] shapesData_getBlendShapeTargets()
+{
+    //
+    // returns the targets of the given blendshape node in custom order
+    //
+    global int $gShapes_newMeshLoaded;
+    global string $gShapes_bsNode;
+    global string $gShapes_showUI;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    // list aliases and weights in pairs but unordered
+    string $aliasWeightPair[] = `aliasAttr -q $gShapes_bsNode`;
+
+    // list all targets in order with their alias names if existing
+    string $aliasList[] = shapesData_getShapeList();
+
+    // -----------------------------------------------------------
+    // general issue:
+    // if a target channel has no alias name the aliasAttr
+    // command fails to list the channel because there is no
+    // alias/weight pair;
+    // however, getting the shape list shows the underlying
+    // weight[] attribute because the alias is missing
+    // -----------------------------------------------------------
+
+    // get the stored aliases from the blend shape node if existing
+    string $storedAliasString;
+    if (`attributeQuery -n $dataNode -ex "alias"`)
+        $storedAliasString = `getAttr ($dataNode + "." + "alias")`;
+    string $storedAliases[];
+    string $storedWeights[];
+    string $aliasArray[] = stringToStringArray($storedAliasString, " ");
+    for ($i = 0; $i < size($aliasArray); $i += 2)
+    {
+        $storedAliases[size($storedAliases)] = $aliasArray[$i];
+        $storedWeights[size($storedWeights)] = $aliasArray[$i + 1];
+    }
+
+    // -----------------------------------------------------------
+    // make sure that the shape list doesn't contain any weight
+    // attributes but only alias names;
+    // for this the SHAPESAliases attribute exists which contains
+    // the weight/alias pair from a previous edit;
+    // with this weight/alias pair it's possible to reconstruct
+    // any missing alias name
+    // -----------------------------------------------------------
+
+    string $unknown[];
+    string $known[];
+    for ($name in $aliasList)
+    {
+        if (`gmatch $name "*weight\\[*"`)
+        {
+            string $newName = "";
+            if (stringArrayContains($name, $storedWeights))
+            {
+                int $id = shapesArray_stringArrayFind($name, 0, $storedWeights);
+                $newName = $storedAliases[$id];
+                $known[size($known)] = $newName;
+            }
+            else
+            {
+                $newName = "unknownAlias_" + `match "[0-9]+" $name`;
+                $unknown[size($unknown)] = $newName;
+            }
+            $aliasWeightPair[size($aliasWeightPair)] = $newName;
+            $aliasWeightPair[size($aliasWeightPair)] = $name;
+            aliasAttr $newName ($gShapes_bsNode + "." + $name);
+        }
+    }
+
+    // -----------------------------------------------------------
+    // check for empty channels
+    // -----------------------------------------------------------
+    string $deletedNames[];
+    for ($a = 0; $a < size($aliasWeightPair); $a += 2)
+    {
+        // check if the target channel contains blend shape values
+        int $index = `match "[0-9]+" $aliasWeightPair[$a + 1]`;
+        int $valueArray[] = `getAttr -mi ($gShapes_bsNode + ".it[0].itg[" + $index + "].iti")`;
+        // remove the channel if there are no existing values
+        if (!size($valueArray))
+        {
+            $deletedNames[size($deletedNames)] = $aliasWeightPair[$a];
+            removeMultiInstance -b 1 ($gShapes_bsNode + ".w[" + $index + "]");
+            aliasAttr -rm ($gShapes_bsNode + "." + $aliasWeightPair[$a]);
+        }
+    }
+
+    if ($gShapes_newMeshLoaded && size($deletedNames))
+        br_displayMessage -warning ("Some target shapes appear to have no deformation data: " + (stringArrayToString($deletedNames, " ")));
+
+    // remove the deleted channels from the info lists
+    $known = stringArrayRemove($deletedNames, $known);
+    $unknown = stringArrayRemove($deletedNames, $unknown);
+
+    // get the list with the updated aliases
+    string $allListItems[] = shapesData_getAllAttrItems();
+
+    // -----------------------------------------------------------
+    // account for any deleted or new target channels
+    // -----------------------------------------------------------
+    string $listItems[];
+
+    string $orderItems[] = stringToStringArray(`getAttr ($dataNode + "." + "order")`, ",");
+    string $parentItems[] = stringToStringArray(`getAttr ($dataNode + "." + "parent")`, ",");
+    string $expandItems[] = stringToStringArray(`getAttr ($dataNode + "." + "expand")`, ",");
+
+    string $parentList[];
+    string $expandList[];
+
+    if (size($orderItems))
+    {
+        // filter out all target names in the stored list, which are not actual channels anymore
+        // example: targets have been deleted but the custom list still contains the names
+        for ($i = 0; $i < size($orderItems); $i ++)
+        {
+            if (stringArrayContains($orderItems[$i], $allListItems))
+            {
+                if ($expandItems[$i] == "")
+                    $expandItems[$i] = "1";
+                $listItems[size($listItems)] = $orderItems[$i];
+                $parentList[size($parentList)] = $parentItems[$i];
+                $expandList[size($expandList)] = $expandItems[$i];
+            }
+            else
+                $deletedNames[size($deletedNames)] = $orderItems[$i];
+        }
+        // append all channel names which are not in the stored list
+        // example: targets have been added but not stored in the custom list
+        for ($i = 0; $i < size($allListItems); $i ++)
+        {
+            if (!stringArrayContains($allListItems[$i], $orderItems))
+            {
+                $listItems[size($listItems)] = $allListItems[$i];
+                $parentList[size($parentList)] = "none";
+                $expandList[size($expandList)] = "1";
+
+                $aliasWeightPair = `aliasAttr -q $gShapes_bsNode`;
+                for ($a = 0; $a < size($aliasWeightPair); $a += 2)
+                {
+                    if ($aliasWeightPair[$a] == $allListItems[$i])
+                    {
+                        int $index = `match "[0-9]+" $aliasWeightPair[$a + 1]`;
+                        shapesData_addDataItem("shape", $index, $aliasWeightPair[$a], -1);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        // in case there is no order stored fill the lists with default values
+        // and also push the default values to the attributes
+        $aliasWeightPair = `aliasAttr -q $gShapes_bsNode`;
+        for ($a = 0; $a < size($aliasWeightPair); $a += 2)
+        {
+            int $index = `match "[0-9]+" $aliasWeightPair[$a + 1]`;
+            shapesData_addDataItem("shape", $index, $aliasWeightPair[$a], -1);
+        }
+
+        string $helperList[] = shapesData_getHelperList();
+        string $setList[] = shapesSet_getDrivenSets();
+        for ($helper in (stringArrayCatenate($helperList, $setList)))
+        {
+            string $type = shapesData_getNonShapeType($helper);
+            int $index = shapesData_getEmptyTargetIndex($type);
+            shapesData_addDataItem($type, $index, $helper, -1);
+        }
+
+        for ($i = 0; $i < size($allListItems); $i ++)
+        {
+            $listItems[size($listItems)] = $allListItems[$i];
+            $parentList[size($parentList)] = "none";
+            $expandList[size($expandList)] = "1";
+        }
+    }
+
+    // -----------------------------------------------------------
+    // remove any deleted items from the data node
+    // -----------------------------------------------------------
+    string $types[] = {"shape", "helper", "group", "drivenSet"};
+    for ($type in $types)
+    {
+        int $ids[] = shapesData_getDataIndices($type);
+        for ($i in $ids)
+        {
+            string $target = `getAttr ($dataNode + "." + $type + "[" + $i + "]." + $type + "Target")`;
+            if (stringArrayContains($target, $deletedNames))
+                removeMultiInstance ($dataNode + "." + $type + "[" + $i + "]");
+        }
+    }
+
+    // -----------------------------------------------------------
+    // remove all parent information on the data node which refer
+    // back to any removed items
+    // -----------------------------------------------------------
+    for ($i = 0; $i < size($parentList); $i ++)
+    {
+        if (stringArrayContains($parentList[$i], $deletedNames))
+            $parentList[$i] = "none";
+    }
+
+    setAttr ($dataNode + "." + "parent") -type "string" (stringArrayToString($parentList, ","));
+    setAttr ($dataNode + "." + "expand") -type "string" (stringArrayToString($expandList, ","));
+
+    // -----------------------------------------------------------
+    // save the weight/alias pair to the data node
+    // -----------------------------------------------------------
+    shapesData_storeAliasList;
+
+    // -----------------------------------------------------------
+    // output the info about any reconstructed alias names
+    // -----------------------------------------------------------
+    if ($gShapes_newMeshLoaded)
+    {
+        if (size($known))
+            br_displayMessage -warning ("Aliases have been missing and were reconstructed with: " + (stringArrayToString($known, " ")));
+        if (size($unknown))
+            br_displayMessage -warning ("Aliases have been missing and were replaced with: " + (stringArrayToString($unknown, " ")));
+    }
+
+    return $listItems;
+}
+
+
+global proc shapesData_storeAliasList()
+{
+    //
+    // store the current aliases as a string on the data node
+    //
+    global string $gShapes_bsNode;
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    string $aliasWeightPair[] = `aliasAttr -q $gShapes_bsNode`;
+    if (size($aliasWeightPair))
+        setAttr ($dataNode + "." + "alias") -type "string" (stringArrayToString($aliasWeightPair, " "));
+}
+
+
+global proc shapesData_updateBlendShapeDeformerIndexList()
+{
+    //
+    // update the blend shape node index list in case a new mesh is loaded;
+    // necessary to make sure that all weight attributes are found during the target listing process
+    //
+    global int $gShapes_newMeshLoaded;
+    global string $gShapes_bsNode;
+
+    // updates the list of target indices for the blend shape node
+    // this is necessary in case an target weight alias is missing,
+    // because then the weight won't get listed with a listAttr command;
+    // getting the indices from the MFnBlendShapeDeformer returns all
+    // indices regardless and these can be compared to the indices returned
+    // by the aliasAttr command;
+    // any mismatching indices can then be updated with a setAttr command
+    // because this will make the weight listable again;
+    // the workflow is a workaround because Maya seems to be buggy here
+
+    if ($gShapes_newMeshLoaded && $gShapes_bsNode != "" && $gShapes_bsNode != "None")
+    {
+        int $indexList[] = `br_getBlendShapeIndices $gShapes_bsNode`;
+
+        string $aliasWeightPair[] = `aliasAttr -q $gShapes_bsNode`;
+        int $idList[];
+        for ($a = 0; $a < size($aliasWeightPair); $a += 2)
+        {
+            int $index = `match "[0-9]+" $aliasWeightPair[$a + 1]`;
+            $idList[size($idList)] = $index;
+        }
+        for ($i in $indexList)
+        {
+            if (!shapesArray_intArrayContains($i, $idList))
+            {
+                string $plug = $gShapes_bsNode + ".w[" + $i + "]";
+                float $value = `getAttr $plug`;
+                string $conn[] = `listConnections -s 1 -d 0 -p 1 -c 1 $plug`;
+                if (size($conn))
+                    disconnectAttr $conn[1] $conn[0];
+                setAttr $plug 1;
+                setAttr $plug $value;
+                if (size($conn))
+                    connectAttr -f $conn[1] $conn[0];
+            }
+        }
+    }
+}
+
+
+global proc shapesData_matchIndices()
+{
+    //
+    // reorders the indices on the data node so that
+    // they match the indices of the target channels;
+    // necessary if the blend shape targets have been added or removed
+    // in an alternative way
+    //
+    global int $gShapes_rebuiltSetup;
+    global string $gShapes_bsNode;
+
+    // rebuilding the setup creates a fresh target order
+    // which triggers this matching process
+    // but the confirm window can be skipped in this case
+    if (!$gShapes_rebuiltSetup)
+    {
+        string $msg = "It appears that the blend shape node\nhas been edited outside of SHAPES.\n\nThis is not recommended.\n\nPlease use the provided functionality\nto add or remove target shapes.\n\nDo you want to update the SHAPES\ndata node to reflect these edits?";
+        if (!shapesCommon_confirmWindow($msg, "OK"))
+            return;
+    }
+
+    string $dataNode = shapesData_getDataNode($gShapes_bsNode);
+
+    string $temp[] = `duplicate $dataNode`;
+    string $dataTemp = $temp[0];
+
+    string $aliasList[] = shapesData_getShapeList();
+
+    int $allIds[] = shapesData_getDataIndices("shape");
+    for ($id in $allIds)
+        removeMultiInstance -b 1 ($dataNode + ".shape[" + $id + "]");
+
+    for ($id in $allIds)
+    {
+        int $label = `getAttr ($dataTemp + ".shape[" + $id + "].shapeLabel")`;
+        float $rangeFloat[];
+        int $rangeInt[];
+        if (shapesData_getRangeAttributeType(($gShapes_bsNode + "_data"), $id) == "Int32Array")
+            $rangeInt = `getAttr ($dataTemp + ".shape[" + $id + "].shapeRange")`;
+        else
+            $rangeFloat = `getAttr ($dataTemp + ".shape[" + $id + "].shapeRange")`;
+        string $target = `getAttr ($dataTemp + ".shape[" + $id + "].shapeTarget")`;
+        float $tRange[] = `getAttr ($dataTemp + ".shape[" + $id + "].shapeTimeRange")`;
+
+        if ($target != "")
+        {
+            int $index = shapesData_getShapeIndex($target);
+
+            shapesData_addDataItem("shape", $index, $target, $label);
+            if (shapesData_getRangeAttributeType(($gShapes_bsNode + "_data"), $id) == "Int32Array")
+                shapesData_setIntArray("shape", $index, "Range", $rangeInt);
+            else
+                shapesData_setFloatArray("shape", $index, "Range", $rangeFloat);
+            shapesData_setFloatArray("shape", $index, "TimeRange", $tRange);
+
+            $aliasList = stringArrayRemove({$target}, $aliasList);
+        }
+    }
+
+    for ($target in $aliasList)
+    {
+        int $index = shapesData_getShapeIndex($target);
+        shapesData_addDataItem("shape", $index, $target, -1);
+        br_displayMessage -info ("Added " + $target + " to the data node.");
+    }
+
+    delete $dataTemp;
+
+    // refresh the target list
+    shapesList_listBlendShapeTargets 1;
+}
+
+
+global proc int shapesData_verifyIndices()
+{
+    //
+    // checks if the indices of the data node match the target indices;
+    // returns 0 if one or more indices don't match
+    //
+    global string $gShapes_bsNode;
+
+    if ($gShapes_bsNode == "" || $gShapes_bsNode == "None")
+        return 1;
+
+    int $matched = 1;
+    int $allIds[] = shapesData_getDataIndices("shape");
+    for ($id in $allIds)
+    {
+        string $target = shapesData_getString("shape", $id, "Target");
+        if (shapesData_getShapeIndex($target) != $id)
+        {
+            $matched = 0;
+            break;
+        }
+    }
+    return $matched;
+}
+
+global proc string shapesData_getRangeAttributeType( string $node, int $index )
+{
+    //
+    // Return the attribute type of the shape range which has changed
+    // with version 5.6.0 from int to float.
+    //
+    $cmd = "from pySHAPES.nodes import data; data.getShapeRangeAttrType('" + $node + "', " + $index + ")";
+    return `python $cmd`;
+}
+
+
+global proc SHAPES_data(){}
