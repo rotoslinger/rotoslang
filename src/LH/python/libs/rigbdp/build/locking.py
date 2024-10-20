@@ -5,7 +5,7 @@ import importlib, os, sys, json
 from maya import cmds
 
 # bdp
-from rigbdp.build.export import get_scene_dir
+from rigbdp.export.skin import get_scene_dir
 
 ############################################################################################################################################################
 ##################################################################### Rig Unlocking ########################################################################
@@ -115,6 +115,31 @@ def list_skin_cluster_influences(mesh, debug = True):
 # if influences:
 #     print(influences)
 ######################################################################################
+
+
+def hidden_in_outliner_off():
+    '''
+    Set isHistoricallyInteresting attribute for all nodes in scene.
+    The historicallyInteresting attribute is 0 on nodes which are only interesting to programmers.
+    1 for the TDs, 2 for the users.
+    param value        Set ihi to 0: off, 1:on, 2:also on
+    setIsHistoricallyInteresting(value=0)  # hide history from channelbox
+    setIsHistoricallyInteresting(value=2)  # show history (a bit more than Maya's default)
+    '''
+    allNodes = cmds.ls()
+    failed = []
+    for node in allNodes:
+        plug = f'{node}.hiddenInOutliner'
+        if cmds.objExists(plug):
+            try:
+                print('Unlocking!!')
+                cmds.setAttr(plug, lock=False)
+                cmds.setAttr(plug, False)
+            except:
+                failed.append(node)
+    if failed:
+        print(f'Skipped the following nodes {failed}')
+    print("script has ran")
 
 
 
@@ -528,7 +553,7 @@ def check_attr(node_type="", node_attr="hiddenInOutliner",
                get_attr_val=True,
                select_nodes=True,
                value_filter = True,
-               set_new_value = True,
+               set_new_value = False,
                new_value = 0):
     # disp_dict = dict()
     # Searching all dag nodes for "overrideDisplayType" attribute

@@ -71,7 +71,7 @@ def undo_ignore(func):
     return wrapper
 
 def suppress_warnings(func):
-    # Ifnores undo just for the decorated method
+    # Ignores undo just for the decorated method
     @wraps(func)
     def wrapper(*args, **kwargs):
         cmds.scriptEditorInfo(suppressWarnings=True)
@@ -79,3 +79,16 @@ def suppress_warnings(func):
         cmds.scriptEditorInfo(suppressWarnings=False)
         return result
     return wrapper
+
+def print_bookends(func):
+    """
+    Decorator to print bookend lines before and after the output of the function.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print('\n###################################################################')
+        func(*args, **kwargs)
+        print('###################################################################\n')
+    return wrapper
+
+

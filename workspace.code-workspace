@@ -8,6 +8,12 @@
 		},
 		{
 			"path": "../../../../../Program Files/Autodesk/Maya2024/plug-ins/camd/scripts"
+		},
+		{
+			"path": "../../BDP/shapes/SHAPES/SHAPES/modules/SHAPES/scripts"
+		},
+		{
+			"path": "../../BDP/cha/SHAPES_transfer"
 		}
 	],
 	"settings": {

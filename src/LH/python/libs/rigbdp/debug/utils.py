@@ -1,6 +1,6 @@
 import time, os, shutil, sys, re, json
 from maya import cmds
-from rigbdp.build.file import get_scene_dir
+from rigbdp.import_export.file import get_scene_dir
 
 ######################################### Backup Utils ################################################
 DELIMITER = os.path.sep  # Use the appropriate path delimiter for the OS

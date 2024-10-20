@@ -1,7 +1,6 @@
 from maya import cmds
 from functools import wraps
 
-
 def undo_chunk(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -20,7 +19,6 @@ def undo_ignore(func):
         cmds.undoInfo(stateWithoutFlush = True)
         return result
     return wrapper
-
 
 def suppress_warnings(func):
     # Ifnores undo just for the decorated method

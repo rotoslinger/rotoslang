@@ -1,6 +1,6 @@
 import os, importlib
 import maya.cmds as cmds
-from rigbdp.build import file as file_utils
+from rigbdp.import_export import file as file_utils
 importlib.reload(file_utils)
 
 class RigBuilder:
@@ -122,7 +122,7 @@ class RigBuilder:
         # For debugging, this method can be called from outside the class by using builder._RigBuilder__initialize_directories()
 
         # Call the standalone function and get the dynamically created directory variables
-        dir_vars = file_utils.create_folder_structure(self.local_build_dir, dirs=self.data_dirs, debug=self.debug)
+        dir_vars = file_utils.create_dir_structure(self.local_build_dir, dirs=self.data_dirs, debug=self.debug)
 
         # The next section dynamically creates the instance vars below.
         # I am adding here to give them more visibility
@@ -171,3 +171,21 @@ class RigBuilder:
 # builder.import_model(filepath="path_to_model")
 # builder.import_weight(filepath="path_to_weight_file")
 # builder.import_correctives(filepath="path_to_corrective_shapes")
+############################################################################################################################################################
+# import importlib
+# from rigbdp.build import rigbuild
+# from rigbdp.import_export import file as file_utils
+# importlib.reload(rigbuild)
+# importlib.reload(file_utils)
+
+# local_build_dir=r"C:\Users\harri\Documents\BDP\cha\build_test_dir"
+
+# builder = rigbuild.RigBuilder(local_build_dir=r"C:\Users\harri\Documents\BDP\cha\teshi_TESTBUILD",
+#                                 src_rig_file = r"C:\Users\harri\Documents\BDP\cha\teshi_TESTBUILD\teshi_RIG_200_v006.ma",debug=True)
+# # Create folder structure
+# builder._RigBuilder__initialize_directories()
+
+# builder.new_scene()
+# builder.import_rig()
+
+############################################################################################################################################################

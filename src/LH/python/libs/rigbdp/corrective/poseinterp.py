@@ -1,8 +1,136 @@
+import importlib
+import math
+
 import maya.cmds as cmds
 import maya.mel as mel
-import importlib
+import maya.api.OpenMaya as om2
+
 import decorator
 importlib.reload(decorator)
+
+
+def matrix_to_euler_and_translate(flat_matrix):
+    """
+    Args:
+        flat_matrix (list): A flat list representing a 4x4 matrix (16 elements).
+    
+    Returns:
+        tuple: (translation, euler_rotation) where translation is a tuple of x, y, z values
+               and euler_rotation is a tuple of x, y, z rotation in degrees.
+    """
+    
+    # Create an MMatrix from the flat list
+    m_matrix = om2.MMatrix(flat_matrix)
+    
+    # Create MTransformationMatrix from MMatrix
+    m_transform_matrix = om2.MTransformationMatrix(m_matrix)
+    
+    # Extract translation
+    translation = m_transform_matrix.translation(om2.MSpace.kWorld)
+    translation = (translation.x, translation.y, translation.z)
+    
+    # Extract Euler rotation (in radians) and convert to degrees
+    euler_rotation_rad = m_transform_matrix.rotation(asQuaternion=False)
+    euler_rotation_deg = (
+        om2.MAngle(euler_rotation_rad.x).asDegrees(),
+        om2.MAngle(euler_rotation_rad.y).asDegrees(),
+        om2.MAngle(euler_rotation_rad.z).asDegrees()
+    )
+    
+    return translation, euler_rotation_deg
+
+def euler_and_translate_to_matrix(translation, euler_rotation):
+    """
+    Args:
+        translation (tuple): The translation as (x, y, z).
+        euler_rotation (tuple): The Euler rotation in degrees as (x, y, z).
+    
+    Returns:
+        list: A flat list representing a 4x4 matrix (16 elements).
+    """
+    
+    # Convert Euler rotation to radians
+    euler_rotation_rad = (
+        om2.MAngle(euler_rotation[0], om2.MAngle.kDegrees).asRadians(),
+        om2.MAngle(euler_rotation[1], om2.MAngle.kDegrees).asRadians(),
+        om2.MAngle(euler_rotation[2], om2.MAngle.kDegrees).asRadians()
+    )
+    
+    # Create an MTransformationMatrix
+    m_transform_matrix = om2.MTransformationMatrix()
+    
+    # Set translation
+    m_transform_matrix.setTranslation(om2.MVector(translation), om2.MSpace.kWorld)
+    
+    # Set Euler rotation
+    m_euler_rotation = om2.MEulerRotation(euler_rotation_rad)
+    m_transform_matrix.setRotation(m_euler_rotation)
+    
+    # Convert MTransformationMatrix back to MMatrix
+    m_matrix = m_transform_matrix.asMatrix()
+    
+    # Convert MMatrix to a flat list (16 elements)
+    flat_matrix = [m_matrix(i, j) for i in range(4) for j in range(4)]
+    
+    return flat_matrix
+
+# For visualizing matrices
+
+def euler_to_matrix(rx=0, ry=0, rz=0):
+    """
+    Args:
+        x_deg (float): Rotation around the X-axis in degrees.
+        y_deg (float): Rotation around the Y-axis in degrees.
+        z_deg (float): Rotation around the Z-axis in degrees.
+    
+    Prints:
+        A readable 4x4 transformation matrix.
+    """
+    # Convert degrees to radians
+    x_rad = math.radians(rx)
+    y_rad = math.radians(ry)
+    z_rad = math.radians(rz)
+    
+    # Rotation matrices around X, Y, Z axes
+    rx = [
+        [1, 0, 0, 0],
+        [0, math.cos(x_rad), -math.sin(x_rad), 0],
+        [0, math.sin(x_rad), math.cos(x_rad), 0],
+        [0, 0, 0, 1]
+    ]
+    
+    ry = [
+        [math.cos(y_rad), 0, math.sin(y_rad), 0],
+        [0, 1, 0, 0],
+        [-math.sin(y_rad), 0, math.cos(y_rad), 0],
+        [0, 0, 0, 1]
+    ]
+    
+    rz = [
+        [math.cos(z_rad), -math.sin(z_rad), 0, 0],
+        [math.sin(z_rad), math.cos(z_rad), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ]
+    
+    # Matrix multiplication function (for 4x4 matrices)
+    def matrix_mult(A, B):
+        return [[sum(A[i][k] * B[k][j] for k in range(4)) for j in range(4)] for i in range(4)]
+    
+    # Combine the rotations: first X, then Y, then Z
+    rxy = matrix_mult(rx, ry)
+    rotation_matrix = matrix_mult(rxy, rz)
+    
+    # Print the matrix in a readable format
+    print("Transformation Matrix:")
+    for row in rotation_matrix:
+        print(" ".join(f"{val:.6f}" for val in row))
+
+# Example usage
+# euler_to_matrix(45, 30, 60)
+
+
+
 
 
 
@@ -17,20 +145,6 @@ def addrbf(joint_name='L_arm00Out_jnt',
             nuetral_val = 0, 
             blendshape_node='teshi_base_body_geo_bodyMechanics_skinCluster'):
     pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
