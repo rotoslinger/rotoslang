@@ -362,7 +362,6 @@ def export_to_json(data, file_path=None, filename_prefix='',  suffix="MATRIX_CON
     print("\n")
     print(f"Exported to {full_file_path}")
     print("\n")
-
 ####################################### Usage ########################################
 # connections_data = get_compound_attr_connect_map(node='teshi_base_body_geo_bodyMechanics_skinCluster',
 #                                                  compound_attr='matrix')
@@ -372,7 +371,7 @@ def export_to_json(data, file_path=None, filename_prefix='',  suffix="MATRIX_CON
 #                suffix='MATRIX_CONNECTIONS')
 ######################################################################################
 
-class JsonAttributes:
+class JsonConnectionAttrs:
     '''
     A simple class that creates attributes based on dictionary keys.
 
